@@ -139,7 +139,7 @@ function render(){
   $('#pulls').innerHTML=route.pulls.map((p,i)=>{
     const score=scorePull(p,dungeon,enemies,route,data.shadow);
     const members=p.enemies.map(id=>positions.get(id)).filter(Boolean);
-    return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}</div>${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary':''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" title="Show on map" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button><button data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>`:''}</article>`;
+    return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}</div>${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary':''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button><button data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>`:''}</article>`;
   }).join('');
   updateSaveButton();renderMap();if(inspected)renderInspector(inspected);
 }
@@ -158,7 +158,7 @@ function showChickenTooltip(anchor){
   const groups=[...route.pulls.map(p=>({name:p.name,id:p.id})),{name:'Not in a pull',id:null}];
   tip.innerHTML=`<strong>Chicken · ${chickens.length}</strong>${chickens.length?groups.map(group=>{
     const members=chickens.filter(p=>(owners.get(p.placementId)?.pull.id??null)===group.id);if(!members.length)return '';
-    return `<div class="tip-pack-heading">${esc(group.name)}</div><ul class="tip-pack">${members.map(p=>{const enemy=enemies.get(p.id),icon=availableImage(enemy);return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify([p.placementId]))}" title="Show on map">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}</span></button></li>`;}).join('')}</ul>`;
+    return `<div class="tip-pack-heading">${esc(group.name)}</div><ul class="tip-pack">${members.map(p=>{const enemy=enemies.get(p.id),icon=availableImage(enemy);return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify([p.placementId]))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}</span></button></li>`;}).join('')}</ul>`;
   }).join(''):'<div class="muted">No Chicken mobs in this route.</div>'}`;
   positionSidebarTooltip(tip,anchor);
 }
@@ -185,7 +185,7 @@ function showPullTooltip(anchor){
   tip.dataset.pull=pull.id;
   tip.innerHTML=`<strong>${esc(pull.name)}</strong><div class="tip-score">${pct(score.percent)} · ${members.length} ${members.length===1?'mob':'mobs'}</div>${rows.length?`<ul class="tip-pack">${rows.map(({p,count,ids,empowered,chicken})=>{
     const enemy=enemies.get(p.id),icon=availableImage(enemy);
-    return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify(ids))}" title="Show on map">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}${count>1?` ×${count}`:''}</span><span class="tip-pack-status">${empowered?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${chicken?`<img src="${chickenIcon}" alt="Chicken" title="Chicken">`:''}</span></button></li>`;
+    return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify(ids))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}${count>1?` ×${count}`:''}</span><span class="tip-pack-status">${empowered?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${chicken?`<img src="${chickenIcon}" alt="Chicken" title="Chicken">`:''}</span></button></li>`;
   }).join('')}</ul>`:'<div class="muted">No mobs in this pull.</div>'}`;
   positionSidebarTooltip(tip,anchor);
 }
@@ -325,7 +325,7 @@ function renderMap(){
     const referencePatrol=mapLayer.patrols?.[mapLayer.placementPatrols?.[p.placementId]];
     if(referencePatrol?.length>1||p.mapPatrolPath?.length>1){
       // Separate paths at floor transitions; never draw across unrelated layers.
-      let segment=[];const flush=()=>{if(segment.length>1){const points=segment.join(' '),key=p.packId+'|'+points;if(!patrolPaths.has(key)){patrolPaths.add(key);$('#patrols').append(svg('polyline',{'data-pack':p.packId,class:'patrol-path',points,fill:'none',stroke:color,'stroke-width':1.8,'stroke-dasharray':'5 4','vector-effect':'non-scaling-stroke',opacity:.85}));}}segment=[];};
+      let segment=[];const flush=()=>{if(segment.length>1){const points=segment.join(' '),key=p.packId+'|'+points;if(!patrolPaths.has(key)){patrolPaths.add(key);$('#patrols').append(svg('polyline',{'data-pack':p.packId,class:'patrol-path',points,fill:'none',stroke:'#ffffff','stroke-width':1.8,'stroke-dasharray':'5 4','vector-effect':'non-scaling-stroke',opacity:.85}));}}segment=[];};
       if(referencePatrol)segment=referencePatrol.map(xy=>xy.join(','));
       else for(const [i,pt] of p.mapPatrolPath.entries()){if(i&&pt.mapImageId!==p.mapPatrolPath[i-1].mapImageId)flush();if(onMap(pt,mapLayer)){const xy=coordinates({...pt,worldPosition:p.patrolPath?.[i]});if(xy)segment.push(xy.join(','));else flush();}else flush();}flush();
     }
