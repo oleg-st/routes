@@ -45,7 +45,7 @@ try{
     // Right-drag continues to pan without opening a deletion menu.
     await move(395,330);await page.mouse.down({button:'right'});await move(425,350);await page.mouse.up({button:'right'});
     assert.equal(await page.locator('#enemy-menu').isHidden(),true);
-    await page.locator('#fit').click();
+    await page.keyboard.press('f');
     // Escape cancels an in-progress arrow.
     await page.locator('[data-tool=line]').click();await click(250,440);await move(500,440);await page.keyboard.press('Escape');
     assert.equal(await page.locator('#draft > g').count(),0);assert.equal(await drawings.count(),1);

@@ -21,6 +21,7 @@ export function usedImages({includeReferenced = false, includeLayers = false} = 
     const image = enemy.images?.find(image => image.size === '200') || enemy.images?.[0];
     if (image) images.add(image.path);
   }
+  for (const hero of read('heroes')) for (const image of hero.images || []) images.add(image.path);
   // Runtime source literals include toolbar, modifier, and relic icons.
   for (const source of ['index.html', 'app.js', 'styles.css', 'route-model.js', 'map-views.js', 'map-geometry.js']) {
     const text = fs.readFileSync(new URL(`../${source}`, import.meta.url), 'utf8');

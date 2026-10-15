@@ -1,4 +1,4 @@
-import {uid,newRoute,clearRoute,hasRouteChanges,newPull,pullColor,renamePull,movePull,assignEnemies,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,validateRoute,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,toggleModifier,encodeRoute,decodeRoute} from './route-model.js';
+import {uid,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute} from './route-model.js';
 import {pullOutline} from './map-geometry.js';
 import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
 import {correctDungeon} from './data/placement-corrections.js';
@@ -6,6 +6,13 @@ import {enemyAbilities} from './data/ability-corrections.js';
 import {fullMapBuildId} from './data/full-maps.js';
 import {combinedBuildId} from './data/combined-layouts.js';
 import {loadData} from './data/runtime-loader.js';
+import {createCursorOverlay} from './collaboration/cursor-overlay.js';
+import {createRoomSession} from './collaboration/room-manager.js';
+import {createRoomUI} from './collaboration/room-ui.js';
+import {newRoomCode,roomCode} from './collaboration/room-protocol.js';
+import {createRouteDocument,restoreRouteDocument} from './collaboration/route-document.js';
+import {openRouteStorage} from './collaboration/route-storage.js';
+import {migrateLegacyLibrary} from './collaboration/route-library.js';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
@@ -18,7 +25,9 @@ const relicIcons={portal:'images/hero-items/relic-b-crit-portal-hero-item-200.av
 const failedMobImages=new Set();
 const svg=(tag,attrs={},text)=>{const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text!=null)e.textContent=text;return e;};
 let data,dungeon,route,activePull,mapLayer,positions,enemies,packNumbers,view,baseView,tool='select',draft=[],inspected=null;
-let history=[],future=[],drag=null,saveTimer,toastTimer,suppressClick=false;
+let drag=null,toastTimer,suppressClick=false;
+let routeDocument,routeBinding,routeStorage,stopRoute,routeBusy=false,selectionQueue=Promise.resolve();
+let roomSession=null,roomUI,cursorUI,roomTransition=false,roomResume=null;
 let hoveredPack=null;
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
 const enemyFocusDuration=1000;
@@ -27,14 +36,14 @@ let arrowColor='#ff0000',arrowWidth=3;
 const storageKey='fellowship-atlas-v1';
 let store={drafts:{},saved:[],lastDungeon:null};
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4500);}
-function persist(){
-  if(!route)return;store.drafts[dungeon.id]=structuredClone(route);store.lastDungeon=dungeon.id;
-  try{localStorage.setItem(storageKey,JSON.stringify(store));}catch{toast('Unable to save in this browser. Export your route to keep a copy.');}
-}
-function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(persist,200);}
-function change(fn){history.push(JSON.stringify(route));if(history.length>60)history.shift();future=[];fn();render();scheduleSave();}
-function undo(){if(!history.length)return;future.push(JSON.stringify(route));route=JSON.parse(history.pop());repairSelection();render();scheduleSave();}
-function redo(){if(!future.length)return;history.push(JSON.stringify(route));route=JSON.parse(future.pop());repairSelection();render();scheduleSave();}
+function canEdit(){return !routeBusy&&!roomTransition&&(!roomSession||roomSession.document&&!roomSession.state().full&&!roomSession.state().kicked&&!roomSession.state().switching)&&routeDocument?.role==='player';}
+function storageStatus({state,error}){const label=$('#storage-status');label.textContent=state==='saved'?'Saved locally':state==='saving'?'Saving…':'Save failed · click to retry';label.dataset.state=state;label.title=error?.message||'Route Together · browser storage';}
+async function persist(){try{await routeBinding?.flush();}catch(error){toast('Unable to save: '+error.message);throw error;}}
+function refreshRoute(){route=routeDocument.snapshot();repairSelection();render();}
+function change(commands){if(!canEdit())return false;if(Array.isArray(commands)&&!commands.length)return true;try{Array.isArray(commands)?routeDocument.executeBatch(commands):routeDocument.execute(commands);refreshRoute();return true;}catch(error){toast(error.message);return false;}}
+function undo(){if(canEdit()&&routeDocument.canUndo()){routeDocument.undo();refreshRoute();}}
+function redo(){if(canEdit()&&routeDocument.canRedo()){routeDocument.redo();refreshRoute();}}
+function run(action){return (...args)=>Promise.resolve().then(()=>action(...args)).catch(error=>toast(error.message));}
 function repairSelection(){if(!route.pulls.some(p=>p.id===activePull))activePull=route.pulls[0]?.id??null;}
 function active(){return route.pulls.find(p=>p.id===activePull)||route.pulls[0];}
 function assigned(){return new Map(route.pulls.flatMap((p,i)=>p.enemies.map(id=>[id,{pull:p,index:i}])));}
@@ -50,27 +59,100 @@ function floorName(m,i){
   const title=names[m.name]||m.name||`Layer ${i+1}`;
   return dungeon.mapImages.filter(v=>v.name===m.name).length>1&&m.name?`${title} ${i+1}`:title;
 }
-function createRoute(){
-  const routes=[...store.saved,...Object.values(store.drafts),route].filter(Boolean);
-  const highest=Math.max(0,...routes.map(r=>Number(/^Route ([1-9]\d*)$/.exec(r.name)?.[1])||0));
-  const number=Math.max(highest+1,Number(store.nextRouteNumber)||1);
-  store.nextRouteNumber=number+1;
-  return newRoute(dungeon,data.manifest.buildId,`Route ${number}`);
-}
+async function createRoute(target=dungeon){const fresh=newRoute(target,data.manifest.buildId,await routeStorage.nextName(Math.max(0,...[...store.saved,route].filter(Boolean).map(r=>Number(/^Route (\d+)$/.exec(r.name)?.[1])||0))+1));applyModifierPresets(fresh,target,data['modifier-placements']);return fresh;}
 function selectDungeon(id,imported){
-  if(route)persist();dungeon=data.dungeons.find(d=>d.id===id)||data.dungeons[0];
-  positions=new Map(dungeon.enemies.map(e=>[e.placementId,e]));packNumbers=new Map([...new Set(dungeon.enemies.map(e=>e.packId))].map((id,i)=>[id,i+1]));
-  try{route=imported||validateRoute(store.drafts[dungeon.id],data.dungeons,enemies);}catch{route=createRoute();}
-  applyModifierPresets(route,dungeon,data['modifier-placements']);
-  packNumbers.set('modifier:ghorn','Ghorn');packNumbers.set('modifier:witch','Witch');
-  activePull=route.pulls[0]?.id??null;history=[];future=[];inspected=null;$('#inspector').hidden=true;$('#dungeon').value=dungeon.id;$('#search').value='';$('#search-results').hidden=true;
-  const views=mapViews(dungeon);
-  if($('#floors'))$('#floors').innerHTML=views.map((m,i)=>`<button data-floor="${i}">${esc(floorName(m,i))}</button>`).join('');
-  updateFloorPanel();
-  const start=views.findIndex(m=>m.name?.startsWith('Start'));
-  const global=views.findIndex(m=>m.name==='Global');
-  chooseFloor(views[0].sources?0:start>=0?start:global>=0?global:0);render();$('#pulls').scrollTop=0;scheduleSave();
+  if(roomSession||roomTransition)return Promise.reject(new Error('Leave the room before opening another route.'));
+  const operation=selectionQueue.then(()=>loadDungeon(id,imported));selectionQueue=operation.catch(()=>{});return operation;
 }
+async function loadDungeon(id,imported){
+  routeBusy=true;drag=null;draft=[];
+  try{
+    await persist();
+    const target=data.dungeons.find(d=>d.id===id)||data.dungeons[0];
+    const options={dungeon:target,enemies,role:'player'};
+    const packet=typeof imported==='string'?await routeStorage.load(imported):!imported&&store.drafts[target.id]?await routeStorage.load(store.drafts[target.id]):null;
+    if(typeof imported==='string'&&!packet)throw new Error('Saved route data is missing.');
+    const next=packet?restoreRouteDocument(packet,options):createRouteDocument(imported||await createRoute(target),options);
+    const binding=routeStorage.bind(next,storageStatus);
+    try{await binding.flush();await routeStorage.setDraft(target.id,next.identity.routeId);}catch(error){await binding.dispose().catch(()=>{});next.dispose();throw error;}
+    await routeBinding?.dispose();stopRoute?.();routeDocument?.dispose();
+    displayRouteDocument(next,binding);
+  }finally{routeBusy=false;}
+}
+function displayRouteDocument(next,binding){
+    routeDocument=next;routeBinding=binding;route=next.snapshot();dungeon=data.dungeons.find(d=>d.id===next.identity.dungeonId);
+    store.drafts[dungeon.id]=route.id;store.lastDungeon=dungeon.id;
+    stopRoute=next.subscribe(event=>{if(event.origin==='import')queueMicrotask(()=>{if(routeDocument===next)refreshRoute();});});
+    positions=new Map(dungeon.enemies.map(e=>[e.placementId,e]));packNumbers=new Map([...new Set(dungeon.enemies.map(e=>e.packId))].map((id,i)=>[id,i+1]));
+    routeBusy=false;
+    packNumbers.set('modifier:ghorn','Ghorn');packNumbers.set('modifier:witch','Witch');
+    activePull=route.pulls[0]?.id??null;inspected=null;$('#inspector').hidden=true;$('#dungeon').value=dungeon.id;$('#search').value='';$('#search-results').hidden=true;
+    const views=mapViews(dungeon);
+    if($('#floors'))$('#floors').innerHTML=views.map((m,i)=>`<button data-floor="${i}">${esc(floorName(m,i))}</button>`).join('');
+    updateFloorPanel();
+    const start=views.findIndex(m=>m.name?.startsWith('Start'));
+    const global=views.findIndex(m=>m.name==='Global');
+    chooseFloor(views[0].sources?0:start>=0?start:global>=0?global:0);render();$('#pulls').scrollTop=0;
+  if(roomSession)roomUI.update(roomSession.state());
+}
+async function startRoom({code,name,classId='',role='player',config={},create=false}){
+  if(roomSession||roomTransition)throw new Error('Leave your current room first.');
+  roomTransition=true;const previous={dungeonId:dungeon.id,routeId:route.id},packet=create?routeDocument.exportSnapshot():undefined;
+  try{
+    await persist();await routeBinding.dispose();stopRoute?.();routeDocument.dispose();routeDocument=null;routeBinding=null;
+    let session;
+    session=await createRoomSession({code,role,name,classId,classes:data.heroes,initialPacket:packet,storage:routeStorage,connectionConfig:config,
+      resolveOptions:identity=>{const target=data.dungeons.find(d=>d.id===identity.dungeonId);if(!target||identity.buildId!==data.manifest.buildId)throw new Error('This room uses an incompatible dungeon or game data build.');return {dungeon:target,enemies};},
+      onArchive:async saved=>{await routeStorage.saveBookmark(saved);const i=store.saved.findIndex(r=>r.id===saved.id);if(i>=0)store.saved[i]=saved;else store.saved.push(saved);},
+      onKicked:async()=>{if(roomSession===session){$('#dialog').close();await leaveRoom();toast('You were disconnected by the room creator.');}},
+      onStorage:storageStatus,onPresence:cursors=>cursorUI?.setRemote(cursors),
+      onDocument:(doc,binding)=>{if(session&&roomSession===session){stopRoute?.();cursorUI?.clear();displayRouteDocument(doc,binding);}},
+      onState:state=>{if(session&&roomSession===session){roomUI.update(state);if(routeDocument)updateRoomControls();}},
+    });
+    roomSession=session;roomTransition=false;roomResume={code,role,name,classId};try{sessionStorage.setItem('rt-room',JSON.stringify(roomResume));}catch{}
+    const url=new URL(location.href);url.hash='room='+code;window.history.replaceState(null,'',url);
+    if(session.document)displayRouteDocument(session.document,session.binding);roomUI.update(session.state());updateRoomControls();await session.start();
+  }catch(error){
+    if(roomSession){stopRoute?.();await roomSession.leave().catch(()=>{});routeDocument=null;routeBinding=null;}roomSession=null;roomTransition=false;roomResume=null;try{sessionStorage.removeItem('rt-room');}catch{}roomUI.update(null);cursorUI?.clear();
+    if(!routeDocument)await selectDungeon(previous.dungeonId,previous.routeId);throw error;
+  }
+}
+async function changeDungeon(id){
+  if(!roomSession)return selectDungeon(id);
+  if(id===dungeon.id)return;
+  const target=data.dungeons.find(d=>d.id===id);if(!target)throw new Error('Unknown dungeon.');
+  if(!roomSession.state().canChangeDungeon){$('#dungeon').value=dungeon.id;throw new Error('Only the room creator can change the dungeon.');}
+  roomTransition=true;updateRoomControls();
+  try{
+    let packet=await roomSession.savedRoute(id);
+    if(!packet){const next=createRouteDocument(await createRoute(target),{dungeon:target,enemies,role:'player'});try{packet=next.exportSnapshot();}finally{next.dispose();}}
+    await roomSession.switchDocument(packet);toast('Dungeon changed for everyone. The previous route was saved locally.');
+  }finally{roomTransition=false;$('#dungeon').value=dungeon.id;if(routeDocument)render();updateRoomControls();}
+}
+function updateRoomControls(){
+  $('#dungeon').disabled=Boolean(roomTransition||roomSession&&!roomSession.state().canChangeDungeon);
+  $('#dungeon').title=roomSession?'Only the room creator can change the dungeon. The current route is saved locally.':'';
+  for(const el of $$('#library,#new-route,#import'))el.disabled=Boolean(roomSession||roomTransition);
+  for(const el of $$('#export,#share'))el.disabled=Boolean(roomTransition||roomSession&&(!roomSession.document||roomSession.state().full));
+  if(routeDocument){updateSaveButton();$('#route-name').disabled=!canEdit();$('#undo').disabled=!canEdit()||!routeDocument.canUndo();$('#redo').disabled=!canEdit()||!routeDocument.canRedo();}
+}
+async function leaveRoom(){
+  if(!roomSession||roomTransition&&!roomSession.state().kicked)return;roomTransition=true;
+  const session=roomSession,packet=session.document?.exportSnapshot(),fallback=store.lastDungeon||dungeon.id;
+  try{await session.binding?.flush();}catch(error){if(!session.state().kicked){roomTransition=false;throw error;}}
+  stopRoute?.();routeDocument=null;routeBinding=null;let leaveError;try{await session.leave();}catch(error){leaveError=error;}roomSession=null;roomTransition=false;roomResume=null;
+  try{sessionStorage.removeItem('rt-room');}catch{}const url=new URL(location.href);url.hash='';window.history.replaceState(null,'',url);roomUI.update(null);
+  if(packet)await selectDungeon(packet.identity.dungeonId,packet.identity.routeId);else await selectDungeon(fallback);updateRoomControls();if(leaveError)throw leaveError;
+}
+function setupRooms(){
+  cursorUI=createCursorOverlay({classes:data.heroes,map:$('#map'),getContext:()=>mapLayer&&roomSession?.document&&!roomSession.state().full?{mapLayer,dungeon}:null,onCursor:cursor=>roomSession?.setCursor(cursor)});
+  roomUI=createRoomUI({showDialog,copyText:copyRouteText,onError:toast,
+    classes:data.heroes,onProfile:profile=>{roomSession.updateProfile(profile);roomResume={...roomResume,...profile};try{sessionStorage.setItem('rt-room',JSON.stringify(roomResume));}catch{}},
+    onCreate:({name,classId,config})=>startRoom({code:newRoomCode(),name,classId,role:'player',config,create:true}),
+    onJoin:args=>startRoom(args),onLeave:leaveRoom,onKick:id=>roomSession?.kick(id),onReconnect:config=>roomSession?.reconnect(config)});
+  window.addEventListener('online',()=>{if(roomSession)roomSession.reconnect().catch(error=>toast(error.message));});
+}
+function openRoomHash(){if(!location.hash.startsWith('#room='))return;try{const code=roomCode(location.hash);if(roomSession){if(roomSession.state().roomId!==code)toast('Leave this room before joining another.');return;}roomUI.form(code);}catch(error){toast(error.message);}}
 function updateFloorPanel(){
   const panel=$('#floor-panel'),option=$('#floor-panel-option');
   if(!panel)return;
@@ -102,6 +184,8 @@ function setMapImage(layer){
   previous.replaceWith(image);image.setAttribute('href',layer.path);
 }
 function chooseFloor(index){
+  cursorUI?.pause();
+  drag=null;
   clearTimeout(enemyHoverTimer);
   clearEnemyFocus();
   mapLayer=mapViews(dungeon)[index];draft=[];hideHover();
@@ -120,7 +204,7 @@ function render(){
   hideChickenTooltip();
   hidePullTooltip();
   refreshPositions();
-  $('#route-name').value=route.name;const totals=scoreRoute(route,dungeon,enemies,data.shadow);
+  if(document.activeElement!==$('#route-name'))$('#route-name').value=route.name;const totals=scoreRoute(route,dungeon,enemies,data.shadow);
   $('#total-percent').innerHTML=`${totals.percent==null?'—':totals.percent.toFixed(2)}<span>%</span>`;
   $('#total-score').textContent=`${fmt(totals.score)} / ${fmt(dungeon.requiredScore)} points`;
   $('#progress-fill').style.width=`${Math.min(100,totals.percent||0)}%`;
@@ -131,8 +215,9 @@ function render(){
   $('#score-remaining').textContent=totals.unknown?`Unknown scores: ${totals.unknown} enemies` : remaining>0?`${fmt(remaining)} points to reach 100%`: `${fmt(-remaining)} extra points`;
   if(route.shadow){$('#total-score').textContent=`${fmt(totals.score)} KS · ${pct(totals.percent)}`;$('#score-remaining').textContent=`${Math.max(0,shadowTarget(dungeon)-orbs)} orbs remaining · estimated`;}
   $('#shadow').setAttribute('aria-pressed',String(route.shadow));
-  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=kind==='empowered'?!route.modifiers.empowered.enemies.length:!route.modifiers[kind].packId;$('#'+kind).title=$('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?'G'+packNumbers.get(route.modifiers[kind].packId):'Choose a pack'}`;}
-  $('#pull-count').textContent=route.pulls.length;$('#undo').disabled=!history.length;$('#redo').disabled=!future.length;
+  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=!canEdit()||(kind==='empowered'?!route.modifiers.empowered.enemies.length:!route.modifiers[kind].packId);$('#'+kind).title=$('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?'G'+packNumbers.get(route.modifiers[kind].packId):'Choose a pack'}`;}
+  $('#pull-count').textContent=route.pulls.length;$('#undo').disabled=!routeDocument.canUndo();$('#redo').disabled=!routeDocument.canRedo();
+  for(const el of $$('#route-name,#shadow,#add-pull,#clear-route,#new-route,#import,[data-tool]'))el.disabled=!canEdit()&&el.dataset.tool!=='select';
   const chickens=chickenPositions().length;
   const invis=route.drawings.filter(d=>d.kind==='invis').length;
   $('#route-relics').innerHTML=relicSummary(chickens,invis);
@@ -141,7 +226,8 @@ function render(){
     const members=p.enemies.map(id=>positions.get(id)).filter(Boolean);
     return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}</div>${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary':''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button><button data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>`:''}</article>`;
   }).join('');
-  updateSaveButton();renderMap();if(inspected)renderInspector(inspected);
+  if(!canEdit())for(const button of $$('#pulls [data-action]:not([data-action=focus])'))button.disabled=true;
+  updateRoomControls();updateSaveButton();renderMap();if(inspected)renderInspector(inspected);
 }
 function matchesSearch(pos){const q=$('#search').value.trim().toLowerCase();if(!q)return true;return (enemies.get(pos.id)?.name||'').toLowerCase().includes(q)||`g${packNumbers.get(pos.packId)}`===q;}
 function visiblePositions(){const owners=assigned();return currentPositions().filter(p=>!$('#hide-unselected').checked||owners.has(p.placementId));}
@@ -214,7 +300,7 @@ function positionPopover(element,event){
 }
 function toggleChicken(id){
   const p=positions.get(id);if(!p||enemies.get(p.id)?.isBoss)return;
-  change(()=>{route.excluded=route.excluded.includes(id)?route.excluded.filter(v=>v!==id):[...route.excluded,id];});
+  change({type:'set-excluded',mobId:id,excluded:!route.excluded.includes(id)});
 }
 function showEnemyMenu(id,event){
   const p=positions.get(id);if(!p)return;
@@ -225,20 +311,37 @@ function showEnemyMenu(id,event){
   menu.onclick=e=>{const action=e.target.closest('[data-enemy-action]')?.dataset.enemyAction;if(!action)return;menu.hidden=true;if(action==='chicken')toggleChicken(id);else renderInspector(id);};
   menu.querySelector('button').focus({preventScroll:true});
 }
-function showDrawingMenu(id,event){
-  const drawing=route.drawings.find(d=>d.id===id);if(!drawing)return;
-  hideHover();const menu=$('#enemy-menu'),name={line:'arrow',portal:'portal',invis:'invis',note:'note'}[drawing.kind];
+function showDrawingMenu(id,event,vertex){
+  const drawing=annotation(id);if(!drawing||!canEdit())return;const endpoint=vertex??Number(event.target?.closest('[data-endpoint]')?.dataset.endpoint);
+  hideHover();const menu=$('#enemy-menu'),name={line:'arrow',portal:'portal',invis:'invis',note:'note',marker:'marker'}[drawing.kind];
   menu.setAttribute('aria-label','Drawing actions');
-  menu.innerHTML=`${drawing.kind==='note'?'<button role="menuitem" data-drawing-action="edit">Edit note</button>':''}<button role="menuitem" data-drawing-action="delete">Delete ${name}</button>`;
-  menu.onclick=e=>{const action=e.target.closest('[data-drawing-action]')?.dataset.drawingAction;if(!action)return;menu.hidden=true;if(action==='edit')editNote(drawing);else{change(()=>route.drawings=route.drawings.filter(d=>d.id!==id));$('#map').focus();}};
+  menu.innerHTML=`${['note','marker'].includes(drawing.kind)?'<button role="menuitem" data-drawing-action="edit">Edit '+(drawing.kind==='note'?'note':'marker')+'</button>':''}${drawing.kind==='line'?'<button role="menuitem" data-drawing-action="insert">Add vertex after this point</button>':''}${drawing.kind==='line'&&drawing.points.length>2&&Number.isInteger(endpoint)?'<button role="menuitem" data-drawing-action="vertex">Remove vertex</button>':''}<button role="menuitem" data-drawing-action="delete">Delete ${name}</button>`;
+  menu.onclick=e=>{const action=e.target.closest('[data-drawing-action]')?.dataset.drawingAction;if(!action)return;menu.hidden=true;if(action==='edit'){drawing.kind==='marker'?editMarker(drawing):editNote(drawing);}else if(action==='insert'){const index=Number.isInteger(endpoint)?Math.min(endpoint,drawing.points.length-2):0;change({type:'insert-point',drawingId:id,afterId:drawing.pointIds[index],position:drawing.points[index].map((n,i)=>(n+drawing.points[index+1][i])/2)});}else if(action==='vertex'){change({type:'delete-point',drawingId:id,pointId:drawing.pointIds[endpoint]});}else{change(drawing.kind==='marker'?{type:'delete-marker',markerId:id}:{type:'delete-drawing',drawingId:id});$('#map').focus();}};
   positionPopover(menu,event);menu.querySelector('button').focus({preventScroll:true});
 }
+function annotation(id){return route.drawings.find(d=>d.id===id)||markerAnnotation(route.markers.find(m=>m.id===id));}
+function markerAnnotation(marker){return marker&&{...marker,kind:'marker',points:[marker.position],text:marker.label};}
+function editMarker(marker,pos){
+  if(!canEdit())return;
+  showDialog(marker?'Edit marker':'Map marker',`<label>Label<textarea id="marker-label" maxlength="4000">${esc(marker?.label||'')}</textarea></label><label>Color<input type="color" id="marker-color" value="${marker?.color||active()?.color||pullColor(0)}"></label><label>Symbol<select id="marker-icon">${['pin','star','flag'].map(icon=>'<option '+(marker?.icon===icon?'selected':'')+'>'+icon+'</option>').join('')}</select></label><button id="place-marker" class="primary">Save</button>`);
+  $('#place-marker').onclick=()=>{const label=$('#marker-label').value,color=$('#marker-color').value,icon=$('#marker-icon').value;
+    const commands=marker?[]:{type:'add-marker',mapId:mapLayer.id,position:pos,label,color,icon};
+    if(marker){const current=route.markers.find(m=>m.id===marker.id),patch={};if(!current){toast('This marker was deleted.');return;}
+      if(label!==marker.label){if(!unchangedText(current.label,marker.label))return;commands.push({type:'set-text',group:'markers',id:marker.id,text:label});}
+      if(color!==marker.color)patch.color=color;if(icon!==marker.icon)patch.icon=icon;
+      if(Object.keys(patch).length)commands.push({type:'update-marker',markerId:marker.id,patch});
+    }
+    if(change(commands)){$('#dialog').close();setTool('select');}
+  };
+}
+function unchangedText(current,original){if(current===original)return true;toast('This text changed in another tab. Copy your draft, then reopen the editor to see the latest version.');return false;}
 function editNote(drawing,pos){
-  showDialog(drawing?'Edit note':'Map note',`<textarea id="map-note" placeholder="For example: portal after this pack…" maxlength="500" aria-label="Note text">${esc(drawing?.text||'')}</textarea><button id="place-note" class="primary">${drawing?'Save':'Add'}</button>`);
+  if(!canEdit())return;
+  showDialog(drawing?'Edit note':'Map note',`<textarea id="map-note" placeholder="For example: portal after this pack…" maxlength="4000" aria-label="Note text">${esc(drawing?.text||'')}</textarea><button id="place-note" class="primary">${drawing?'Save':'Add'}</button>`);
   const input=$('#map-note');input.focus();input.setSelectionRange(input.value.length,input.value.length);
   $('#place-note').onclick=()=>{const text=$('#map-note').value.trim();if(!text){$('#map-note').focus();return;}
-    change(()=>{if(drawing){const note=route.drawings.find(d=>d.id===drawing.id);if(note)note.text=text;}else route.drawings.push({id:uid(),mapId:mapLayer.id,kind:'note',color:(active()?.color||pullColor(0)),text,points:[pos]});});
-    $('#dialog').close();setTool('select');
+    if(drawing&&text!==drawing.text&&!unchangedText(route.drawings.find(d=>d.id===drawing.id)?.text,drawing.text))return;
+    if(change(drawing?(text===drawing.text?[]:{type:'set-text',group:'drawings',id:drawing.id,text}):{type:'add-drawing',id:uid(),mapId:mapLayer.id,kind:'note',color:(active()?.color||pullColor(0)),text,points:[pos]})){$('#dialog').close();setTool('select');}
   };
 }
 function setArrowOptions(open){$('#arrow-options').hidden=!open;$('[data-tool="line"]').setAttribute('aria-expanded',String(open));}
@@ -366,21 +469,24 @@ function renderMap(){
       $('#pack-labels').append(svg('text',{x,y,'text-anchor':'middle','font-size':10*unit,'font-family':'Segoe UI,sans-serif',fill:'#e6e4dc',stroke:'#0a1119','stroke-width':3*unit,'paint-order':'stroke','stroke-linejoin':'round'},label));
     }
   }
-  $('#drawings').replaceChildren();for(const d of route.drawings){const projected=drawingOnMap(drag?.edit?.id===d.id?drag.edit:d,mapLayer,dungeon);if(projected)drawAnnotation(projected,$('#drawings'),unit);}
-  renderDraft();
+  $('#drawings').replaceChildren();for(const d of [...route.drawings,...route.markers.map(markerAnnotation)]){const projected=drawingOnMap(drag?.edit?.id===d.id?drag.edit:d,mapLayer,dungeon);if(projected)drawAnnotation(projected,$('#drawings'),unit);}
+  renderDraft();cursorUI?.refresh();
 }
 function drawAnnotation(d,root,unit){
   const color=relicColors[d.kind]||d.color;
   const isDraft=d.id==='draft',width=d.kind==='line'?(d.width||3):3;
   const g=svg('g',{'data-drawing':d.id,class:`annotation${drag?.edit?.id===d.id?' editing':''}`,...(!isDraft?{tabindex:0,role:'group','aria-label':d.kind==='line'?'Arrow':d.kind==='note'?'Note: '+d.text:d.kind}:{'pointer-events':'none'})});
-  if(d.kind==='note'){
+  if(d.kind==='marker'){
+    if(!isDraft){g.setAttribute('data-endpoint','0');g.classList.add('annotation-handle');}
+    const [x,y]=d.points[0];g.append(svg('circle',{cx:x,cy:y,r:12*unit,fill:'#11171b',stroke:color,'stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('text',{x,y:y+4*unit,'text-anchor':'middle','font-size':14*unit,fill:color},{pin:'◆',star:'★',flag:'⚑'}[d.icon]||'◆'),svg('title',{},d.label));
+  }else if(d.kind==='note'){
     if(!isDraft){g.setAttribute('data-endpoint','0');g.classList.add('annotation-handle');}
     const number=route.drawings.filter(item=>item.kind==='note').findIndex(item=>item.id===d.id)+1;
     const [x,y]=d.points[0];g.append(svg('circle',{cx:x,cy:y,r:Math.max(9,4+String(number).length*3)*unit,fill:'#11171b',stroke:'#ffffff','stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('text',{x,y:y+3.5*unit,'text-anchor':'middle','font-size':11*unit,'font-weight':700,fill:'#ffffff'},number));
   }else{
-    const points=(d.kind==='line'?[d.points[0],d.points.at(-1)]:d.points).map(p=>p.join(',')).join(' ');
+    const points=d.points.map(p=>p.join(',')).join(' ');
     if(!isDraft)g.append(svg('polyline',{points,fill:'none',stroke:'transparent','stroke-width':Math.max(16,width*6),'vector-effect':'non-scaling-stroke','pointer-events':'stroke','stroke-linecap':'round'}));
-    g.append(svg('polyline',{class:'annotation-line',points,fill:'none',stroke:color,'stroke-width':width,'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':d.kind==='invis'?'7 6':d.kind==='portal'?'3 7':'none','marker-end':d.kind==='line'&&d.points.length===2?'url(#arrowhead)':'none'}));
+    g.append(svg('polyline',{class:'annotation-line',points,fill:'none',stroke:color,'stroke-width':width,'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':d.kind==='invis'?'7 6':d.kind==='portal'?'3 7':'none','marker-end':d.kind==='line'&&d.points.length>=2?'url(#arrowhead)':'none'}));
     if(d.kind==='line'&&!isDraft)for(const [i,[x,y]]of d.points.entries())g.append(svg('circle',{class:'arrow-handle','data-endpoint':i,cx:x,cy:y,r:6*unit,fill:color,stroke:'#fff','stroke-width':1.5,'vector-effect':'non-scaling-stroke'}));
     if(relicIcons[d.kind])for(const [i,[x,y]] of d.points.entries()){
       const endpoint=svg('g',isDraft?{}:{class:'annotation-handle','data-endpoint':i});
@@ -391,6 +497,7 @@ function drawAnnotation(d,root,unit){
 }
 function renderDraft(preview){const root=$('#draft');root.replaceChildren();if(draft.length)drawAnnotation({id:'draft',mapId:mapLayer.id,kind:tool,color:tool==='line'?arrowColor:(active()?.color||pullColor(0)),width:arrowWidth,points:preview?[draft[0],preview]:draft},root,scale());}
 function point(event){const p=$('#map').createSVGPoint();p.x=event.clientX;p.y=event.clientY;const v=p.matrixTransform($('#map').getScreenCTM().inverse());return[v.x,v.y];}
+function commitDrag(state){if(!state.edit||!state.moved)return;change(state.edit.kind==='marker'?{type:'update-marker',markerId:state.edit.id,patch:{position:state.edit.points[0]}}:{type:'move-point',drawingId:state.edit.id,pointId:state.edit.pointIds[state.endpoint],position:state.edit.points[state.endpoint]});}
 function draggedDrawingPoint(event,state){const pos=point(event).map((v,i)=>v+state.offset[i]);return drawingPointFromMap(pos,state.edit,mapLayer,dungeon);}
 function zoom(factor,at){const anchor=at||[view.x+view.w/2,view.y+view.h/2];if(view.w*factor<baseView.w/12||view.w*factor>baseView.w*2.5)return;view={x:anchor[0]+(view.x-anchor[0])*factor,y:anchor[1]+(view.y-anchor[1])*factor,w:view.w*factor,h:view.h*factor};renderMap();}
 function setTool(value,{cancel=false}={}){
@@ -404,11 +511,11 @@ function choosePacks(ids,options){
   const available=effectivePositions(route,dungeon),selected=new Set(ids);
   const packs=new Set(available.filter(p=>selected.has(p.placementId)).map(p=>p.packId));
   const members=available.filter(p=>packs.has(p.packId)).map(p=>p.placementId);
-  if(members.length)change(()=>{if(!active()){const pull=newPull();route.pulls.push(pull);activePull=pull.id;}assignEnemies(route,activePull,members,options);});
+  if(members.length){const commands=[];if(!active()){activePull=uid();commands.push({type:'add-pull',id:activePull});}commands.push({type:'assign-mobs',pullId:activePull,mobIds:members,toggle:options?.toggle??true});change(commands);}
 }
 function chooseEnemy(id){choosePacks([id]);}
-function commitDrawing(){if(draft.length!==2)return;const drawing={id:uid(),mapId:mapLayer.id,kind:tool,color:relicColors[tool]||arrowColor,...(tool==='line'?{width:arrowWidth}:{}),points:draft.map(p=>[...p])};draft=[];change(()=>route.drawings.push(drawing));}
-function showDialog(title,html){$('#dialog-title').textContent=title;$('#dialog-content').innerHTML=html;if(!$('#dialog').open)$('#dialog').showModal();}
+function commitDrawing(){if(draft.length!==2)return;const drawing={id:uid(),mapId:mapLayer.id,kind:tool,color:relicColors[tool]||arrowColor,...(tool==='line'?{width:arrowWidth}:{}),points:draft.map(p=>[...p])};draft=[];change({type:'add-drawing',...drawing});}
+function showDialog(title,html){cursorUI?.pause();$('#dialog-title').textContent=title;$('#dialog-content').innerHTML=html;if(!$('#dialog').open)$('#dialog').showModal();}
 function showScoreInfo(){
   showDialog('Scoring',`<p>Kill score: selected mobs ÷ dungeon requirement. Replaced packs and Chicken mobs contribute zero.</p><p>Empowered: 3× raw score, 2× base health. Ghorn / Witch: 20 KS each.</p><p>Shadow Lord: estimated orbs from cumulative raw score; 30 orbs per Emissary. Miniboss replacements do not generate orbs in this model.</p><p class="muted">Modifier rules are historical and unverified for the current patch. Modifier targets are matched automatically by enemy name and world coordinates from reference data. Disabled modifiers have no recorded placements.</p>`);
 }
@@ -459,21 +566,27 @@ function focusEnemies(ids,{preserveZoom=false}={}){
 }
 function updateSaveButton(){
   let saved=store.saved.find(r=>r.id===route.id);
-  if(saved){try{saved=validateRoute(saved,data.dungeons,enemies);applyModifierPresets(saved,dungeon,data['modifier-placements']);}catch{saved=null;}}
   const changed=hasRouteChanges({...route,name:$('#route-name').value.trim()||route.name},saved);
-  $('#save-route').disabled=!changed;
+  $('#save-route').disabled=!canEdit()||!changed;
   $('#delete-route').hidden=!store.saved.some(r=>r.id===route.id);
   $('#save-route').title=changed?'Save changes to this browser’s library':saved?'No unsaved changes':'No changes to save';
 }
-function saveNamed(){route.name=$('#route-name').value.trim()||route.name;const saved=structuredClone(route);const i=store.saved.findIndex(r=>r.id===saved.id);if(i>=0)store.saved[i]=saved;else store.saved.push(saved);persist();updateSaveButton();toast('Route saved to this browser’s library.');}
-function removeSavedRoute(i){
-  if(i<0)return;
-  const removed=store.saved.splice(i,1)[0];persist();updateSaveButton();showDialog('Route removed from the library',`<p>${esc(removed.name)}</p><button id="restore-saved" class="primary">Restore route</button>`);$('#restore-saved').onclick=()=>{store.saved.splice(i,0,removed);persist();updateSaveButton();showLibrary();};
+async function saveNamed(){
+  if(!canEdit())return;
+  const name=$('#route-name').value.trim()||route.name;if(name!==route.name)change({type:'set-meta',patch:{name}});
+  const saved=structuredClone(route);await persist();await routeStorage.saveBookmark(saved);
+  const i=store.saved.findIndex(r=>r.id===saved.id);if(i>=0)store.saved[i]=saved;else store.saved.push(saved);updateSaveButton();toast('Route saved to this browser’s library.');
+}
+async function removeSavedRoute(i){
+  if(i<0||!canEdit())return;
+  const removed=store.saved[i];await routeStorage.removeBookmark(removed.id);store.saved.splice(i,1);updateSaveButton();
+  showDialog('Route removed from the library',`<p>${esc(removed.name)}</p><button id="restore-saved" class="primary">Restore route</button>`);
+  $('#restore-saved').onclick=run(async()=>{await routeStorage.saveBookmark(removed);store.saved.splice(i,0,removed);updateSaveButton();showLibrary();});
 }
 function showLibrary(){
   showDialog('Saved routes',store.saved.length?store.saved.map((r,i)=>`<div class="library-item"><div><strong>${esc(r.name)}</strong><small>${esc(data.dungeons.find(d=>d.id===r.dungeonId)?.name)} · ${r.pulls.length} pulls${r.shadow?' · Shadow Lord (archived)':''}</small></div><div><button data-load="${i}">Open</button><button data-remove="${i}" aria-label="Delete saved route">×</button></div></div>`).join(''):'<p class="empty-library">Your saved routes will appear here.<br>Click “Save route” below the pull list.</p>');
-  $$('[data-load]').forEach(b=>b.onclick=()=>{try{const r=validateRoute(store.saved[Number(b.dataset.load)],data.dungeons,enemies);selectDungeon(r.dungeonId,r);$('#dialog').close();}catch(e){toast(e.message);}});
-  $$('[data-remove]').forEach(b=>b.onclick=()=>removeSavedRoute(Number(b.dataset.remove)));
+  $$('[data-load]').forEach(b=>b.onclick=run(async()=>{const r=store.saved[Number(b.dataset.load)];await selectDungeon(r.dungeonId,r.id);$('#dialog').close();}));
+  $$('[data-remove]').forEach(b=>b.onclick=run(()=>removeSavedRoute(Number(b.dataset.remove))));
 }
 async function copyRouteText(text,title,message){
   try{await navigator.clipboard.writeText(text);toast(message);return;}catch{}
@@ -484,20 +597,20 @@ async function copyRouteText(text,title,message){
   $('#copy-route-button').onclick=copy;copy();
 }
 async function exportRoute(){
-  persist();
   try{return await copyRouteText(await encodeRoute(route,dungeon),'Export route','Route copied to clipboard.');}
   catch(err){toast('Export: '+err.message);}
 }
 async function shareRoute(){
-  persist();
   try{
     const url=new URL(location.href);url.hash='route='+await encodeRoute(route,dungeon);
     return await copyRouteText(url.href,'Share route','Route link copied to clipboard.');
   }catch(err){toast('Share: '+err.message);}
 }
 async function importRouteText(text){
+  if(roomSession||roomTransition)throw new Error('Leave the room before importing a route.');
   const incoming=await decodeRoute(text,data.dungeons,enemies);incoming.id=uid();
-  selectDungeon(incoming.dungeonId,incoming);
+  if(!canEdit())throw new Error('Only players can import routes.');
+  await selectDungeon(incoming.dungeonId,incoming);
   toast(incoming.buildId!==data.manifest.buildId?'Imported a route from another build. Check scores and pull contents.':'Route imported.');
 }
 function showImport(){
@@ -519,7 +632,9 @@ function search(){
   const result=effectivePositions(route,dungeon).filter(matchesSearch);const groups=new Map();result.forEach(p=>{const key=p.id+':'+p.packId;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);});
   $('#search-results').innerHTML=[...groups.values()].slice(0,35).map(ps=>`<button data-search-id="${ps[0].placementId}">${esc(enemies.get(ps[0].id)?.name)} <span class="muted">× ${ps.length} · G${packNumbers.get(ps[0].packId)}</span></button>`).join('')||'<p class="muted" style="padding:12px">No results found</p>';
 }
-function addPull(){change(()=>{const p=newPull(route.pulls.length);let index=route.pulls.length;while(route.pulls.some(pull=>pull.color===p.color))p.color=pullColor(++index);route.pulls.push(p);activePull=p.id;});$('#pulls').scrollTop=$('#pulls').scrollHeight;}
+function addPull(){const p=newPull(route.pulls.length);let index=route.pulls.length;while(route.pulls.some(pull=>pull.color===p.color))p.color=pullColor(++index);if(change({type:'add-pull',id:p.id,color:p.color})){activePull=p.id;render();$('#pulls').scrollTop=$('#pulls').scrollHeight;}}
+function movePullTo(id,to){const from=route.pulls.findIndex(p=>p.id===id),target=route.pulls[to];if(!target||from===to)return;change({type:'move-pull',pullId:id,[from<to?'afterId':'beforeId']:target.id});}
+function toggleRouteModifier(kind){const mod=route.modifiers[kind],commands=[{type:'set-modifier',kind,patch:{active:!mod.active}}];if(kind!=='empowered'&&!mod.active&&!route.pulls.some(p=>p.enemies.includes('modifier:'+kind))){const pull=route.pulls.find(p=>p.enemies.some(id=>mod.replacedEnemies?.includes(id)));if(pull)commands.push({type:'assign-mobs',pullId:pull.id,mobIds:['modifier:'+kind]});}change(commands);}
 function bind(){
   const pullList=$('#pulls'),pullTip=$('#pull-tooltip');
   for(const list of [pullTip,$('#chicken-tooltip'),$('#search-results')]){
@@ -568,18 +683,18 @@ function bind(){
   }
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hideChickenTooltip();});
   window.addEventListener('resize',hideChickenTooltip);
-  $('#dungeon').onchange=e=>selectDungeon(e.target.value);if($('#floors'))$('#floors').onclick=e=>{const b=e.target.closest('[data-floor]');if(b)chooseFloor(Number(b.dataset.floor));};
+  $('#dungeon').onchange=run(e=>changeDungeon(e.target.value));if($('#floors'))$('#floors').onclick=e=>{const b=e.target.closest('[data-floor]');if(b)chooseFloor(Number(b.dataset.floor));};
   $('#route-name').oninput=updateSaveButton;
-  $('#route-name').onchange=e=>change(()=>route.name=e.target.value.trim()||route.name);
-  $('#shadow').onclick=()=>change(()=>route.shadow=!route.shadow);
-  for(const kind of ['empowered','ghorn','witch'])$('#'+kind).onclick=()=>change(()=>toggleModifier(route,kind));
+  $('#route-name').onchange=e=>change({type:'set-meta',patch:{name:e.target.value.trim()||route.name}});
+  $('#shadow').onclick=()=>change({type:'set-meta',patch:{shadow:!route.shadow}});
+  for(const kind of ['empowered','ghorn','witch'])$('#'+kind).onclick=()=>toggleRouteModifier(kind);
   $('#help').onclick=showHelp;$('#close-dialog').onclick=()=>$('#dialog').close();
-  $('#add-pull').onclick=addPull;$('#undo').onclick=undo;$('#redo').onclick=redo;$('#save-route').onclick=saveNamed;$('#library').onclick=showLibrary;$('#export').onclick=exportRoute;
+  $('#add-pull').onclick=addPull;$('#undo').onclick=undo;$('#redo').onclick=redo;$('#save-route').onclick=run(saveNamed);$('#library').onclick=showLibrary;$('#export').onclick=exportRoute;
   $('#import').onclick=showImport;$('#share').onclick=shareRoute;
-  window.addEventListener('hashchange',importRouteHash);
-  $('#delete-route').onclick=()=>removeSavedRoute(store.saved.findIndex(r=>r.id===route.id));
-  $('#clear-route').onclick=()=>{drag=null;draft=[];hideHover();$('#enemy-menu').hidden=true;$('#inspector').hidden=true;inspected=null;$('#map').classList.remove('dragging');closeArrowOptions();change(()=>{clearRoute(route);applyModifierPresets(route,dungeon,data['modifier-placements']);repairSelection();});setTool('select',{cancel:true});toast('Route cleared. Undo to restore it.');};
-  $('#new-route').onclick=()=>{const changed=!$('#save-route').disabled;if(changed)saveNamed();selectDungeon(dungeon.id,createRoute());toast(changed?'New route created. Your previous route was saved to the library.':'New route created.');};
+  window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#room='))openRoomHash();else importRouteHash();});
+  $('#delete-route').onclick=run(()=>removeSavedRoute(store.saved.findIndex(r=>r.id===route.id)));
+  $('#clear-route').onclick=()=>{drag=null;draft=[];hideHover();$('#enemy-menu').hidden=true;$('#inspector').hidden=true;inspected=null;$('#map').classList.remove('dragging');closeArrowOptions();const preset=newRoute(dungeon,data.manifest.buildId);applyModifierPresets(preset,dungeon,data['modifier-placements']);change([{type:'clear-route'},...['empowered','ghorn','witch'].map(kind=>({type:'set-modifier',kind,patch:preset.modifiers[kind]}))]);setTool('select',{cancel:true});toast('Route cleared. Undo to restore it.');};
+  $('#new-route').onclick=run(async()=>{if(!canEdit())return;const changed=!$('#save-route').disabled;if(changed)await saveNamed();await selectDungeon(dungeon.id,await createRoute());toast(changed?'New route created. Your previous route was saved to the library.':'New route created.');});
   $('#layers').onclick=()=>setDisplayOptions($('#layers-panel').hidden);
   if($('#show-floor-panel')){
     $('#show-floor-panel').checked=true;
@@ -609,16 +724,23 @@ function bind(){
     const i=route.pulls.findIndex(p=>p.id===id),p=route.pulls[i];
     if(action==='focus'){focusEnemies(p.enemies);return;}
     if(action==='rename'){
-      showDialog('Pull settings',`<label>Name<input id="edit-pull-name" value="${esc(p.name)}" maxlength="200"></label><label>Color<input id="edit-pull-color" type="color" value="${p.color}"></label><button id="apply-pull" class="primary">Done</button>`);
-      $('#apply-pull').onclick=()=>{const name=$('#edit-pull-name').value.trim(),color=$('#edit-pull-color').value;change(()=>{renamePull(p,name,i);p.color=color;});$('#dialog').close();};return;
+      showDialog('Pull settings',`<label>Name<input id="edit-pull-name" value="${esc(p.name)}" maxlength="200"></label><label>Color<input id="edit-pull-color" type="color" value="${p.color}"></label><label>Note<textarea id="edit-pull-note" maxlength="4000">${esc(p.note)}</textarea></label><button id="apply-pull" class="primary">Done</button>`);
+      $('#apply-pull').onclick=()=>{
+        const name=$('#edit-pull-name').value.trim(),color=$('#edit-pull-color').value,text=$('#edit-pull-note').value,commands=[],patch={};
+        const current=route.pulls.find(p=>p.id===id);if(!current){toast('This pull was deleted.');return;}
+        if(name!==p.name)patch.name=name;if(color!==p.color)patch.color=color;
+        if(text!==p.note){if(!unchangedText(current.note,p.note))return;commands.push({type:'set-text',group:'pulls',id,text});}
+        if(Object.keys(patch).length)commands.push({type:'update-pull',pullId:id,patch});
+        if(change(commands))$('#dialog').close();
+      };return;
     }
-    change(()=>{if(action==='delete'){route.pulls.splice(i,1);if(!route.pulls.length)route.pulls.push(newPull());repairSelection();}else{movePull(route,i,i+(action==='up'?-1:1));}});
+    if(action==='delete'){const commands=[{type:'delete-pull',pullId:id}];if(route.pulls.length===1)commands.push({type:'add-pull'});change(commands);}else movePullTo(id,i+(action==='up'?-1:1));
   };
 
   $('#pulls').onkeydown=e=>{if(e.target.matches('.pull-card')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();activePull=e.target.dataset.pull;render();}};
   let draggedPull;
   $('#pulls').ondragstart=e=>{if(e.target.closest('textarea,input,button')){e.preventDefault();return;}draggedPull=e.target.closest('[data-pull]')?.dataset.pull;e.dataTransfer.effectAllowed='move';};
-  $('#pulls').ondragover=e=>e.preventDefault();$('#pulls').ondrop=e=>{e.preventDefault();const target=e.target.closest('[data-pull]')?.dataset.pull;if(!target||!draggedPull||target===draggedPull)return;change(()=>{const from=route.pulls.findIndex(p=>p.id===draggedPull),to=route.pulls.findIndex(p=>p.id===target);movePull(route,from,to);});draggedPull=null;};
+  $('#pulls').ondragover=e=>e.preventDefault();$('#pulls').ondrop=e=>{e.preventDefault();const target=e.target.closest('[data-pull]')?.dataset.pull;if(!target||!draggedPull||target===draggedPull)return;movePullTo(draggedPull,route.pulls.findIndex(p=>p.id===target));draggedPull=null;};
   const map=$('#map');
   map.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1.12:1/1.12,point(e));},{passive:false});
   map.addEventListener('pointerdown',e=>{
@@ -627,8 +749,8 @@ function bind(){
     suppressClick=false;
     const pan=e.button===2||tool==='select';
     drag={start:point(e),client:[e.clientX,e.clientY],view:{...view},pan,moved:false,box:tool==='box'&&e.button===0,target:e.target.closest('[data-placement]')?.dataset.placement,drawing:e.target.closest('[data-drawing]')?.dataset.drawing};
-    const endpoint=e.target.closest('[data-endpoint]'),drawing=route.drawings.find(d=>d.id===drag.drawing);
-    if(e.button===0&&endpoint&&drawing){
+    const endpoint=e.target.closest('[data-endpoint]'),drawing=annotation(drag.drawing);drag.vertex=endpoint?Number(endpoint.dataset.endpoint):undefined;
+    if(canEdit()&&e.button===0&&endpoint&&drawing){
       drag.edit=structuredClone(drawing);drag.endpoint=Number(endpoint.dataset.endpoint);drag.pan=false;drag.box=false;
       drag.offset=drawingOnMap(drawing,mapLayer,dungeon).points[drag.endpoint].map((v,i)=>v-drag.start[i]);
     }
@@ -644,7 +766,7 @@ function bind(){
     }
     if(!$('#enemy-menu').hidden)return;
     if(draft.length===1&&['line','portal','invis'].includes(tool))renderDraft(point(e));
-    const note=route.drawings.find(d=>d.id===e.target.closest('[data-drawing]')?.dataset.drawing&&d.kind==='note');
+    const candidate=annotation(e.target.closest('[data-drawing]')?.dataset.drawing),note=['note','marker'].includes(candidate?.kind)?candidate:null;
     if(note){hideHover();const tip=$('#tooltip');tip.dataset.placement='';tip.innerHTML=`<div class="note-tooltip-text">${esc(note.text)}</div>`;positionPopover(tip,e);return;}
     const id=e.target.closest('[data-placement]')?.dataset.placement;if(!id){hideHover();return;}
     const p=positions.get(id),enemy=enemies.get(p.id),score=pointScore(p),pack=effectivePositions(route,dungeon).filter(v=>v.packId===p.packId);
@@ -661,15 +783,15 @@ function bind(){
     if(!drag)return;const state=drag;drag=null;map.classList.remove('dragging');map.releasePointerCapture(e.pointerId);suppressClick=state.moved;
     if(state.edit){
       suppressClick=true;
-      if(state.moved){const pos=draggedDrawingPoint(e,state);if(pos)state.edit.points[state.endpoint]=pos;change(()=>{const drawing=route.drawings.find(d=>d.id===state.edit.id);if(drawing)drawing.points=state.edit.points;});}
+      if(state.moved){const pos=draggedDrawingPoint(e,state);if(pos)state.edit.points[state.endpoint]=pos;commitDrag(state);}
       else renderMap();
       return;
     }
     if(state.box&&state.moved){const end=point(e),minX=Math.min(state.start[0],end[0]),maxX=Math.max(state.start[0],end[0]),minY=Math.min(state.start[1],end[1]),maxY=Math.max(state.start[1],end[1]);const ids=visiblePositions().filter(p=>{const[x,y]=coordinates(p);return matchesSearch(p)&&x>=minX&&x<=maxX&&y>=minY&&y<=maxY;}).map(p=>p.placementId);choosePacks(ids,{toggle:false});$('#draft').replaceChildren();}
     if(e.button===0&&!state.moved&&tool==='select'&&state.target){chooseEnemy(state.target);suppressClick=true;}
-    if(e.button===2&&!state.moved){if(state.drawing)showDrawingMenu(state.drawing,e);else if(state.target)showEnemyMenu(state.target,e);}
+    if(e.button===2&&!state.moved){if(state.drawing)showDrawingMenu(state.drawing,e,state.vertex);else if(state.target)showEnemyMenu(state.target,e);}
   });
-  map.addEventListener('pointercancel',()=>{drag=null;suppressClick=true;map.classList.remove('dragging');renderMap();});
+  map.addEventListener('pointercancel',()=>{const state=drag;drag=null;if(state?.edit&&state.moved)commitDrag(state);suppressClick=true;map.classList.remove('dragging');renderMap();});
   map.addEventListener('contextmenu',e=>e.preventDefault());
   map.addEventListener('pointerleave',e=>{if(!$('#tooltip').contains(e.relatedTarget))hideHover();});
   $('#tooltip').addEventListener('pointerleave',hideHover);
@@ -685,12 +807,14 @@ function bind(){
     if(tool==='select'){if(mob)chooseEnemy(mob);return;}
     if(['box','empowered','ghorn','witch'].includes(tool))return;
     const pos=point(e);
+    if(!canEdit())return;
+    if(tool==='marker'){editMarker(null,pos);return;}
     if(tool==='note'){editNote(null,pos);return;}
     draft.push(pos);if(['line','portal','invis'].includes(tool)&&draft.length===2){if(Math.hypot(pos[0]-draft[0][0],pos[1]-draft[0][1])<4*scale()){draft.pop();return;}commitDrawing();setTool('select');}else renderDraft();
   });
   map.addEventListener('keydown',e=>{const id=e.target.closest('[data-placement]')?.dataset.placement,drawing=e.target.closest('[data-drawing]')?.dataset.drawing;if(!id&&!drawing)return;if(e.key==='ContextMenu'||(e.shiftKey&&e.key==='F10')){e.preventDefault();const rect=e.target.getBoundingClientRect();(drawing?showDrawingMenu:showEnemyMenu)(drawing||id,{clientX:rect.right,clientY:rect.top});}else if(id&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(tool==='select')chooseEnemy(id);}});
   document.addEventListener('keydown',e=>{
-    if(e.target.closest('input,textarea,select')||$('#dialog').open)return;
+    if(e.target.closest('input,textarea,select')||$('#dialog').open||roomSession&&!roomSession.document||roomTransition)return;
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();return;}
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();$('#search').focus();return;}
@@ -698,7 +822,9 @@ function bind(){
     const key=e.key.toLowerCase();if(key==='n')addPull();if(key==='f')fitMap();if(key==='b')setTool('box');if(key==='v')setTool('select');if(key==='d')setTool('line');if(key==='escape'){drag=null;map.classList.remove('dragging');closeArrowOptions();setTool('select',{cancel:true});$('#inspector').hidden=true;inspected=null;$('#layers-panel').hidden=true;$('#search-results').hidden=true;}
   });
   new ResizeObserver(()=>{if(route)renderMap();}).observe($('#map-stage'));
-  window.addEventListener('pagehide',persist);
+  $('#storage-status').onclick=run(persist);
+  window.addEventListener('blur',()=>{const state=drag;drag=null;if(state?.edit&&state.moved)commitDrag(state);map.classList.remove('dragging');});
+  window.addEventListener('beforeunload',e=>{if(routeBinding?.pending){e.preventDefault();e.returnValue='';}});
 }
 async function init(){
   data=await loadData();data.shadow=data['shadow-reference'];enemies=new Map(data.enemies.map(e=>[e.id,e]));for(const [kind,name]of [['ghorn','Ghorn'],['witch','Witch']])enemies.set('modifier:'+kind,{id:'modifier:'+kind,name,dungeonScore:20,images:[],isBoss:false});
@@ -713,6 +839,13 @@ async function init(){
     if(Array.isArray(saved.pulls))for(const pull of saved.pulls){if(pull)pull.name=englishDefaultLabel(pull.name);}
   }
   $('#dungeon').innerHTML=[...data.dungeons].sort((a,b)=>a.name.localeCompare(b.name)).map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
-  bind();selectDungeon(store.lastDungeon||'Level.ID.FrozenKingdom');importRouteHash();setTool('select');
+  routeStorage=await openRouteStorage();
+  const errors=await migrateLegacyLibrary(routeStorage,store,{dungeons:data.dungeons,enemies,presets:data['modifier-placements']});
+  store=await routeStorage.library();
+  bind();setupRooms();await selectDungeon(store.lastDungeon||'Level.ID.FrozenKingdom');
+  let resume;try{resume=JSON.parse(sessionStorage.getItem('rt-room'));}catch{}
+  if(location.hash.startsWith('#room=')){const code=roomCode(location.hash);if(resume?.code===code)await startRoom({...resume,code});else openRoomHash();}
+  else await importRouteHash();setTool('select');
+  if(errors.length)toast('Some older routes could not be migrated. Their original browser backup is preserved.');
 }
-init().catch(err=>{$('#map-loading').textContent=err.message;$('#map-loading').classList.add('fatal');console.error(err);});
+init().catch(err=>{$('#map-loading').hidden=false;$('#map-loading').textContent=err.message;$('#map-loading').classList.add('fatal');console.error(err);});

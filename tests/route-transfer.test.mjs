@@ -74,3 +74,19 @@ test('Invalid data, duplicate placements, changed datasets and decompression bom
   const bomb='R1.'+deflateRawSync(Buffer.alloc(3_000_001,32)).toString('base64url');
   await assert.rejects(decodeRoute(bomb,dungeons,enemies),/too large/);
 });
+
+test('R2 preserves marker labels and multi-vertex geometry while creating independent IDs',async()=>{
+  const dungeon=dungeons[0],route=newRoute(dungeon,'25647984'),mapId=mapViews(dungeon)[0].id;
+  route.drawings=[{id:'path',mapId,kind:'line',color:'#abcdef',width:5,text:'',points:[[10,20],[30,70],[90,40]],pointIds:['a','b','c']},
+    {id:'note',mapId,kind:'note',color:'#aabbcc',text:'Заметка 🐉 '.repeat(100),points:[[20,30]]}];
+  route.markers=[{id:'marker',mapId,position:[12.345678,45.6789],color:'#bbaa11',icon:'star',label:'Встречаемся здесь 🐉'}];
+  const encoded=await encodeRoute(route,dungeon);assert.match(encoded,/^R2\./);
+  for(const input of [encoded,'#route='+encoded,'https://example.com/planner/#route='+encoded]){
+    const copy=await decodeRoute(input,dungeons,enemies);
+    assert.deepEqual(copy.drawings[0].points,route.drawings[0].points);assert.equal(copy.drawings[1].text,route.drawings[1].text);
+    assert.deepEqual(content(copy.markers),content(route.markers));assert.notEqual(copy.markers[0].id,'marker');assert.notEqual(copy.drawings[0].id,'path');
+    assert.equal(await encodeRoute(copy,dungeon),encoded);
+  }
+  const corrupt=unpack(encoded);corrupt[9][0][1]=[NaN,0];
+  await assert.rejects(decodeRoute('R2.'+pack(corrupt).slice(3),dungeons,enemies),/marker position/);
+});

@@ -33,7 +33,7 @@ function visit(value) {
   if (typeof value.path === 'string' && /^(?:private\/)?images\//.test(value.path)) updateImage(value);
   for (const child of Object.values(value)) visit(child);
 }
-for (const name of ['dungeons', 'enemies', 'abilities']) {
+for (const name of ['dungeons', 'enemies', 'abilities', 'heroes']) {
   const filename = `data/${name}.json`;
   const value = JSON.parse(fs.readFileSync(filename, 'utf8'));
   visit(value);

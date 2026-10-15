@@ -106,7 +106,7 @@ test('Import rejects duplicate, foreign, malformed and incompatible data',()=>{
   assert.throws(()=>validateRoute(r,dungeons),/multiple pulls/);
   r.pulls.pop();r.pulls[0].enemies=['foreign'];assert.throws(()=>validateRoute(r,dungeons),/another dataset/);
   r.pulls[0].enemies=[];r.drawings=[{mapId:d.mapImages[0].id,points:[[NaN,0]]}];assert.throws(()=>validateRoute(r,dungeons),/coordinates/);
-  assert.throws(()=>validateRoute({version:3},dungeons),/format/);
+  assert.throws(()=>validateRoute({version:999},dungeons),/format/);
 });
 test('Empowered uses raw fractional score and never empowers bosses',()=>{
   const r=newRoute(d,'test'),boss=d.enemies.find(p=>enemies.get(p.id).isBoss);
@@ -193,4 +193,36 @@ test('Save state tracks content through saving, undo, clearing, and reload',()=>
   const loaded=validateRoute(r,dungeons,enemies);assert.equal(hasRouteChanges(loaded,r),false);
   clearRoute(loaded);assert.equal(hasRouteChanges(loaded,r),true);
   assert.equal(hasRouteChanges(loaded),false);
+});
+
+test('All annotation identities survive repeated saved-route reloads without mutating the source',()=>{
+  const r=newRoute(d,'test');
+  r.drawings=['line','portal','invis','note'].map((kind,i)=>({
+    id:`annotation-${i}`,mapId:d.mapImages[0].id,kind,color:'#abcdef',text:kind==='note'?'Keep this note':'',
+    points:kind==='note'?[[10,20]]:[[10,20],[30,40]],
+  }));
+  const before=structuredClone(r);
+  let loaded=r;
+  for(let i=0;i<3;i++)loaded=validateRoute(JSON.parse(JSON.stringify(loaded)),dungeons,enemies);
+  assert.equal(loaded.id,r.id);
+  assert.deepEqual(loaded.pulls.map(p=>p.id),r.pulls.map(p=>p.id));
+  assert.deepEqual(loaded.drawings,r.drawings);
+  assert.deepEqual(r,before);
+});
+
+test('Legacy annotations acquire distinct stable IDs on their first saved reload',()=>{
+  const r=newRoute(d,'test');
+  r.drawings=Array.from({length:3},()=>({mapId:d.mapImages[0].id,kind:'note',points:[[10,20]],text:'Legacy'}));
+  const migrated=validateRoute(r,dungeons,enemies),ids=migrated.drawings.map(d=>d.id);
+  assert.equal(new Set(ids).size,3);
+  assert.ok(ids.every(id=>typeof id==='string'&&id.length>0));
+  const reloaded=validateRoute(JSON.parse(JSON.stringify(migrated)),dungeons,enemies);
+  assert.deepEqual(reloaded.drawings.map(d=>d.id),ids);
+  assert.ok(r.drawings.every(d=>!('id' in d)));
+});
+
+test('Ambiguous annotation IDs are rejected instead of silently assigning new identities',()=>{
+  const r=newRoute(d,'test');
+  r.drawings=['line','note'].map(kind=>({id:'duplicate',mapId:d.mapImages[0].id,kind,points:[[10,20],[30,40]]}));
+  assert.throws(()=>validateRoute(r,dungeons,enemies),/Duplicate drawing ID/);
 });

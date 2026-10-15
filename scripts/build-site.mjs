@@ -1,3 +1,4 @@
+import {build} from 'esbuild';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -10,6 +11,7 @@ const check = spawnSync(process.execPath, ['scripts/verify-data.mjs', '--public'
 if (check.status !== 0) throw new Error('Image/data verification failed.');
 // Explicit publication allowlist: private originals and build tooling never enter dist.
 const files = ['index.html', 'app.js', 'route-model.js', 'map-geometry.js', 'map-views.js', 'styles.css',
+  ...fs.readdirSync('collaboration').filter(file=>file.endsWith('.js')).map(file=>'collaboration/'+file),
   ...fs.readdirSync('data').filter(file => /\.(js|json|txt)$/.test(file)).map(file => 'data/' + file),
   ...usedImages()];
 if (files.some(file => file.startsWith('private/') || file.includes('..'))) throw new Error('Private path in publication allowlist.');
@@ -46,4 +48,6 @@ const html=fs.readFileSync(path.join(destination,'index.html'),'utf8')
   .replace(/<label id="floor-panel-option">.*?<\/label>/,'');
 fs.writeFileSync(path.join(destination,'index.html'),html);
 compactPublicData(destination);
+const bundle=await build({absWorkingDir:destination,entryPoints:['app.js'],bundle:true,format:'esm',write:false,minify:true,target:['es2022'],alias:{'loro-crdt':'loro-crdt/base64'}});
+fs.writeFileSync(path.join(destination,'app.js'),bundle.outputFiles[0].text);
 console.log(`Prepared ${files.length} public files in dist/. Publish only this directory.`);

@@ -13,6 +13,7 @@ const result=await build({
   absWorkingDir:root,
   entryPoints:['app.js'],
   bundle:true,
+  alias:{'loro-crdt':'loro-crdt/base64'},
   format:'iife',
   target:['es2022'],
   minify:true,
