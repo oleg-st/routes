@@ -278,7 +278,7 @@ function renderMap(){
     const members=visible.filter(p=>owners.get(p.placementId)?.pull.id===pull.id);if(!members.length)continue;
     const points=members.map(coordinates),padding=radius*1.6+9*unit,hull=pullOutline(points,padding),selected=pull.id===activePull;
     const g=svg('g',{'data-pull-outline':pull.id,'pointer-events':'none'});
-    g.append(svg('polygon',{points:hull.map(p=>p.join(',')).join(' '),fill:pull.color,'fill-opacity':selected?.18:.1,stroke:pull.color,'stroke-width':selected?3.5:2.5,'stroke-linejoin':'round','vector-effect':'non-scaling-stroke'}));
+    g.append(svg('polygon',{points:hull.map(p=>p.join(',')).join(' '),fill:pull.color,'fill-opacity':selected?.28:.2,stroke:pull.color,'stroke-width':selected?3.5:2.5,'stroke-linejoin':'round','vector-effect':'non-scaling-stroke'}));
     $('#pull-outlines').append(g);
     const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);
     const singlePack=new Set(pull.enemies.map(id=>positions.get(id)?.packId).filter(Boolean)).size===1;
