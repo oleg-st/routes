@@ -1,4 +1,4 @@
-import {uid,newRoute,clearRoute,hasRouteChanges,newPull,pullColor,renamePull,movePull,assignEnemies,scorePull,scoreRoute,placementScore,packEfficiency,packEfficiencyColor,validateRoute,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,toggleModifier,encodeRoute,decodeRoute} from './route-model.js';
+import {uid,newRoute,clearRoute,hasRouteChanges,newPull,pullColor,renamePull,movePull,assignEnemies,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,validateRoute,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,toggleModifier,encodeRoute,decodeRoute} from './route-model.js';
 import {pullOutline} from './map-geometry.js';
 import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
 import {correctDungeon} from './data/placement-corrections.js';
@@ -333,11 +333,7 @@ function renderMap(){
   }
   setHoveredPack(hoveredPack);
   if($('#show-pack-efficiency').checked){
-    const packs=new Map(),allMembers=new Map();
-    for(const p of effectivePositions(route,dungeon)){
-      if(!allMembers.has(p.packId))allMembers.set(p.packId,[]);
-      allMembers.get(p.packId).push(p);
-    }
+    const packs=new Map(),efficiency=dungeonPackEfficiencies(dungeon,enemies,route,data.shadow);
     for(const p of visible){
       if(!matchesSearch(p))continue;
       if(!packs.has(p.packId))packs.set(p.packId,[]);
@@ -345,13 +341,13 @@ function renderMap(){
     }
     for(const [id,ps] of packs){
       // Search and floor visibility affect placement, never the pack's value.
-      const value=packEfficiency(allMembers.get(id),dungeon,enemies,route,data.shadow);
+      const value=efficiency.values.get(id);
       if(value==null)continue;
       const points=ps.map(coordinates),x=points.reduce((sum,p)=>sum+p[0],0)/points.length;
       const y=Math.max(...points.map((p,i)=>p[1]+radius*(enemies.get(ps[i].id)?.isBoss?1.6:1)))+11*unit;
       const label=value.toFixed(2),width=(label.length*6.2+6)*unit;
       const badge=svg('g',{'data-pack-efficiency':id,'aria-label':`Pack efficiency ${label}`});
-      badge.append(svg('rect',{x:x-width/2,y:y-8*unit,width,height:16*unit,rx:2*unit,fill:packEfficiencyColor(value,dungeon)}),svg('text',{x,y,'text-anchor':'middle','dominant-baseline':'central','font-size':11*unit,'font-family':'Segoe UI,sans-serif','font-weight':700,fill:'#fff'},label));
+      badge.append(svg('rect',{x:x-width/2,y:y-8*unit,width,height:16*unit,rx:2*unit,fill:packEfficiencyColor(value,efficiency.range)}),svg('text',{x,y,'text-anchor':'middle','dominant-baseline':'central','font-size':11*unit,'font-family':'Segoe UI,sans-serif','font-weight':700,fill:'#fff'},label));
       $('#pack-efficiency').append(badge);
     }
   }
