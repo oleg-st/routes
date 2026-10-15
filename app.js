@@ -1,4 +1,4 @@
-import {uid,newRoute,clearRoute,hasRouteChanges,newPull,pullColor,renamePull,movePull,assignEnemies,scorePull,scoreRoute,placementScore,validateRoute,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,toggleModifier,encodeRoute,decodeRoute} from './route-model.js';
+import {uid,newRoute,clearRoute,hasRouteChanges,newPull,pullColor,renamePull,movePull,assignEnemies,scorePull,scoreRoute,placementScore,packEfficiency,packEfficiencyColor,validateRoute,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,toggleModifier,encodeRoute,decodeRoute} from './route-model.js';
 import {pullOutline} from './map-geometry.js';
 import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
 import {correctDungeon} from './data/placement-corrections.js';
@@ -271,7 +271,7 @@ function renderMap(){
   const unit=scale(),radius=(Number($('#marker-size').value)+iconPadding)*.75*unit,owners=assigned();
   renderMapStart(unit);
   renderCampfires();
-  const markerRoot=$('#markers');markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#pack-labels').replaceChildren();$('#status-badges').replaceChildren();
+  const markerRoot=$('#markers');markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#pack-labels').replaceChildren();$('#pack-efficiency').replaceChildren();$('#status-badges').replaceChildren();
   const visible=visiblePositions();const sorted=[...visible].sort((a,b)=>Number(enemies.get(a.id)?.isBoss)-Number(enemies.get(b.id)?.isBoss));
   $('#pull-outlines').replaceChildren();$('#pull-labels').replaceChildren();
   for(const [i,pull] of route.pulls.entries()){
@@ -332,6 +332,29 @@ function renderMap(){
     }
   }
   setHoveredPack(hoveredPack);
+  if($('#show-pack-efficiency').checked){
+    const packs=new Map(),allMembers=new Map();
+    for(const p of effectivePositions(route,dungeon)){
+      if(!allMembers.has(p.packId))allMembers.set(p.packId,[]);
+      allMembers.get(p.packId).push(p);
+    }
+    for(const p of visible){
+      if(!matchesSearch(p))continue;
+      if(!packs.has(p.packId))packs.set(p.packId,[]);
+      packs.get(p.packId).push(p);
+    }
+    for(const [id,ps] of packs){
+      // Search and floor visibility affect placement, never the pack's value.
+      const value=packEfficiency(allMembers.get(id),dungeon,enemies,route,data.shadow);
+      if(value==null)continue;
+      const points=ps.map(coordinates),x=points.reduce((sum,p)=>sum+p[0],0)/points.length;
+      const y=Math.max(...points.map((p,i)=>p[1]+radius*(enemies.get(ps[i].id)?.isBoss?1.6:1)))+11*unit;
+      const label=value.toFixed(2),width=(label.length*6.2+6)*unit;
+      const badge=svg('g',{'data-pack-efficiency':id,'aria-label':`Pack efficiency ${label}`});
+      badge.append(svg('rect',{x:x-width/2,y:y-8*unit,width,height:16*unit,rx:2*unit,fill:packEfficiencyColor(value,dungeon)}),svg('text',{x,y,'text-anchor':'middle','dominant-baseline':'central','font-size':11*unit,'font-family':'Segoe UI,sans-serif','font-weight':700,fill:'#fff'},label));
+      $('#pack-efficiency').append(badge);
+    }
+  }
   if($('#show-packs').checked){
     const packs=new Map();for(const p of visible){if(!matchesSearch(p))continue;if(!packs.has(p.packId))packs.set(p.packId,[]);packs.get(p.packId).push(p);}
     const placedLabels=[];
@@ -569,7 +592,7 @@ function bind(){
   }
   document.addEventListener('pointerdown',e=>{if(!e.target.closest('#layers, #layers-panel'))setDisplayOptions(false);});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#layers-panel').hidden){setDisplayOptions(false);$('#layers').focus();}});
-  ['show-packs','show-patrols','show-mob-icons','hide-unselected','marker-size'].forEach(id=>$('#'+id).oninput=renderMap);
+  ['show-packs','show-pack-efficiency','show-patrols','show-mob-icons','hide-unselected','marker-size'].forEach(id=>$('#'+id).oninput=renderMap);
   $$('[data-tool]').forEach(b=>b.onclick=()=>{const open=$('#arrow-options').hidden;setTool(b.dataset.tool);if(b.dataset.tool==='line')setArrowOptions(open);});
   const arrowColors=[['#ff0000','Red'],['#5146ff','Blue'],['#ffa500','Orange'],['#ffff00','Yellow'],['#22e628','Green'],['#9000ff','Purple'],['#ffffff','White'],['#000000','Black']];
   $('.arrow-colors').innerHTML=arrowColors.map(([color,name])=>`<button data-arrow-color="${color}" style="--swatch:${color}" aria-label="${name}" title="${name}" aria-pressed="${color===arrowColor}"></button>`).join('');
