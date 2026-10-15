@@ -20,8 +20,9 @@ const svg=(tag,attrs={},text)=>{const e=document.createElementNS(NS,tag);for(con
 let data,dungeon,route,activePull,mapLayer,positions,enemies,packNumbers,view,baseView,tool='select',draft=[],inspected=null;
 let history=[],future=[],drag=null,saveTimer,toastTimer,suppressClick=false;
 let hoveredPack=null;
-let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer;
+let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
 const enemyFocusDuration=1000;
+const enemyHoverDelay=200;
 let arrowColor='#ff0000',arrowWidth=3;
 const storageKey='fellowship-atlas-v1';
 let store={drafts:{},saved:[],lastDungeon:null};
@@ -101,6 +102,7 @@ function setMapImage(layer){
   previous.replaceWith(image);image.setAttribute('href',layer.path);
 }
 function chooseFloor(index){
+  clearTimeout(enemyHoverTimer);
   clearEnemyFocus();
   mapLayer=mapViews(dungeon)[index];draft=[];hideHover();
   setMapImage(mapLayer);
@@ -406,6 +408,7 @@ function appendEnemyFocus(group){
   group.append(svg('circle',{cx:ring.getAttribute('cx'),cy:ring.getAttribute('cy'),r:Number(ring.getAttribute('r'))+7*scale(),class:'mob-focus-ring','pointer-events':'none',style:`animation-duration:${enemyFocusDuration}ms;animation-delay:${Math.min(0,enemyFocusUntil-performance.now()-enemyFocusDuration)}ms`}));
 }
 function highlightEnemies(ids){
+  clearTimeout(enemyHoverTimer);
   clearEnemyFocus();focusedEnemies=new Set(ids);enemyFocusUntil=performance.now()+enemyFocusDuration;
   for(const group of $$('#markers > g'))appendEnemyFocus(group);
   enemyFocusTimer=setTimeout(clearEnemyFocus,enemyFocusDuration);
@@ -504,9 +507,18 @@ function bind(){
     const highlightRow=e=>{
       const button=e.target.closest('[data-focus-enemies],[data-search-id]');
       if(!button||button.contains(e.relatedTarget))return;
-      highlightEnemies(button.dataset.focusEnemies?JSON.parse(button.dataset.focusEnemies):[button.dataset.searchId]);
+      clearTimeout(enemyHoverTimer);
+      const ids=button.dataset.focusEnemies?JSON.parse(button.dataset.focusEnemies):[button.dataset.searchId];
+      if(e.type==='focusin'){highlightEnemies(ids);return;}
+      enemyHoverTimer=setTimeout(()=>{
+        if(button.isConnected&&button.getClientRects().length&&button.matches(':hover'))highlightEnemies(ids);
+      },enemyHoverDelay);
     };
     list.addEventListener('pointerover',highlightRow);
+    list.addEventListener('pointerout',e=>{
+      const button=e.target.closest('[data-focus-enemies],[data-search-id]');
+      if(button&&!button.contains(e.relatedTarget))clearTimeout(enemyHoverTimer);
+    });
     list.addEventListener('focusin',highlightRow);
   }
   pullList.addEventListener('pointerover',e=>{const card=e.target.closest('[data-pull]');if(e.target.closest('button')){hidePullTooltip();return;}if(card&&(pullTip.hidden||pullTip.dataset.pull!==card.dataset.pull))showPullTooltip(card);});
