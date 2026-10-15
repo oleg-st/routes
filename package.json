@@ -1,0 +1,25 @@
+{
+  "name": "fellowship-route-planner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/server.mjs",
+    "start": "node scripts/server.mjs",
+    "data": "node scripts/prepare-data.mjs",
+    "images": "node scripts/prepare-images.mjs",
+    "maps": "node scripts/prepare-combined-maps.mjs",
+    "build:local": "node scripts/build-local.mjs",
+    "build:site": "node scripts/build-site.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check app.js && node --check route-model.js && node scripts/verify-data.mjs && node scripts/build-local.mjs --check"
+  },
+  "dependencies": {
+    "@crockery/fellowship-data": "15.0.3"
+  },
+  "devDependencies": {
+    "acorn": "^8.19.0",
+    "esbuild": "^0.28.2",
+    "playwright": "^1.64.1"
+  }
+}

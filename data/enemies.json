@@ -1,0 +1,4675 @@
+[
+  {
+    "id": "cm-earthelemental",
+    "gameId": 249,
+    "name": "Enraged Earth Elemental",
+    "dungeonScore": 7,
+    "baseHealth": 17791.5675,
+    "baseHealthMultiplier": 5.9325,
+    "spiritPointValue": 7,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "cm-earthelemental",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/cm-earthelemental-enemy-full.webp",
+        "sha256": "dbf323d64ec2734fe9e6863966d037ef828f9bbb59f4dadc3e5ad307a06517bd",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "cm-earthelemental",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/cm-earthelemental-enemy-200.avif",
+        "sha256": "64e7f852a33cda824e75df1507a19c22e883d3957cf6c3832315422f3e697422",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/cm-earthelemental-enemy-200.webp",
+        "sourceSha256": "c075e5cf0c7ed106644ce4ebe0def33767765e7b6b91d77686ad6d49334cd0ea"
+      }
+    ]
+  },
+  {
+    "id": "cm-elf-arcanewarden",
+    "gameId": 248,
+    "name": "Arcane Warden",
+    "dungeonScore": 4,
+    "baseHealth": 8827.8564,
+    "baseHealthMultiplier": 2.9436,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "cm-elf-arcanewarden",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/cm-elf-arcanewarden-enemy-full.webp",
+        "sha256": "f4b4cd3d1d8f32060aa1f6b3e69d401e1c42f5933dcdf40a49deb2c4ba93cb0b",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "cm-elf-arcanewarden",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/cm-elf-arcanewarden-enemy-200.avif",
+        "sha256": "a2a49830f5142f2af63b8fe51ce0ef553939146574f6b4318058c5b2e24eaa66",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/cm-elf-arcanewarden-enemy-200.webp",
+        "sourceSha256": "687285d5b6aec7c430ad4aa22a58d5e56ec3d767ffe0eb430698cd4c3d9311ac"
+      }
+    ]
+  },
+  {
+    "id": "cm-elf-enforcer",
+    "gameId": 247,
+    "name": "Enforcer",
+    "dungeonScore": 5,
+    "baseHealth": 13024.657,
+    "baseHealthMultiplier": 4.343,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "cm-elf-enforcer",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/cm-elf-enforcer-enemy-full.webp",
+        "sha256": "ea6c2b6869d36ae877babb93190ccba874ecf560b1e0cd94fb9cfa792eadc45b",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "cm-elf-enforcer",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/cm-elf-enforcer-enemy-200.avif",
+        "sha256": "dbc438d30f20852d093051d0490a164b58ea6985359872b359e8218d1654f94b",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/cm-elf-enforcer-enemy-200.webp",
+        "sourceSha256": "fc24fbed2ecfc21d452853d28ae3d98bb3f667e742ae89e6890a838a4b26cf05"
+      }
+    ]
+  },
+  {
+    "id": "cm-elf-goon",
+    "gameId": 246,
+    "name": "Dredge",
+    "dungeonScore": 1,
+    "baseHealth": 3971.5757000000003,
+    "baseHealthMultiplier": 1.3243,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "cm-elf-goon",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/cm-elf-goon-enemy-full.webp",
+        "sha256": "ad399b56d84e9b48a5816a7b9dec84d7b35540af847f9de73820359f31a43d11",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "cm-elf-goon",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/cm-elf-goon-enemy-200.avif",
+        "sha256": "8680f702098ccda269ba941e974a63fe3d50921574aa5ae3d6b9a637119d67cd",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/cm-elf-goon-enemy-200.webp",
+        "sourceSha256": "89c4635726ab948c6b34e8f7feabb299c2bcaa857c980d3b30cc68ce73a8224d"
+      }
+    ]
+  },
+  {
+    "id": "cm-elf-interrogator",
+    "gameId": 245,
+    "name": "Quarry Stalker",
+    "dungeonScore": 2,
+    "baseHealth": 5689.7028,
+    "baseHealthMultiplier": 1.8972,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "cm-elf-interrogator",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/cm-elf-interrogator-enemy-full.webp",
+        "sha256": "220d8f104679c058c148e0fed7acf563397428cee7a6efd54f0a461e9a7750e1",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "cm-elf-interrogator",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/cm-elf-interrogator-enemy-200.avif",
+        "sha256": "7b1042e0c224d461c8b2bb48e71031f6612b790a7570b7676c369e6cced39232",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/cm-elf-interrogator-enemy-200.webp",
+        "sourceSha256": "3f6fc3633fb3e0c0b592f699086cfc3de31267251197badf106cf347e56284d7"
+      }
+    ]
+  },
+  {
+    "id": "cm-elf-lookout",
+    "gameId": 244,
+    "name": "Nezari Bolter",
+    "dungeonScore": 2,
+    "baseHealth": 5434.7878,
+    "baseHealthMultiplier": 1.8122,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "cm-elf-lookout",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/cm-elf-lookout-enemy-full.webp",
+        "sha256": "cd1df9cfee09e19888ec88d1052bd0f15f10fd8a0e75bb20c00c71cee1af381f",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "cm-elf-lookout",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/cm-elf-lookout-enemy-200.avif",
+        "sha256": "a7167494de6bbc8b4f03323a36456635fb27fcac6d5c85682d908375690c9ef1",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/cm-elf-lookout-enemy-200.webp",
+        "sourceSha256": "951209f475ed025242e5335fc0e01ba8de33a45d4e39060d1f2ece8beb5589c2"
+      }
+    ]
+  },
+  {
+    "id": "cm-elf-taskmaster",
+    "gameId": 243,
+    "name": "Task Master",
+    "dungeonScore": 4,
+    "baseHealth": 9175.440499999999,
+    "baseHealthMultiplier": 3.0595,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "cm-elf-taskmaster",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/cm-elf-taskmaster-enemy-full.webp",
+        "sha256": "458df07a7b0b39afac4ec4267bae7e394129e2f61372dfba6fe2de3d26386020",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "cm-elf-taskmaster",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/cm-elf-taskmaster-enemy-200.avif",
+        "sha256": "030461a20fc5388c8fb232a8d2271eedc69111096e5215aa31521b77cf511965",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/cm-elf-taskmaster-enemy-200.webp",
+        "sourceSha256": "8977f5a77f44a02958ba5c758212d5144f9466394a2a8e7b5789428353196c9c"
+      }
+    ]
+  },
+  {
+    "id": "cm-rubiliteaurastone",
+    "gameId": 241,
+    "name": "Godfall Wardstone",
+    "dungeonScore": 2,
+    "baseHealth": 3841.4190999999996,
+    "baseHealthMultiplier": 1.2809,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "cm-rubiliteaurastone",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/cm-rubiliteaurastone-enemy-full.webp",
+        "sha256": "40181106b4ee4a6fd785cfb7aa0f1b55d4bcd472a81bc9f616aac0bb10dd835b",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "cm-rubiliteaurastone",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/cm-rubiliteaurastone-enemy-200.avif",
+        "sha256": "91e98e916ae37747ba6c1f83b553483f168a2930169d23c3b4b301a71325b1ff",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/cm-rubiliteaurastone-enemy-200.webp",
+        "sourceSha256": "a7bb5a4e72ba178bdbea94e35a110a61e2718bb694d3fe4659c541dde6d9988b"
+      }
+    ]
+  },
+  {
+    "id": "cm-rubilitetriggerstone",
+    "gameId": null,
+    "name": "Rubilite Triggerstone",
+    "dungeonScore": 0,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": []
+  },
+  {
+    "id": "dd-arbalist",
+    "gameId": 179,
+    "name": "Dunesnare Hunter",
+    "dungeonScore": 3,
+    "baseHealth": 7073.4414,
+    "baseHealthMultiplier": 2.3586,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dd-arbalist",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dd-arbalist-enemy-full.webp",
+        "sha256": "2637549a7520faae2f62be36b91cefa960bd191e9e6374d50a15bd2274d9ad5c",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dd-arbalist",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dd-arbalist-enemy-200.avif",
+        "sha256": "7cfbdec926dfa8fff0dbb9e2ab759ac66b3cc84e1dce005d17684402de4296b6",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dd-arbalist-enemy-200.webp",
+        "sourceSha256": "b97c71d9eaf21ced9aeeb6a46407fb2f52d3abb5f710edc661adcfd8a44cb2b3"
+      }
+    ]
+  },
+  {
+    "id": "dd-desertbrute",
+    "gameId": 177,
+    "name": "Gravebreaker Brute",
+    "dungeonScore": 5,
+    "baseHealth": 12463.844,
+    "baseHealthMultiplier": 4.156,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dd-desertbrute",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dd-desertbrute-enemy-full.webp",
+        "sha256": "d31365fc57282be2be50d513cf26ecf8242b4059351325fb42df5838aacb3030",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dd-desertbrute",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dd-desertbrute-enemy-200.avif",
+        "sha256": "34efbb6968050a223dc9efe778c17cadb3bb1c06bc90459fc21c5dcf3fc3547b",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dd-desertbrute-enemy-200.webp",
+        "sourceSha256": "869ee292eeb578ee55935bb24ee183efcc1b2e7325557a89197c6d3e2583b519"
+      }
+    ]
+  },
+  {
+    "id": "dd-desertnomad",
+    "gameId": 176,
+    "name": "Sandsworn Husk",
+    "dungeonScore": 2,
+    "baseHealth": 6181.538799999999,
+    "baseHealthMultiplier": 2.0612,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dd-desertnomad",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dd-desertnomad-enemy-full.webp",
+        "sha256": "24ae8fbc3c7963135433b85ee03392451246f83d97497b9525bbfe2ecef9db98",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dd-desertnomad",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dd-desertnomad-enemy-200.avif",
+        "sha256": "28d78e5b61fea3aa25dc5014582a08b7e39d18f24cb9e86297a297c126b9cfaf",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dd-desertnomad-enemy-200.webp",
+        "sourceSha256": "1d4e822c995e971075790bcaf89677ba6c3c6365aafb1d4b041a83f50e645ceb"
+      }
+    ]
+  },
+  {
+    "id": "dd-desertwarrior",
+    "gameId": 175,
+    "name": "Tombguard Reaver",
+    "dungeonScore": 3,
+    "baseHealth": 9811.228500000001,
+    "baseHealthMultiplier": 3.2715,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dd-desertwarrior",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dd-desertwarrior-enemy-full.webp",
+        "sha256": "997e8ea8fdf91d81a834d2d08c44824e87384fc8ea9825b46e326528e51afbe1",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dd-desertwarrior",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dd-desertwarrior-enemy-200.avif",
+        "sha256": "1c60cb6ffbf9bf57e2ced07268892e44e72734c8a3927e0dc1a8924326d43793",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dd-desertwarrior-enemy-200.webp",
+        "sourceSha256": "c5e7242176b4b5647e14bff4d887ba5c3f4606f026edec1e3c2f5669abdcf3e8"
+      }
+    ]
+  },
+  {
+    "id": "dd-nightboundmagi",
+    "gameId": 174,
+    "name": "Nightbound Magi",
+    "dungeonScore": 5,
+    "baseHealth": 13357.845900000002,
+    "baseHealthMultiplier": 4.4541,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dd-nightboundmagi",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dd-nightboundmagi-enemy-full.webp",
+        "sha256": "e4dd8b80b0d57ad5cdea48b1e8c4224a113e9ffc1a7ffb815d88be73931063fd",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dd-nightboundmagi",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dd-nightboundmagi-enemy-200.avif",
+        "sha256": "d8cf94bada6df94fd3dcb4acbe05382e206ad40a9290f608e7aca634374ae017",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dd-nightboundmagi-enemy-200.webp",
+        "sourceSha256": "08202cac0d3b22016a000145df3a3e2acc9c4a1a5e34791212d570dca463af4c"
+      }
+    ]
+  },
+  {
+    "id": "dd-witheringmagi",
+    "gameId": 173,
+    "name": "Acolyte of Sinnari",
+    "dungeonScore": 3,
+    "baseHealth": 8063.4113,
+    "baseHealthMultiplier": 2.6887,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dd-witheringmagi",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dd-witheringmagi-enemy-full.webp",
+        "sha256": "b41610924d3ef3c03ab2cf885120e92230b5ce101cf265bbebecf774dd06deb6",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dd-witheringmagi",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dd-witheringmagi-enemy-200.avif",
+        "sha256": "40e9105858950128cbac967537a845a29790864a6f0b0fe316c72c607b74241c",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dd-witheringmagi-enemy-200.webp",
+        "sourceSha256": "700621d0f7b02bcf0138c1528c64960ea540768de5b4b408336c6c7861ab58ef"
+      }
+    ]
+  },
+  {
+    "id": "dr-bloodfangmauler",
+    "gameId": 201,
+    "name": "Bloodfang",
+    "dungeonScore": 3,
+    "baseHealth": 6780.1392000000005,
+    "baseHealthMultiplier": 2.2608,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-bloodfangmauler",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-bloodfangmauler-enemy-full.webp",
+        "sha256": "99ab16db950cb986645bc2127170755d2b3823ad6a901c8b01b3e37d8e65cf1f",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-bloodfangmauler",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-bloodfangmauler-enemy-200.avif",
+        "sha256": "6f09786a58c777cd86ed982b03f399f9eea80a0a2e0752848d724a2a410012b5",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-bloodfangmauler-enemy-200.webp",
+        "sourceSha256": "c17bec3e1e59d6ef1a5e0aa5d6e443c1a02ad290268432510bc9ee0e006b8cad"
+      }
+    ]
+  },
+  {
+    "id": "dr-bosscultleader",
+    "gameId": 200,
+    "name": "Prophet Ez'rath",
+    "dungeonScore": 0,
+    "baseHealth": 51521.500439999996,
+    "baseHealthMultiplier": 17.17956,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-bosscultleader",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-bosscultleader-enemy-full.webp",
+        "sha256": "03f19e8288a0ee659e6b12d3881d2f803e30c445a954285a633c3565d16857be",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-bosscultleader",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-bosscultleader-enemy-200.avif",
+        "sha256": "db2f63b0e6dcde409a710787eb3dcb641f14495d85b421136b3d09ed2d219a89",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-bosscultleader-enemy-200.webp",
+        "sourceSha256": "347c50c2edc99bc4c95aa5cb5e714a82a20d85441f336210359bab1ffe4d1478"
+      }
+    ]
+  },
+  {
+    "id": "dr-bossdemonplant",
+    "gameId": 199,
+    "name": "Vun’Kahr, the Thorned Maw",
+    "dungeonScore": 0,
+    "baseHealth": 77915.45952,
+    "baseHealthMultiplier": 25.98048,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-bossdemonplant",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-bossdemonplant-enemy-full.webp",
+        "sha256": "1e4a75478542b9aab8a984b5c625b5ac2cc862ecb4baa77248497816cdfa0d8e",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-bossdemonplant",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-bossdemonplant-enemy-200.avif",
+        "sha256": "00f20fa0f0b8ceda722629154ce8142e2dd1c31d62839857c8db4c24abcf4c63",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-bossdemonplant-enemy-200.webp",
+        "sourceSha256": "6d58b214cb74828c92781acee0d592f6bc768b7e8f24ba05e93f6650a1b0275c"
+      }
+    ]
+  },
+  {
+    "id": "dr-bossgatewizard",
+    "gameId": 198,
+    "name": "Moar'gore, Master of Sacrifice",
+    "dungeonScore": 0,
+    "baseHealth": 60873.702,
+    "baseHealthMultiplier": 20.298,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-bossgatewizard",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-bossgatewizard-enemy-full.webp",
+        "sha256": "d93f212f856b09bd47ea2960c5b7d7627c0a3cdd9b7a9d58066a43c46ad05b86",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-bossgatewizard",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-bossgatewizard-enemy-200.avif",
+        "sha256": "7bc340c6c7aec309d63f86c9665419693d674bb2dfbe9b0ea24016f9caa6f807",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-bossgatewizard-enemy-200.webp",
+        "sourceSha256": "f08c200f726154a4a25ab2e672a522fbe4f0e8e10a54389cff8c2186933d4f0e"
+      }
+    ]
+  },
+  {
+    "id": "dr-cultistcaster",
+    "gameId": 193,
+    "name": "Profane Invoker",
+    "dungeonScore": 3,
+    "baseHealth": 7500.199100000001,
+    "baseHealthMultiplier": 2.5009,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-cultistcaster",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-cultistcaster-enemy-full.webp",
+        "sha256": "79426f5bdaa5095ed374d010c1a70ac3f19e8ec5ec43e723c726d1e1a1977871",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-cultistcaster",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-cultistcaster-enemy-200.avif",
+        "sha256": "a2b97a04d3c7c32a82257e55d14b3a6740de7e7f8d005ae626460263ba767ac6",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-cultistcaster-enemy-200.webp",
+        "sourceSha256": "1873c1a31e5d603ea7b7eeafd986aaa8292211e438279592e87a0091d1e8aa78"
+      }
+    ]
+  },
+  {
+    "id": "dr-cultistmajorcaster",
+    "gameId": 191,
+    "name": "Hellcaller",
+    "dungeonScore": 4,
+    "baseHealth": 9260.912,
+    "baseHealthMultiplier": 3.088,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-cultistmajorcaster",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-cultistmajorcaster-enemy-full.webp",
+        "sha256": "38a4994c9791f02ef2047a1671c52f74cb0c45226ef80f5691d4530bd5c5fd82",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-cultistmajorcaster",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-cultistmajorcaster-enemy-200.avif",
+        "sha256": "122dd3021c30d6f35d4bc5c803ddc8dabdfaab8200431831a4c271c733832a07",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-cultistmajorcaster-enemy-200.webp",
+        "sourceSha256": "98b2ea2d7ac86d7da5d34ff0988e72363fd7415ca46b4fc75e1997268c931aff"
+      }
+    ]
+  },
+  {
+    "id": "dr-cultistsickle",
+    "gameId": 190,
+    "name": "Sickle",
+    "dungeonScore": 1,
+    "baseHealth": 3861.3324599999996,
+    "baseHealthMultiplier": 1.28754,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-cultistsickle",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-cultistsickle-enemy-full.webp",
+        "sha256": "0ddded1828508b0a0b5b335a57bcf9d8d30f65fd13b6ec1e86be9bedf7a66f46",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-cultistsickle",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-cultistsickle-enemy-200.avif",
+        "sha256": "fdfa70091492e0c6c737875373517eb30f48617ae80ddc2a514a1d14a689cb66",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-cultistsickle-enemy-200.webp",
+        "sourceSha256": "46808cca0f97091c1d94e339005fd3b0399a0371aa7210a67b38a36bcafe9142"
+      }
+    ]
+  },
+  {
+    "id": "dr-cultistsickle-praying",
+    "gameId": 192,
+    "name": "Initiate",
+    "dungeonScore": 1,
+    "baseHealth": 2004.8315,
+    "baseHealthMultiplier": 0.6685,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-cultistsickle-praying",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-cultistsickle-praying-enemy-full.webp",
+        "sha256": "0ddded1828508b0a0b5b335a57bcf9d8d30f65fd13b6ec1e86be9bedf7a66f46",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-cultistsickle-praying",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-cultistsickle-praying-enemy-200.avif",
+        "sha256": "fdfa70091492e0c6c737875373517eb30f48617ae80ddc2a514a1d14a689cb66",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-cultistsickle-praying-enemy-200.webp",
+        "sourceSha256": "46808cca0f97091c1d94e339005fd3b0399a0371aa7210a67b38a36bcafe9142"
+      }
+    ]
+  },
+  {
+    "id": "dr-dangerousbrute",
+    "gameId": 189,
+    "name": "Executioner",
+    "dungeonScore": 5,
+    "baseHealth": 13168.609,
+    "baseHealthMultiplier": 4.391,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-dangerousbrute",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-dangerousbrute-enemy-full.webp",
+        "sha256": "6cb877cc41fdd811492b11c284ecdf89d69b16b9452130358b47f96e614f971b",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-dangerousbrute",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-dangerousbrute-enemy-200.avif",
+        "sha256": "749c0ac4ad52ba2bff4a3f5aefbc80cd00c92872f0a62e95ee77554a95082f8e",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-dangerousbrute-enemy-200.webp",
+        "sourceSha256": "cbfffb9a6590f3317feb0b8e0ba1476f6de0c50a6e39bc01f1dfb2df2b056dec"
+      }
+    ]
+  },
+  {
+    "id": "dr-horneddemon",
+    "gameId": 186,
+    "name": "Hulking Bulgore",
+    "dungeonScore": 4,
+    "baseHealth": 10765.8102,
+    "baseHealthMultiplier": 3.5898,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-horneddemon",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-horneddemon-enemy-full.webp",
+        "sha256": "291d907b2bb9e2ad64c6f7e061f85b9d04a04c2c3719b202b0d3468079a3d563",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-horneddemon",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-horneddemon-enemy-200.avif",
+        "sha256": "bf4da1b5387926b77a4f8424d42d65eafbce9a630fe6337436c43bdc304573df",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-horneddemon-enemy-200.webp",
+        "sourceSha256": "4dbf1fe23327d4219ac5474674eefb366654b0a246aac300f442d1fb2c70e56d"
+      }
+    ]
+  },
+  {
+    "id": "dr-mancatcher",
+    "gameId": 185,
+    "name": "Bloodfang Raider",
+    "dungeonScore": 3,
+    "baseHealth": 6987.67,
+    "baseHealthMultiplier": 2.33,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-mancatcher",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-mancatcher-enemy-full.webp",
+        "sha256": "5126d81bb9a41a1ff074f75d7c437304aa279b54a93761a2552568c263f928a5",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-mancatcher",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-mancatcher-enemy-200.avif",
+        "sha256": "a9f50b9dc4e8dfd2bf2d5d5fc44eec4d1d3c61565d93ffaa019ed06503a3102b",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-mancatcher-enemy-200.webp",
+        "sourceSha256": "7a270c73e133a100fe82f056f55deb7c7813a641aa34a4b293c003494aba1299"
+      }
+    ]
+  },
+  {
+    "id": "dr-ruinslasher",
+    "gameId": 183,
+    "name": "Ruins Lasher",
+    "dungeonScore": 1,
+    "baseHealth": 4058.2468,
+    "baseHealthMultiplier": 1.3532,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-ruinslasher",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-ruinslasher-enemy-full.webp",
+        "sha256": "b46ac781c12aac790ca9f4a4d67780abdee9db93bdd6fece9d4c3cae23367a2a",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-ruinslasher",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-ruinslasher-enemy-200.avif",
+        "sha256": "bce3953ac6deefb0b0a47d2397572cb60d616c5d406fbac38d61f3011320df98",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-ruinslasher-enemy-200.webp",
+        "sourceSha256": "cc0f364e1a76157b0adffb0a184ea585f1a9652a0648d5e7f7c88370dc5db355"
+      }
+    ]
+  },
+  {
+    "id": "dr-slaughtervine",
+    "gameId": 182,
+    "name": "Slaughtervine",
+    "dungeonScore": 1,
+    "baseHealth": 4318.5599999999995,
+    "baseHealthMultiplier": 1.44,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "dr-slaughtervine",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/dr-slaughtervine-enemy-full.webp",
+        "sha256": "1526694d5b3dc9d27be5c7dc338710f2f1d7f7aac5303f7c87c9854a2f0c3a2f",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "dr-slaughtervine",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/dr-slaughtervine-enemy-200.avif",
+        "sha256": "bc28a141dfa1a613fce553c2f87e254529796470632ee650661787f665d02021",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/dr-slaughtervine-enemy-200.webp",
+        "sourceSha256": "2ccc8edab32fa3aae03bce22d4d3d20472548e99c5aa5bdbe5ed6e75322686cd"
+      }
+    ]
+  },
+  {
+    "id": "em-bossgianttroll",
+    "gameId": 172,
+    "name": "Godfall Titan",
+    "dungeonScore": 0,
+    "baseHealth": 63860.706,
+    "baseHealthMultiplier": 21.294,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "em-bossgianttroll",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/em-bossgianttroll-enemy-full.webp",
+        "sha256": "ddc035d3b507516a71f8548d4c82253b9dd78074dc560339c814609114d0097b",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "em-bossgianttroll",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/em-bossgianttroll-enemy-200.avif",
+        "sha256": "92c6aaf9b70c609ef1045c45ab72f5c2d292e7f55dbb291546b4f79937af3c46",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/em-bossgianttroll-enemy-200.webp",
+        "sourceSha256": "b44ac54d7a5b9a795ce9f76dcdd8a003ac4aed072d83f1202d198453541e6594"
+      }
+    ]
+  },
+  {
+    "id": "em-bossvaerith",
+    "gameId": 270,
+    "name": "Vaerith Vorn",
+    "dungeonScore": 0,
+    "baseHealth": 8997,
+    "baseHealthMultiplier": 3,
+    "spiritPointValue": 3,
+    "isBoss": true,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "em-bossvaerith",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/em-bossvaerith-enemy-full.webp",
+        "sha256": "9da4eff6b0ac928177fcf2572d912b9cc383c3414f922471971d4b21fdb12a17",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "em-bossvaerith",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/em-bossvaerith-enemy-200.avif",
+        "sha256": "e56b2b8e3b0f2d861cdb1074a6e669c2ccb191dc45628c82d4b93e14219dbe4c",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/em-bossvaerith-enemy-200.webp",
+        "sourceSha256": "c8fede731322b77cb644fe83378f25a5320a8dcee6eb3e6c8437debcfd7e91dd"
+      }
+    ]
+  },
+  {
+    "id": "fk-bosselfdragon",
+    "gameId": 170,
+    "name": "Cithrel",
+    "dungeonScore": 0,
+    "baseHealth": 82095.01587,
+    "baseHealthMultiplier": 27.37413,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-bosselfdragon",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-bosselfdragon-enemy-full.webp",
+        "sha256": "a6a331a998a21a2358098ad056b2e3056ff707568e22ea605cf042afd9ff8e06",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-bosselfdragon",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-bosselfdragon-enemy-200.avif",
+        "sha256": "f803bab49a061c09b69e50e0f8f2992b4716df684e92256ea5dc53a2fa46d665",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-bosselfdragon-enemy-200.webp",
+        "sourceSha256": "4549fc111fea21f7e21f339f11c3031820673236fd385f928604daa4ddd26b1b"
+      }
+    ]
+  },
+  {
+    "id": "fk-bossfreezingwaterlord",
+    "gameId": 169,
+    "name": "Ancient Koros",
+    "dungeonScore": 0,
+    "baseHealth": 64847.676900000006,
+    "baseHealthMultiplier": 21.6231,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-bossfreezingwaterlord",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-bossfreezingwaterlord-enemy-full.webp",
+        "sha256": "06efc28055d1b78d84e10685be9f3b5036fab3cedcd3a759cd840949705b3734",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-bossfreezingwaterlord",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-bossfreezingwaterlord-enemy-200.avif",
+        "sha256": "0694a0f853d6df8003ab15761537dc3b31c6fc95981f4217d2608dbcbaddc10c",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-bossfreezingwaterlord-enemy-200.webp",
+        "sourceSha256": "2f2ec4dc4f42e6ad65bfddadf0c5e0d912421f2c1ae10e8cb17dde2f0c0447bb"
+      }
+    ]
+  },
+  {
+    "id": "fk-bossrangercaptain",
+    "gameId": 168,
+    "name": "Noor, The Betrayer",
+    "dungeonScore": 0,
+    "baseHealth": 67634.0478,
+    "baseHealthMultiplier": 22.5522,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-bossrangercaptain",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-bossrangercaptain-enemy-full.webp",
+        "sha256": "bc5ce5f6c0a8c75119809a9fe94375393624078668f3779da558919458ecc890",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-bossrangercaptain",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-bossrangercaptain-enemy-200.avif",
+        "sha256": "bd39b383e39a457829296ad6ee9006850820c077eb044f3b715b180055a0b348",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-bossrangercaptain-enemy-200.webp",
+        "sourceSha256": "f9a6a3e7ec904691cee1c3a6d51193fddb023ef8e559b7190121ebc18bbfea94"
+      }
+    ]
+  },
+  {
+    "id": "fk-elf-cleric",
+    "gameId": 167,
+    "name": "Corrupter",
+    "dungeonScore": 5,
+    "baseHealth": 12763.744,
+    "baseHealthMultiplier": 4.256,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-elf-cleric",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-elf-cleric-enemy-full.webp",
+        "sha256": "f128e307d772d391c7fdaecaebfb0486dcf695cd511700529d5abf40f486a7f8",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-elf-cleric",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-elf-cleric-enemy-200.avif",
+        "sha256": "8108ab8599c949e4f3cd58bc66f9abadde2203abf574ca2f2379817d1c87a150",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-elf-cleric-enemy-200.webp",
+        "sourceSha256": "b4f33511f5bca14b14943a7733105d0802824c5670d0cac9dcfea80057a18ea3"
+      }
+    ]
+  },
+  {
+    "id": "fk-elf-duelist",
+    "gameId": 166,
+    "name": "Blade of Cithrel",
+    "dungeonScore": 3,
+    "baseHealth": 9676.273500000001,
+    "baseHealthMultiplier": 3.2265,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-elf-duelist",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-elf-duelist-enemy-full.webp",
+        "sha256": "59be76af605076eb2dc64ef7fbcea1c77563e5da915b5db07247f1b3a52c61e2",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-elf-duelist",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-elf-duelist-enemy-200.avif",
+        "sha256": "e485d8295c5576bd1a479176117cf945d36424d7b8fc39157c4e16651af49e31",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-elf-duelist-enemy-200.webp",
+        "sourceSha256": "f3afdf459d451e3a329f12ccd851e81e78e79c72121f4595e7bc2a7ca566bb9d"
+      }
+    ]
+  },
+  {
+    "id": "fk-elf-goon",
+    "gameId": 165,
+    "name": "Eldrin Recruit",
+    "dungeonScore": 1,
+    "baseHealth": 5483.0717,
+    "baseHealthMultiplier": 1.8283,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-elf-goon",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-elf-goon-enemy-full.webp",
+        "sha256": "8bb04cd86e3a6b82f50e9317e4cc006aaf132a01455dbd5175302505a53b2d40",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-elf-goon",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-elf-goon-enemy-200.avif",
+        "sha256": "4928d270b46836684a02fd59afef1f128582f0bac006d561aa36ed723d6c0ce7",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-elf-goon-enemy-200.webp",
+        "sourceSha256": "3b277a67a3bf138d74db22b39ac691b453fc719ab935c10dc83eb80badb50540"
+      }
+    ]
+  },
+  {
+    "id": "fk-elf-guard",
+    "gameId": 164,
+    "name": "Eldrin Sentinel",
+    "dungeonScore": 3,
+    "baseHealth": 10955.347,
+    "baseHealthMultiplier": 3.653,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-elf-guard",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-elf-guard-enemy-full.webp",
+        "sha256": "5ba6fdc2d014dd891fcb51fe6c3270d54bf28de2fbd3f496ed606270d7e70fd5",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-elf-guard",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-elf-guard-enemy-200.avif",
+        "sha256": "194ca336795932fab578fb6d3747c35778f229e2a46df8462817ee105103dafd",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-elf-guard-enemy-200.webp",
+        "sourceSha256": "e9a5440e1dfd5459c0b98627671f80e41b98a24ec31d9828ce8f2c13cc52a22b"
+      }
+    ]
+  },
+  {
+    "id": "fk-elf-illusionist",
+    "gameId": 163,
+    "name": "Deceitful Scholar",
+    "dungeonScore": 5,
+    "baseHealth": 13587.2694,
+    "baseHealthMultiplier": 4.5306,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-elf-illusionist",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-elf-illusionist-enemy-full.webp",
+        "sha256": "9da4eff6b0ac928177fcf2572d912b9cc383c3414f922471971d4b21fdb12a17",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-elf-illusionist",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-elf-illusionist-enemy-200.avif",
+        "sha256": "e56b2b8e3b0f2d861cdb1074a6e669c2ccb191dc45628c82d4b93e14219dbe4c",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-elf-illusionist-enemy-200.webp",
+        "sourceSha256": "c8fede731322b77cb644fe83378f25a5320a8dcee6eb3e6c8437debcfd7e91dd"
+      }
+    ]
+  },
+  {
+    "id": "fk-elf-ranger",
+    "gameId": 162,
+    "name": "Tundra Stalker",
+    "dungeonScore": 2,
+    "baseHealth": 7717.9265000000005,
+    "baseHealthMultiplier": 2.5735,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-elf-ranger",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-elf-ranger-enemy-full.webp",
+        "sha256": "62cdb111579a2c860aa5cfcaa17c568293658640fd4d48c91ceb647e6dc16447",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-elf-ranger",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-elf-ranger-enemy-200.avif",
+        "sha256": "e1bb9057f6984024367e3e76954b27bdf314fcdbe44a2228f02a8733ba7f7f1d",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-elf-ranger-enemy-200.webp",
+        "sourceSha256": "eeca4aedaa521653ac755c382d65b3306b74a3ea47b273cc8819348d1a1f0d2d"
+      }
+    ]
+  },
+  {
+    "id": "fk-elf-shardling",
+    "gameId": 161,
+    "name": "Ice Shardling",
+    "dungeonScore": 1,
+    "baseHealth": 2062.4123,
+    "baseHealthMultiplier": 0.6877,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-elf-shardling",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-elf-shardling-enemy-full.webp",
+        "sha256": "21697d8f1849fab6af2acdae77ee27c0148df4d16e06d5bbeccb7bd65fcdb4e5",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-elf-shardling",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-elf-shardling-enemy-200.avif",
+        "sha256": "d853a951afd7fc3611d2e14ce2499449603c9373071a5555ed37d89b59858595",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-elf-shardling-enemy-200.webp",
+        "sourceSha256": "6a512b8da2bdf3ac75c25d9d0e55c60c82d4981e7430adb0e967122bb1340133"
+      }
+    ]
+  },
+  {
+    "id": "fk-icegolem",
+    "gameId": 160,
+    "name": "Spellbound Golem",
+    "dungeonScore": 5,
+    "baseHealth": 12541.818000000001,
+    "baseHealthMultiplier": 4.182,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "fk-icegolem",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/fk-icegolem-enemy-full.webp",
+        "sha256": "5b254c4ac28d19e1165c37f20642232ca2b4ecf9a2161dc828e66e63dd937425",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "fk-icegolem",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/fk-icegolem-enemy-200.avif",
+        "sha256": "3b32e5cfe8c09725801950be18cd1ecf491c873140a90a458b8152e57e731251",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/fk-icegolem-enemy-200.webp",
+        "sourceSha256": "710b13c9ca92845c44815a4946fac355017b0185c74ec824cf04a4ac300f8893"
+      }
+    ]
+  },
+  {
+    "id": "ic-assassin",
+    "gameId": 157,
+    "name": "Coldheart Assassin",
+    "dungeonScore": 3,
+    "baseHealth": 6358.779699999999,
+    "baseHealthMultiplier": 2.1203,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "ic-assassin",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/ic-assassin-enemy-full.webp",
+        "sha256": "e779b0628f0866cf631bd4ffbae35ca8f91fb083e9968b2dfa0d518a969ebbe8",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "ic-assassin",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/ic-assassin-enemy-200.avif",
+        "sha256": "109697dfc255992b71046f0d3244a007dd28e28769030d4278d050355ac034ad",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/ic-assassin-enemy-200.webp",
+        "sourceSha256": "809ee9e59b696e6efb926b72debff8f3e7568348af721ef21e8da483cec8636b"
+      }
+    ]
+  },
+  {
+    "id": "ic-bossmagistrate",
+    "gameId": 156,
+    "name": "Apostate Veras",
+    "dungeonScore": 0,
+    "baseHealth": 59365.624859999996,
+    "baseHealthMultiplier": 19.79514,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "ic-bossmagistrate",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/ic-bossmagistrate-enemy-full.webp",
+        "sha256": "76d2dc66a8860264d22f89e00a6ef8f8bfdf792a423c7f26e421804a4bbebf2c",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "ic-bossmagistrate",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/ic-bossmagistrate-enemy-200.avif",
+        "sha256": "2bfdc83d346ca9b92f64d8c6d91afc2acb74219134433d92c9279dfec2d896fc",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/ic-bossmagistrate-enemy-200.webp",
+        "sourceSha256": "87e799a2ef51720658786880198ea337f29ebde496742b7571d2e65a08cca44d"
+      }
+    ]
+  },
+  {
+    "id": "ic-glacialsprite",
+    "gameId": 155,
+    "name": "Frozen Remnant",
+    "dungeonScore": 1,
+    "baseHealth": 3075.7744000000002,
+    "baseHealthMultiplier": 1.0256,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "ic-glacialsprite",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/ic-glacialsprite-enemy-full.webp",
+        "sha256": "8eb80a65826af0e28d471a34e68eb558e813762d415009ea3af5a376421940b0",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "ic-glacialsprite",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/ic-glacialsprite-enemy-200.avif",
+        "sha256": "aeae03fcbfc31249b1be086c46a96282cd9fd100aff9e0eab43533a283ebf8ce",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/ic-glacialsprite-enemy-200.webp",
+        "sourceSha256": "438e2099f763d37415970719c333fa4ef355a08d5649675f8e5a105c50c64bd5"
+      }
+    ]
+  },
+  {
+    "id": "ic-greatericeelemental",
+    "gameId": 154,
+    "name": "Greater Ice Elemental",
+    "dungeonScore": 8,
+    "baseHealth": 17451.181,
+    "baseHealthMultiplier": 5.819,
+    "spiritPointValue": 8,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "ic-greatericeelemental",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/ic-greatericeelemental-enemy-full.webp",
+        "sha256": "393267aa4e88d1b98862833c24ea8040344da3e01578f604f18180bd2350745e",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "ic-greatericeelemental",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/ic-greatericeelemental-enemy-200.avif",
+        "sha256": "7b74ec6abe79e47b6cb39ce53f7a3f4a8fdf3aa81cde2b66e8bc5efba04aec9c",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/ic-greatericeelemental-enemy-200.webp",
+        "sourceSha256": "e103e0d5fac53f55bbe760c85925436899e88622ce0881dc76d1a1f1f490a2ec"
+      }
+    ]
+  },
+  {
+    "id": "ic-healer",
+    "gameId": 153,
+    "name": "Eldrin Chronomancer",
+    "dungeonScore": 4,
+    "baseHealth": 12502.830999999998,
+    "baseHealthMultiplier": 4.169,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "ic-healer",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/ic-healer-enemy-full.webp",
+        "sha256": "2bb4b61ab7f52ab223bc06a02a2b0fedc4fd6eeb7643036a1b3ae90f293c10f3",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "ic-healer",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/ic-healer-enemy-200.avif",
+        "sha256": "049bce82fab7b97d63ee73d5ed4b76eb9628e7a5b3e215ef1c23c2cc44661adc",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/ic-healer-enemy-200.webp",
+        "sourceSha256": "f53db2018511566261c16004680cb14b8029d7e15e5f63091f5ac362b03bae3a"
+      }
+    ]
+  },
+  {
+    "id": "ic-lookout",
+    "gameId": 151,
+    "name": "Expedition Lookout",
+    "dungeonScore": 1,
+    "baseHealth": 2137.6872,
+    "baseHealthMultiplier": 0.7128,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "ic-lookout",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/ic-lookout-enemy-full.webp",
+        "sha256": "91178e106a9be83bfc8098d2627acaa4e5061c8c42cef6d93bd13b7b46816a32",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "ic-lookout",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/ic-lookout-enemy-200.avif",
+        "sha256": "1a9bdc0e823d1da15f33232a1144fb17f6f916ba9360ed54b2bfe45e4d246e4a",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/ic-lookout-enemy-200.webp",
+        "sourceSha256": "609644da51177d135819c7922e33875e933817d9bf48e646b0ae9be498fbb8a3"
+      }
+    ]
+  },
+  {
+    "id": "mc-bloodcaster",
+    "gameId": 336,
+    "name": "Heskyr Magus",
+    "dungeonScore": 4,
+    "baseHealth": 12397.866000000002,
+    "baseHealthMultiplier": 4.134,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-bloodcaster",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-bloodcaster-enemy-full.webp",
+        "sha256": "80a2c459bfc75f137aa2eeec378ba83b43aa288a01b37824c87803f9edefcdf6",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-bloodcaster",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-bloodcaster-enemy-200.avif",
+        "sha256": "b62e5ffed4e9d1e3fcd1a5142b238639130f9508f37b73502fff92dac7f8132d",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-bloodcaster-enemy-200.webp",
+        "sourceSha256": "12674fb71d595b5115a8dff7f1fd51f5b9d7b6c94a840d9bd3b47909fc4e14d5"
+      }
+    ]
+  },
+  {
+    "id": "mc-bloodgrunt",
+    "gameId": 334,
+    "name": "Heskyr Brood",
+    "dungeonScore": 2,
+    "baseHealth": 5173.5749000000005,
+    "baseHealthMultiplier": 1.7251,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-bloodgrunt",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-bloodgrunt-enemy-full.webp",
+        "sha256": "406084b5ed133bdc9b0697378e82c718ed4b1192c8a53ac5ecb39f5217094db1",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-bloodgrunt",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-bloodgrunt-enemy-200.avif",
+        "sha256": "fb65628d907ce0725d6afdf1b533d3533021e9dd03008afa45ca8d5cc511b038",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-bloodgrunt-enemy-200.webp",
+        "sourceSha256": "c7ba504c0799631e965824962b9dc1178ceea156f3f8e9f6a90d7c91103cb358"
+      }
+    ]
+  },
+  {
+    "id": "mc-bloodguard",
+    "gameId": 333,
+    "name": "Heskyr Zealot",
+    "dungeonScore": 4,
+    "baseHealth": 8856.046999999999,
+    "baseHealthMultiplier": 2.953,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-bloodguard",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-bloodguard-enemy-full.webp",
+        "sha256": "7f66dc719b26281ac8908798278061b2da9b5ad949f58e546d83a95b3ea7945d",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-bloodguard",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-bloodguard-enemy-200.avif",
+        "sha256": "4d67a028998e2235a35105bce1640fc504f424b5ba29fb0cbc0036415bdd41f4",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-bloodguard-enemy-200.webp",
+        "sourceSha256": "e57712d7efaced7d93aab5f869b43a23a155eac8086c11f235d9354d40ab446d"
+      }
+    ]
+  },
+  {
+    "id": "mc-bloodhound",
+    "gameId": 332,
+    "name": "Stalking Grim",
+    "dungeonScore": 3,
+    "baseHealth": 5880.439200000001,
+    "baseHealthMultiplier": 1.9608,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-bloodhound",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-bloodhound-enemy-full.webp",
+        "sha256": "8c8f6acc1c4e38d88988ea0fce975ada5f07483593dd860277b2b2ea2e91c04d",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-bloodhound",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-bloodhound-enemy-200.avif",
+        "sha256": "d2d2fb8b4cbb0f3bc1e876aa19b20451af3bed236fc6242868e9d99a6d846956",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-bloodhound-enemy-200.webp",
+        "sourceSha256": "3cfa977c10391525c74836c938605b99cc704b4e6b6f3e21962699cd57f78257"
+      }
+    ]
+  },
+  {
+    "id": "mc-bloodsummoner",
+    "gameId": 331,
+    "name": "Sanguine Disciple",
+    "dungeonScore": 6,
+    "baseHealth": 16596.466,
+    "baseHealthMultiplier": 5.534,
+    "spiritPointValue": 6,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-bloodsummoner",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-bloodsummoner-enemy-full.webp",
+        "sha256": "032c3f2d79adb182a957da575eee06be614fdd3df5baa317e3f190a021ef2570",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-bloodsummoner",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-bloodsummoner-enemy-200.avif",
+        "sha256": "b239a579757acf94f0db72b90fd9e245c837bf9a645538731823bdb20524842c",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-bloodsummoner-enemy-200.webp",
+        "sourceSha256": "7658e11e86e74034e11adb7ebff93b27da978befb1cbb5dedd4a664813eb7612"
+      }
+    ]
+  },
+  {
+    "id": "mc-bossguardian",
+    "gameId": 330,
+    "name": "Xurath, Fist of the Warden",
+    "dungeonScore": 0,
+    "baseHealth": 72927.8826,
+    "baseHealthMultiplier": 24.3174,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-bossguardian",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-bossguardian-enemy-full.webp",
+        "sha256": "32132b326dda6f74ac4906c0984156832286a060882405bc25fdb123e79321b3",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-bossguardian",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-bossguardian-enemy-200.avif",
+        "sha256": "9dce99c5dc3ee3c5bc993b995a22625de29a467b8c2947d0e4ca7dfafe29a125",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-bossguardian-enemy-200.webp",
+        "sourceSha256": "91cefc1bad18738ecf1b48d78846ce5a29f451add6f12b7e633598aa648cf993"
+      }
+    ]
+  },
+  {
+    "id": "mc-wanderingghostguard",
+    "gameId": 329,
+    "name": "Restless Protector",
+    "dungeonScore": 2,
+    "baseHealth": 10232.588,
+    "baseHealthMultiplier": 3.412,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-wanderingghostguard",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-wanderingghostguard-enemy-full.webp",
+        "sha256": "76dc6b523d644c20308ee2431e954d6c54ffb15a89f15e78749fb7ef2083530d",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-wanderingghostguard",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-wanderingghostguard-enemy-200.avif",
+        "sha256": "669f7e56bc59370ef9d7177c265549a7c8fded6ff5ce1cbd9568cc6f6ce171b9",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-wanderingghostguard-enemy-200.webp",
+        "sourceSha256": "60d96d65fca651a59ca82fe87398a8a02c169ffd21ee7417c8341862fc5da3c3"
+      }
+    ]
+  },
+  {
+    "id": "mc-wanderingghostpriest",
+    "gameId": 328,
+    "name": "Meandering Acolyte",
+    "dungeonScore": 2,
+    "baseHealth": 6732.755,
+    "baseHealthMultiplier": 2.245,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-wanderingghostpriest",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-wanderingghostpriest-enemy-full.webp",
+        "sha256": "417c143954b0d5f96808ebe9308443000b8751c625bf65c0260600f98a4f4975",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-wanderingghostpriest",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-wanderingghostpriest-enemy-200.avif",
+        "sha256": "00d8d7b5e6f1728abfe014c779449d58e67b6ee7a47420ac31681ecbd643b320",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-wanderingghostpriest-enemy-200.webp",
+        "sourceSha256": "bbcd7486945c96867162a466deab1a04a0974857171096e1b193e7ec7af5ad06"
+      }
+    ]
+  },
+  {
+    "id": "mc-wanderingghostwarrior",
+    "gameId": 327,
+    "name": "Undying Champion",
+    "dungeonScore": 2,
+    "baseHealth": 8022.325,
+    "baseHealthMultiplier": 2.675,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mc-wanderingghostwarrior",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mc-wanderingghostwarrior-enemy-full.webp",
+        "sha256": "3b047200fb5de43bf5a30ed58938bf8141d6d758c60136e60aeb21b76390bc86",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mc-wanderingghostwarrior",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mc-wanderingghostwarrior-enemy-200.avif",
+        "sha256": "ed98c2e0f3862f2020e953c4ea87dd8af54bfb90d79b022bf756012a4309d265",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mc-wanderingghostwarrior-enemy-200.webp",
+        "sourceSha256": "b2f77ca9f9b9478880f931cc31c97a0fc0b000088526641f23014dcaf8d9eebe"
+      }
+    ]
+  },
+  {
+    "id": "mf-blightedmorningglory",
+    "gameId": 142,
+    "name": "Blighted Dawnbloom",
+    "dungeonScore": 2,
+    "baseHealth": 4794.14142,
+    "baseHealthMultiplier": 1.59858,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mf-blightedmorningglory",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mf-blightedmorningglory-enemy-full.webp",
+        "sha256": "d2ce0e519998af09b6375d4396b789ee933cad0e79a73472a40ae8ed7390b2e4",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mf-blightedmorningglory",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mf-blightedmorningglory-enemy-200.avif",
+        "sha256": "297163f5ce75708f2061c6731ec22fbba981ef83c83315a59df1ee23020c08bf",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mf-blightedmorningglory-enemy-200.webp",
+        "sourceSha256": "e490419fa7af1000ddb66c692831bd3a96d2c5a65719882c2267d12bc43f3e83"
+      }
+    ]
+  },
+  {
+    "id": "mf-bossnecrolord",
+    "gameId": 141,
+    "name": "Malgut the Fetid",
+    "dungeonScore": 0,
+    "baseHealth": 66567.3035,
+    "baseHealthMultiplier": 22.1965,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mf-bossnecrolord",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mf-bossnecrolord-enemy-full.webp",
+        "sha256": "09fd6cd26d95bcec27cbded1343cb40a553b34f6d3f2ae14927b53b8c86d3c69",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mf-bossnecrolord",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mf-bossnecrolord-enemy-200.avif",
+        "sha256": "b3eb711c2d6ce73c849f63e18392e482fea4e43b2e3710397344b688c8b23fda",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mf-bossnecrolord-enemy-200.webp",
+        "sourceSha256": "3d41bfa83274339f09a006b8ff9d8665a10c9df2778e760bdd40be994195e8f9"
+      }
+    ]
+  },
+  {
+    "id": "mf-bossunicorn",
+    "gameId": 140,
+    "name": "Akari the Everdawn Lord",
+    "dungeonScore": 0,
+    "baseHealth": 18380.5711,
+    "baseHealthMultiplier": 6.1289,
+    "spiritPointValue": 0,
+    "isBoss": true,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mf-bossunicorn",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mf-bossunicorn-enemy-full.webp",
+        "sha256": "3ae70842da2c811b4cad6e830af48aca16956f1b02fc591bb11b6991c2529871",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mf-bossunicorn",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mf-bossunicorn-enemy-200.avif",
+        "sha256": "1d1c790d7b7a3418944a49ae6eb002fbf9143af6b54bf71b870bd1bc0e212c8f",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mf-bossunicorn-enemy-200.webp",
+        "sourceSha256": "f7612a9d66e010395aff967c8ffc4f9ee0c19ce4fefd23ff139b784eecb7f296"
+      }
+    ]
+  },
+  {
+    "id": "mf-dawnstoneguardian",
+    "gameId": 139,
+    "name": "Bloodstone Goliath",
+    "dungeonScore": 5,
+    "baseHealth": 14506.162999999999,
+    "baseHealthMultiplier": 4.837,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mf-dawnstoneguardian",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mf-dawnstoneguardian-enemy-full.webp",
+        "sha256": "ebe99387436f455526c3c7b25512738b73ee21e0da3303d689467f7694a80397",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mf-dawnstoneguardian",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mf-dawnstoneguardian-enemy-200.avif",
+        "sha256": "8aacaba80f8fee9c3be2958dd912818ddb002be08076c4aae7791abc0c403103",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mf-dawnstoneguardian-enemy-200.webp",
+        "sourceSha256": "0b8875bb766a1ff7cb0044f7ee44aaf9a2368f7321d200da5c39087d9f25a475"
+      }
+    ]
+  },
+  {
+    "id": "mf-foultotemic",
+    "gameId": 138,
+    "name": "Corrupted Totemic",
+    "dungeonScore": 4,
+    "baseHealth": 9603.6977,
+    "baseHealthMultiplier": 3.2023,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mf-foultotemic",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mf-foultotemic-enemy-full.webp",
+        "sha256": "e788858aacd39866695b456af5cf1b9a4196676053d8bd3885b3ba4695771f4b",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mf-foultotemic",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mf-foultotemic-enemy-200.avif",
+        "sha256": "d3a605f7ac61eb372116fe3119bfd7afe7752e9243e9572117287df996a99dfd",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mf-foultotemic-enemy-200.webp",
+        "sourceSha256": "a5520f317482e93a4180e79f98bdefe6de9046d369460b578a30c85720ec1117"
+      }
+    ]
+  },
+  {
+    "id": "mf-mangybrute",
+    "gameId": 137,
+    "name": "Mangy Brute",
+    "dungeonScore": 1,
+    "baseHealth": 4168.0102,
+    "baseHealthMultiplier": 1.3898,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mf-mangybrute",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mf-mangybrute-enemy-full.webp",
+        "sha256": "77c5cb20127b69a212853e762ed23c9c41d163f077296ef08945b03228733cd9",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mf-mangybrute",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mf-mangybrute-enemy-200.avif",
+        "sha256": "70723981ae3b264aba54165ac79c50d99908012ad7bce0a85f0f8754ee2b5b44",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mf-mangybrute-enemy-200.webp",
+        "sourceSha256": "c7bf63d3f667b0d0f8c34cd20180b5e311087983d3d9b452983860b019337af1"
+      }
+    ]
+  },
+  {
+    "id": "mf-skittershard",
+    "gameId": 136,
+    "name": "Skittershard",
+    "dungeonScore": 1,
+    "baseHealth": 2388.7035,
+    "baseHealthMultiplier": 0.7965,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "mf-skittershard",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/mf-skittershard-enemy-full.webp",
+        "sha256": "61c1874b2a228358ad9a9b7ca96105ca5dec5b75d2ea1e1c4e0414d687de1cb0",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "mf-skittershard",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/mf-skittershard-enemy-200.avif",
+        "sha256": "4fc0db8d1a7cded02e569113fda71e4bb030e745f7cf29ef6dd79e44916d977f",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/mf-skittershard-enemy-200.webp",
+        "sourceSha256": "c3c0c37ccdc6c7b1d89127c2d39031462a1987bbb05790a20c0e75d33f8919a0"
+      }
+    ]
+  },
+  {
+    "id": "np-bosshellcaller",
+    "gameId": 133,
+    "name": "Warlord Brogg",
+    "dungeonScore": 0,
+    "baseHealth": 61406.0245,
+    "baseHealthMultiplier": 20.4755,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "np-bosshellcaller",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/np-bosshellcaller-enemy-full.webp",
+        "sha256": "bedc2cef6055695383d70a609e1a2a2bee35c26e2bc6cbc49071bf925f828fd7",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "np-bosshellcaller",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/np-bosshellcaller-enemy-200.avif",
+        "sha256": "c168acff339b05bc25ff3bbb1ad92a8b062209b62f2247c282a6c5c3fa938f56",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/np-bosshellcaller-enemy-200.webp",
+        "sourceSha256": "e1ad447cabcaf34014b15a6e66accf80f2d01209829cb664c6c100623626ca1a"
+      }
+    ]
+  },
+  {
+    "id": "np-bullybasher",
+    "gameId": 132,
+    "name": "Bully Basher",
+    "dungeonScore": 4,
+    "baseHealth": 9720.0589,
+    "baseHealthMultiplier": 3.2411,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "np-bullybasher",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/np-bullybasher-enemy-full.webp",
+        "sha256": "b9f54cfd1537ed47de3e3a11982b8a3e0ed98bf385b886f84703911d361e586a",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "np-bullybasher",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/np-bullybasher-enemy-200.avif",
+        "sha256": "33689f850b5f18aa2fd082c415ced0d2b13485c369d2b538bcac9c1abea8ea70",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/np-bullybasher-enemy-200.webp",
+        "sourceSha256": "fbdd6d76677c713053b2cd063e51ea0a2a4e681394402f4191f878128aa0c628"
+      }
+    ]
+  },
+  {
+    "id": "np-facestabber",
+    "gameId": 131,
+    "name": "Facestabber",
+    "dungeonScore": 2,
+    "baseHealth": 5219.1597,
+    "baseHealthMultiplier": 1.7403,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "np-facestabber",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/np-facestabber-enemy-full.webp",
+        "sha256": "5a9de7877699dbe259bd42e221c018cf0345cabba737f01e149fd5ecf7ae10ba",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "np-facestabber",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/np-facestabber-enemy-200.avif",
+        "sha256": "65c7d372d5f8a7bda3c7a1ebe152d668565ea66506799dc1bbccd9a177c04171",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/np-facestabber-enemy-200.webp",
+        "sourceSha256": "92109274b23cac77bbe430580e1070140851a6ba2ec7ecadc17db803a7d359aa"
+      }
+    ]
+  },
+  {
+    "id": "np-halfmancatcher",
+    "gameId": 134,
+    "name": "Mancatcher",
+    "dungeonScore": 2,
+    "baseHealth": 4481.4057,
+    "baseHealthMultiplier": 1.4943,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "np-halfmancatcher",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/np-halfmancatcher-enemy-full.webp",
+        "sha256": "e7c1b5e61e5861495c5dc646c6e126121176b9e40b16a7335e88b6468c90796c",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "np-halfmancatcher",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/np-halfmancatcher-enemy-200.avif",
+        "sha256": "56662830ff4a048eadffc9753558e31ea0fd8b6c12743b384947a83324e81123",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/np-halfmancatcher-enemy-200.webp",
+        "sourceSha256": "9097c1f2eaebf6357dbcc58e7aac14b0edef67d602ed033f3e0c9c030161ee27"
+      }
+    ]
+  },
+  {
+    "id": "np-shinchopper",
+    "gameId": 130,
+    "name": "Shinchopper",
+    "dungeonScore": 1,
+    "baseHealth": 4290.3694000000005,
+    "baseHealthMultiplier": 1.4306,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "np-shinchopper",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/np-shinchopper-enemy-full.webp",
+        "sha256": "3f66c33f9a1f593c753d3e6879de277751f3e6c278e3e2986a6178cbbeda00b8",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "np-shinchopper",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/np-shinchopper-enemy-200.avif",
+        "sha256": "c1e93baf0e950d1e94d90ad62d53323d92d68b97bb1bdd8e124f0a4eb3de73a4",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/np-shinchopper-enemy-200.webp",
+        "sourceSha256": "e87eece3bdf8f00f6b4cda41a5a323af70a0fc4eb48192b2a5abe8e32b2feeca"
+      }
+    ]
+  },
+  {
+    "id": "np-stormscreamer",
+    "gameId": 129,
+    "name": "Stormscreamer",
+    "dungeonScore": 3,
+    "baseHealth": 7273.7746,
+    "baseHealthMultiplier": 2.4254,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "np-stormscreamer",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/np-stormscreamer-enemy-full.webp",
+        "sha256": "8b8d2c6ede9b1ce30531cd162830f8411f4890b3dc2780cd1f64fc0a2c6fd062",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "np-stormscreamer",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/np-stormscreamer-enemy-200.avif",
+        "sha256": "1f29c8b42364f1d2a7d830168d8ce74671c6b8782c80cad1c12b2f71244fac6e",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/np-stormscreamer-enemy-200.webp",
+        "sourceSha256": "b19849067adf9c5a8bd0155a91aecf041f6dcdf2bbeb8ba6aa84ce52b21c5391"
+      }
+    ]
+  },
+  {
+    "id": "pr-barbarouslasher",
+    "gameId": 128,
+    "name": "Barbarous Lasher",
+    "dungeonScore": 5,
+    "baseHealth": 12424.857,
+    "baseHealthMultiplier": 4.143,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-barbarouslasher",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-barbarouslasher-enemy-full.webp",
+        "sha256": "1526694d5b3dc9d27be5c7dc338710f2f1d7f7aac5303f7c87c9854a2f0c3a2f",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-barbarouslasher",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-barbarouslasher-enemy-200.avif",
+        "sha256": "bc28a141dfa1a613fce553c2f87e254529796470632ee650661787f665d02021",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-barbarouslasher-enemy-200.webp",
+        "sourceSha256": "2ccc8edab32fa3aae03bce22d4d3d20472548e99c5aa5bdbe5ed6e75322686cd"
+      }
+    ]
+  },
+  {
+    "id": "pr-bilgerat",
+    "gameId": 127,
+    "name": "Bilgerat",
+    "dungeonScore": 4,
+    "baseHealth": 6824.8243,
+    "baseHealthMultiplier": 2.2757,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-bilgerat",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-bilgerat-enemy-full.webp",
+        "sha256": "0e2d7329a047d6778bf04b55b668cd4127c81a82d3fb63c3e1632288c178daf6",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-bilgerat",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-bilgerat-enemy-200.avif",
+        "sha256": "8200c35dd1e9f92530df84195021e90c65caedaf5fbb36521f98dce8fcfb9f02",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-bilgerat-enemy-200.webp",
+        "sourceSha256": "a6db743a1f8b20709376bdc8513ecad861e8aa5d2af173166b20fbba19b2bda7"
+      }
+    ]
+  },
+  {
+    "id": "pr-blunderbusspirate",
+    "gameId": 126,
+    "name": "Soulpowder Buccaneer",
+    "dungeonScore": 3,
+    "baseHealth": 6235.5208,
+    "baseHealthMultiplier": 2.0792,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-blunderbusspirate",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-blunderbusspirate-enemy-full.webp",
+        "sha256": "0c63658eb786e2ce297ffb4edcdba97d0b3ead21db88f571ec647a18e36a3bc4",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-blunderbusspirate",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-blunderbusspirate-enemy-200.avif",
+        "sha256": "39eb06166b977b66bd90a24f7bde10414a59e28a640c143c884c4cf666f3ee6d",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-blunderbusspirate-enemy-200.webp",
+        "sourceSha256": "dcf72771b05f286412248e9e77cadbb4260447ba499e487717e222419a5c3f65"
+      }
+    ]
+  },
+  {
+    "id": "pr-bossanchor",
+    "gameId": 125,
+    "name": "First Mate Marrow",
+    "dungeonScore": 0,
+    "baseHealth": 65849.043,
+    "baseHealthMultiplier": 21.957,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-bossanchor",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-bossanchor-enemy-full.webp",
+        "sha256": "2380789a28a22aa38a082e51f8c60dfdce747528fdfe527e041277a81834aa58",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-bossanchor",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-bossanchor-enemy-200.avif",
+        "sha256": "dc38958aba1719d24fe084fad93351a2af1625d9334819a3840bb904abdb60d4",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-bossanchor-enemy-200.webp",
+        "sourceSha256": "3bfa1ca6fe66aed7c2d453dfa0735855f4c9a24d0c521f4b6729a555e73fd3e3"
+      }
+    ]
+  },
+  {
+    "id": "pr-bosspiratecaptain",
+    "gameId": 124,
+    "name": "Deathless Katrine",
+    "dungeonScore": 0,
+    "baseHealth": 31637.9505,
+    "baseHealthMultiplier": 10.5495,
+    "spiritPointValue": 22,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-bosspiratecaptain",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-bosspiratecaptain-enemy-full.webp",
+        "sha256": "367795ca7b02d1b09b24d416afeb1139c9abf8a6da2c5b417856b97622381083",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-bosspiratecaptain",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-bosspiratecaptain-enemy-200.avif",
+        "sha256": "c1c8fcc6c62c6da1866d8d6c905f1b066ac4a033c38948a381b7ee88fe8fef31",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-bosspiratecaptain-enemy-200.webp",
+        "sourceSha256": "252271ae536fe8779bb8ca1c56a70a388a2e157d179d2a096701f50aa84308db"
+      }
+    ]
+  },
+  {
+    "id": "pr-bosstreasuredemon",
+    "gameId": 121,
+    "name": "Bael'Aurum",
+    "dungeonScore": 0,
+    "baseHealth": 64813.1884,
+    "baseHealthMultiplier": 21.6116,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-bosstreasuredemon",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-bosstreasuredemon-enemy-full.webp",
+        "sha256": "223452085c0982b2cadb582ea86fca4150a1386b25dd8bc3f748bede8b7e432e",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-bosstreasuredemon",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-bosstreasuredemon-enemy-200.avif",
+        "sha256": "732e81d550b3a0ef4b163950efce246abef894c59b8377af9eb0723477b9da23",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-bosstreasuredemon-enemy-200.webp",
+        "sourceSha256": "2bab431a8a3a9e9983decadc7aa342719db3bd6126192f473b57026b28fea0f4"
+      }
+    ]
+  },
+  {
+    "id": "pr-cannonpirate",
+    "gameId": 119,
+    "name": "Scuttlejack Cannoneer",
+    "dungeonScore": 5,
+    "baseHealth": 9633.9876,
+    "baseHealthMultiplier": 3.2124,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-cannonpirate",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-cannonpirate-enemy-full.webp",
+        "sha256": "bb071abffae03419fc34090434fe281a183563eb6c40fa94df79561d04ecdc37",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-cannonpirate",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-cannonpirate-enemy-200.avif",
+        "sha256": "0b6a0bad898e859bbe39a65822231d32aaf145ca6dd01f45fab627b636b3be90",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-cannonpirate-enemy-200.webp",
+        "sourceSha256": "54828944d6f14e2e5f823b0c58ed4cc53979abfab7661a1a306a5e49a28cd013"
+      }
+    ]
+  },
+  {
+    "id": "pr-goldenconstructvolatile",
+    "gameId": 118,
+    "name": "Greedbound Prism",
+    "dungeonScore": 2,
+    "baseHealth": 6975.9739,
+    "baseHealthMultiplier": 2.3261,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-goldenconstructvolatile",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-goldenconstructvolatile-enemy-full.webp",
+        "sha256": "893b99ab162118d400805cdd8315f858c250135b64044312d0cb50af3105de31",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-goldenconstructvolatile",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-goldenconstructvolatile-enemy-200.avif",
+        "sha256": "ab15713b86b697fed316d8d261a2ef1620259433876ef4824fc432fef3d8d08e",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-goldenconstructvolatile-enemy-200.webp",
+        "sourceSha256": "0674b65ab388bb8ea5bf8b2135f32e40f821b511b5d486cceb0867a77dc00f85"
+      }
+    ]
+  },
+  {
+    "id": "pr-pirategrunt",
+    "gameId": 116,
+    "name": "Gravescythe",
+    "dungeonScore": 3,
+    "baseHealth": 6972.9749,
+    "baseHealthMultiplier": 2.3251,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-pirategrunt",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-pirategrunt-enemy-full.webp",
+        "sha256": "fc2b6987d4b40d891479cbfadd6165fd375aaf49c5a0da997728e5937c6b1d46",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-pirategrunt",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-pirategrunt-enemy-200.avif",
+        "sha256": "7328a163aeb0ee830f14cf947f89991a3c3dd2e33d864a274bc6bf94c3c515af",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-pirategrunt-enemy-200.webp",
+        "sourceSha256": "79074073fd299251701ca9a321b9aee2068b13225f5c6fbe5e22a4201c744990"
+      }
+    ]
+  },
+  {
+    "id": "pr-possessedarmor",
+    "gameId": 115,
+    "name": "Greedspawn Sentinel",
+    "dungeonScore": 5,
+    "baseHealth": 15630.787999999999,
+    "baseHealthMultiplier": 5.212,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-possessedarmor",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-possessedarmor-enemy-full.webp",
+        "sha256": "0d5c7f294b55370d1405645aa9e1033dc3f86e730984ce1d5b456095f4c0d7c9",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-possessedarmor",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-possessedarmor-enemy-200.avif",
+        "sha256": "59de840844bdf69ace6bea5326a270f5fe0a9eab404c3f680f2b992a49ac98a9",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-possessedarmor-enemy-200.webp",
+        "sourceSha256": "54efc4f8a206bc2a20fb8468ad217bfbad9dd547e2ed564f6bb8d8d5d5a23908"
+      }
+    ]
+  },
+  {
+    "id": "pr-scallywag",
+    "gameId": 114,
+    "name": "Saltsworn Scallywag",
+    "dungeonScore": 2,
+    "baseHealth": 5111.4956,
+    "baseHealthMultiplier": 1.7044,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-scallywag",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-scallywag-enemy-full.webp",
+        "sha256": "2ce36bcc5b88850dae97f8d2ce085c9044fce00cb4bc04714b06533caacf9d54",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-scallywag",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-scallywag-enemy-200.avif",
+        "sha256": "052cb55016694edd361c8b6acaad7aefddf8f1fa16757e267a24d19e8e7f93f8",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-scallywag-enemy-200.webp",
+        "sourceSha256": "d684ab0ad6b349c368141ef915bd6d0c318ea049113dfffa6d8638fa30dd3705"
+      }
+    ]
+  },
+  {
+    "id": "pr-swashbuckler",
+    "gameId": 110,
+    "name": "Bleachbone Brute",
+    "dungeonScore": 4,
+    "baseHealth": 10427.822900000001,
+    "baseHealthMultiplier": 3.4771,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-swashbuckler",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-swashbuckler-enemy-full.webp",
+        "sha256": "2bf1281e931e5ced31303ee12f33fde5f71d5546703b37c8eeadbd4b15a54a1f",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-swashbuckler",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-swashbuckler-enemy-200.avif",
+        "sha256": "6da8443534ad4af892eecdb9ec319a48e654d65f206c75ca66161d5c5e842839",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-swashbuckler-enemy-200.webp",
+        "sourceSha256": "21f5f69a40c3c8f6e59ef322624aaf07a6f2770893884d17c0156779dfad8b89"
+      }
+    ]
+  },
+  {
+    "id": "pr-tigercat",
+    "gameId": 109,
+    "name": "Jungle Stalker",
+    "dungeonScore": 3,
+    "baseHealth": 7356.2471000000005,
+    "baseHealthMultiplier": 2.4529,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-tigercat",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-tigercat-enemy-full.webp",
+        "sha256": "c19712b5ba486cae8514c06c4541d40a3eb83f9fb3f4168ce2b6110b37fcaff0",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-tigercat",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-tigercat-enemy-200.avif",
+        "sha256": "c8db320f683f5d8b15111663a264fc6523a3b0124c0fde630dc8d307abe8b738",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-tigercat-enemy-200.webp",
+        "sourceSha256": "bf70bdb3c1706f4068476382e38cc19c4cafde2c05653b8b5f21e7030a935cbd"
+      }
+    ]
+  },
+  {
+    "id": "pr-watercaster",
+    "gameId": 107,
+    "name": "Tide Witch",
+    "dungeonScore": 5,
+    "baseHealth": 7144.2178,
+    "baseHealthMultiplier": 2.3822,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "pr-watercaster",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/pr-watercaster-enemy-full.webp",
+        "sha256": "15fa7f7f93f4e27f5389601936034791e6240e6e366046dde42631f17c7671ba",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "pr-watercaster",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/pr-watercaster-enemy-200.avif",
+        "sha256": "cee8e8ffee3a8d1b97caa74f477ab309a56b30881cd955e29eb3b597873d0acc",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/pr-watercaster-enemy-200.webp",
+        "sourceSha256": "b799de3b12eb2f8ad14e5025e8821446a344c29d166924a3c1c4324fb72e4efc"
+      }
+    ]
+  },
+  {
+    "id": "sg-bosssiren",
+    "gameId": 105,
+    "name": "Sinthara",
+    "dungeonScore": 0,
+    "baseHealth": 64408.62330000001,
+    "baseHealthMultiplier": 21.4767,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-bosssiren",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-bosssiren-enemy-full.webp",
+        "sha256": "7405ef52ac6142bd0b10aabbccf8f8e7212ffce600b4237a66979fd0e5945c95",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-bosssiren",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-bosssiren-enemy-200.avif",
+        "sha256": "88875c91fa5714b36bba1ea75ee0dfc09b4eeff9b2a016ae5005cf7053543cf7",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-bosssiren-enemy-200.webp",
+        "sourceSha256": "7bf47227f4d53d5494b4c0dcdd915ae429d2db56df5f0f6262e4c77d6a68dffd"
+      }
+    ]
+  },
+  {
+    "id": "sg-corallasher",
+    "gameId": 104,
+    "name": "Witchreef Lasher",
+    "dungeonScore": 1,
+    "baseHealth": 3337.2872,
+    "baseHealthMultiplier": 1.1128,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-corallasher",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-corallasher-enemy-full.webp",
+        "sha256": "80dd60a23d57f3393c4481905972e6a59c7f9fbec95853bb7125689afb378779",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-corallasher",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-corallasher-enemy-200.avif",
+        "sha256": "1b452bb0c60e8d7326113d53efd381c2f429540e882654642bc9b9eda74041a5",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-corallasher-enemy-200.webp",
+        "sourceSha256": "7effcd0be8f36300bbcf7b1cb1824ba75f98f881f321be8a8207895014705c9c"
+      }
+    ]
+  },
+  {
+    "id": "sg-drownedsailor",
+    "gameId": 103,
+    "name": "Vengeful Shade",
+    "dungeonScore": 3,
+    "baseHealth": 6156.947,
+    "baseHealthMultiplier": 2.053,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-drownedsailor",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-drownedsailor-enemy-full.webp",
+        "sha256": "bd9aaa52d4cec531ca127c0105fb9f34ff6d1e83f2e1159e33a4ec8939669864",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-drownedsailor",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-drownedsailor-enemy-200.avif",
+        "sha256": "d3910679da7bf3869367b34cc6ba1b32229f831fd93300a128c9546a23461736",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-drownedsailor-enemy-200.webp",
+        "sourceSha256": "50ac975d92da1c16b952fde9b5e6d5fdb36305169cdd85fa722b9d3dc8a0cffe"
+      }
+    ]
+  },
+  {
+    "id": "sg-echoingspirit",
+    "gameId": 102,
+    "name": "Tormented Spectre",
+    "dungeonScore": 2,
+    "baseHealth": 6385.770700000001,
+    "baseHealthMultiplier": 2.1293,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-echoingspirit",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-echoingspirit-enemy-full.webp",
+        "sha256": "044d596805386da443c6aa67c91e92504195409f0ddd3e55a763a8192ec33f63",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-echoingspirit",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-echoingspirit-enemy-200.avif",
+        "sha256": "dea0de0523a6c866987c9eebd598e54f698debce4de02b04f81be8e7d455a586",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-echoingspirit-enemy-200.webp",
+        "sourceSha256": "29b2db6633705ffa2b4d98e6419e711e4f54a82d03f3eaaad768393c5aa4ccd1"
+      }
+    ]
+  },
+  {
+    "id": "sg-ghostcorpse",
+    "gameId": 100,
+    "name": "Lost Soul",
+    "dungeonScore": 1,
+    "baseHealth": 2479.8731,
+    "baseHealthMultiplier": 0.8269,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-ghostcorpse",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-ghostcorpse-enemy-full.webp",
+        "sha256": "a1268010c3101345ae36a6d5f9a0cefa4d1039122842b33dcfb501625d866142",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-ghostcorpse",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-ghostcorpse-enemy-200.avif",
+        "sha256": "b8f3f8049c4fcca06ad0692fa2e3fd50c4d3d195b1e1f2fe7962ba48fff00712",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-ghostcorpse-enemy-200.webp",
+        "sourceSha256": "a4218a39daf65d1f188ed9c5ec9fa3410b38b15baf3350aa172539c4c3212c62"
+      }
+    ]
+  },
+  {
+    "id": "sg-ghosteruptor",
+    "gameId": 99,
+    "name": "Deepbound Magi",
+    "dungeonScore": 5,
+    "baseHealth": 13615.460000000001,
+    "baseHealthMultiplier": 4.54,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-ghosteruptor",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-ghosteruptor-enemy-full.webp",
+        "sha256": "e4dd8b80b0d57ad5cdea48b1e8c4224a113e9ffc1a7ffb815d88be73931063fd",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-ghosteruptor",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-ghosteruptor-enemy-200.avif",
+        "sha256": "d8cf94bada6df94fd3dcb4acbe05382e206ad40a9290f608e7aca634374ae017",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-ghosteruptor-enemy-200.webp",
+        "sourceSha256": "08202cac0d3b22016a000145df3a3e2acc9c4a1a5e34791212d570dca463af4c"
+      }
+    ]
+  },
+  {
+    "id": "sg-ghostferventsoldier",
+    "gameId": 98,
+    "name": "Fading Raider",
+    "dungeonScore": 2,
+    "baseHealth": 7663.044800000001,
+    "baseHealthMultiplier": 2.5552,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-ghostferventsoldier",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-ghostferventsoldier-enemy-full.webp",
+        "sha256": "43d0680c910c0c7fdd72c3a46b424ba27fd2e9a95a154485a525c09ae36a8b07",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-ghostferventsoldier",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-ghostferventsoldier-enemy-200.avif",
+        "sha256": "b525b66a441c477868905db4f6670118578b5388d29a2cb022c8437614bc12ab",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-ghostferventsoldier-enemy-200.webp",
+        "sourceSha256": "4723a36a0af4096b8374ffd0368a91539c997fe16a8a181f98eb919ecda31a51"
+      }
+    ]
+  },
+  {
+    "id": "sg-ghostorc",
+    "gameId": 97,
+    "name": "Hollowed Corsair",
+    "dungeonScore": 5,
+    "baseHealth": 10102.1315,
+    "baseHealthMultiplier": 3.3685,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-ghostorc",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-ghostorc-enemy-full.webp",
+        "sha256": "8e975ff6e638ca669caf5a96d781867e7e593ea629d514b631a5c30971316b74",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-ghostorc",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-ghostorc-enemy-200.avif",
+        "sha256": "908eae7abfd02b03d7e9f69628af6176f5757b04a5f940d938d99ca293be1c8b",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-ghostorc-enemy-200.webp",
+        "sourceSha256": "12d5d313e760c3bf553c5ad338d214b9e8a4ea207eb287f2dbdbf6afe943a1e9"
+      }
+    ]
+  },
+  {
+    "id": "sg-waterelemental",
+    "gameId": 94,
+    "name": "Water Elemental",
+    "dungeonScore": 3,
+    "baseHealth": 11050.1154,
+    "baseHealthMultiplier": 3.6846,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sg-waterelemental",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sg-waterelemental-enemy-full.webp",
+        "sha256": "2c3005348a093bb87278cad0a76334416bb5d91b21edb922ff1fe3db6d2ca40b",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sg-waterelemental",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sg-waterelemental-enemy-200.avif",
+        "sha256": "dd468115465c3308792172dfda0e8df06b5e715cdc7b1018fbdffd04bb78ee6b",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sg-waterelemental-enemy-200.webp",
+        "sourceSha256": "ecf01af9182ad8c579e4e16e14c472dba0aee531bfcd033ce7174c79c61ecdac"
+      }
+    ]
+  },
+  {
+    "id": "sh-carrionhorror",
+    "gameId": 268,
+    "name": "Carrion Horror",
+    "dungeonScore": 5,
+    "baseHealth": 13975.34,
+    "baseHealthMultiplier": 4.66,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sh-carrionhorror",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sh-carrionhorror-enemy-full.webp",
+        "sha256": "7bd0bdcedf4f2395224da716a44924b1dacc6262c0bf7e58565b66314ecc25f1",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sh-carrionhorror",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sh-carrionhorror-enemy-200.avif",
+        "sha256": "db833e8396a16247e4bbad8e59e47431ff5437bcbf1030b4a0613a8b9e7b9e3b",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sh-carrionhorror-enemy-200.webp",
+        "sourceSha256": "a5e9388a101dcc9e6d1d520ed4ebc0d822a7391a622cb6deb3815fe0eedf0a05"
+      }
+    ]
+  },
+  {
+    "id": "sh-eggbearer",
+    "gameId": 267,
+    "name": "Eggbearer",
+    "dungeonScore": 2,
+    "baseHealth": 4290.3694000000005,
+    "baseHealthMultiplier": 1.4306,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sh-eggbearer",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sh-eggbearer-enemy-full.webp",
+        "sha256": "04fb86534f6b172f89b62983f948f744f86413bb4d5fbe77f1d4a7681d2dbff5",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sh-eggbearer",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sh-eggbearer-enemy-200.avif",
+        "sha256": "6b6afa870025d779716689bae76b13ca1695521ccafd6c5df31bb74c6c6ae022",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sh-eggbearer-enemy-200.webp",
+        "sourceSha256": "cd16e7ca574ae27669063eb5980dd27e3ae964e13d14d91abc0a9f18146e0a50"
+      }
+    ]
+  },
+  {
+    "id": "sh-gravesnarekidnapper",
+    "gameId": 91,
+    "name": "Gravesnare Kidnapper",
+    "dungeonScore": 4,
+    "baseHealth": 9733.854299999999,
+    "baseHealthMultiplier": 3.2457,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sh-gravesnarekidnapper",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sh-gravesnarekidnapper-enemy-full.webp",
+        "sha256": "2c246c953642ead727f63f6a4d38e9c66d87f427c03fe76c7d14ac2c8007da66",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sh-gravesnarekidnapper",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sh-gravesnarekidnapper-enemy-200.avif",
+        "sha256": "5f2d38bef3a503ee6dd59ae9e1d29548a4dcf9e83c79d2a46a00511cf547a844",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sh-gravesnarekidnapper-enemy-200.webp",
+        "sourceSha256": "ac883fd75f6d68361d4d6beb6851545a637bc1fbd2e0a3e5c1e2da47f4e46ec6"
+      }
+    ]
+  },
+  {
+    "id": "sh-rotheartrecluse",
+    "gameId": 90,
+    "name": "Rotheart Recluse",
+    "dungeonScore": 3,
+    "baseHealth": 6032.4884999999995,
+    "baseHealthMultiplier": 2.0115,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sh-rotheartrecluse",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sh-rotheartrecluse-enemy-full.webp",
+        "sha256": "589005d772455ac4bb8a129c0e38333d96ec47063ba3a91be67d5aa0f2b7c29d",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sh-rotheartrecluse",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sh-rotheartrecluse-enemy-200.avif",
+        "sha256": "b546994b7bfd99e2ddd851756c552431df14fb1288af0879794ac8b3b42d5a34",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sh-rotheartrecluse-enemy-200.webp",
+        "sourceSha256": "5319073aa2ba34db6fc0f02d4daf681626dbd17098b29b4b95db977c797ded36"
+      }
+    ]
+  },
+  {
+    "id": "sh-venomdrinker",
+    "gameId": 266,
+    "name": "Venomdrinker",
+    "dungeonScore": 3,
+    "baseHealth": 6978.972900000001,
+    "baseHealthMultiplier": 2.3271,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sh-venomdrinker",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sh-venomdrinker-enemy-full.webp",
+        "sha256": "8b8d2c6ede9b1ce30531cd162830f8411f4890b3dc2780cd1f64fc0a2c6fd062",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sh-venomdrinker",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sh-venomdrinker-enemy-200.avif",
+        "sha256": "1f29c8b42364f1d2a7d830168d8ce74671c6b8782c80cad1c12b2f71244fac6e",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sh-venomdrinker-enemy-200.webp",
+        "sourceSha256": "b19849067adf9c5a8bd0155a91aecf041f6dcdf2bbeb8ba6aa84ce52b21c5391"
+      }
+    ]
+  },
+  {
+    "id": "sp-bossmarcass",
+    "gameId": 315,
+    "name": "Overlord Varux",
+    "dungeonScore": 0,
+    "baseHealth": 61934.448300000004,
+    "baseHealthMultiplier": 20.6517,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sp-bossmarcass",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sp-bossmarcass-enemy-full.webp",
+        "sha256": "972a8c5eaf1dd7172f6c1b0e2aa7ad45bb9661b488d5bb96b4bfefe3a4efae2c",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sp-bossmarcass",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sp-bossmarcass-enemy-200.avif",
+        "sha256": "0cebebed60f90223d7b5639d34b44bb8b89c58564c8f620d69505ce92c168b9e",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sp-bossmarcass-enemy-200.webp",
+        "sourceSha256": "b2de69b92afdfdac1403fb4f048674da70ed9b1a33537b6719b443926d5a52bb"
+      }
+    ]
+  },
+  {
+    "id": "sp-frostwolf",
+    "gameId": 314,
+    "name": "Dire Wolf",
+    "dungeonScore": 2,
+    "baseHealth": 7800.399,
+    "baseHealthMultiplier": 2.601,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sp-frostwolf",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sp-frostwolf-enemy-full.webp",
+        "sha256": "dbec9add1397e82c97226a9086c37b30517c30420b392b23767976b2005e00f7",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sp-frostwolf",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sp-frostwolf-enemy-200.avif",
+        "sha256": "c6a51c35b2253362e04b87222aafe729060c2c568ff6d27b87ccc894b3b3965f",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sp-frostwolf-enemy-200.webp",
+        "sourceSha256": "50c088afbf50ede3f43d1608a743a3bb59e61d272fca360f9e0c6a6a67036794"
+      }
+    ]
+  },
+  {
+    "id": "sp-polarbear",
+    "gameId": 313,
+    "name": "Glacial Bear",
+    "dungeonScore": 7,
+    "baseHealth": 13864.377,
+    "baseHealthMultiplier": 4.623,
+    "spiritPointValue": 7,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "sp-polarbear",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/sp-polarbear-enemy-full.webp",
+        "sha256": "97a0c3b6a4ca2f810300e6094285292617f8e09e732b4ba490f026d49884cdf1",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "sp-polarbear",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/sp-polarbear-enemy-200.avif",
+        "sha256": "4b8516dc664b75733c6d7a70bc6b386a6905f3ac9a63e662e7ba34a065c37edd",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/sp-polarbear-enemy-200.webp",
+        "sourceSha256": "61f8d7792cc6f45525e51794bd4ba280047835e5118c909d6dabc99b21eaa9d4"
+      }
+    ]
+  },
+  {
+    "id": "st-bigbloodelemental",
+    "gameId": 326,
+    "name": "Heart of Rot",
+    "dungeonScore": 6,
+    "baseHealth": 13865.2767,
+    "baseHealthMultiplier": 4.6233,
+    "spiritPointValue": 6,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-bigbloodelemental",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/st-bigbloodelemental-enemy-full.webp",
+        "sha256": "1210c5069bd45db623424246ca1a67dd60f31d5fac1d5676b4a2ffbc2053cc13",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "st-bigbloodelemental",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/st-bigbloodelemental-enemy-200.avif",
+        "sha256": "f12d022ca3165c05d0d45d980ae42bd3505a163a4184cc2a05047991751738f0",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/st-bigbloodelemental-enemy-200.webp",
+        "sourceSha256": "532a66ba007059e302ebbb9f202057070a9da6b4e9a2d940c8353480ad71f5f6"
+      }
+    ]
+  },
+  {
+    "id": "st-bossarbiter",
+    "gameId": 321,
+    "name": "Vel’korath the Sanctified, Vision of the Covenant",
+    "dungeonScore": 0,
+    "baseHealth": 121149.70330000001,
+    "baseHealthMultiplier": 40.3967,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-bossarbiter",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/st-bossarbiter-enemy-full.webp",
+        "sha256": "ca3ba536e9c0d1903ff9596dca1e7b2d6d74cf3692dbd2b83b9577ff0663540b",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "st-bossarbiter",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/st-bossarbiter-enemy-200.avif",
+        "sha256": "0289ccf3642e68b6b9f669821f04aa8932d6e105b60adfdecb4478220555d21d",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/st-bossarbiter-enemy-200.webp",
+        "sourceSha256": "1b8395187068e64146dabbacf1d3188851959e0097347104f16b63de0cee6044"
+      }
+    ]
+  },
+  {
+    "id": "st-bossdefenseeye",
+    "gameId": 319,
+    "name": "Han-Eth, Sentry of Xul",
+    "dungeonScore": 0,
+    "baseHealth": 109748.55495,
+    "baseHealthMultiplier": 36.59505,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-bossdefenseeye",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/st-bossdefenseeye-enemy-full.webp",
+        "sha256": "0e56044fb012abb2c4b8d326b7e0f9d4eb32eda8c5a3692b60cb280ca5da90f2",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "st-bossdefenseeye",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/st-bossdefenseeye-enemy-200.avif",
+        "sha256": "7d741b330ff61df20cfc9896174496fdaa92bc7a825b9b8225cc78e257d6d041",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/st-bossdefenseeye-enemy-200.webp",
+        "sourceSha256": "698a189910f6ac006426d9a28bd970da4d11ca450927e3f60fb9dbcf2214dc7f"
+      }
+    ]
+  },
+  {
+    "id": "st-bossgatekeeper",
+    "gameId": 318,
+    "name": "Xul’vorith, Sentinel of the Bloodbound Gate",
+    "dungeonScore": 0,
+    "baseHealth": 91754.55495,
+    "baseHealthMultiplier": 30.59505,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-bossgatekeeper",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/st-bossgatekeeper-enemy-full.webp",
+        "sha256": "7154b8379abe65870b5e4949f5064e4e0171a71739ae53ad3f94ed118f7d86dc",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "st-bossgatekeeper",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/st-bossgatekeeper-enemy-200.avif",
+        "sha256": "ed260a1b2c8ed7983da2b2c3dafde3c71bb2a6c9bf846d630a5fb6681cdbe4bb",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/st-bossgatekeeper-enemy-200.webp",
+        "sourceSha256": "1a4e707f98e6b697514080f8b80a759d1ae18a9c6c7a37382915ae78696816c4"
+      }
+    ]
+  },
+  {
+    "id": "st-sanguinecrusher",
+    "gameId": 317,
+    "name": "Sanguine Crusher",
+    "dungeonScore": 6,
+    "baseHealth": 16615.6596,
+    "baseHealthMultiplier": 5.5404,
+    "spiritPointValue": 6,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-sanguinecrusher",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/st-sanguinecrusher-enemy-full.webp",
+        "sha256": "5e705de4fffbb3ce928b36caa14166aaed9017b92f473b60a862820828e87147",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "st-sanguinecrusher",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/st-sanguinecrusher-enemy-200.avif",
+        "sha256": "7cb17f1d0d970cdd07c4af705d225938d8465d7536f39b22ddf7176d0102dbdf",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/st-sanguinecrusher-enemy-200.webp",
+        "sourceSha256": "71e5fe4f382c54028df233b1e0136466efa9e73d3ac1a5ea16f13ae042dac2e7"
+      }
+    ]
+  },
+  {
+    "id": "st-smallbloodelemental",
+    "gameId": 316,
+    "name": "Sanguine Echo",
+    "dungeonScore": 2,
+    "baseHealth": 3871.709,
+    "baseHealthMultiplier": 1.291,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-smallbloodelemental",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/st-smallbloodelemental-enemy-full.webp",
+        "sha256": "c5e5548af7435744e7d0e616947f5ae3d40715a8be2b3a75e2da2d703e9442d9",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "st-smallbloodelemental",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/st-smallbloodelemental-enemy-200.avif",
+        "sha256": "1d8dccb0f121662854ba53de951ce45e2dda90eeda86d6c3273d2737f47b6b07",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/st-smallbloodelemental-enemy-200.webp",
+        "sourceSha256": "a26b6a8ae9b595db6a3d0263d7e4b1be88cf69328ccc53bed1b9f8305d2fc866"
+      }
+    ]
+  },
+  {
+    "id": "ub-bossarchbishop",
+    "gameId": 87,
+    "name": "Sin-Magir",
+    "dungeonScore": 0,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "ub-bossarchbishop",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/ub-bossarchbishop-enemy-full.webp",
+        "sha256": "6413bdfa014ec9e8366500ae7bb816d300bf01ebcfda18f4c73c10a4ecc262ba",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "ub-bossarchbishop",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/ub-bossarchbishop-enemy-200.avif",
+        "sha256": "a5088a117435bcc0f120e7405fbee5ed2879152ad62727a3f72b419180744634",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/ub-bossarchbishop-enemy-200.webp",
+        "sourceSha256": "3c03d463441513e9ac3767e57ccd2a701cc8d2a9d764dd7988ce9e391372b08b"
+      }
+    ]
+  },
+  {
+    "id": "uc-evilspirit",
+    "gameId": 48,
+    "name": "Dire Rat",
+    "dungeonScore": 1,
+    "baseHealth": 2108.297,
+    "baseHealthMultiplier": 0.703,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "uc-evilspirit",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/uc-evilspirit-enemy-full.webp",
+        "sha256": "4dfdf0dcbf733f3179a6bb9d6d6d78584c7245a4eafe0c52beebbaa358fd0e3a",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "uc-evilspirit",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/uc-evilspirit-enemy-200.avif",
+        "sha256": "196e28cadd3d96da6f91278a261d841a5a6d3b723e1c7b585d69750f753a8294",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/uc-evilspirit-enemy-200.webp",
+        "sourceSha256": "f01cb701c999b353681b13bc05c655deb746ba9f49e612e7e5d0eef11f2537c4"
+      }
+    ]
+  },
+  {
+    "id": "um-bossdrazhulthefleshbroker",
+    "gameId": 44,
+    "name": "Drazhul the Fleshbroker",
+    "dungeonScore": 0,
+    "baseHealth": 38732.6848,
+    "baseHealthMultiplier": 12.9152,
+    "spiritPointValue": 23,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-bossdrazhulthefleshbroker",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-bossdrazhulthefleshbroker-enemy-full.webp",
+        "sha256": "ca9044291666a71ced4a2333f1371dcde20e07ebec5d009b8a3c2d2135766258",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-bossdrazhulthefleshbroker",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-bossdrazhulthefleshbroker-enemy-200.avif",
+        "sha256": "0dd023c4e6e308207af2494d3c139646c388b9eb4ebfa20552ed3a2e1e30e257",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-bossdrazhulthefleshbroker-enemy-200.webp",
+        "sourceSha256": "0f76634dad5b1aaeee3eb7fa68cd3f8c03cb3fe04d616c4cd4a56221e966beeb"
+      }
+    ]
+  },
+  {
+    "id": "um-bossslavetraderbrull",
+    "gameId": 43,
+    "name": "Slavetrader Brull",
+    "dungeonScore": 0,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-bossslavetraderbrull",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-bossslavetraderbrull-enemy-full.webp",
+        "sha256": "b39be0f11ec134e52b7ccae0c6885edb3fb132b39f9cb7d9f481cb0a6463ddec",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-bossslavetraderbrull",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-bossslavetraderbrull-enemy-200.avif",
+        "sha256": "1b416b35def3f4c67adcb4f1ab9200113bff8f7439956447bb7ec4bae874fbaf",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-bossslavetraderbrull-enemy-200.webp",
+        "sourceSha256": "effceb866556e37397b33c6686ecdffb837d111a0fe7183d51776d2a2b8d8465"
+      }
+    ]
+  },
+  {
+    "id": "um-desecrater",
+    "gameId": 42,
+    "name": "Desecrator",
+    "dungeonScore": 3,
+    "baseHealth": 6919.5927,
+    "baseHealthMultiplier": 2.3073,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-desecrater",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-desecrater-enemy-full.webp",
+        "sha256": "4774cc7213eaf7d3dee21d75608e87fbd42d5f5f72904e075a48c461086923b8",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-desecrater",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-desecrater-enemy-200.avif",
+        "sha256": "b5dacf54c92ac633e249c95be3e7940444072ab1da9e9cb43d4d4a43baf7cd42",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-desecrater-enemy-200.webp",
+        "sourceSha256": "a6b5e943cdb68f16907341e5a6369e5bf300a5f7fb7f5161bb6fdd29a4034f92"
+      }
+    ]
+  },
+  {
+    "id": "um-gorestainedbutcher",
+    "gameId": 41,
+    "name": "Gorestained Butcher",
+    "dungeonScore": 5,
+    "baseHealth": 13126.623,
+    "baseHealthMultiplier": 4.377,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-gorestainedbutcher",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-gorestainedbutcher-enemy-full.webp",
+        "sha256": "bb880a87c183335520ed2ec6b8f303cfb594efdf086eac62dd5f69c6560f79b4",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-gorestainedbutcher",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-gorestainedbutcher-enemy-200.avif",
+        "sha256": "f88e3acf6f55e5006bf326017d28c1a4e8a2f280cf5b42910484e2da92481924",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-gorestainedbutcher-enemy-200.webp",
+        "sourceSha256": "02475f7e1fc88f76fd002090b9caf66576d61ad54435c430aa255757391d374f"
+      }
+    ]
+  },
+  {
+    "id": "um-hornedseer",
+    "gameId": 40,
+    "name": "Horned Seer",
+    "dungeonScore": 3,
+    "baseHealth": 7226.6903,
+    "baseHealthMultiplier": 2.4097,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-hornedseer",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-hornedseer-enemy-full.webp",
+        "sha256": "0b7cb7b4c9e54db662311644a7c6ca413436e136f12108be91f87bcd6ed198ba",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-hornedseer",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-hornedseer-enemy-200.avif",
+        "sha256": "aa7bbd5e3b8843fd650d9a64e5c5db0c92aa8ed4d325d712cdcad4f135fc5958",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-hornedseer-enemy-200.webp",
+        "sourceSha256": "74b9821c49ccb54248a81376ab9e2a8728cde5e1b081fd18804f3fb25040091d"
+      }
+    ]
+  },
+  {
+    "id": "um-outrunner",
+    "gameId": 39,
+    "name": "Outrunner",
+    "dungeonScore": 2,
+    "baseHealth": 4481.4057,
+    "baseHealthMultiplier": 1.4943,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-outrunner",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-outrunner-enemy-full.webp",
+        "sha256": "e76c051478648f71f52c8ad571ca2080e0dbaf0c5a748b89876a4396e004f245",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-outrunner",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-outrunner-enemy-200.avif",
+        "sha256": "fcfc271822a1a538bc2d7eb0c2b387c69c880af85b5ea2c25984c9bb37b2207c",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-outrunner-enemy-200.webp",
+        "sourceSha256": "f3429cd8d247b85b6a0c2e63113ecd11d9f724c415ac70bde11a9e17f0ac6f80"
+      }
+    ]
+  },
+  {
+    "id": "um-slavecage",
+    "gameId": 38,
+    "name": "Slavebind Totem",
+    "dungeonScore": 4,
+    "baseHealth": 749.75,
+    "baseHealthMultiplier": 0.25,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-slavecage",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-slavecage-enemy-full.webp",
+        "sha256": "80e7cf9f4b27a977bb417fdaa7bd543ecfc923e2a2ba181e7e7403866993e5b3",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-slavecage",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-slavecage-enemy-200.avif",
+        "sha256": "9f43af16dfd83f20af9d46b8ba59524d4a7112cf976f67f85d076e5b3036a7e8",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-slavecage-enemy-200.webp",
+        "sourceSha256": "dfd8342ff8c7d85dcb1ba8a1aa966a58e13a95adc318a3dcebc1e69b979c5410"
+      }
+    ]
+  },
+  {
+    "id": "um-urrakslaver",
+    "gameId": 37,
+    "name": "Urrak Slaver",
+    "dungeonScore": 3,
+    "baseHealth": 8650.6155,
+    "baseHealthMultiplier": 2.8845,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-urrakslaver",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-urrakslaver-enemy-full.webp",
+        "sha256": "d6a0468b9b7428c0afa7fe4eac5f745f5b00c7792cb98a3d142e08a629eabe4e",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-urrakslaver",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-urrakslaver-enemy-200.avif",
+        "sha256": "a6e0abd1b0eb3e8c28884a7826622d6348a7ca4ffb08ec59b8df73a810c95797",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-urrakslaver-enemy-200.webp",
+        "sourceSha256": "6a84eaa8d78402ab046b19e5fd7ac2b88887a2d02817accf42f4c43001aa4f21"
+      }
+    ]
+  },
+  {
+    "id": "um-urrakwitch",
+    "gameId": 36,
+    "name": "Urrak Witch",
+    "dungeonScore": 4,
+    "baseHealth": 8803.8644,
+    "baseHealthMultiplier": 2.9356,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "um-urrakwitch",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/um-urrakwitch-enemy-full.webp",
+        "sha256": "1e7b959b96f2e9976ddf7923afd1806499ecbb44e3603e1406a1a05b8f5578ba",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "um-urrakwitch",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/um-urrakwitch-enemy-200.avif",
+        "sha256": "715f43023546725ea9db69cadf2290ca1ba81477fd36f0bc9ef13e463a385274",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/um-urrakwitch-enemy-200.webp",
+        "sourceSha256": "d098e9be9e86c65fcebb97b6d7d046803b6a0ca23c4e44b572523f17a0cf0465"
+      }
+    ]
+  },
+  {
+    "id": "vv-blackburnmystic",
+    "gameId": 34,
+    "name": "Bleakfrost Mystic",
+    "dungeonScore": 4,
+    "baseHealth": 6385.770700000001,
+    "baseHealthMultiplier": 2.1293,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-blackburnmystic",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-blackburnmystic-enemy-full.webp",
+        "sha256": "72ef0acd574cb11ca1552b67a553fd4541c0dc09190d6ae193274976a913e547",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-blackburnmystic",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-blackburnmystic-enemy-200.avif",
+        "sha256": "ea6494690b86bde15227296ebc239dc64735e2eddf13c536ba9f525ad3e98742",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-blackburnmystic-enemy-200.webp",
+        "sourceSha256": "ee9470a49c188bb03bc30d8477449b69e672f37745f4787ff52cdc831f095759"
+      }
+    ]
+  },
+  {
+    "id": "vv-blackburnslaver",
+    "gameId": 33,
+    "name": "Bleakfrost Slaver",
+    "dungeonScore": 3,
+    "baseHealth": 9263.3112,
+    "baseHealthMultiplier": 3.0888,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-blackburnslaver",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-blackburnslaver-enemy-full.webp",
+        "sha256": "c2cc0cdd76be935e321b6648a3b5b21da2f6bd5f0601e4367df09109bb4e4983",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-blackburnslaver",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-blackburnslaver-enemy-200.avif",
+        "sha256": "ed66493cabc0537fdb701dafa7dadb2e91aa77712e3cf0c622a2662d6bb76864",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-blackburnslaver-enemy-200.webp",
+        "sourceSha256": "48bbba28900a4620d8ab21fd5169cb65b3ddeabbe06cd5e7fd3e10d35055d438"
+      }
+    ]
+  },
+  {
+    "id": "vv-blackmistcutthroat",
+    "gameId": 32,
+    "name": "Nightmist Cutthroat",
+    "dungeonScore": 3,
+    "baseHealth": 5383.8048,
+    "baseHealthMultiplier": 1.7952,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-blackmistcutthroat",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-blackmistcutthroat-enemy-full.webp",
+        "sha256": "5944fa6cd011ffc639ca34c706b7855dcb055f370a107f3d1c86020b034aea73",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-blackmistcutthroat",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-blackmistcutthroat-enemy-200.avif",
+        "sha256": "c810efd86d860ac5fe02955859965fd3fe15fc1802f16c00f17940ef66afd83e",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-blackmistcutthroat-enemy-200.webp",
+        "sourceSha256": "1229c6af316c8a992e476afee41931836d06f937952611871d2086962e54fd34"
+      }
+    ]
+  },
+  {
+    "id": "vv-blackmistshadow",
+    "gameId": 30,
+    "name": "Shadow of Ulmorgat",
+    "dungeonScore": 5,
+    "baseHealth": 11254.9471,
+    "baseHealthMultiplier": 3.7529,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-blackmistshadow",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-blackmistshadow-enemy-full.webp",
+        "sha256": "b69fb98c54b883c6b74cd07b1dde5b9b85388a5ea7470dab1a5057bc1783fe78",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-blackmistshadow",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-blackmistshadow-enemy-200.avif",
+        "sha256": "e2f9e89386272eafa67c5388f56c520007f09db6ee3b498db7d218f59787dc22",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-blackmistshadow-enemy-200.webp",
+        "sourceSha256": "6f02326c1a23045511777b9e93fa17722a66076ca14956d475ecf8c0929e3f20"
+      }
+    ]
+  },
+  {
+    "id": "vv-blackmistwhisperer",
+    "gameId": 29,
+    "name": "Nightmist Whisperer",
+    "dungeonScore": 4,
+    "baseHealth": 7203.598,
+    "baseHealthMultiplier": 2.402,
+    "spiritPointValue": 4,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-blackmistwhisperer",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-blackmistwhisperer-enemy-full.webp",
+        "sha256": "31c36d7f795d295635926555a7af459261291f5088f8ab8505100943b2b49667",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-blackmistwhisperer",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-blackmistwhisperer-enemy-200.avif",
+        "sha256": "951b975fa736d8cded1aa3e927b31d827640599dbda606566f823f347a41dff8",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-blackmistwhisperer-enemy-200.webp",
+        "sourceSha256": "e794478c61eb2970ce1f6d79c180e2daacf9f5b8893d85c04a82d9a7b17e8fc2"
+      }
+    ]
+  },
+  {
+    "id": "vv-bosschilgar",
+    "gameId": 28,
+    "name": "Chilgar the Drowned",
+    "dungeonScore": 0,
+    "baseHealth": 53614.02270000001,
+    "baseHealthMultiplier": 17.8773,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-bosschilgar",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-bosschilgar-enemy-full.webp",
+        "sha256": "7940916147186b7d99efa55a25cf09f7b87cf0b35289ac3fda3d1c3ddb321875",
+        "width": 1110,
+        "height": 1110
+      },
+      {
+        "id": "vv-bosschilgar",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-bosschilgar-enemy-200.avif",
+        "sha256": "609e8170569bcd5f25c55dcebdd64d86a5a651c305ef7cfe9194c6d9187fa56b",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-bosschilgar-enemy-200.webp",
+        "sourceSha256": "8742f7a8f0855ed9f06c9f7d07ef0c45c8a7f00dc5c3f1e17e3d4de33c47ee88"
+      }
+    ]
+  },
+  {
+    "id": "vv-bossfrosttroll",
+    "gameId": 25,
+    "name": "Fodir Kaldur",
+    "dungeonScore": 0,
+    "baseHealth": 54714.0559,
+    "baseHealthMultiplier": 18.2441,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-bossfrosttroll",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-bossfrosttroll-enemy-full.webp",
+        "sha256": "3346d2db63e9c3793cd98765fdd51109023106aaf3a5335206d6d19a37a9df67",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-bossfrosttroll",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-bossfrosttroll-enemy-200.avif",
+        "sha256": "768512c9ce8c62c7fbbed7ec96cb9a1f38ab92dc4283873263d991391d4e4d7a",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-bossfrosttroll-enemy-200.webp",
+        "sourceSha256": "083a410859bb35b759f2a1724f9b3996edaf25787feb90a77db82237c1fa9285"
+      }
+    ]
+  },
+  {
+    "id": "vv-bosskaldursonfire",
+    "gameId": 23,
+    "name": "Kaldurson Eldsupptok",
+    "dungeonScore": 15,
+    "baseHealth": 21692.666699999998,
+    "baseHealthMultiplier": 7.2333,
+    "spiritPointValue": 15,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-bosskaldursonfire",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-bosskaldursonfire-enemy-full.webp",
+        "sha256": "46934b7d9bd342e65904fa255a5003561cee61db2a59f0682131a5d44637f7f6",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-bosskaldursonfire",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-bosskaldursonfire-enemy-200.avif",
+        "sha256": "2f824b396dffe5d2dc2d1323eef23ff2e7d37c7813fe97674de8b478afe6e961",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-bosskaldursonfire-enemy-200.webp",
+        "sourceSha256": "82c9eaaeb2d1d6a222e63923804b76db26a80c491550a050e311a5282d578d54"
+      }
+    ]
+  },
+  {
+    "id": "vv-bosskaldursonice",
+    "gameId": 22,
+    "name": "Kaldurson Isilagður",
+    "dungeonScore": 15,
+    "baseHealth": 21560.410799999998,
+    "baseHealthMultiplier": 7.1892,
+    "spiritPointValue": 15,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-bosskaldursonice",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-bosskaldursonice-enemy-full.webp",
+        "sha256": "0bf810b718366c2212fa3429fae3a497387c89bc3f647cf1312e3cca9cf6b513",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-bosskaldursonice",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-bosskaldursonice-enemy-200.avif",
+        "sha256": "2ddb8824404bdb5cd5e48025831916f0b6d9142cc4a7931d992f1399940b5823",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-bosskaldursonice-enemy-200.webp",
+        "sourceSha256": "d45ab1d5d02a9d11a2fddf807745ff3a8c78006ea328c4b0916e6342e1bbde0c"
+      }
+    ]
+  },
+  {
+    "id": "vv-bossvikingmystic",
+    "gameId": 18,
+    "name": "Auga Handhafi the Blind",
+    "dungeonScore": 0,
+    "baseHealth": 56753.6758,
+    "baseHealthMultiplier": 18.9242,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-bossvikingmystic",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-bossvikingmystic-enemy-full.webp",
+        "sha256": "02e3697d9114b95dca4f41f176100a2a49cb9dda0ea4c9e0153dd87ccbaeb589",
+        "width": 1110,
+        "height": 1110
+      },
+      {
+        "id": "vv-bossvikingmystic",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-bossvikingmystic-enemy-200.avif",
+        "sha256": "957c39a541cac4ab7c960e071982843b4af2f79353ed22a66bc1ec214f55662f",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-bossvikingmystic-enemy-200.webp",
+        "sourceSha256": "cc1c80d2ec827635565b3595e35da80b86891d48f84990dfffeaff1e93516221"
+      }
+    ]
+  },
+  {
+    "id": "vv-coldbrinefiend",
+    "gameId": 15,
+    "name": "Coldbrine Fiend",
+    "dungeonScore": 3,
+    "baseHealth": 7567.3767,
+    "baseHealthMultiplier": 2.5233,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-coldbrinefiend",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-coldbrinefiend-enemy-full.webp",
+        "sha256": "6d06556caa45b7d91fb57ea5f4316adae9c5301afa6cf298b2818806b909d685",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-coldbrinefiend",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-coldbrinefiend-enemy-200.avif",
+        "sha256": "2613a89363831d428729deb82284f7fb9b734ee35b6025d5c6da50ea3cf67e5e",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-coldbrinefiend-enemy-200.webp",
+        "sourceSha256": "4f08fcd49c5a641f8e5b865b1ac9e7416287a5b97b2ae0c39c50bb00a9097ac4"
+      }
+    ]
+  },
+  {
+    "id": "vv-cravenhiisi",
+    "gameId": 14,
+    "name": "Craven Hiisi",
+    "dungeonScore": 1,
+    "baseHealth": 3894.8013,
+    "baseHealthMultiplier": 1.2987,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-cravenhiisi",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-cravenhiisi-enemy-full.webp",
+        "sha256": "4e04842b02df9ebc776fe182755a6deae2f207633642e9852cb577e5575d0c8c",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-cravenhiisi",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-cravenhiisi-enemy-200.avif",
+        "sha256": "c5e272b7567c9551675a17ff7fb0a8b876abe094aa3360d594646db3e1fe9727",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-cravenhiisi-enemy-200.webp",
+        "sourceSha256": "f20befad431f651206e45a640f41728f810296e020dc343c893c15de960aa17b"
+      }
+    ]
+  },
+  {
+    "id": "vv-frenziedlooter",
+    "gameId": 13,
+    "name": "Frenzied Looter",
+    "dungeonScore": 1,
+    "baseHealth": 4256.4807,
+    "baseHealthMultiplier": 1.4193,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-frenziedlooter",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-frenziedlooter-enemy-full.webp",
+        "sha256": "17f549a22f636e49da61400517280771b6ebca384322e46a0eac77dee1ce6b79",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-frenziedlooter",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-frenziedlooter-enemy-200.avif",
+        "sha256": "b47433b221c2d1bafabd0e49c2feccd2aeecfc4dca99e3f5dbb0f7dfc9622d52",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-frenziedlooter-enemy-200.webp",
+        "sourceSha256": "1064bf50be3f6ff59d0f4c6050eaf40f5f7d685b689797d84afcf2d45e7810b3"
+      }
+    ]
+  },
+  {
+    "id": "vv-icebitepillager",
+    "gameId": 12,
+    "name": "Raging Pillager",
+    "dungeonScore": 2,
+    "baseHealth": 7992.335,
+    "baseHealthMultiplier": 2.665,
+    "spiritPointValue": 2,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-icebitepillager",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-icebitepillager-enemy-full.webp",
+        "sha256": "f72680fb7f8af112a8eb9bf5787f4a2df87bbb1005aa6df81f84cb4000755ba2",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-icebitepillager",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-icebitepillager-enemy-200.avif",
+        "sha256": "c086141a447365ee8e604ccbdcd895bfccc931e9dd0c8d2f83be8f5bfab2fd8d",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-icebitepillager-enemy-200.webp",
+        "sourceSha256": "346e1709ffa74ca89e88949fdd9399405edf7d09aeecbd07f9038ad9580d9eda"
+      }
+    ]
+  },
+  {
+    "id": "vv-icebitereaver",
+    "gameId": 11,
+    "name": "Icebite Reaver",
+    "dungeonScore": 5,
+    "baseHealth": 12868.709,
+    "baseHealthMultiplier": 4.291,
+    "spiritPointValue": 5,
+    "isBoss": false,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-icebitereaver",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-icebitereaver-enemy-full.webp",
+        "sha256": "dc2782ad344038cbca098ad212c3ed3b2aaa6ee6092f0f8e6d7a4ba5c81252fe",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-icebitereaver",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-icebitereaver-enemy-200.avif",
+        "sha256": "bb58349103c8ccbd416ccb951930c104c7c4c65532e2f0057fef1d2c3fa828a0",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-icebitereaver-enemy-200.webp",
+        "sourceSha256": "9daf1e61d44ff4511756b2d3c38ae851957b187933d82f872764d36860dbb696"
+      }
+    ]
+  },
+  {
+    "id": "vv-sootstainedarsonist",
+    "gameId": 10,
+    "name": "Ashen Arsonist",
+    "dungeonScore": 3,
+    "baseHealth": 6924.60103,
+    "baseHealthMultiplier": 2.30897,
+    "spiritPointValue": 3,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "vv-sootstainedarsonist",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/vv-sootstainedarsonist-enemy-full.webp",
+        "sha256": "0367dc41f6587187e38b0514db475eee313f442120edd758929125538bd7b6d7",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "vv-sootstainedarsonist",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/vv-sootstainedarsonist-enemy-200.avif",
+        "sha256": "2972caf76cd3409d2468ea8281e5a4df90e4b82d30b1ae92f2a71b9fa81c0cc0",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/vv-sootstainedarsonist-enemy-200.webp",
+        "sourceSha256": "3aff5a70b3b886328335b23fb21478be092d559bb066732a6f95b860a55ff2a3"
+      }
+    ]
+  },
+  {
+    "id": "ic-elf-shardling",
+    "gameId": 152,
+    "name": "Ice Shardling",
+    "dungeonScore": 1,
+    "baseHealth": 2062.4123,
+    "baseHealthMultiplier": 0.6877,
+    "spiritPointValue": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": "Leather",
+    "images": [
+      {
+        "id": "ic-elf-shardling",
+        "type": "enemy",
+        "size": "full",
+        "path": "images/enemies/ic-elf-shardling-enemy-full.webp",
+        "sha256": "21697d8f1849fab6af2acdae77ee27c0148df4d16e06d5bbeccb7bd65fcdb4e5",
+        "width": 512,
+        "height": 512
+      },
+      {
+        "id": "ic-elf-shardling",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/enemies/ic-elf-shardling-enemy-200.avif",
+        "sha256": "d853a951afd7fc3611d2e14ce2499449603c9373071a5555ed37d89b59858595",
+        "width": 200,
+        "height": 200,
+        "sourcePath": "images/enemies/ic-elf-shardling-enemy-200.webp",
+        "sourceSha256": "6a512b8da2bdf3ac75c25d9d0e55c60c82d4981e7430adb0e967122bb1340133"
+      }
+    ]
+  },
+  {
+    "id": "sh-quiveringeggsac",
+    "gameId": null,
+    "name": "Quivering Egg Sac",
+    "dungeonScore": 0,
+    "baseHealth": 2999,
+    "baseHealthMultiplier": 1,
+    "isBoss": false,
+    "canBeControlled": true,
+    "classification": "normal",
+    "armorType": null,
+    "images": []
+  }
+]

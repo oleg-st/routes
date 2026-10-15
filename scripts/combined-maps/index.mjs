@@ -1,0 +1,10 @@
+import DemonicRitual from './tuzari.mjs';
+import DesertDunes from './empyrean-sands.mjs';
+import IceCave from './wyrmheart.mjs';
+import MoorCastle from './regath.mjs';
+import NightPatrol from './stormwatch.mjs';
+import PirateRaid from './wraithtide.mjs';
+import SandTomb from './xul.mjs';
+import SpiderForest from './silken-hollow.mjs';
+import VikingVillageAttack from './drakheim.mjs';
+export const recipes=[DemonicRitual,DesertDunes,IceCave,MoorCastle,NightPatrol,PirateRaid,SandTomb,SpiderForest,VikingVillageAttack];

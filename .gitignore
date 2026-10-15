@@ -1,0 +1,39 @@
+# Dependencies and caches
+node_modules/
+.npm-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+
+# Generated builds (GitHub Actions builds dist from source)
+/dist/
+/local.html
+
+# Private sources, local research and temporary outputs
+/private/
+images-archive/
+/tmp/
+/docs/*-preview.png
+/docs/*-preview.jpg
+/docs/preview.jpg
+/docs/full-map-sands.png
+/docs/mob-portraits.jpg
+
+# Test reports and logs
+/coverage/
+/playwright-report/
+/test-results/
+*.log
+
+# Local configuration and editor/OS files
+.env
+.env.*
+!.env.example
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
