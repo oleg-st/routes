@@ -81,11 +81,29 @@ function setDisplayOptions(open){
   $('#layers-panel').hidden=!open;
   $('#layers').setAttribute('aria-expanded',String(open));
 }
+function setMapImage(layer){
+  const previous=$('#map-image');
+  if(previous.getAttribute('href')===layer.path)return;
+  const map=$('#map'),loading=$('#map-loading');
+  map.style.visibility='hidden';map.setAttribute('aria-busy','true');
+  loading.textContent='Loading map…';loading.hidden=false;
+  // A separate element keeps late events from an earlier selection isolated.
+  const image=svg('image',{id:'map-image',width:layer.width,height:layer.height});
+  image.addEventListener('load',()=>{
+    if($('#map-image')!==image)return;
+    map.style.visibility='';map.setAttribute('aria-busy','false');loading.hidden=true;
+  },{once:true});
+  image.addEventListener('error',()=>{
+    if($('#map-image')!==image)return;
+    map.setAttribute('aria-busy','false');
+    loading.textContent='Unable to load map. Select another map or reload to retry.';
+  },{once:true});
+  previous.replaceWith(image);image.setAttribute('href',layer.path);
+}
 function chooseFloor(index){
   clearEnemyFocus();
   mapLayer=mapViews(dungeon)[index];draft=[];hideHover();
-  const image=$('#map-image');
-  image.setAttribute('href',mapLayer.path);image.setAttribute('width',mapLayer.width);image.setAttribute('height',mapLayer.height);
+  setMapImage(mapLayer);
   let drawingClip=$('#drawing-map-clip');
   if(!drawingClip){drawingClip=svg('clipPath',{id:'drawing-map-clip',clipPathUnits:'userSpaceOnUse'});$('#map defs').append(drawingClip);}
   drawingClip.replaceChildren(svg('rect',{x:0,y:0,width:mapLayer.width,height:mapLayer.height}));
@@ -663,6 +681,6 @@ async function init(){
     if(Array.isArray(saved.pulls))for(const pull of saved.pulls){if(pull)pull.name=englishDefaultLabel(pull.name);}
   }
   $('#dungeon').innerHTML=[...data.dungeons].sort((a,b)=>a.name.localeCompare(b.name)).map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
-  bind();selectDungeon(store.lastDungeon||'Level.ID.FrozenKingdom');importRouteHash();setTool('select');$('#map-loading').hidden=true;
+  bind();selectDungeon(store.lastDungeon||'Level.ID.FrozenKingdom');importRouteHash();setTool('select');
 }
 init().catch(err=>{$('#map-loading').textContent=err.message;$('#map-loading').classList.add('fatal');console.error(err);});
