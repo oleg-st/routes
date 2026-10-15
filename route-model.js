@@ -184,3 +184,133 @@ export function validateRoute(value,dungeons,enemies){
   for(const kind of ['ghorn','witch'])if(enemies?.get(modifierId(kind))?.isBoss)bossIds.add(modifierId(kind));
   return {version:2,id:text(value.id)||uid(),buildId:text(value.buildId),dungeonId:dungeon.id,name:englishDefaultLabel(text(value.name))||'Imported route',shadow:value.shadow===true,modifiers,pulls,drawings,excluded:[...new Set((value.excluded||[]).map(canonical))].filter(id=>!bossIds.has(id))};
 }
+
+
+// R1: base64url(raw DEFLATE(UTF-8 JSON tuples)). IDs used only by the UI are
+// regenerated on import. Sorted dataset indexes replace long placement/pack IDs;
+// a dataset fingerprint prevents an index from silently selecting another enemy.
+const PREFIX='R1.',LIMIT=3_000_000;
+const tooLarge=()=>new Error('Route is too large (maximum 3 MB).');
+const invalid=()=>new Error('Invalid compact route.');
+const trim=row=>{while(row.at(-1)===null)row.pop();return row;};
+const optionalList=list=>list?.length?list:null;
+const colorCode=color=>COLORS.includes(color)?COLORS.indexOf(color):color;
+function readColor(value,fallback){
+  if(value==null)return fallback;
+  if(Number.isInteger(value)&&COLORS[value])return COLORS[value];
+  if(typeof value==='string'&&/^#[0-9a-f]{6}$/i.test(value))return value;
+  throw invalid();
+}
+function base64url(bytes){
+  let binary='';
+  for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+  return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+async function transform(bytes,Stream){
+  const reader=new Blob([bytes]).stream().pipeThrough(new Stream('deflate-raw')).getReader();
+  const chunks=[];let size=0;
+  try{
+    for(;;){
+      const {done,value}=await reader.read();if(done)break;
+      size+=value.length;if(size>LIMIT){await reader.cancel();throw tooLarge();}
+      chunks.push(value);
+    }
+  }finally{reader.releaseLock();}
+  const output=new Uint8Array(size);let offset=0;
+  for(const chunk of chunks){output.set(chunk,offset);offset+=chunk.length;}
+  return output;
+}
+async function dictionary(dungeon){
+  const placements=[...new Set([...dungeon.enemies.map(e=>e.placementId),'modifier:ghorn','modifier:witch'])].sort();
+  const packs=[...new Set(dungeon.enemies.map(e=>e.packId).filter(Boolean))].sort();
+  const bytes=new TextEncoder().encode(JSON.stringify([placements,packs]));
+  const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes));
+  return {placements,packs,fingerprint:base64url(digest.subarray(0,12))};
+}
+function indexOf(list,id){const index=list.indexOf(id);if(index<0)throw invalid();return index;}
+function itemAt(list,index){if(!Number.isInteger(index)||index<0||index>=list.length)throw invalid();return list[index];}
+function tuple(value,max){if(!Array.isArray(value)||value.length>max)throw invalid();return value;}
+function list(value){if(value==null)return [];if(!Array.isArray(value))throw invalid();return value;}
+function flag(value){if(value!=null&&value!==1)throw invalid();return value===1;}
+
+export async function encodeRoute(route,dungeon){
+  route=structuredClone(route);
+  const {placements,packs,fingerprint}=await dictionary(dungeon);
+  const ids=values=>values.map(id=>indexOf(placements,id));
+  const pulls=route.pulls.map((p,i)=>trim([
+    ids(p.enemies),p.name===`Pull ${i+1}`?null:p.name,
+    p.color===pullColor(i)?null:colorCode(p.color),p.note||null,p.customName?1:null,
+  ]));
+  const drawings=route.drawings.map(d=>trim([
+    d.mapId,['line','portal','invis','note'].indexOf(d.kind),d.points,
+    d.color===COLORS[0]?null:colorCode(d.color),d.text||null,d.width??null,
+  ]));
+  const modifiers=['empowered','ghorn','witch'].map(kind=>{
+    const m=route.modifiers?.[kind];if(!m)return null;
+    const row=kind==='empowered'?[m.active?1:null,optionalList(ids(m.enemies))]:[
+      m.active?1:null,m.packId==null?null:indexOf(packs,m.packId),
+      m.replacedEnemies===undefined?null:ids(m.replacedEnemies),
+    ];
+    return trim(row).length?row:null;
+  });
+  const payload=trim([
+    route.dungeonId.replace(/^Level\.ID\./,''),route.buildId,fingerprint,route.name,pulls,
+    optionalList(drawings),optionalList(ids(route.excluded)),optionalList(trim(modifiers)),route.shadow?1:null,
+  ]);
+  const bytes=new TextEncoder().encode(JSON.stringify(payload));
+  if(bytes.length>LIMIT)throw tooLarge();
+  return PREFIX+base64url(await transform(bytes,CompressionStream));
+}
+
+async function expandRoute(payload,dungeons){
+  const [id,buildId,fingerprint,name,pulls,drawings,excluded,mods,shadow]=tuple(payload,9);
+  const dungeon=dungeons.find(d=>d.id===`Level.ID.${id}`);
+  if(!dungeon)throw new Error('This dungeon is not available in the current dataset.');
+  const {placements,packs,fingerprint:expected}=await dictionary(dungeon);
+  if(fingerprint!==expected)throw new Error('This route uses a different enemy dataset. Import cancelled to avoid selecting incorrect enemies.');
+  const ids=values=>list(values).map(index=>itemAt(placements,index));
+  if(!Array.isArray(pulls)||pulls.length>500)throw invalid();
+  const modifiers={};
+  tuple(mods??[],3).forEach((row,i)=>{
+    if(row==null)return;
+    const [active,value,replaced]=tuple(row,i===0?2:3);
+    modifiers[['empowered','ghorn','witch'][i]]=i===0?{active:flag(active),enemies:ids(value)}:{
+      active:flag(active),packId:value==null?null:itemAt(packs,value),
+      ...(replaced==null?{}:{replacedEnemies:ids(replaced)}),
+    };
+  });
+  return {
+    version:2,dungeonId:dungeon.id,buildId,name,shadow:flag(shadow),modifiers,excluded:ids(excluded),
+    pulls:pulls.map((row,i)=>{
+      const [enemies,name,color,note,customName]=tuple(row,5);
+      if(!Array.isArray(enemies))throw invalid();
+      return {enemies:ids(enemies),name:name??`Pull ${i+1}`,color:readColor(color,pullColor(i)),note:note??'',customName:flag(customName)};
+    }),
+    drawings:list(drawings).map(row=>{
+      const [mapId,kind,points,color,text,width]=tuple(row,6);
+      return {mapId,kind:itemAt(['line','portal','invis','note'],kind),points,color:readColor(color,COLORS[0]),text:text??'',...(width==null?{}:{width})};
+    }),
+  };
+}
+
+export async function decodeRoute(text,dungeons,enemies){
+  text=text.trim();
+  if(!text)throw new Error('Paste a route string first.');
+  if(text.length>27_000_000)throw tooLarge();
+  if(text.startsWith('#route='))text=decodeURIComponent(text.slice(7));
+  else if(!text.startsWith(PREFIX)){
+    let url;try{url=new URL(text);}catch{throw new Error('Paste a valid route string or Share link.');}
+    if(!url.hash.startsWith('#route='))throw new Error('This link does not contain a route.');
+    text=decodeURIComponent(url.hash.slice(7));
+  }
+  if(new TextEncoder().encode(text).length>LIMIT)throw tooLarge();
+  if(!text.startsWith(PREFIX))throw invalid();
+  const encoded=text.slice(PREFIX.length);
+  if(!/^[A-Za-z0-9_-]+$/.test(encoded))throw invalid();
+  let bytes;
+  try{bytes=Uint8Array.from(atob(encoded.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));}
+  catch{throw invalid();}
+  const decoded=await transform(bytes,DecompressionStream);
+  const value=await expandRoute(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(decoded)),dungeons);
+  return validateRoute(value,dungeons,enemies);
+}

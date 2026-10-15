@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {mapViews, mapCoordinates} from '../map-views.js';
 import {correctDungeon} from '../data/placement-corrections.js';
-import {newRoute} from '../route-model.js';
+import {newRoute,encodeRoute} from '../route-model.js';
 import {expandDungeons} from '../data/compact-data.js';
 import {enemyAbilities} from '../data/ability-corrections.js';
 
@@ -34,6 +34,9 @@ test('Published site omits layer controls and private images while preserving sa
   for (const dungeon of dungeons) {
     const publicDungeon=publicDungeons.find(d=>d.id===dungeon.id);
     assert.deepEqual(publicDungeon.enemies,dungeon.enemies,'Patrols, IDs and coordinates round-trip exactly');
+    const transferRoute=newRoute(dungeon,'test');transferRoute.pulls[0].enemies=dungeon.enemies.slice(0,5).map(e=>e.placementId);
+    const transferred=await publishedRoutes.decodeRoute(await encodeRoute(transferRoute,dungeon),publicDungeons,publicEnemies);
+    assert.deepEqual(transferred.pulls[0].enemies,transferRoute.pulls[0].enemies);
     assert.equal(publicDungeon.requiredScore,dungeon.requiredScore);
     for(const id of new Set(dungeon.enemies.map(enemy=>enemy.id))){
       const source=enemies.get(id),compact=publicEnemies.get(id);

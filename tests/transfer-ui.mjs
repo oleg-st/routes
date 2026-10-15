@@ -2,6 +2,20 @@ import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
+import fs from 'node:fs';
+import {encodeRoute,decodeRoute} from '../route-model.js';
+import {correctDungeon} from '../data/placement-corrections.js';
+
+const dungeons=JSON.parse(fs.readFileSync('data/dungeons.json')).map(correctDungeon);
+const enemies=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
+const encode=route=>encodeRoute(route,dungeons.find(d=>d.id===route.dungeonId));
+const decode=text=>decodeRoute(text,dungeons,enemies);
+const content=route=>JSON.parse(JSON.stringify(route,(key,value)=>key==='id'?undefined:value));
+const copied=async(page,selector)=>{
+  await page.evaluate(()=>{window.copiedText=null;});await page.locator(selector).click();
+  await page.waitForFunction(()=>typeof window.copiedText==='string');
+  return page.evaluate(()=>window.copiedText);
+};
 
 const server=spawn(process.execPath,['scripts/server.mjs'],{env:{...process.env,PORT:'0'},stdio:['ignore','pipe','pipe']});
 let browser;
@@ -16,34 +30,35 @@ try{
     page.on('pageerror',error=>errors.push(error.message));
     await context.addInitScript(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.copiedText=text;}}}));
     const ready=async()=>page.locator('#map-loading').waitFor({state:'hidden'});
-    const exported=async()=>{await page.locator('#export').click();return JSON.parse(await page.evaluate(()=>window.copiedText));};
-    const paste=async text=>{await page.locator('#import').click();await page.locator('#import-route-text').fill(text);await page.locator('#import-route-button').click();};
+    const exported=async()=>decode(await copied(page,'#export'));
+    const paste=async text=>{
+      await page.locator('#import').click();await page.locator('#import-route-text').fill(text);await page.locator('#import-route-button').click();
+      await page.waitForFunction(()=>!document.querySelector('#dialog').open||!document.querySelector('#import-error').hidden);
+    };
     await page.goto(url);await ready();
     await page.locator('#route-name').fill('Маршрут #1 — 🐉 & 50%');
     await page.locator('#add-pull').click();
     const source=await exported();assert.equal(source.pulls.length,2);
     source.pulls[0].note='Строка 1\nСтрока 2 <keep> #?&%';
-    await paste(JSON.stringify(source));assert.equal(await page.locator('#dialog').evaluate(el=>el.open),false);
-    const imported=await exported();assert.notEqual(imported.id,source.id);
-    assert.deepEqual({...imported,id:source.id},source);
-    await page.locator('#share').click();
-    const link=await page.evaluate(()=>window.copiedText),shared=new URL(link);
-    assert.ok(shared.hash.startsWith('#route='));
-    assert.deepEqual(JSON.parse(decodeURIComponent(shared.hash.slice(7))),imported);
+    await paste(await encode(source));assert.equal(await page.locator('#dialog').evaluate(el=>el.open),false);
+    const imported=await exported();
+    assert.deepEqual(content(imported),content(source));
+    const link=await copied(page,'#share'),shared=new URL(link);
+    assert.ok(shared.hash.startsWith('#route=R1.'));
+    assert.deepEqual(content(await decode(link)),content(imported));
     // A new tab must reconstruct the route solely from the link, without stored drafts.
     const other=await context.newPage();await other.goto(link);await other.locator('#map-loading').waitFor({state:'hidden'});
-    assert.equal(await other.locator('#route-name').inputValue(),source.name);
-    await other.locator('#export').click();
-    const restored=JSON.parse(await other.evaluate(()=>window.copiedText));
-    assert.deepEqual({...restored,id:imported.id},imported);await other.close();
+    await other.waitForFunction(name=>document.querySelector('#route-name').value===name,source.name);
+    const restored=await decode(await copied(other,'#export'));
+    assert.deepEqual(content(restored),content(imported));await other.close();
     await paste(link);assert.equal(await page.locator('#dialog').evaluate(el=>el.open),false);
     const before=await exported();
-    for(const invalid of ['', '{broken', '#route=%ZZ', JSON.stringify({...source,dungeonId:'missing'})]){
+    for(const invalid of ['', 'R1.broken', '#route=%ZZ', JSON.stringify(source)]){
       await paste(invalid);assert.equal(await page.locator('#import-error').isVisible(),true);
-      await page.locator('#close-dialog').click();assert.deepEqual(await exported(),before);
+      await page.locator('#close-dialog').click();assert.deepEqual(content(await exported()),content(before));
     }
     const changed={...source,name:'Changed through hash'};
-    await page.evaluate(value=>{location.hash='route='+encodeURIComponent(JSON.stringify(value));},changed);
+    await page.evaluate(value=>{location.hash='route='+value;},await encode(changed));
     await page.waitForFunction(()=>document.querySelector('#route-name').value==='Changed through hash');
     await page.evaluate(()=>{location.hash='route=%ZZ';});
     await page.waitForFunction(()=>document.querySelector('#toast').textContent.startsWith('Import:'));
@@ -51,16 +66,19 @@ try{
     // Clipboard denial leaves selectable text instead of losing the export.
     await page.evaluate(()=>{navigator.clipboard.writeText=async()=>{throw new Error('Denied');};document.execCommand=()=>false;});
     await page.locator('#export').click();
-    assert.equal(JSON.parse(await page.locator('#copy-route-text').inputValue()).name,changed.name);
+    await page.locator('#copy-route-text').waitFor();
+    assert.equal((await decode(await page.locator('#copy-route-text').inputValue())).name,changed.name);
     assert.equal(await page.locator('#copy-route-text').evaluate(el=>el.selectionEnd-el.selectionStart===el.value.length),true);
     await page.locator('#close-dialog').click();
-    await page.locator('#share').click();assert.ok((await page.locator('#copy-route-text').inputValue()).includes('#route='));
+    await page.locator('#share').click();await page.locator('#copy-route-text').waitFor();assert.ok((await page.locator('#copy-route-text').inputValue()).includes('#route=R1.'));
     assert.deepEqual(errors,[]);await context.close();
     console.log(`Export, Import, Share, hash loading and clipboard fallback passed: ${url}`);
   }
   const context=await browser.newContext({permissions:['clipboard-read','clipboard-write']}),page=await context.newPage();
   await page.goto(origin);await page.locator('#map-loading').waitFor({state:'hidden'});await page.locator('#export').click();
-  assert.equal(JSON.parse(await page.evaluate(()=>navigator.clipboard.readText())).version,2);
-  await page.locator('#share').click();assert.ok((await page.evaluate(()=>navigator.clipboard.readText())).includes('#route='));
+  await page.waitForFunction(async()=>(await navigator.clipboard.readText()).startsWith('R1.'));
+  assert.equal((await decode(await page.evaluate(()=>navigator.clipboard.readText()))).version,2);
+  await page.locator('#share').click();
+  await page.waitForFunction(async()=>(await navigator.clipboard.readText()).includes('#route=R1.'));
   await context.close();console.log('Native clipboard Export and Share passed.');
 }finally{await browser?.close();server.kill();}

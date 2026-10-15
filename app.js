@@ -1,4 +1,4 @@
-import {uid,newRoute,clearRoute,hasRouteChanges,newPull,pullColor,renamePull,movePull,assignEnemies,scorePull,scoreRoute,placementScore,validateRoute,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,toggleModifier} from './route-model.js';
+import {uid,newRoute,clearRoute,hasRouteChanges,newPull,pullColor,renamePull,movePull,assignEnemies,scorePull,scoreRoute,placementScore,validateRoute,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,toggleModifier,encodeRoute,decodeRoute} from './route-model.js';
 import {pullOutline} from './map-geometry.js';
 import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
 import {correctDungeon} from './data/placement-corrections.js';
@@ -29,7 +29,7 @@ let store={drafts:{},saved:[],lastDungeon:null};
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4500);}
 function persist(){
   if(!route)return;store.drafts[dungeon.id]=structuredClone(route);store.lastDungeon=dungeon.id;
-  try{localStorage.setItem(storageKey,JSON.stringify(store));}catch{toast('Unable to save in this browser. Export your route as JSON.');}
+  try{localStorage.setItem(storageKey,JSON.stringify(store));}catch{toast('Unable to save in this browser. Export your route to keep a copy.');}
 }
 function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(persist,200);}
 function change(fn){history.push(JSON.stringify(route));if(history.length>60)history.shift();future=[];fn();render();scheduleSave();}
@@ -312,6 +312,7 @@ function renderMap(){
       const image=svg('image',{href:portrait,x:x-r,y:y-r,width:r*2,height:r*2,preserveAspectRatio:'xMidYMid slice','clip-path':'url(#mob-portrait-clip)','pointer-events':'none'});
       image.addEventListener('error',()=>{failedMobImages.add(portrait);renderMap();},{once:true});
       group.append(image);
+      if(own)group.append(svg('circle',{cx:x,cy:y,r,fill:color,'fill-opacity':.3,'pointer-events':'none',class:'mob-pull-tint'}));
     }
     group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(chicken?' chicken-ring':'')}));
     if(enemy?.isBoss||p.modifier){
@@ -392,7 +393,7 @@ function showDialog(title,html){$('#dialog-title').textContent=title;$('#dialog-
 function showScoreInfo(){
   showDialog('Scoring',`<p>Kill score: selected mobs ÷ dungeon requirement. Replaced packs and Chicken mobs contribute zero.</p><p>Empowered: 3× raw score, 2× base health. Ghorn / Witch: 20 KS each.</p><p>Shadow Lord: estimated orbs from cumulative raw score; 30 orbs per Emissary. Miniboss replacements do not generate orbs in this model.</p><p class="muted">Modifier rules are historical and unverified for the current patch. Modifier targets are matched automatically by enemy name and world coordinates from reference data. Disabled modifiers have no recorded placements.</p>`);
 }
-function showHelp(){showDialog('Start your route with a pull',`<div class="help-grid"><kbd>Click</kbd><span>Add or remove a whole pack in the active pull.</span><kbd>Right-click enemy</kbd><span>Add or remove Chicken, or choose Info for stats and abilities.</span><kbd>B / V</kbd><span>Box selection of whole packs / pack selection.</span><kbd>N</kbd><span>Create and select the next pull.</span><kbd>D · Esc</kbd><span>Draw an arrow with two clicks · cancel. Choose color and thickness beside the arrow tool. Hover an arrow and drag either endpoint.</span><kbd>Right-click drawing</kbd><span>Delete an arrow, portal or invisibility path; edit or delete a note. Hover a numbered note to read its text.</span><kbd>Scroll / F</kbd><span>Zoom / fit the map.</span><kbd>Drag</kbd><span>Pan the map. With other tools, drag using the right mouse button.</span><kbd>Ctrl + Z / Y</kbd><span>Undo / redo a change.</span></div><p>Drag pulls to reorder them. Selecting an enemy assigned to another pull moves its whole pack to the active pull without double-counting. Routes are stored in this browser; export JSON to keep a separate copy.</p><p>The counter uses the base kill scores of selected enemies. <button id="help-score" class="text-button">Shadow Lord calculations and limitations ↗</button></p>`);$('#help-score').onclick=showScoreInfo;}
+function showHelp(){showDialog('Start your route with a pull',`<div class="help-grid"><kbd>Click</kbd><span>Add or remove a whole pack in the active pull.</span><kbd>Right-click enemy</kbd><span>Add or remove Chicken, or choose Info for stats and abilities.</span><kbd>B / V</kbd><span>Box selection of whole packs / pack selection.</span><kbd>N</kbd><span>Create and select the next pull.</span><kbd>D · Esc</kbd><span>Draw an arrow with two clicks · cancel. Choose color and thickness beside the arrow tool. Hover an arrow and drag either endpoint.</span><kbd>Right-click drawing</kbd><span>Delete an arrow, portal or invisibility path; edit or delete a note. Hover a numbered note to read its text.</span><kbd>Scroll / F</kbd><span>Zoom / fit the map.</span><kbd>Drag</kbd><span>Pan the map. With other tools, drag using the right mouse button.</span><kbd>Ctrl + Z / Y</kbd><span>Undo / redo a change.</span></div><p>Drag pulls to reorder them. Selecting an enemy assigned to another pull moves its whole pack to the active pull without double-counting. Routes are stored in this browser; export a route string to keep a separate copy.</p><p>The counter uses the base kill scores of selected enemies. <button id="help-score" class="text-button">Shadow Lord calculations and limitations ↗</button></p>`);$('#help-score').onclick=showScoreInfo;}
 function renderInspector(id){
   const p=positions.get(id);if(!p){inspected=null;$('#inspector').hidden=true;return;}inspected=id;const e=enemies.get(p.id),score=pointScore(p),abilities=enemyAbilities(data.abilities,p.id);
   $('#inspector').innerHTML=`<button class="close-inspector" aria-label="Close enemy details">×</button><div class="enemy-profile">${availableImage(e)?'<img src="'+availableImage(e)+'" alt="">':''}<div><h2>${esc(e.name)}</h2><small>${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)} · ${e.isBoss?'Boss':e.canBeControlled?'Can be crowd-controlled':'Immune to crowd control'}</small></div></div><div class="enemy-facts"><div><span>Score ${route.shadow?'· archived SL':''}</span>${fmt(score)} / ${pct(score/dungeon.requiredScore*100)}</div><div><span>Base health</span>${e.baseHealth?fmt(Math.round(e.baseHealth*(!e.isBoss&&route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?2:1))):'—'}</div></div>${route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?'<small class="empowered-label">Empowered</small>':''}<h3>ABILITIES · ${abilities.length}</h3>${abilities.length?abilities.map(a=>`<div class="ability"><strong>${esc(a.name)}</strong>${a.description?.replace(/<[^>]*>/g,'').trim()?'<p>'+esc(a.description.replace(/<[^>]*>/g,''))+'</p>':''}<small>${a.castInterruptibility==='always'?'Interruptible':a.castInterruptibility==='sometimes'?'Interruptibility depends on phase':a.castInterruptibility==='never'?'Not interruptible':''}${a.baseCooldownSeconds?' · CD '+fmt(a.baseCooldownSeconds)+' s':''}</small></div>`).join(''):'<p class="muted">No descriptions are available in the dataset.</p>'}`;
@@ -463,37 +464,36 @@ async function copyRouteText(text,title,message){
   const copy=()=>{field.focus();field.select();try{if(document.execCommand('copy')){$('#dialog').close();toast(message);return true;}}catch{}return false;};
   $('#copy-route-button').onclick=copy;copy();
 }
-function exportRoute(){persist();return copyRouteText(JSON.stringify(route),'Export route','Route copied to clipboard.');}
-function shareRoute(){
-  persist();const url=new URL(location.href);url.hash='route='+encodeURIComponent(JSON.stringify(route));
-  return copyRouteText(url.href,'Share route','Route link copied to clipboard.');
+async function exportRoute(){
+  persist();
+  try{return await copyRouteText(await encodeRoute(route,dungeon),'Export route','Route copied to clipboard.');}
+  catch(err){toast('Export: '+err.message);}
 }
-function importRouteText(text){
-  text=text.trim();
-  if(!text)throw new Error('Paste a route string first.');
-  if(text.length>27_000_000)throw new Error('Route is too large (maximum 3 MB).');
-  if(text.startsWith('#route='))text=decodeURIComponent(text.slice(7));
-  else if(!text.startsWith('{')){
-    let url;try{url=new URL(text);}catch{throw new Error('Paste a valid route JSON string or Share link.');}
-    if(!url.hash.startsWith('#route='))throw new Error('This link does not contain a route.');
-    text=decodeURIComponent(url.hash.slice(7));
-  }
-  if(new TextEncoder().encode(text).length>3_000_000)throw new Error('Route is too large (maximum 3 MB).');
-  const incoming=validateRoute(JSON.parse(text),data.dungeons,enemies);incoming.id=uid();
+async function shareRoute(){
+  persist();
+  try{
+    const url=new URL(location.href);url.hash='route='+await encodeRoute(route,dungeon);
+    return await copyRouteText(url.href,'Share route','Route link copied to clipboard.');
+  }catch(err){toast('Share: '+err.message);}
+}
+async function importRouteText(text){
+  const incoming=await decodeRoute(text,data.dungeons,enemies);incoming.id=uid();
   selectDungeon(incoming.dungeonId,incoming);
   toast(incoming.buildId!==data.manifest.buildId?'Imported a route from another build. Check scores and pull contents.':'Route imported.');
 }
 function showImport(){
-  showDialog('Import route','<label for="import-route-text">Paste a route string or Share link</label><textarea id="import-route-text" spellcheck="false" placeholder="Paste exported JSON or a Share link"></textarea><p id="import-error" role="alert" hidden></p><button id="import-route-button" class="primary">Import</button>');
+  showDialog('Import route','<label for="import-route-text">Paste a route string or Share link</label><textarea id="import-route-text" spellcheck="false" placeholder="R1.… or a Share link"></textarea><p id="import-error" role="alert" hidden></p><button id="import-route-button" class="primary">Import</button>');
   $('#import-route-text').focus();
-  $('#import-route-button').onclick=()=>{
-    try{importRouteText($('#import-route-text').value);$('#dialog').close();}
+  $('#import-route-button').onclick=async()=>{
+    const button=$('#import-route-button');button.disabled=true;
+    try{await importRouteText($('#import-route-text').value);$('#dialog').close();}
     catch(err){$('#import-error').textContent='Import: '+err.message;$('#import-error').hidden=false;}
+    finally{button.disabled=false;}
   };
 }
-function importRouteHash(){
+async function importRouteHash(){
   if(!location.hash.startsWith('#route='))return;
-  try{importRouteText(location.hash);}catch(err){toast('Import: '+err.message);}
+  try{await importRouteText(location.hash);}catch(err){toast('Import: '+err.message);}
 }
 function search(){
   renderMap();const q=$('#search').value.trim();$('#search-results').hidden=!q;if(!q)return;
@@ -686,7 +686,7 @@ async function init(){
   if(fullMapBuildId!==data.manifest.buildId)throw new Error('Full map coordinates need updating for this game data build. Run node scripts/prepare-full-maps.mjs.');
   if(combinedBuildId!==data.manifest.buildId)throw new Error('Combined maps need updating for this game data build. Run npm run maps.');
   data.dungeons=data.dungeons.map(correctDungeon);
-  try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved&&saved.drafts&&Array.isArray(saved.saved))store=saved;}catch{toast('Browser storage is corrupted. You can import a JSON backup.');}
+  try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved&&saved.drafts&&Array.isArray(saved.saved))store=saved;}catch{toast('Browser storage is corrupted. You can import a route string backup.');}
   for(const saved of [...Object.values(store.drafts),...store.saved]){
     if(!saved||typeof saved!=='object')continue;
     saved.name=englishDefaultLabel(saved.name);
