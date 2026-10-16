@@ -25,6 +25,19 @@ function network(){const endpoints=new Map();let serial=0,drop=()=>false;const s
 async function until(fn){for(let i=0;i<200;i++){if(fn())return;await new Promise(r=>setTimeout(r,5));}assert.ok(fn(),'Timed out waiting for room state');}
 async function member(t,net,config={}){const session=await createRoomSession({code:'ABCDEFGH2345',storage:storage(),resolveOptions,transportFactory:net.factory,intervalMs:0,cursorIntervalMs:0,...config});t.after(()=>session.leave());await session.start();return session;}
 
+test('Peer ping refreshes at most every five seconds and unavailable or stale peers have no ping',async t=>{
+  let clock=0,pingMs=42,calls=0;const net=network(),factory=net.factory;
+  net.factory=async callbacks=>({...await factory(callbacks),async connectionStats(){calls++;return {connection:'direct',pingMs};}});
+  const host=await member(t,net,{initialPacket:seed(),now:()=>clock});
+  const guest=await member(t,net,{role:'spectator',now:()=>clock});
+  await until(()=>host.state().sessions.find(s=>!s.self)?.pingMs===42&&guest.state().sessions.find(s=>!s.self)?.pingMs===42);
+  const firstCalls=calls;clock=4999;host.tick();guest.tick();await new Promise(r=>setTimeout(r,10));assert.equal(calls,firstCalls);
+  pingMs=80;clock=5000;host.tick();guest.tick();await until(()=>host.state().sessions.find(s=>!s.self)?.pingMs===80);
+  pingMs=null;clock=10000;host.tick();guest.tick();await until(()=>host.state().sessions.find(s=>!s.self)?.pingMs===null);
+  pingMs=25;clock=15000;host.tick();guest.tick();await until(()=>host.state().sessions.find(s=>!s.self)?.pingMs===25);
+  clock=31000;assert.equal(host.state().sessions.find(s=>!s.self)?.pingMs,null);
+});
+
 test('Room code and binary protocol validate lengths, versions and identity',()=>{
   const code=newRoomCode();assert.equal(code.length,12);assert.equal(roomCode('https://example.org/route/#room='+displayCode(code)),code);
   assert.throws(()=>roomCode('bad'),/12-character/);

@@ -7,7 +7,11 @@ import path from 'node:path';
 import {build} from 'esbuild';
 import {chromium} from 'playwright';
 const realPublic=process.env.RT_PUBLIC_SIGNALING==='1',site=process.env.RT_SITE==='1';
-const bundle=site?null:await build({entryPoints:['app.js'],bundle:true,format:'esm',write:false,alias:{'loro-crdt':'loro-crdt/base64'},plugins:realPublic?[]:[{name:'local-signaling',setup(b){b.onLoad({filter:/[/\\]room-config\.js$/},()=>({loader:'js',contents:"export const roomAppId='route-together-browser-test';export const roomTransportConfig={relayConfig:{urls:['wss://relay.route-together.test'],redundancy:1},rtcConfig:{iceServers:[]}};"}));}}]});
+const bundle=site?null:await build({entryPoints:['app.js'],bundle:true,format:'esm',write:false,alias:{'loro-crdt':'loro-crdt/base64'},plugins:realPublic?[]:[{name:'local-signaling',setup(b){
+  b.onLoad({filter:/[/\\]room-config\.js$/},()=>({loader:'js',contents:"export const roomAppId='route-together-browser-test';export const roomTransportConfig={relayConfig:{urls:['wss://relay.route-together.test'],redundancy:1},rtcConfig:{iceServers:[]},_test_only_mdnsHostFallbackToLoopback:true};"}));
+  // Controlled local WebRTC must not depend on a public TURN verification flow.
+  b.onLoad({filter:/[/\\]turn-service-config\.js$/},()=>({loader:'js',contents:'export const turnServiceConfig={};'}));
+}}]});
 const root=path.resolve(site?'dist':'.'),prefix=site?'/RoutePlanner/':'/';
 const server=http.createServer((req,res)=>{
   const url=new URL(req.url,'http://localhost');if(!url.pathname.startsWith(prefix)){res.writeHead(404).end();return;}
@@ -72,6 +76,14 @@ try{
   await a.locator('#room-sessions').evaluate(e=>e.open=false);const target=await moveCursor(b);await remote.waitFor();
   assert.ok(Math.abs(Number(await remote.getAttribute('data-map-x'))-target.x)<1);assert.equal(await remote.locator('text').textContent(),'Cursor player');assert.equal(await remote.locator('path').getAttribute('fill'),'#B46831');assert.match(await remote.locator('image').getAttribute('href'),/warmaster-hero-200.avif/);await remote.locator('image').evaluate(el=>new Promise((resolve,reject)=>{const image=new Image();image.onload=resolve;image.onerror=reject;image.src=el.getAttribute('href');}));await a.screenshot({path:'tmp/route-together-cursor.png'});await remote.screenshot({path:'tmp/route-together-cursor-detail.png'});
   await viewer.locator('#remote-cursors [data-cursor-session="'+originalSession+'"] ').waitFor();
+  await a.waitForFunction(()=>[...document.querySelectorAll('.room-ping')].filter(e=>/^\d+ ms$/.test(e.textContent)).length===2);
+  await viewer.waitForFunction(()=>[...document.querySelectorAll('.room-ping')].filter(e=>/^\d+ ms$/.test(e.textContent)).length===2);
+  assert.match(await a.locator('#room-session-list').textContent(),/Ping \d+ ms/);
+  assert.equal(await a.locator('.room-ping').first().textContent(),'you');
+  await a.locator('#room-avatars').screenshot({path:'tmp/route-together-ping.png'});
+  await a.setViewportSize({width:820,height:850});
+  for(const ping of await a.locator('.room-ping').all())assert.equal(await ping.isVisible(),true);
+  await a.locator('#room-avatars').screenshot({path:'tmp/route-together-ping-narrow.png'});
   await a.setViewportSize({width:1180,height:850});await a.mouse.move(450,450);await a.mouse.wheel(0,-300);await remote.waitFor();assert.ok(Math.abs(Number(await remote.getAttribute('data-map-x'))-target.x)<1,'Remote coordinates must survive another viewport and zoom');
   const viewerSession=await viewer.locator('#room-session-list [data-session]').first().getAttribute('data-session');await moveCursor(viewer);assert.equal(await a.locator('#remote-cursors [data-cursor-session="'+viewerSession+'"]').count(),0);
   await b.mouse.move(10,10);assert.equal(await remote.count(),1);

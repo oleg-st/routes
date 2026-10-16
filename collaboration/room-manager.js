@@ -46,7 +46,7 @@ export async function createRoomSession({code,role='player',name='Player',classI
   function peerSync(p){return now()-p.seen>15000?'offline':!eligible(p)||p.pending.size||!p.check||now()-p.check.time>15000?'syncing':compareFingerprints(localCheck,p.check);}
   function state(){
     // Display the local profile even while network admission is waiting for another peer.
-    const sessions=[{...localMember(),self:true,status:full?'full':'local'},...[...peers.entries()].filter(([,p])=>p.member&&!p.rejected&&admitted(p.member.sessionId)).map(([peerId,p])=>({...p.member,peerId,self:false,connection:p.connection??'unknown',syncStatus:peerSync(p),status:now()-p.seen>15000?'reconnecting':p.synced?'connected':'syncing'}))];
+    const sessions=[{...localMember(),self:true,status:full?'full':'local'},...[...peers.entries()].filter(([,p])=>p.member&&!p.rejected&&admitted(p.member.sessionId)).map(([peerId,p])=>({...p.member,peerId,self:false,connection:p.connection??'unknown',pingMs:now()-p.seen>15000?null:p.pingMs??null,syncStatus:peerSync(p),status:now()-p.seen>15000?'reconnecting':p.synced?'connected':'syncing'}))];
     for(const member of sessions)member.leader=Boolean(leaderId&&member.participantId===leaderId);
     const connected=sessions.filter(s=>!s.self&&s.status==='connected').length;
     const remote=sessions.filter(s=>!s.self),syncStatus=closed||kicked||!remote.length||remote.every(s=>s.syncStatus==='offline')?'offline':target||switching||!document?'syncing':remote.some(s=>s.syncStatus==='mismatch')?'mismatch':remote.every(s=>s.syncStatus==='synced')?'synced':'syncing';
@@ -219,11 +219,17 @@ export async function createRoomSession({code,role='player',name='Player',classI
     if(h.replyTo){for(const id of p.request?.pending||[])p.pending.delete(id);p.request=null;p.initialSynced=true;p.synced=!p.pending.size;}
     else if(h.type==='DELTA')send(peerId,'ACK',{replyTo:h.messageId});error=undefined;emit();
   }
-  function joinPeer(peerId){if(closed||full||peers.has(peerId))return;if(peers.size>=16)return;peers.set(peerId,{seen:now(),synced:false,pending:new Set(),seenMessages:new Set()});hello(peerId);emit();}
+  function refreshPeerStats(peerId,p){
+    if(!transport?.connectionStats||p.statsBusy||now()-(p.statsAt??-Infinity)<5000)return;
+    const active=transport,current=generation;p.statsBusy=true;p.statsAt=now();
+    const apply=value=>{if(!closed&&current===generation&&peers.get(peerId)===p){p.connection=value.connection;p.pingMs=value.pingMs;emit();}};
+    Promise.resolve().then(()=>active.connectionStats(peerId)).then(apply).catch(()=>apply({connection:'unknown',pingMs:null})).finally(()=>{p.statsBusy=false;});
+  }
+  function joinPeer(peerId){if(closed||full||peers.has(peerId))return;if(peers.size>=16)return;const p={seen:now(),synced:false,pending:new Set(),seenMessages:new Set()};peers.set(peerId,p);hello(peerId);refreshPeerStats(peerId,p);emit();}
   function leavePeer(peerId){const p=peers.get(peerId);if(p?.sessionId){cursors.remove(p.sessionId);hints.delete(p.sessionId);departed.set(p.sessionId,now()+30000);}peers.delete(peerId);for(const id of peers.keys())hello(id);emit();}
   function tick(){
     if(closed||full||kicked)return;broadcastCheck().catch(report);for(const [sid,until]of departed)if(until<now())departed.delete(sid);
-    for(const [peerId,p]of peers){hello(peerId);request(peerId,p);if(p.archiveRequest)queue(()=>requestArchive(peerId,p));transport?.connectionType?.(peerId).then(value=>{if(peers.get(peerId)===p){p.connection=value;emit();}}).catch(()=>{});}emit();
+    for(const [peerId,p]of peers){hello(peerId);request(peerId,p);if(p.archiveRequest)queue(()=>requestArchive(peerId,p));refreshPeerStats(peerId,p);}emit();
   }
   async function connect(){
     connectAbort?.abort();const controller=new AbortController();connectAbort=controller;
