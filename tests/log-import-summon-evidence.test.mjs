@@ -60,3 +60,16 @@ test('Chilgar pillar rule preserves ordinary Remnants and needs a recent nearby 
  assert.equal(run([e],[add],a)[0].rule,'chilgar-pillar');
  for(const bad of [{...add,nearest:[{distance:1}]},{...add,firstTime:30000},{...add,firstPosition:{x:5000,y:0}}])assert.equal(run([e],[bad],a).length,0);
 });
+
+test('Silken boss cast identifies both add types without excluding static, early or distant mobs',()=>{
+ const a=[{id:1,gameID:92,type:'NPC'}];
+ const e={fight:5,type:'cast',timestamp:10000,sourceID:1,abilityGameID:1396,sourceResources:{x:0,y:0}};
+ for(const gameID of [90,91]){
+   const add={...row,gameID,firstTime:15642,firstPosition:{x:2500,y:100},nearest:[{distance:2700}]};
+   assert.equal(run([e],[add],a)[0].rule,'silken-boss-adds');
+   for(const bad of [{...add,firstTime:9999},{...add,firstTime:18001},{...add,nearest:[{distance:500}]},
+     {...add,firstPosition:{x:5000,y:0}},{...add,firstPosition:undefined},{...add,gameID:267}])assert.equal(run([e],[bad],a).length,0);
+   for(const bad of [{...e,fake:true},{...e,abilityGameID:1600},{...e,fight:6}])assert.equal(run([bad],[add],a).length,0);
+   assert.equal(run([e],[add],[{...a[0],gameID:133}]).length,0);
+ }
+});

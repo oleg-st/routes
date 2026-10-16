@@ -46,7 +46,9 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     const chickens=npcRows.filter(c=>[277,278].includes(c.gameID)&&c.firstTime>=cast.timestamp&&c.firstTime<Math.min(nextCast,cast.timestamp+5000));
     return {...r,firstTime:cast.timestamp,firstPosition:chickens.length===1?chickens[0].firstPosition:undefined};
   });
-  if(chickenCasts.some(c=>!rows.some(r=>r.key===`${c.targetID}:${c.targetInstance??1}`)))throw new Error('A Chicken target could not be identified. The route needs manual analysis.');
+  // A known summon can be Chickenized, but has no original map placement.
+  // Only unresolved targets need manual analysis.
+  if(chickenCasts.some(c=>!summons.has(`${c.targetID}:${c.targetInstance??1}`)&&!rows.some(r=>r.key===`${c.targetID}:${c.targetInstance??1}`)))throw new Error('A Chicken target could not be identified. The route needs manual analysis.');
   if(!rows.length)throw new Error('No enemies could be matched to this dungeon.');
   const players=actors.filter(a=>a.type==='Player'),actorByID=new Map(actors.map(a=>[a.id,a]));
   const invisible=extractInvisibility(events,{fightID:fight.id,players,complete:true}),visibility=createVisibilityIndex(invisible.intervals);

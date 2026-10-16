@@ -93,3 +93,23 @@ test('A unique inferred route completes without a redundant choice',()=>{
   assert.equal(review.state().complete,true);assert.deepEqual(review.state().options,[]);
   assert.equal(review.state().canBack,false);
 });
+
+test('Chicken on an identified summon does not require or exclude a map placement',async()=>{
+  const p={id:'mob',placementId:'static',packId:'pack',worldPosition:{x:100,y:100},mapPosition:{x:0.5,y:0.5},mapImageId:'map'};
+  const dungeon={id:'test',name:'Test',enemies:[p],mapImages:[{id:'map',width:100,height:100}]};
+  const catalog=new Map([['mob',{id:'mob',gameId:90,name:'Recluse'}]]);
+  const input={complete:true,reportCode:'example',fight,actors:[{id:1,type:'Player'},{id:2,type:'NPC',gameID:90},{id:3,type:'NPC',gameID:92}],events:[
+    {...event,targetResources:{x:100,y:100,hitPoints:100,maxHitPoints:100}},
+    {fight:5,type:'summon',timestamp:140,sourceID:3,targetID:2,targetInstance:2},
+    {fight:5,type:'cast',timestamp:150,sourceID:1,targetID:2,targetInstance:2,abilityGameID:1478},
+  ]};
+  const options={dungeon,catalog,presets:{},dungeonData:'custom'};
+  const result=await matchLiveLog(input,options);
+  assert.equal(result.variants.length,1);
+  assert.deepEqual(Object.values(result.groups).flatMap(g=>g.enemies),['static']);
+  assert.deepEqual(Object.values(result.groups).flatMap(g=>g.excluded),[]);
+  const unknown=structuredClone(input);unknown.events.at(-1).targetID=99;
+  await assert.rejects(matchLiveLog(unknown,options),/Chicken target could not be identified/);
+  const ordinary=structuredClone(input);ordinary.events.at(-1).targetInstance=1;
+  assert.deepEqual(Object.values((await matchLiveLog(ordinary,options)).groups).flatMap(g=>g.excluded),['static']);
+});

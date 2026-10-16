@@ -6,6 +6,10 @@ export const verifiedSummonRules=Object.freeze([
   // Confirmed by the user in report c4nFLaThdAxtVpYv/88. Require a nearby
   // recent pillar cast and no first position near a static Remnant spawn.
   {bossGameID:28,abilityGameID:222,childGameIDs:[155],windowMs:15000,maxDistance:3000,minSpawnDistance:1000,id:'chilgar-pillar'},
+  // Silken Hollow: user-confirmed Recluse/Kidnapper summons in
+  // cRPvJkZLBG7V8zaF/5. All eight appear 0.9–5.7 s after cast 1396,
+  // within 3,072 units of the boss and far from their static spawns.
+  {bossGameID:92,abilityGameID:1396,childGameIDs:[90,91],windowMs:8000,maxDistance:4000,minSpawnDistance:1000,id:'silken-boss-adds'},
 ]);
 export function classifySummons({fightID,actors,rows,events,rules=verifiedSummonRules}){
   const actorByID=new Map(actors.map(a=>[a.id,a])),result=new Map();
@@ -23,7 +27,7 @@ export function classifySummons({fightID,actors,rows,events,rules=verifiedSummon
     for(const rule of rules){
       if(!rule.childGameIDs.includes(row.gameID))continue;
       if(rule.minSpawnDistance&&!(row.nearest?.[0]?.distance>=rule.minSpawnDistance))continue;
-      const cast=scoped.find(e=>e.type==='cast'&&e.abilityGameID===rule.abilityGameID&&actorByID.get(e.sourceID)?.gameID===rule.bossGameID&&
+      const cast=scoped.find(e=>e.type==='cast'&&!e.fake&&e.abilityGameID===rule.abilityGameID&&actorByID.get(e.sourceID)?.gameID===rule.bossGameID&&
         row.firstTime>=e.timestamp&&row.firstTime-e.timestamp<=rule.windowMs&&
         (!rule.maxDistance||Math.hypot(row.firstPosition?.x-e.sourceResources?.x,row.firstPosition?.y-e.sourceResources?.y)<=rule.maxDistance));
       if(cast){result.set(row.key,{key:row.key,classification:'probable-summon',basis:'verified-summon-cast-and-new-instance',rule:rule.id,
