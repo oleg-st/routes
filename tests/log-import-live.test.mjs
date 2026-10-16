@@ -88,8 +88,8 @@ test('Live matching imports a uniquely identified boss once across repeated atte
   assert.deepEqual(Object.values(result.groups).flatMap(g=>g.enemies),[boss.placementId]);
   assert.equal(createReviewSession(result).state().complete,true);
 });
-test('A unique inferred route requires a visible choice before saving',()=>{
+test('A unique inferred route completes without a redundant choice',()=>{
   const review=createReviewSession({assumption:'Missing member',inferredPlacements:['b'],groups:{g:{label:'G1',enemies:['a','b']}},variants:[{pulls:[{groups:['g']}]}]});
-  assert.equal(review.state().complete,false);assert.equal(review.state().options[0].id,'accept-inferred');
-  review.choose('accept-inferred');assert.equal(review.state().complete,true);review.back();assert.equal(review.state().complete,false);
+  assert.equal(review.state().complete,true);assert.deepEqual(review.state().options,[]);
+  assert.equal(review.state().canBack,false);
 });

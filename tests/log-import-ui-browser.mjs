@@ -55,9 +55,7 @@ try{
   assert.match(await page.locator('#panel').textContent(),/actual path is unknown/);
   await page.locator('[data-log-cancel]').click();
   await page.evaluate(()=>{window.extraFixture.variants=window.extraFixture.variants.slice(1);window.ui.open();});await submit();
-  assert.equal(await page.evaluate(()=>window.result.saved),false);
-  assert.match(await page.locator('[data-log-choice]').textContent(),/Accept the estimated approach/);
-  await page.locator('[data-log-choice]').click();
+  assert.equal(await page.locator('[data-log-choice]').count(),0);
   assert.equal(await page.evaluate(()=>window.result.saved),true);assert.equal(await page.locator('#panel').isHidden(),true);assert.deepEqual(errors,[]);
   console.log('Log import UI: hover, locate, compatible choices, Back, Cancel, immediate save and hypothesis choice passed.');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

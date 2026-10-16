@@ -32,7 +32,7 @@ test('Buried contacts cannot be inferred; NPCs must already be in combat',()=>{
   npc.positions=[{...player.positions[0],eventType:'cast'},player.positions[1]];
   assert.equal(make({trajectories:[npc]})('p',6000,100).source,'engaged enemy');
 });
-test('An import supported only by a log gap remains a reviewable hypothesis',async()=>{
+test('A unique gap-based route completes automatically while retaining hypothesis evidence',async()=>{
   const dungeon={id:'gap-test',name:'Gap',mapImages:[],enemies:[{id:'enemy',placementId:'spawn',packId:'p',worldPosition:{x:0,y:0}}]};
   const events=[
     {type:'heal',timestamp:0,fight:1,targetID:1,targetResources:{x:0,y:-2000,hitPoints:100}},
@@ -45,10 +45,8 @@ test('An import supported only by a log gap remains a reviewable hypothesis',asy
   assert.equal(result.matching.aggroRadius,1500);assert.equal(result.variants.length,1);
   assert.ok(result.movementHypotheses.length);assert.match(result.assumption,/actual path is unknown/);
   assert.equal(result.variants[0].proximity['group-0'].estimated,true);
-  const review=createReviewSession(result);assert.equal(review.state().complete,false);
-  assert.equal(review.state().options[0].label,'Accept the estimated approach');
-  review.choose('accept-inferred');assert.equal(review.state().complete,true);
-  review.back();assert.equal(review.state().complete,false);
+  const review=createReviewSession(result);assert.equal(review.state().complete,true);
+  assert.deepEqual(review.state().options,[]);
   const observedLog={...log,events:[events[0],{type:'heal',timestamp:5000,fight:1,targetID:1,targetResources:{x:0,y:-500,hitPoints:100}},...events.slice(1)]};
   const observed=await matchLiveLog(observedLog,{dungeon,catalog:new Map([['enemy',{id:'enemy',name:'Enemy',gameId:123}]]),presets:{},dungeonData:'custom'});
   assert.deepEqual(observed.movementHypotheses,[]);assert.equal(observed.assumption,null);

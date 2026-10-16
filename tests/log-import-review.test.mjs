@@ -20,13 +20,11 @@ test('Immediate routes and choices preserve complete-route compatibility and rev
   }
 });
 
-test('A unique route with an unobserved member still requires explicit acceptance',()=>{
+test('A unique route with an unobserved member completes automatically',()=>{
   const fixture=logFixtures[2],session=createReviewSession({...fixture,variants:fixture.variants.slice(0,1)});
-  assert.equal(session.state().complete,false);
-  assert.equal(session.state().options[0].label,'Include the inferred pack member');
-  assert.deepEqual(session.state().options[0].groups,['a']);
-  session.choose('accept-inferred');assert.equal(session.state().complete,true);
-  session.back();assert.equal(session.state().complete,false);
+  assert.equal(session.state().complete,true);
+  assert.deepEqual(session.state().options,[]);
+  assert.deepEqual(session.state().pulls,fixture.variants[0].pulls);
 });
 
 test('Stop at first divergence, permit a no-more-packs branch, then advance to next divergence',()=>{
