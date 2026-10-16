@@ -1,11 +1,13 @@
 import {customDungeons} from './custom-dungeons.js';
+import {bossEncounterLabel} from './boss-encounters.js';
 const customByDungeon=new Map(Object.entries(customDungeons).map(([id,data])=>[id,{
   packs:new Map(data.packs.flatMap(pack=>pack.members.map(member=>[member,pack.id]))),
   burried:new Set(data.burried),
 }]));
 
 export function placementName(placement,enemy){
-  const name=enemy?.name||placement.id;
+  const encounter=bossEncounterLabel(placement);
+  const name=(enemy?.name||placement.id)+(encounter?` (${encounter})`:'');
   return placement.burried?`${name} (burried)`:name;
 }
 

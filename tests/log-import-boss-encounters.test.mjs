@@ -1,0 +1,83 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {stormwatchBoss,restoreBossEncounters} from '../data/boss-encounters.js';
+import {correctDungeon,placementName} from '../data/placement-corrections.js';
+import {matchLiveLog} from '../log-import/live-matcher.js';
+import {createReviewSession} from '../log-import/review-session.js';
+import {newRoute,newPull,encodeRoute,decodeRoute} from '../route-model.js';
+const raw=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id===stormwatchBoss.dungeonID);
+const catalog=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
+const dungeon=correctDungeon(raw,'custom');
+const bridge=dungeon.enemies.find(p=>p.placementId===stormwatchBoss.bridge);
+const final=dungeon.enemies.find(p=>p.placementId===stormwatchBoss.final);
+const resource=p=>({x:p.worldPosition.y,y:p.worldPosition.x,hitPoints:70,maxHitPoints:100});
+const event=(timestamp,p,instance=1)=>({fight:5,type:'damage',timestamp,sourceID:1,targetID:2,targetInstance:instance,
+  sourceResources:{...resource(p),hitPoints:100},targetResources:resource(p)});
+const log=events=>({complete:true,reportCode:'example',fight:{id:5,startTime:0,endTime:60000,
+  dungeonPulls:[0,10000,20000,30000,40000,50000].map((startTime,i)=>({id:i+1,startTime,endTime:startTime+9999}))},
+  actors:[{id:1,type:'Player'},{id:2,type:'NPC',subType:'Boss',gameID:133}],events});
+const match=async input=>matchLiveLog(input,{dungeon,catalog,presets:{},dungeonData:'custom'});
+const pulls=result=>result.variants[0].pulls.map(p=>({id:p.id,enemies:p.groups.flatMap(id=>result.groups[id].enemies)}));
+
+test('Stormwatch restores two independent placements and keeps both across route export and data modes',async()=>{
+  assert.equal(dungeon.enemies.filter(p=>p.id===stormwatchBoss.enemyID).length,2);
+  assert.notEqual(bridge.packId,final.packId);
+  assert.match(placementName(bridge,catalog.get(bridge.id)),/Bridge/);
+  assert.match(placementName(final,catalog.get(final.id)),/Final/);
+  assert.deepEqual(restoreBossEncounters(raw),raw);
+  const upstream={...raw,enemies:raw.enemies.filter(p=>p.placementId!==final.placementId)};
+  assert.deepEqual(restoreBossEncounters(upstream),raw);
+  const route=newRoute(dungeon,'25647984');route.pulls[0].enemies=[bridge.placementId];
+  route.pulls.push({...newPull(1),enemies:[final.placementId]});
+  const encoded=await encodeRoute(route,dungeon);
+  for(const mode of ['custom','fellership']){
+    const copy=await decodeRoute(encoded,[correctDungeon(raw,mode)],catalog);
+    assert.deepEqual(copy.pulls.map(p=>p.enemies),[[bridge.placementId],[final.placementId]]);
+  }
+});
+
+test('One Brogg actor and instance imports bridge and final as separate pulls',async()=>{
+  const result=await match(log([event(1000,bridge),event(31000,final)]));
+  assert.equal(result.variants.length,1);
+  assert.deepEqual(pulls(result),[{id:'segment-1',enemies:[bridge.placementId]},{id:'segment-4',enemies:[final.placementId]}]);
+  assert.equal(result.assumption,null);
+  assert.equal(createReviewSession(result).state().complete,true);
+});
+
+test('Encounter boundaries separate Brogg phases even within one API pull',async()=>{
+  const input=log([{type:'dungeonencounterstart',timestamp:0,fight:5,encounterID:133},event(1000,bridge),
+    {type:'dungeonencounterstart',timestamp:30000,fight:5,encounterID:133},event(31000,final)]);
+  input.fight.dungeonPulls=[{id:1,startTime:0,endTime:60000}];
+  assert.deepEqual(pulls(await match(input)),[{id:'segment-1',enemies:[bridge.placementId]},
+    {id:'segment-1-encounter-1',enemies:[final.placementId]}]);
+});
+
+test('Wipes with reused or changed actor instances keep the first attempt of each phase',async()=>{
+  for(const instances of [[1,1,1,1],[1,2,3,4]]){
+    const input=log([event(1000,bridge,instances[0]),event(11000,bridge,instances[1]),event(31000,final,instances[2]),event(51000,final,instances[3])]);
+    // Also allow a new actor identity after a reset.
+    input.actors.push({id:3,type:'NPC',subType:'Boss',gameID:133});input.events[3].targetID=3;
+    assert.deepEqual(pulls(await match(input)),[{id:'segment-1',enemies:[bridge.placementId]},{id:'segment-4',enemies:[final.placementId]}]);
+  }
+});
+
+test('A bridge-only or final-only log never invents the other encounter',async()=>{
+  for(const p of [bridge,final]){
+    const result=await match(log([event(1000,p),event(21000,p,2)]));
+    assert.deepEqual(pulls(result),[{id:'segment-1',enemies:[p.placementId]}]);
+  }
+});
+
+test('Missing boss positions use player location and opening events stay in their own phase',async()=>{
+  const input=log([event(1000,bridge),event(31000,final),event(31500,final)]);
+  delete input.events[0].targetResources;delete input.events[1].targetResources;delete input.events[1].sourceResources;
+  const result=await match(input);
+  assert.deepEqual(pulls(result),[{id:'segment-1',enemies:[bridge.placementId]},{id:'segment-4',enemies:[final.placementId]}]);
+});
+
+test('Low HP, repeated pulls and passive summit samples do not invent a final encounter',async()=>{
+  const input=log([event(1000,bridge),{...event(11000,bridge),targetResources:{...resource(bridge),hitPoints:60}},
+    {...event(31000,final),type:'applybuff',positionOnly:true}]);
+  assert.deepEqual(pulls(await match(input)),[{id:'segment-1',enemies:[bridge.placementId]}]);
+});

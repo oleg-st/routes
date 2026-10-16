@@ -1,7 +1,7 @@
 // API segments describe actual attempts. The route describes first engagements:
 // a reset/re-pull never moves an already selected enemy into a later pull.
 // Only established identity aliases may merge different log instance IDs.
-export function firstEngagements(events,{fightID,actors,aliases=new Map()}){
+export function firstEngagements(events,{fightID,actors,aliases=new Map(),key=(e,side)=>`${e[side+'ID']}:${e[side+'Instance']??1}`}){
   const npcIDs=new Set(actors.filter(a=>a.type==='NPC').map(a=>a.id)),first=new Map();
   const resolve=key=>aliases.get(key)??key;
   for(const e of events.toSorted((a,b)=>a.timestamp-b.timestamp)){
@@ -11,8 +11,8 @@ export function firstEngagements(events,{fightID,actors,aliases=new Map()}){
       const active=side==='source'?['damage','cast','begincast'].includes(e.type):
         ['damage','death','applydebuff','refreshdebuff'].includes(e.type)||e.type==='cast'&&e.abilityGameID===1478;
       if(!active)continue;
-      const key=resolve(`${e[`${side}ID`]}:${e[`${side}Instance`]??1}`);
-      if(!first.has(key))first.set(key,e.timestamp);
+      const identity=resolve(key(e,side));
+      if(!first.has(identity))first.set(identity,e.timestamp);
     }
   }
   return first;

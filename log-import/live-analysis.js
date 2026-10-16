@@ -1,14 +1,14 @@
 // Build only the identities, positions and HP evidence consumed by matching.
-export function analyzeRouteEvents({fight,actors,events},dungeon,catalog){
+export function analyzeRouteEvents({fight,actors,events},dungeon,catalog,{key=(e,side)=>`${e[side+'ID']}:${e[side+'Instance']??1}`}={}){
   const actorByID=new Map(actors.map(a=>[a.id,a])),instances=new Map();
   const byGameID=Map.groupBy(dungeon.enemies,p=>catalog.get(p.id)?.gameId);
   for(const e of events){
     for(const side of ['source','target','attacker']){
       const actor=actorByID.get(e[side+'ID']);if(!actor)continue;
-      const instance=e[side+'Instance']??1,key=`${actor.id}:${instance}`;
-      let row=instances.get(key);
-      if(!row){row={key,actorID:actor.id,instance,gameID:actor.gameID,type:actor.type,name:catalog.get(byGameID.get(actor.gameID)?.[0]?.id)?.name??actor.type,
-        firstTime:Infinity,positions:[],deaths:[]};instances.set(key,row);}
+      const instance=e[side+'Instance']??1,identity=key(e,side);
+      let row=instances.get(identity);
+      if(!row){row={key:identity,actorID:actor.id,instance,gameID:actor.gameID,type:actor.type,name:catalog.get(byGameID.get(actor.gameID)?.[0]?.id)?.name??actor.type,
+        firstTime:Infinity,positions:[],deaths:[]};instances.set(identity,row);}
       if(!e.positionOnly)row.firstTime=Math.min(row.firstTime,e.timestamp);
       if(side==='target'&&e.type==='death'&&!e.fake)row.deaths.push({timestamp:e.timestamp});
       const r=e[side+'Resources'];

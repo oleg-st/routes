@@ -250979,6 +250979,24 @@
         "groupId": 18,
         "patrolPath": null,
         "mapPatrolPath": null
+      },
+      {
+        "id": "np-bosshellcaller",
+        "placementId": "placement-custom-stormwatch-brogg-final",
+        "packId": "pack-custom-stormwatch-brogg-final",
+        "worldPosition": {
+          "x": 10192.0193,
+          "y": 22697.473,
+          "z": 13272.205
+        },
+        "mapPosition": {
+          "x": 0.5015324655172414,
+          "y": 0.26498393793103453
+        },
+        "mapImageId": "Level.ID.NightPatrol:T_Map_Nightpatrol_02",
+        "groupId": null,
+        "patrolPath": null,
+        "mapPatrolPath": null
       }
     ]
   },

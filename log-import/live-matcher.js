@@ -15,13 +15,16 @@ import {matchingConfig} from './matching-config.js';
 import {createPathProximity,combineProximity} from './path-proximity.js';
 import {createGapApproach} from './gap-approach.js';
 import {mapViews,mapCoordinates} from '../map-views.js';
+import {encounterIdentity} from './boss-encounters.js';
 
 const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
 export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false}){
   if(!log.complete)throw new Error('Incomplete log; no route was created.');
   const {fight,actors,events}=log;
   onProgress('Matching enemies to the selected dungeon data…');await yieldUI();signal?.throwIfAborted();
-  const {npcRows,trajectories}=analyzeRouteEvents(log,dungeon,catalog);
+  const encounters=encounterIdentity(log,dungeon);
+  const pullSegments=encounters.pulls??fight.dungeonPulls;
+  const {npcRows,trajectories}=analyzeRouteEvents(log,dungeon,catalog,encounters);
   const affixes=modifierEvidence(fight,actors,events),health=routeHealthEvidence(npcRows);
   const empoweredCompatible=createEmpoweredConstraint({...affixes.empowered,empoweredPlacements:presets?.empowered??[],healthEvidence:health});
   const removed=new Set(['ghorn','witch'].flatMap(k=>affixes[k].active?presets?.[k]?.replacedEnemies??[]:[]));
@@ -54,10 +57,10 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       x:p.y,y:p.x,hp:p.hp,t:p.t,key:row.key,type:row.type,activeSince,deathTime,visibility:row.type==='Player'?visibility.stateAt(row.actorID,p.t):undefined}));
   });
   observations.push(...interpolatePlayerPositions(trajectories,rows.map(r=>r.firstTime),{visibility,mapChanges:events.filter(e=>e.type==='mapchange')}));
-  const anchor=r=>r.nearest[0]?.distance<2&&(!r.nearest[1]||r.nearest[1].distance>=2)?r.nearest[0].placementId:null;
+  const anchor=r=>encounters.placements.get(r.key)??(r.nearest[0]?.distance<2&&(!r.nearest[1]||r.nearest[1].distance>=2)?r.nearest[0].placementId:null);
   const anchors=Map.groupBy(rows.filter(anchor),r=>packByPlacement.get(anchor(r))?.id);
   const attacks=events.filter(e=>['cast','damage'].includes(e.type)&&e.abilityGameID!==1002109&&actorByID.get(e.sourceID)?.type==='Player'&&actorByID.get(e.targetID)?.type==='NPC'&&Number.isFinite(e.sourceResources?.x)&&Number.isFinite(e.sourceResources?.y))
-    .map(e=>({x:e.sourceResources.y,y:e.sourceResources.x,t:e.timestamp,key:`${e.sourceID}:1`,targetKey:`${e.targetID}:${e.targetInstance??1}`,abilityGameID:e.abilityGameID,range:config.attackRange}));
+    .map(e=>({x:e.sourceResources.y,y:e.sourceResources.x,t:e.timestamp,key:`${e.sourceID}:1`,targetKey:encounters.key(e,'target'),abilityGameID:e.abilityGameID,range:config.attackRange}));
   const radiusAttempts=[];
   const step=config.aggroRadiusStep??matchingConfig.aggroRadiusStep;
   const maximum=adaptiveRadius?Math.max(config.aggroRadius,config.maxAggroRadius??matchingConfig.maxAggroRadius):config.aggroRadius;
@@ -168,16 +171,16 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const movementHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.gap).map(a=>[`${a.placementId}|${a.gap.key}|${a.gap.start}`,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,...a.gap}]))).values()];
   const assumption=[inferredPlacements.length?'Each candidate includes one unobserved pack member by the whole-pack rule. It may instead be absent or replaced; choose only if you accept this intended-route hypothesis.':null,
     movementHypotheses.length?`Possible approach to ${[...new Set(movementHypotheses.map(h=>h.pack))].join(', ')} is estimated across gaps in the log. The actual path is unknown; review this movement hypothesis before accepting.`:null].filter(Boolean).join(' ')||null;
-  const groups={},variants=[],first=firstEngagements(events,{fightID:fight.id,actors});
+  const groups={},variants=[],first=firstEngagements(events,{fightID:fight.id,actors,key:encounters.key});
   const pathProximity=createPathProximity(packs,observations);
   const empoweredKeys=new Set([...affixes.empowered.confirmedInstances.map(r=>r.key),...health.filter(r=>r.empoweredCandidate).map(r=>r.key)]);
   for(const candidate of candidates){
     const proximity={};
-    const pulls=fight.dungeonPulls.map(p=>({id:`segment-${p.id}`,start:(p.startTime-fight.startTime)/1000,end:(p.endTime-fight.startTime)/1000,groups:[]}));
+    const pulls=pullSegments.map(p=>({id:`segment-${p.id}`,start:(p.startTime-fight.startTime)/1000,end:(p.endTime-fight.startTime)/1000,groups:[]}));
     for(const [pack,as]of Map.groupBy(candidate.assignments,a=>packByPlacement.get(a.placementId))){
       const members=as.map(a=>a.placementId).sort(),excluded=as.filter(a=>chickenKeys.has(a.key)).map(a=>a.placementId).sort(),empowered=as.filter(a=>empoweredKeys.has(a.key)).map(a=>a.placementId).sort();
       const time=Math.min(...as.map(a=>first.get(a.key)??a.firstTime));
-      const segment=Math.max(0,fight.dungeonPulls.findLastIndex(p=>p.startTime<=time));
+      const segment=Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=time));
       const identity=JSON.stringify([members,excluded,empowered]);
       let id=Object.keys(groups).find(id=>groups[id].identity===identity);
       if(!id){id=`group-${Object.keys(groups).length}`;groups[id]={id,identity,label:pack.number,enemies:members,excluded,empowered};}
@@ -188,7 +191,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     }
     for(const kind of ['ghorn','witch'])if(affixes[kind].active){
       const npc=npcRows.find(r=>r.gameID===affixes[kind].gameID),id=`modifier:${kind}`;
-      const segment=Math.max(0,fight.dungeonPulls.findLastIndex(p=>p.startTime<=npc.firstTime));
+      const segment=Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=npc.firstTime));
       groups[id]={id,label:kind==='ghorn'?'Ghorn':'Witch',enemies:[id],excluded:[],empowered:[]};pulls[segment].groups.push(id);
     }
     pulls.forEach(p=>p.groups.sort());

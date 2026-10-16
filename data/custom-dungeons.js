@@ -4401,6 +4401,12 @@ export const customDungeons={
           "placement-1fe04a055b2ee780b1a96dbb89b8f6bf373c750f6cf5a5d8eabf074d48ac63d1",
           "placement-ce8616c07d02e080d2e810be23c07b8ba300161fbb90dc24d7da48aa3f37c86f"
         ]
+      },
+      {
+        "id": "pack-custom-stormwatch-brogg-final",
+        "members": [
+          "placement-custom-stormwatch-brogg-final"
+        ]
       }
     ],
     "burried": []

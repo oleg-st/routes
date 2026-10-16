@@ -13,7 +13,7 @@ if (check.status !== 0) throw new Error('Image/data verification failed.');
 // Explicit publication allowlist: private originals and build tooling never enter dist.
 const files = ['index.html', 'app.js', 'route-model.js', 'map-geometry.js', 'map-views.js', 'styles.css',
   ...['import-ui','review-session','fight-label','live-import','live-api','live-analysis','live-matcher','matcher-client','matcher-worker','oauth','report-url',
-    'pack-corrections','placement-geometry','assignment','pack-solver','approach-filter','reverse-approach','summon-evidence',
+    'pack-corrections','placement-geometry','assignment','pack-solver','approach-filter','reverse-approach','summon-evidence','boss-encounters',
     'modifier-evidence','invisibility','portals','route-relics','intended-pulls','matching-config','activation','path-proximity','gap-approach'].map(name=>`log-import/${name}.js`),
   ...fs.readdirSync('collaboration').filter(file=>file.endsWith('.js')).map(file=>'collaboration/'+file),
   ...fs.readdirSync('data').filter(file => /\.(js|json|txt)$/.test(file)).map(file => 'data/' + file),
