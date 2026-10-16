@@ -56,3 +56,5 @@
 .turn-verification{width:min(420px,calc(100vw - 32px));padding:24px;color:var(--text);background:var(--panel);border:1px solid var(--border);border-radius:10px}.turn-verification::backdrop{background:#000a}.turn-verification h2{margin-top:0;font-size:20px}.turn-verification p{font-size:13px;line-height:1.5}.turn-verification button{display:block;margin:18px 0 0 auto}
 
 .popover .dungeon-data-option{display:block;border-top:1px solid #424b53;padding-top:14px;margin-bottom:0}.dungeon-data-option select{display:block;width:100%;margin-top:8px;font-size:12px}
+
+#dialog-content label[for="import-route-text"]{display:block;margin-bottom:8px}
