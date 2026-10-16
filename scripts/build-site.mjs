@@ -6,6 +6,7 @@ import {projectRoot, usedImages, publicMapPath} from './image-assets.mjs';
 import {fullMaps, fullMapBuildId} from '../data/full-maps.js';
 import {combinedLayouts} from '../data/combined-layouts.js';
 import {compactPublicData} from './compact-public-data.mjs';
+import {compactCustomModule} from './compact-route-data.mjs';
 
 const check = spawnSync(process.execPath, ['scripts/verify-data.mjs', '--public'], {stdio: 'inherit'});
 if (check.status !== 0) throw new Error('Image/data verification failed.');
@@ -48,6 +49,7 @@ const html=fs.readFileSync(path.join(destination,'index.html'),'utf8')
   .replace(/<label id="floor-panel-option">.*?<\/label>/,'');
 fs.writeFileSync(path.join(destination,'index.html'),html);
 compactPublicData(destination);
+fs.writeFileSync(path.join(destination,'data/custom-dungeons.js'),compactCustomModule());
 const bundle=await build({absWorkingDir:destination,entryPoints:['app.js'],bundle:true,format:'esm',write:false,minify:true,target:['es2022'],alias:{'loro-crdt':'loro-crdt/base64'}});
 fs.writeFileSync(path.join(destination,'app.js'),bundle.outputFiles[0].text);
 console.log(`Prepared ${files.length} public files in dist/. Publish only this directory.`);

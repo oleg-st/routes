@@ -1,7 +1,7 @@
 import {uid,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute} from './route-model.js';
 import {pullOutline} from './map-geometry.js';
 import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
-import {correctDungeon} from './data/placement-corrections.js';
+import {correctDungeon,placementName} from './data/placement-corrections.js';
 import {enemyAbilities} from './data/ability-corrections.js';
 import {fullMapBuildId} from './data/full-maps.js';
 import {combinedBuildId} from './data/combined-layouts.js';
@@ -34,6 +34,8 @@ const enemyFocusDuration=1000;
 const enemyHoverDelay=200;
 let arrowColor='#ff0000',arrowWidth=3;
 const storageKey='fellowship-atlas-v1';
+const dungeonDataKey='fellowship-dungeon-data';
+let dungeonDataMode='custom';
 let store={drafts:{},saved:[],lastDungeon:null};
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4500);}
 function canEdit(){return !routeBusy&&!roomTransition&&(!roomSession||roomSession.document&&!roomSession.state().full&&!roomSession.state().kicked&&!roomSession.state().switching)&&routeDocument?.role==='player';}
@@ -49,6 +51,18 @@ function active(){return route.pulls.find(p=>p.id===activePull)||route.pulls[0];
 function assigned(){return new Map(route.pulls.flatMap((p,i)=>p.enemies.map(id=>[id,{pull:p,index:i}])));}
 function currentPositions(){return effectivePositions(route,dungeon).filter(e=>onMap(e,mapLayer));}
 function refreshPositions(){positions=new Map(effectivePositions(route,dungeon).map(p=>[p.placementId,p]));}
+function changeDungeonData(mode){
+  if(routeBusy||roomTransition){$('#dungeon-data').value=dungeonDataMode;throw new Error('Finish the current operation before changing dungeon data.');}
+  if(!['custom','fellership'].includes(mode))return;
+  for(const d of data.dungeons)Object.assign(d,correctDungeon(d,mode));
+  dungeonDataMode=mode;
+  try{localStorage.setItem(dungeonDataKey,mode);}catch{}
+  drag=null;draft=[];hideHover();$('#enemy-menu').hidden=true;$('#inspector').hidden=true;inspected=null;
+  packNumbers=new Map([...new Set(dungeon.enemies.map(p=>p.packId))].map((id,i)=>[id,i+1]));
+  packNumbers.set('modifier:ghorn','Ghorn');packNumbers.set('modifier:witch','Witch');
+  refreshPositions();render();
+  if($('#search').value)search();
+}
 function pointScore(p){return placementScore(p,enemies.get(p.id),route,data.shadow);}
 function isEmpowered(p){return route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(p.placementId)&&!enemies.get(p.id)?.isBoss;}
 function coordinates(e){return mapCoordinates(e,mapLayer);}
@@ -215,7 +229,7 @@ function render(){
   $('#score-remaining').textContent=totals.unknown?`Unknown scores: ${totals.unknown} enemies` : remaining>0?`${fmt(remaining)} points to reach 100%`: `${fmt(-remaining)} extra points`;
   if(route.shadow){$('#total-score').textContent=`${fmt(totals.score)} KS · ${pct(totals.percent)}`;$('#score-remaining').textContent=`${Math.max(0,shadowTarget(dungeon)-orbs)} orbs remaining · estimated`;}
   $('#shadow').setAttribute('aria-pressed',String(route.shadow));
-  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=!canEdit()||(kind==='empowered'?!route.modifiers.empowered.enemies.length:!route.modifiers[kind].packId);$('#'+kind).title=$('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?'G'+packNumbers.get(route.modifiers[kind].packId):'Choose a pack'}`;}
+  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=!canEdit()||(kind==='empowered'?!route.modifiers.empowered.enemies.length:!route.modifiers[kind].packId);$('#'+kind).title=$('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?(packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'):'Choose a pack'}`;}
   $('#pull-count').textContent=route.pulls.length;$('#undo').disabled=!routeDocument.canUndo();$('#redo').disabled=!routeDocument.canRedo();
   for(const el of $$('#route-name,#shadow,#add-pull,#clear-route,#new-route,#import,[data-tool]'))el.disabled=!canEdit()&&el.dataset.tool!=='select';
   const chickens=chickenPositions().length;
@@ -229,7 +243,7 @@ function render(){
   if(!canEdit())for(const button of $$('#pulls [data-action]:not([data-action=focus])'))button.disabled=true;
   updateRoomControls();updateSaveButton();renderMap();if(inspected)renderInspector(inspected);
 }
-function matchesSearch(pos){const q=$('#search').value.trim().toLowerCase();if(!q)return true;return (enemies.get(pos.id)?.name||'').toLowerCase().includes(q)||`g${packNumbers.get(pos.packId)}`===q;}
+function matchesSearch(pos){const q=$('#search').value.trim().toLowerCase();if(!q)return true;return placementName(pos,enemies.get(pos.id)).toLowerCase().includes(q)||`g${packNumbers.get(pos.packId)}`===q;}
 function visiblePositions(){const owners=assigned();return currentPositions().filter(p=>!$('#hide-unselected').checked||owners.has(p.placementId));}
 function relicSummary(chickens,invis){
   return [[chickenIcon,'Chicken',chickens],[relicIcons.invis,'Invisibility',invis]].map(([icon,name,count])=>`<span class="route-relic ${count?'present':''}" ${name==='Chicken'?'data-route-chicken tabindex="0" aria-describedby="chicken-tooltip"':`title="${name}: ${count}"`}><img src="${icon}" alt=""><span>${name}</span><b>${count}</b></span>`).join('');
@@ -397,7 +411,7 @@ function renderMap(){
     const portrait=chicken?chickenIcon:showIcons&&availableImage(enemy),hasPortrait=portrait&&!failedMobImages.has(portrait);
     const empowered=isEmpowered(p);
     const color=own?.pull.color||(enemy?.isBoss?'#df858c':'#a6bfcc');
-    const group=svg('g',{'data-placement':p.placementId,role:'button',tabindex:0,'aria-label':`${enemy?.name||p.id}, ${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)}, ${fmt(pointScore(p))} points`,opacity:matchesSearch(p)?1:.14});
+    const group=svg('g',{'data-placement':p.placementId,role:'button',tabindex:0,'aria-label':`${placementName(p,enemy)}, ${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)}, ${fmt(pointScore(p))} points`,opacity:matchesSearch(p)?1:.14});
     if(empowered){
       group.setAttribute('aria-label',group.getAttribute('aria-label')+', Empowered');
       group.append(svg('circle',{cx:x,cy:y,r:r+unit*3,fill:'none',stroke:'#171006','stroke-width':6,'vector-effect':'non-scaling-stroke'}),svg('circle',{cx:x,cy:y,r:r+unit*3,fill:'none',stroke:'#ffbb25','stroke-width':3,'vector-effect':'non-scaling-stroke'}));
@@ -522,7 +536,7 @@ function showScoreInfo(){
 function showHelp(){showDialog('Start your route with a pull',`<div class="help-grid"><kbd>Click</kbd><span>Add or remove a whole pack in the active pull.</span><kbd>Right-click enemy</kbd><span>Add or remove Chicken, or choose Info for stats and abilities.</span><kbd>B / V</kbd><span>Box selection of whole packs / pack selection.</span><kbd>N</kbd><span>Create and select the next pull.</span><kbd>D · Esc</kbd><span>Draw an arrow with two clicks · cancel. Choose color and thickness beside the arrow tool. Hover an arrow and drag either endpoint.</span><kbd>Right-click drawing</kbd><span>Delete an arrow, portal or invisibility path; edit or delete a note. Hover a numbered note to read its text.</span><kbd>Scroll / F</kbd><span>Zoom / fit the map.</span><kbd>Drag</kbd><span>Pan the map. With other tools, drag using the right mouse button.</span><kbd>Ctrl + Z / Y</kbd><span>Undo / redo a change.</span></div><p>Drag pulls to reorder them. Selecting an enemy assigned to another pull moves its whole pack to the active pull without double-counting. Routes are stored in this browser; export a route string to keep a separate copy.</p><p>The counter uses the base kill scores of selected enemies. <button id="help-score" class="text-button">Shadow Lord calculations and limitations ↗</button></p>`);$('#help-score').onclick=showScoreInfo;}
 function renderInspector(id){
   const p=positions.get(id);if(!p){inspected=null;$('#inspector').hidden=true;return;}inspected=id;const e=enemies.get(p.id),score=pointScore(p),abilities=enemyAbilities(data.abilities,p.id);
-  $('#inspector').innerHTML=`<button class="close-inspector" aria-label="Close enemy details">×</button><div class="enemy-profile">${availableImage(e)?'<img src="'+availableImage(e)+'" alt="">':''}<div><h2>${esc(e.name)}</h2><small>${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)} · ${e.isBoss?'Boss':e.canBeControlled?'Can be crowd-controlled':'Immune to crowd control'}</small></div></div><div class="enemy-facts"><div><span>Score ${route.shadow?'· archived SL':''}</span>${fmt(score)} / ${pct(score/dungeon.requiredScore*100)}</div><div><span>Base health</span>${e.baseHealth?fmt(Math.round(e.baseHealth*(!e.isBoss&&route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?2:1))):'—'}</div></div>${route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?'<small class="empowered-label">Empowered</small>':''}<h3>ABILITIES · ${abilities.length}</h3>${abilities.length?abilities.map(a=>`<div class="ability"><strong>${esc(a.name)}</strong>${a.description?.replace(/<[^>]*>/g,'').trim()?'<p>'+esc(a.description.replace(/<[^>]*>/g,''))+'</p>':''}<small>${a.castInterruptibility==='always'?'Interruptible':a.castInterruptibility==='sometimes'?'Interruptibility depends on phase':a.castInterruptibility==='never'?'Not interruptible':''}${a.baseCooldownSeconds?' · CD '+fmt(a.baseCooldownSeconds)+' s':''}</small></div>`).join(''):'<p class="muted">No descriptions are available in the dataset.</p>'}`;
+  $('#inspector').innerHTML=`<button class="close-inspector" aria-label="Close enemy details">×</button><div class="enemy-profile">${availableImage(e)?'<img src="'+availableImage(e)+'" alt="">':''}<div><h2>${esc(placementName(p,e))}</h2><small>${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)} · ${e.isBoss?'Boss':e.canBeControlled?'Can be crowd-controlled':'Immune to crowd control'}</small></div></div><div class="enemy-facts"><div><span>Score ${route.shadow?'· archived SL':''}</span>${fmt(score)} / ${pct(score/dungeon.requiredScore*100)}</div><div><span>Base health</span>${e.baseHealth?fmt(Math.round(e.baseHealth*(!e.isBoss&&route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?2:1))):'—'}</div></div>${route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?'<small class="empowered-label">Empowered</small>':''}<h3>ABILITIES · ${abilities.length}</h3>${abilities.length?abilities.map(a=>`<div class="ability"><strong>${esc(a.name)}</strong>${a.description?.replace(/<[^>]*>/g,'').trim()?'<p>'+esc(a.description.replace(/<[^>]*>/g,''))+'</p>':''}<small>${a.castInterruptibility==='always'?'Interruptible':a.castInterruptibility==='sometimes'?'Interruptibility depends on phase':a.castInterruptibility==='never'?'Not interruptible':''}${a.baseCooldownSeconds?' · CD '+fmt(a.baseCooldownSeconds)+' s':''}</small></div>`).join(''):'<p class="muted">No descriptions are available in the dataset.</p>'}`;
   $('#inspector').hidden=false;$('.close-inspector').onclick=()=>{$('#inspector').hidden=true;inspected=null;};
 }
 function clearEnemyFocus(){
@@ -614,7 +628,7 @@ async function importRouteText(text){
   toast(incoming.buildId!==data.manifest.buildId?'Imported a route from another build. Check scores and pull contents.':'Route imported.');
 }
 function showImport(){
-  showDialog('Import route','<label for="import-route-text">Paste a route string or Share link</label><textarea id="import-route-text" spellcheck="false" placeholder="R1.… or a Share link"></textarea><p id="import-error" role="alert" hidden></p><button id="import-route-button" class="primary">Import</button>');
+  showDialog('Import route','<label for="import-route-text">Paste a route string or Share link</label><textarea id="import-route-text" spellcheck="false" placeholder="Route string or Share link"></textarea><p id="import-error" role="alert" hidden></p><button id="import-route-button" class="primary">Import</button>');
   $('#import-route-text').focus();
   $('#import-route-button').onclick=async()=>{
     const button=$('#import-route-button');button.disabled=true;
@@ -630,12 +644,13 @@ async function importRouteHash(){
 function search(){
   renderMap();const q=$('#search').value.trim();$('#search-results').hidden=!q;if(!q)return;
   const result=effectivePositions(route,dungeon).filter(matchesSearch);const groups=new Map();result.forEach(p=>{const key=p.id+':'+p.packId;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);});
-  $('#search-results').innerHTML=[...groups.values()].slice(0,35).map(ps=>`<button data-search-id="${ps[0].placementId}">${esc(enemies.get(ps[0].id)?.name)} <span class="muted">× ${ps.length} · G${packNumbers.get(ps[0].packId)}</span></button>`).join('')||'<p class="muted" style="padding:12px">No results found</p>';
+  $('#search-results').innerHTML=[...groups.values()].slice(0,35).map(ps=>`<button data-search-id="${ps[0].placementId}">${esc(placementName(ps[0],enemies.get(ps[0].id)))} <span class="muted">× ${ps.length} · G${packNumbers.get(ps[0].packId)}</span></button>`).join('')||'<p class="muted" style="padding:12px">No results found</p>';
 }
 function addPull(){const p=newPull(route.pulls.length);let index=route.pulls.length;while(route.pulls.some(pull=>pull.color===p.color))p.color=pullColor(++index);if(change({type:'add-pull',id:p.id,color:p.color})){activePull=p.id;render();$('#pulls').scrollTop=$('#pulls').scrollHeight;}}
 function movePullTo(id,to){const from=route.pulls.findIndex(p=>p.id===id),target=route.pulls[to];if(!target||from===to)return;change({type:'move-pull',pullId:id,[from<to?'afterId':'beforeId']:target.id});}
 function toggleRouteModifier(kind){const mod=route.modifiers[kind],commands=[{type:'set-modifier',kind,patch:{active:!mod.active}}];if(kind!=='empowered'&&!mod.active&&!route.pulls.some(p=>p.enemies.includes('modifier:'+kind))){const pull=route.pulls.find(p=>p.enemies.some(id=>mod.replacedEnemies?.includes(id)));if(pull)commands.push({type:'assign-mobs',pullId:pull.id,mobIds:['modifier:'+kind]});}change(commands);}
 function bind(){
+  $('#dungeon-data').onchange=run(e=>changeDungeonData(e.target.value));
   const pullList=$('#pulls'),pullTip=$('#pull-tooltip');
   for(const list of [pullTip,$('#chicken-tooltip'),$('#search-results')]){
     const highlightRow=e=>{
@@ -775,7 +790,7 @@ function bind(){
     if(tip.hidden||tip.dataset.placement!==id){
       tip.dataset.placement=id;
       const packScores=pack.map(pointScore),packPercent=packScores.some(score=>score==null)?null:packScores.reduce((sum,score)=>sum+score,0)/dungeon.requiredScore*100;
-      tip.innerHTML=`<strong>${esc(enemy.name)}</strong>${isEmpowered(p)?`<div class="tip-empowered"><img src="${empoweredIcon}" alt="">Empowered</div>`:''}<span class="tip-score">${fmt(score)} points · ${pct(score/dungeon.requiredScore*100)}</span>${!enemy.isBoss&&route.excluded.includes(id)?'<div>Chicken</div>':''}<div class="tip-pack-heading">${p.modifier?esc(enemy.name):'G'+packNumbers.get(p.packId)} · ${pack.length} enemies in pack · ${pct(packPercent)}</div><ul class="tip-pack">${pack.map(member=>{const mob=enemies.get(member.id),icon=availableImage(mob);return `<li class="${member.placementId===id?'current':''}" ${member.placementId===id?'aria-current="true"':''}>${icon?`<img src="${icon}" alt="">`:''}<span>${esc(mob.name)}</span><span class="tip-pack-status">${isEmpowered(member)?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${route.excluded.includes(member.placementId)?`<img class="tip-chicken" src="${chickenIcon}" alt="Chicken">`:''}</span></li>`;}).join('')}</ul>`;
+      tip.innerHTML=`<strong>${esc(placementName(p,enemy))}</strong>${isEmpowered(p)?`<div class="tip-empowered"><img src="${empoweredIcon}" alt="">Empowered</div>`:''}<span class="tip-score">${fmt(score)} points · ${pct(score/dungeon.requiredScore*100)}</span>${!enemy.isBoss&&route.excluded.includes(id)?'<div>Chicken</div>':''}<div class="tip-pack-heading">${p.modifier?esc(enemy.name):'G'+packNumbers.get(p.packId)} · ${pack.length} enemies in pack · ${pct(packPercent)}</div><ul class="tip-pack">${pack.map(member=>{const mob=enemies.get(member.id),icon=availableImage(mob);return `<li class="${member.placementId===id?'current':''}" ${member.placementId===id?'aria-current="true"':''}>${icon?`<img src="${icon}" alt="">`:''}<span>${esc(placementName(member,mob))}</span><span class="tip-pack-status">${isEmpowered(member)?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${route.excluded.includes(member.placementId)?`<img class="tip-chicken" src="${chickenIcon}" alt="Chicken">`:''}</span></li>`;}).join('')}</ul>`;
     }
     positionPopover(tip,e);
   });
@@ -831,7 +846,9 @@ async function init(){
   if(data['modifier-placements'].buildId!==data.manifest.buildId)throw new Error('Modifier placements need updating for this game data build. Run node scripts/prepare-modifiers.mjs.');
   if(fullMapBuildId!==data.manifest.buildId)throw new Error('Full map coordinates need updating for this game data build. Run node scripts/prepare-full-maps.mjs.');
   if(combinedBuildId!==data.manifest.buildId)throw new Error('Combined maps need updating for this game data build. Run npm run maps.');
-  data.dungeons=data.dungeons.map(correctDungeon);
+  try{if(localStorage.getItem(dungeonDataKey)==='fellership')dungeonDataMode='fellership';}catch{}
+  data.dungeons=data.dungeons.map(d=>correctDungeon(d,dungeonDataMode));
+  $('#dungeon-data').value=dungeonDataMode;
   try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved&&saved.drafts&&Array.isArray(saved.saved))store=saved;}catch{toast('Browser storage is corrupted. You can import a route string backup.');}
   for(const saved of [...Object.values(store.drafts),...store.saved]){
     if(!saved||typeof saved!=='object')continue;

@@ -12,7 +12,7 @@
     "build:local": "node scripts/build-local.mjs",
     "build:site": "node scripts/build-site.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check app.js && node --check route-model.js && node scripts/verify-data.mjs && node scripts/build-local.mjs --check",
+    "check": "node scripts/update-route-mapping.mjs --check && node --check app.js && node --check route-model.js && node scripts/verify-data.mjs && node scripts/build-local.mjs --check",
     "test:crdt": "node --test tests/route-crdt.test.mjs",
     "test:crdt:browser": "node tests/route-crdt-browser.mjs",
     "test:storage:browser": "node tests/route-storage-browser.mjs",
@@ -21,7 +21,8 @@
     "test:rooms": "node --test tests/room-manager.test.mjs",
     "test:rooms:browser": "node tests/room-browser.mjs",
     "test:cursors:browser": "node tests/cursor-transport-browser.mjs",
-    "test:network:browser": "node tests/network-check-browser.mjs"
+    "test:network:browser": "node tests/network-check-browser.mjs",
+    "data:mapping": "node scripts/update-route-mapping.mjs"
   },
   "dependencies": {
     "@crockery/fellowship-data": "15.0.3",

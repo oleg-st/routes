@@ -11,7 +11,7 @@ const read=name=>JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`,impor
 const dungeons=read('dungeons').map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
 const presets=read('modifier-placements');
 const content=route=>JSON.parse(JSON.stringify(route,(key,value)=>key==='id'?undefined:value));
-const pack=payload=>'R1.'+deflateRawSync(JSON.stringify(payload)).toString('base64url');
+const pack=payload=>'R3.'+deflateRawSync(JSON.stringify(payload)).toString('base64url');
 const unpack=text=>JSON.parse(inflateRawSync(Buffer.from(text.slice(3),'base64url')));
 
 test('Compact routes preserve all content in every dungeon, with exact coordinates and Unicode',async()=>{
@@ -33,7 +33,7 @@ test('Compact routes preserve all content in every dungeon, with exact coordinat
       ...(kind==='line'?{width:5}:{}),points:kind==='note'?[[1.123456789,2.987654321]]:[[1.123456789,2.987654321],[300.123456,400.987654]],
     }));
     const encoded=await encodeRoute(route,dungeon),decoded=await decodeRoute(encoded,dungeons,enemies);
-    assert.match(encoded,/^R1\.[A-Za-z0-9_-]+$/);
+    assert.match(encoded,/^R3\.[A-Za-z0-9_-]+$/);
     assert.deepEqual(content(decoded),content(validateRoute(route,dungeons,enemies)));
     assert.notEqual(decoded.id,route.id);
     assert.notEqual(decoded.pulls[0].id,route.pulls[0].id);
@@ -67,20 +67,20 @@ test('Invalid data, duplicate placements, changed datasets and decompression bom
     await assert.rejects(decodeRoute(input,dungeons,enemies));
   }
   const changed={...dungeon,enemies:dungeon.enemies.slice(1)};
-  await assert.rejects(decodeRoute(text,[changed],enemies),/different enemy dataset/);
-  for(const edit of [p=>p[4][0][0].push(p[4][0][0][0]),p=>p[4][0][0].push(-1),p=>p[4][0][0].push(999999),p=>p[4][0][0].push('0'),p=>p[4]=null,p=>p[8]=2]){
+  await assert.rejects(decodeRoute(text,[changed],enemies),/enemy placements from another dataset/);
+  for(const edit of [p=>p[4][0][0].push(p[4][0][0][0]),p=>p[4][0][0].push(-999999),p=>p[4][0][0].push(999999),p=>p[4][0][0].push('0'),p=>p[4]=null,p=>p[8]=2]){
     const payload=unpack(text);edit(payload);await assert.rejects(decodeRoute(pack(payload),dungeons,enemies));
   }
   const bomb='R1.'+deflateRawSync(Buffer.alloc(3_000_001,32)).toString('base64url');
   await assert.rejects(decodeRoute(bomb,dungeons,enemies),/too large/);
 });
 
-test('R2 preserves marker labels and multi-vertex geometry while creating independent IDs',async()=>{
+test('Mapped format preserves marker labels and multi-vertex geometry while creating independent IDs',async()=>{
   const dungeon=dungeons[0],route=newRoute(dungeon,'25647984'),mapId=mapViews(dungeon)[0].id;
   route.drawings=[{id:'path',mapId,kind:'line',color:'#abcdef',width:5,text:'',points:[[10,20],[30,70],[90,40]],pointIds:['a','b','c']},
     {id:'note',mapId,kind:'note',color:'#aabbcc',text:'Заметка 🐉 '.repeat(100),points:[[20,30]]}];
   route.markers=[{id:'marker',mapId,position:[12.345678,45.6789],color:'#bbaa11',icon:'star',label:'Встречаемся здесь 🐉'}];
-  const encoded=await encodeRoute(route,dungeon);assert.match(encoded,/^R2\./);
+  const encoded=await encodeRoute(route,dungeon);assert.match(encoded,/^R3\./);
   for(const input of [encoded,'#route='+encoded,'https://example.com/planner/#route='+encoded]){
     const copy=await decodeRoute(input,dungeons,enemies);
     assert.deepEqual(copy.drawings[0].points,route.drawings[0].points);assert.equal(copy.drawings[1].text,route.drawings[1].text);
@@ -88,5 +88,5 @@ test('R2 preserves marker labels and multi-vertex geometry while creating indepe
     assert.equal(await encodeRoute(copy,dungeon),encoded);
   }
   const corrupt=unpack(encoded);corrupt[9][0][1]=[NaN,0];
-  await assert.rejects(decodeRoute('R2.'+pack(corrupt).slice(3),dungeons,enemies),/marker position/);
+  await assert.rejects(decodeRoute(pack(corrupt),dungeons,enemies),/marker position/);
 });

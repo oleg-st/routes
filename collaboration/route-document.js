@@ -1,6 +1,7 @@
 import {LoroDoc, VersionVector, UndoManager} from 'loro-crdt';
 import {drawingMap} from '../map-views.js';
 import {hasCustomPullName} from '../route-model.js';
+import {historicPack,replacementMembers} from '../data/route-dictionary.js';
 import {SCHEMA_VERSION, MODIFIERS, invariant, record, id, string, role, assertPlayer, uuid, canonical} from './route-schema.js';
 import {executeCommand} from './route-commands.js';
 import {selectRoute, canonicalRoute} from './route-selectors.js';
@@ -20,7 +21,10 @@ function makeContext(identity, {dungeon, enemies}) {
     },
     pack(key, members) {
       const pack = dungeon.enemies.filter(p => p.packId === key);
-      invariant(pack.length && pack.every(p => !bosses.has(p.placementId)), 'Choose a non-boss pack.');
+      const archived=historicPack(dungeon,key);
+      invariant(pack.length||archived?.length,'Choose a non-boss pack.');
+      const selected=replacementMembers(dungeon,key,members);
+      invariant(selected.length&&selected.every(id=>placements.has(id)&&!bosses.has(id)), 'Choose a non-boss pack.');
       if (members !== undefined) invariant(members.length && members.every(member => placements.has(member) && !bosses.has(member)), 'Invalid replacement enemies.');
     },
   };

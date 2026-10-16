@@ -1,0 +1,212 @@
+{
+  "Level.ID.DemonicRitual": {
+    "placements": {
+      "length": 325,
+      "sha256": "be3c4090303b9a2be07b8747e61f2cb3fa9939b379fc3bf6e73f6decb4d393cc"
+    },
+    "packs": {
+      "length": 183,
+      "sha256": "6d3c2796f64d22b95d9f7019a6dc4a817dc563b6669886155b62e54f685c21bd"
+    },
+    "legacy": {
+      "length": 2,
+      "sha256": "971885b1a6b1188314a1df1eff9cdbf4cb5db53bad928b11bcd270c0f71cfbf1"
+    }
+  },
+  "Level.ID.DesertDunes": {
+    "placements": {
+      "length": 236,
+      "sha256": "3677cb069a3ea316fbfbee44cf4724fc4d4d3ea77b414eb3661e314af8a64e51"
+    },
+    "packs": {
+      "length": 73,
+      "sha256": "b3fdad82a5b74c81300159fcdc86ca6799ded015d011e294c99498eece8ec707"
+    },
+    "legacy": {
+      "length": 2,
+      "sha256": "f8da74e498f01bff23600295bf6cca25cd90c42478ba7d9363ca2539f5f24611"
+    }
+  },
+  "Level.ID.ElfMines": {
+    "placements": {
+      "length": 137,
+      "sha256": "26df2837c614a1d55e460254bda2bbf8979d210ba3d0a71c7caa30986df3941d"
+    },
+    "packs": {
+      "length": 45,
+      "sha256": "06ebd59465556c5c5289a49ce704398ab6d328112d3d2f94f0c67b6ec2e08508"
+    },
+    "legacy": {
+      "length": 2,
+      "sha256": "ca75496d05cfedc9b6e1c4021cd3f5fa31232c855d6968d6a25880c6b1e59af0"
+    }
+  },
+  "Level.ID.FrozenKingdom": {
+    "placements": {
+      "length": 181,
+      "sha256": "4ea255e84c2b045d00edcd047c2d7195f2a642d56758d1a91e5fbec4f83808e1"
+    },
+    "packs": {
+      "length": 60,
+      "sha256": "b7a877c8e3232b5d3c298f8bc41009554d5e1384ac168ca325674515cfb486c4"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "c297978a506e17988007b485c851fc7ba76ca540103d9d6c46f7086a157be4aa"
+    }
+  },
+  "Level.ID.IceCave": {
+    "placements": {
+      "length": 112,
+      "sha256": "332cb3613b0f7969cc94feacaa07b341550f9dee2fa50268c83c14e511c9b891"
+    },
+    "packs": {
+      "length": 30,
+      "sha256": "0f8db2df193cbd431b8791b787f0c674f425c249cb1530068ee75594825d1442"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "0e029449bde0471c685e0a998a0d65b502c5eb468465d2753c5efa0f35bb606e"
+    }
+  },
+  "Level.ID.MoorCastle": {
+    "placements": {
+      "length": 213,
+      "sha256": "2a5e71e4e59c61b4a4785e1a7547bfa07ed91cbe1111ee1d73d86cf6fb840310"
+    },
+    "packs": {
+      "length": 91,
+      "sha256": "8a508dac5e771b9547150c5ee4852833e3f261a3ee4171427db802699b3ad900"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "a6162b8f95e4dda820244fade83064ba0f30019353d8cc8f70c64fb96cd169fe"
+    }
+  },
+  "Level.ID.MythicForest": {
+    "placements": {
+      "length": 230,
+      "sha256": "8ce8142b1667b81f8f2706acbde18954b79b8566b1f0384a1166804f451c627c"
+    },
+    "packs": {
+      "length": 70,
+      "sha256": "2acf113261ab43b2080fe58c177c7dceffecda8a1c0d803e4b7a0101b4643fb4"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "19330763886a658c5d067890fc6f4b8f08d8c338e1688a09fe6cacbd19ebd300"
+    }
+  },
+  "Level.ID.NightPatrol": {
+    "placements": {
+      "length": 161,
+      "sha256": "5deb08a3049888712e218ad69e051c67ec4dbf8ac3f8a7c9bd253f33b467162e"
+    },
+    "packs": {
+      "length": 52,
+      "sha256": "89e0751e8f316066de45b9717b9e4f0e796c53f41a11c04390e599fdbc7921ba"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "93dc8febbfd70a772c96ea50b59032182d5e6b60d36625b4cff48c8cf7c21ee2"
+    }
+  },
+  "Level.ID.PirateRaid": {
+    "placements": {
+      "length": 270,
+      "sha256": "624fdd370aa8a93107cdef9980d79d73cc35f4aa98ab00091481798ececd3fb9"
+    },
+    "packs": {
+      "length": 131,
+      "sha256": "d498fabb9f6d9048cc3e967dc35d4f4b37fae81a64f033afe61db744906f04e9"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "97da08ac951a3927c60cdebf112b3df6de9c63773bd9f9236f66bd2616aa97c2"
+    }
+  },
+  "Level.ID.SandTomb": {
+    "placements": {
+      "length": 241,
+      "sha256": "9905f8f3d583b335c0e339d5169512f184d8c74165fcad1a379bdaf5450fa2e7"
+    },
+    "packs": {
+      "length": 120,
+      "sha256": "8ea32211ce555a8f570b670da9510f57d8bed564e855299bfe11075b757f4de0"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "0fdd6158224cf1fd529f94ef78c688c790585148e3b034b24002c4a64718d8c9"
+    }
+  },
+  "Level.ID.ShipGraveyard": {
+    "placements": {
+      "length": 162,
+      "sha256": "6cd4d446bb1c565682103fa94319d012f999ee914a9d7cb1ee13f814489ed927"
+    },
+    "packs": {
+      "length": 62,
+      "sha256": "37c80df3aae2c770532021deaa0d429c26ee5e59d43925dc3ff84e527ec96199"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "341227a69df88dfb4b6d67df98708c69e1096427e64f9dd3af0d8a0a9e285638"
+    }
+  },
+  "Level.ID.SnowPeak": {
+    "placements": {
+      "length": 133,
+      "sha256": "9511c36d23125a1e3a362055cd0f16d44bea526bcc5d544dad12fe749dab1ae7"
+    },
+    "packs": {
+      "length": 46,
+      "sha256": "6673e0ffe4de71f5e7c4ce468e40c2da15dfaae527490f65f206aa9f8ddb36ac"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "6b3b2d27f68c04742c4319641b3159ccc2aae19059713fdd53ccd7dfbbc5161d"
+    }
+  },
+  "Level.ID.SpiderForest": {
+    "placements": {
+      "length": 163,
+      "sha256": "3948472e7d7362c21422c188dfccdfe1e1f11514879ef869043a18ee017b751c"
+    },
+    "packs": {
+      "length": 54,
+      "sha256": "678b0e97fb0fae4609a287d8931f88dd4f1992409e837eeb341ccbf2ea2038e2"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "833c1b4ed853456f1f748e49af9e5cd50710277bc60f42817699a1aa5c0749f9"
+    }
+  },
+  "Level.ID.UrrakMarkets": {
+    "placements": {
+      "length": 277,
+      "sha256": "4238c38de78433a41cabf213714fc0b8f963a76da40b3f497678a98cffb508a6"
+    },
+    "packs": {
+      "length": 149,
+      "sha256": "09851ed2cf0eff12801064cc57d73e07aa3c488e3ff29b67c8e241c267eb41c4"
+    },
+    "legacy": {
+      "length": 2,
+      "sha256": "0867d1c87b88b4c0cbe359df3e1bb6ff118153797895b2b478edf563fdb03aca"
+    }
+  },
+  "Level.ID.VikingVillageAttack": {
+    "placements": {
+      "length": 233,
+      "sha256": "b9ba076ca054700de3afac949cac944abefe4d040e1d3710626ac394b3c6ea6c"
+    },
+    "packs": {
+      "length": 79,
+      "sha256": "c09813eaaebdea2199a9c56f9b46ba8aa63a8809235bdf75ea6ec7583adcc196"
+    },
+    "legacy": {
+      "length": 1,
+      "sha256": "7869b9e8f16e180633f917f380a32a73d29f9783e1a7a2272bc37e1466fcbe21"
+    }
+  }
+}

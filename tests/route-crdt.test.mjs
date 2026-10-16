@@ -398,7 +398,7 @@ test('Undo clear restores original IDs and geometry, leaving unseen remote inser
 test('Export and independent import preserve text grown beyond one editor limit by concurrent inserts', async t=>{
   const original=seed(t),a=peer(t,original),b=peer(t,original);
   for(const [doc,text] of [[a,'A'.repeat(4000)],[b,'B'.repeat(4000)]])doc.execute({type:'edit-text',group:'pulls',id:'pull-0',index:0,deleteCount:0,text});
-  sync(a,b);const encoded=await encodeRoute(a.snapshot(),dungeon);assert.match(encoded,/^R2\./);
+  sync(a,b);const encoded=await encodeRoute(a.snapshot(),dungeon);assert.match(encoded,/^R3\./);
   const imported=createRouteDocument(await decodeRoute(encoded,[dungeon],enemies),options);t.after(()=>imported.dispose());
   assert.equal(imported.snapshot().pulls[0].note,a.snapshot().pulls[0].note);
 });
