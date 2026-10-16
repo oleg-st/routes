@@ -5,6 +5,9 @@ import {stormwatchBoss,restoreBossEncounters} from '../data/boss-encounters.js';
 import {correctDungeon,placementName} from '../data/placement-corrections.js';
 import {matchLiveLog} from '../log-import/live-matcher.js';
 import {createReviewSession} from '../log-import/review-session.js';
+import {encounterIdentity} from '../log-import/boss-encounters.js';
+import {analyzeRouteEvents} from '../log-import/live-analysis.js';
+import {firstEngagements} from '../log-import/intended-pulls.js';
 import {newRoute,newPull,encodeRoute,decodeRoute} from '../route-model.js';
 const raw=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id===stormwatchBoss.dungeonID);
 const catalog=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
@@ -80,4 +83,43 @@ test('Low HP, repeated pulls and passive summit samples do not invent a final en
   const input=log([event(1000,bridge),{...event(11000,bridge),targetResources:{...resource(bridge),hitPoints:60}},
     {...event(31000,final),type:'applybuff',positionOnly:true}]);
   assert.deepEqual(pulls(await match(input)),[{id:'segment-1',enemies:[bridge.placementId]}]);
+});
+
+test('Damage after Brogg retreats does not put the final encounter ahead of intervening trash',async()=>{
+  const trash=[...Map.groupBy(dungeon.enemies,p=>p.packId).values()].find(ps=>ps.every(p=>!catalog.get(p.id).isBoss&&!p.patrolPath?.length));
+  const input=log([
+    {type:'dungeonencounterstart',timestamp:0,fight:5,encounterID:133},event(1000,bridge),
+    {type:'dungeonencounterend',timestamp:5000,fight:5,encounterID:133},
+    {...event(11000,final),sourceResources:resource(bridge)},
+    ...trash.map((p,i)=>({...event(21000,p),targetID:10+i})),
+    {type:'dungeonencounterstart',timestamp:50000,fight:5,encounterID:133},event(51000,final),
+    {type:'dungeonencounterend',timestamp:59000,fight:5,encounterID:133},
+  ]);
+  input.actors.push(...trash.map((p,i)=>({id:10+i,type:'NPC',gameID:catalog.get(p.id).gameId})));
+  assert.deepEqual(pulls(await match(input)),[
+    {id:'segment-1',enemies:[bridge.placementId]},
+    {id:'segment-3',enemies:trash.map(p=>p.placementId).sort()},
+    {id:'segment-6',enemies:[final.placementId]},
+  ]);
+});
+
+test('Report c4nFLaThdAxtVpYv fight 12 starts final Brogg at 643.093s, not the retreat damage at 326.976s',async()=>{
+  // Minimal real events: encounter boundaries, first attacks and the damage
+  // tick 366ms after the bridge encounter ended, with Brogg already upstairs.
+  const input=JSON.parse(fs.readFileSync('tests/fixtures/stormwatch-brogg-retreat.json'));
+  const identity=encounterIdentity(input,dungeon);
+  const first=firstEngagements(input.events,{fightID:input.fight.id,actors:input.actors,key:identity.key});
+  const rows=analyzeRouteEvents(input,dungeon,catalog,identity).npcRows;
+  for(const [p,time]of [[bridge,9920016],[final,10313454]]){
+    const key=`encounter:${p.placementId}`;
+    assert.equal(first.get(key),time);
+    assert.equal(rows.find(r=>r.key===key).firstTime,time);
+  }
+  assert.deepEqual(pulls(await match(input)),[
+    {id:'segment-2',enemies:[bridge.placementId]},
+    {id:'segment-7',enemies:[final.placementId]},
+  ]);
+  // Without a later encounter, the stray damage must not fabricate a final.
+  input.events=input.events.filter(e=>e.timestamp<10313421);
+  assert.deepEqual(pulls(await match(input)),[{id:'segment-2',enemies:[bridge.placementId]}]);
 });

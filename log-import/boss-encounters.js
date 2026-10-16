@@ -13,7 +13,7 @@ export function encounterIdentity({fight,actors,events},dungeon){
   const playerIDs=new Set(actors.filter(a=>a.type==='Player').map(a=>a.id));
   const scoped=events.filter(e=>e.fight===fight.id).toSorted((a,b)=>a.timestamp-b.timestamp);
   const starts=[...new Set([fight.startTime,...fight.dungeonPulls.map(p=>p.startTime),
-    ...scoped.filter(e=>e.type==='dungeonencounterstart').map(e=>e.timestamp)])].sort((a,b)=>a-b);
+    ...scoped.filter(e=>['dungeonencounterstart','dungeonencounterend'].includes(e.type)).map(e=>e.timestamp)])].sort((a,b)=>a-b);
   const windows=starts.map(start=>({start,events:[]}));
   let index=0;
   for(const e of scoped){
@@ -28,8 +28,20 @@ export function encounterIdentity({fight,actors,events},dungeon){
     // but do not require an exact spawn match or infer phases from HP/attempts.
     return nearest.distance<separation/3?nearest.p:null;
   };
-  const keys=new WeakMap(),phaseTimes=new Map();let current=placements[0];
+  const keys=new WeakMap(),phaseTimes=new Map(),activeEncounters=new Set();
+  let current=placements[0],hasBoundary=false;
   for(const window of windows){
+    const boundaries=window.events.filter(e=>e.timestamp===window.start);
+    for(const e of boundaries.filter(e=>e.type==='dungeonencounterend')){activeEncounters.delete(e.encounterID);hasBoundary=true;}
+    for(const e of boundaries.filter(e=>e.type==='dungeonencounterstart')){activeEncounters.add(e.encounterID);hasBoundary=true;}
+    // Retreating can leave damage, debuffs and resource samples in the log
+    // after Brogg has reached the summit. These are not a new engagement.
+    // Exclude his observations until the next explicit encounter start; keep
+    // the existing position fallback when the log has no boundary evidence.
+    if(hasBoundary&&!activeEncounters.size){
+      for(const e of window.events)keys.set(e,null);
+      continue;
+    }
     const combat=window.events.filter(e=>!e.positionOnly&&activeTypes.has(e.type)&&['source','target','attacker'].some(side=>bossIDs.has(e[side+'ID'])));
     const findPosition=ids=>combat.flatMap(e=>['source','target','attacker'].filter(side=>ids.has(e[side+'ID'])).map(side=>locate(e[side+'Resources']))).find(Boolean);
     // Look through the attempt for boss coordinates before using a player's
@@ -46,7 +58,7 @@ export function encounterIdentity({fight,actors,events},dungeon){
     return cuts.map((startTime,i)=>({...p,id:i?`${p.id}-encounter-${i}`:p.id,startTime,endTime:cuts[i+1]??p.endTime}));
   });
   return {
-    key:(e,side)=>bossIDs.has(e[side+'ID'])?keys.get(e)??ordinary(e,side):ordinary(e,side),
+    key:(e,side)=>bossIDs.has(e[side+'ID'])&&keys.has(e)?keys.get(e):ordinary(e,side),
     placements:new Map(placements.map(p=>[`encounter:${p.placementId}`,p.placementId])),
     pulls,
   };

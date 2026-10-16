@@ -1,0 +1,163 @@
+{
+  "complete": true,
+  "reportCode": "c4nFLaThdAxtVpYv",
+  "fight": {
+    "id": 12,
+    "name": "Stormwatch",
+    "startTime": 9670361,
+    "endTime": 10434500,
+    "dungeonPulls": [
+      {
+        "id": 1,
+        "startTime": 9678718,
+        "endTime": 9919982,
+        "encounterID": 0
+      },
+      {
+        "id": 2,
+        "startTime": 9919984,
+        "endTime": 9996971,
+        "encounterID": 26
+      },
+      {
+        "id": 3,
+        "startTime": 9997033,
+        "endTime": 10029401,
+        "encounterID": 0
+      },
+      {
+        "id": 4,
+        "startTime": 10039722,
+        "endTime": 10141437,
+        "encounterID": 0
+      },
+      {
+        "id": 5,
+        "startTime": 10148018,
+        "endTime": 10302836,
+        "encounterID": 0
+      },
+      {
+        "id": 6,
+        "startTime": 10310681,
+        "endTime": 10313254,
+        "encounterID": 0
+      },
+      {
+        "id": 7,
+        "startTime": 10313421,
+        "endTime": 10434487,
+        "encounterID": 26
+      }
+    ]
+  },
+  "actors": [
+    {
+      "id": 31,
+      "type": "Player",
+      "subType": "Xavian",
+      "gameID": 1000030
+    },
+    {
+      "id": 33,
+      "type": "Player",
+      "subType": "Ardeos",
+      "gameID": 1000032
+    },
+    {
+      "id": 68,
+      "type": "NPC",
+      "subType": "Boss",
+      "gameID": 133
+    }
+  ],
+  "events": [
+    {
+      "timestamp": 9919984,
+      "type": "dungeonencounterstart",
+      "fight": 12,
+      "encounterID": 26
+    },
+    {
+      "timestamp": 9920016,
+      "type": "cast",
+      "fight": 12,
+      "sourceID": 68,
+      "targetID": 31,
+      "abilityGameID": 630,
+      "fake": true,
+      "sourceResources": {
+        "x": 26768,
+        "y": -4758,
+        "hitPoints": 15696857,
+        "maxHitPoints": 15696857
+      }
+    },
+    {
+      "timestamp": 9920016,
+      "type": "begincast",
+      "fight": 12,
+      "sourceID": 68,
+      "targetID": 31,
+      "abilityGameID": 630,
+      "sourceResources": {
+        "x": 26768,
+        "y": -4758,
+        "hitPoints": 15696857,
+        "maxHitPoints": 15696857
+      }
+    },
+    {
+      "timestamp": 9996971,
+      "type": "dungeonencounterend",
+      "fight": 12,
+      "encounterID": 26
+    },
+    {
+      "timestamp": 9997337,
+      "type": "damage",
+      "fight": 12,
+      "sourceID": 33,
+      "targetID": 68,
+      "abilityGameID": 1000101,
+      "sourceResources": {
+        "x": 27054,
+        "y": -5134,
+        "hitPoints": 40257,
+        "maxHitPoints": 40257
+      },
+      "targetResources": {
+        "x": 22657,
+        "y": 10398,
+        "hitPoints": 12556837,
+        "maxHitPoints": 15696857
+      }
+    },
+    {
+      "timestamp": 10313421,
+      "type": "dungeonencounterstart",
+      "fight": 12,
+      "encounterID": 26
+    },
+    {
+      "timestamp": 10313454,
+      "type": "cast",
+      "fight": 12,
+      "sourceID": 68,
+      "targetID": -1,
+      "abilityGameID": 1636,
+      "sourceResources": {
+        "x": 22657,
+        "y": 10398,
+        "hitPoints": 12552159,
+        "maxHitPoints": 15696857
+      }
+    },
+    {
+      "timestamp": 10434487,
+      "type": "dungeonencounterend",
+      "fight": 12,
+      "encounterID": 26
+    }
+  ]
+}

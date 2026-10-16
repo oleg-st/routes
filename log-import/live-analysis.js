@@ -6,6 +6,7 @@ export function analyzeRouteEvents({fight,actors,events},dungeon,catalog,{key=(e
     for(const side of ['source','target','attacker']){
       const actor=actorByID.get(e[side+'ID']);if(!actor)continue;
       const instance=e[side+'Instance']??1,identity=key(e,side);
+      if(identity==null)continue;
       let row=instances.get(identity);
       if(!row){row={key:identity,actorID:actor.id,instance,gameID:actor.gameID,type:actor.type,name:catalog.get(byGameID.get(actor.gameID)?.[0]?.id)?.name??actor.type,
         firstTime:Infinity,positions:[],deaths:[]};instances.set(identity,row);}

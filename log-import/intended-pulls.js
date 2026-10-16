@@ -12,6 +12,7 @@ export function firstEngagements(events,{fightID,actors,aliases=new Map(),key=(e
         ['damage','death','applydebuff','refreshdebuff'].includes(e.type)||e.type==='cast'&&e.abilityGameID===1478;
       if(!active)continue;
       const identity=resolve(key(e,side));
+      if(identity==null)continue;
       if(!first.has(identity))first.set(identity,e.timestamp);
     }
   }
