@@ -18,6 +18,7 @@
     "test:storage:browser": "node tests/route-storage-browser.mjs",
     "test:editor": "node tests/route-ui.mjs && node tests/drawing-ui.mjs && node tests/transfer-ui.mjs && node tests/route-together-ui.mjs",
     "test:site:browser": "node tests/route-site-browser.mjs",
+    "test:site:cache": "node tests/site-cache-browser.mjs",
     "test:rooms": "node --test tests/room-manager.test.mjs",
     "test:rooms:browser": "node tests/room-browser.mjs",
     "test:cursors:browser": "node tests/cursor-transport-browser.mjs",

@@ -1,4 +1,4 @@
-import {build} from 'esbuild';
+import {buildSiteAssets} from './build-site-assets.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -53,6 +53,5 @@ const html=fs.readFileSync(path.join(destination,'index.html'),'utf8')
 fs.writeFileSync(path.join(destination,'index.html'),html);
 compactPublicData(destination);
 fs.writeFileSync(path.join(destination,'data/custom-dungeons.js'),compactCustomModule());
-const bundle=await build({absWorkingDir:destination,entryPoints:['app.js'],bundle:true,format:'esm',write:false,minify:true,target:['es2022'],alias:{'loro-crdt':'loro-crdt/base64'}});
-fs.writeFileSync(path.join(destination,'app.js'),bundle.outputFiles[0].text);
+await buildSiteAssets(destination);
 console.log(`Prepared ${files.length} public files in dist/. Publish only this directory.`);

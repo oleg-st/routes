@@ -2,7 +2,8 @@
 export function runLogMatching(log,{signal,onProgress,...options}){
   return new Promise((resolve,reject)=>{
     signal?.throwIfAborted();
-    const worker=new Worker(new URL('log-import/matcher-worker.js',document.baseURI),{type:'module'});
+    const workerURL=typeof __SITE_MATCHER_URL__==='undefined'?'log-import/matcher-worker.js':__SITE_MATCHER_URL__;
+    const worker=new Worker(new URL(workerURL,document.baseURI),{type:'module'});
     const finish=(error,result)=>{worker.terminate();signal?.removeEventListener('abort',abort);clearTimeout(timeout);error?reject(error):resolve(result);};
     const abort=()=>finish(new DOMException('Import cancelled.','AbortError'));
     const timeout=setTimeout(()=>finish(new Error('Matching took too long. No route was created.')),120000);
