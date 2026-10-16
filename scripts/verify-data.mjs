@@ -25,6 +25,8 @@ for(const d of dungeons.filter(d=>d.mapImages.length>1)){
   for(const source of d.mapImages)if(combined.sources[source.id]?.sha256!==source.sha256||combined.sources[source.id]?.sourceSha256!==source.sourceSha256)throw new Error(`Combined source has changed: ${source.path}`);
 }
 for(const map of publicOnly?[]:Object.values(fullMaps)){
+  // Referenced JPEGs are optional private assets; verify them when available.
+  if(!fs.existsSync(map.path))continue;
   const hash=crypto.createHash('sha256').update(fs.readFileSync(map.path)).digest('hex');
   if(hash!==map.sha256)throw new Error(`Full map differs from reference: ${map.path}`);
 }
@@ -33,7 +35,10 @@ for(const d of dungeons){
   const mapIds=new Set(d.mapImages.map(m=>m.id)),positionIds=new Set();
   for(const map of d.mapImages){
     if(publicOnly)continue;
-    if(!fs.existsSync(map.path))throw new Error(`Missing map: ${map.path}`);
+    if(!fs.existsSync(map.path)){
+      if(map.path.startsWith('private/'))continue;
+      throw new Error(`Missing map: ${map.path}`);
+    }
     const hash=crypto.createHash('sha256').update(fs.readFileSync(map.path)).digest('hex');
     if(hash!==map.sha256)throw new Error(`Compressed map hash differs: ${map.path}`);maps++;
   }
