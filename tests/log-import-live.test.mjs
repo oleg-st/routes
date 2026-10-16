@@ -52,8 +52,8 @@ test('Fight listing loads only summary fields, sorts newest first and defaults t
   await assert.rejects(loadReportFights(url,{token:'x',fetcher:async()=>response({fights:[]})}),/no fights/);
 });
 test('Fight labels include number, outcome, dungeon, displayed league level and run duration',()=>{
-  assert.equal(fightLabel({...fight,id:5,name:'Empyrean Sands',difficultyLevel:75,kill:true,completionTime:631135}),'#5 · Clear · Empyrean Sands · Eternal 55 · 10:31');
-  assert.equal(fightLabel({...fight,id:6,name:'Urrak Markets',difficultyLevel:76,kill:false,completionTime:0,startTime:100,endTime:487100}),'#6 · Wipe · Urrak Markets · Eternal 56 · 8:07');
+  assert.equal(fightLabel({...fight,id:5,name:'Empyrean Sands',difficultyLevel:75,kill:true,completionTime:631135}),'Empyrean Sands · #5 · Eternal 55 · 10:31');
+  assert.equal(fightLabel({...fight,id:6,name:'Urrak Markets',difficultyLevel:76,kill:false,completionTime:0,startTime:100,endTime:487100}),'Urrak Markets · #6 · Eternal 56 · Wipe · 8:07');
   assert.match(fightLabel({...fight,inProgress:true,kill:false}),/In progress/);
 });
 test('PKCE binds production redirect and callback scrubs authorization parameters even on failure',async()=>{

@@ -2,7 +2,6 @@ import {createReviewSession} from './review-session.js';
 import {parseReportURL} from './report-url.js';
 import {fightLabel} from './fight-label.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const time=s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 const fightStatus=f=>f?.inProgress?'progress':f?.kill===true?'clear':f?.kill===false?'wipe':'unknown';
 const proximityLabel=o=>{
   if(!o.proximity)return '';
@@ -25,13 +24,11 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
   }
   function draw(){
     const s=session.state();panel.hidden=false;
-    panel.innerHTML=`<div class="log-review-heading"><div><span class="eyebrow">IMPORT FROM LOG</span><h2>${esc(fixture.title)} <span>Fight ${fixture.fightID}</span></h2></div><div class="log-review-actions">${s.canBack?'<button data-log-back>← Back</button>':''}<button data-log-cancel>Cancel import</button></div></div>
-      <p role="status" aria-live="polite">${s.complete?'Could not save the imported route. Retry or cancel.':`Pull ${s.pullIndex+1} · Choose a pack to add. ${s.remaining} compatible routes remain.`}</p>
+    panel.innerHTML=`<div class="log-review-heading"><span class="eyebrow">IMPORT FROM LOG</span><div class="log-review-actions">${s.canBack?'<button data-log-back>← Back</button>':''}<button data-log-cancel>Cancel import</button></div></div>
+      <div class="log-review-prompt" role="status" aria-live="polite"><span class="log-review-step">Pull ${s.pullIndex+1}</span><div><strong>${s.complete?'Could not save the imported route':s.options[0]?.id==='accept-inferred'?'Review the inferred route':'Choose a pack to add'}</strong><span>${s.complete?'Retry saving or cancel the import.':s.options[0]?.id==='accept-inferred'?'Confirm the hypothesis below to complete the import.':`${s.remaining} compatible routes remain · Select an option below to continue`}</span></div></div>
       ${fixture.assumption?`<p class="muted">${esc(fixture.assumption)}</p>`:''}
-      ${!s.complete?'<small>Common enemies are already in the pull. Hover or focus an option to highlight it.</small>':''}
-      <div class="log-options">${s.options.map((o,i)=>`<div class="log-option"><button data-log-choice="${esc(o.id)}"><span class="log-option-number">${i+1}</span><span><strong>${esc(o.label)}</strong><small>${esc(o.groups.length?describe(ids(o.groups)):'Continue with the enemies already selected')}</small>${o.proximity?`<small class="log-proximity" title="Closest approach before engagement, in world units. Estimates across log gaps and patrol paths are possible positions, not observed contact or a probability.">${esc(proximityLabel(o))}</small>`:''}</span><span aria-hidden="true">＋</span></button>${o.groups.length?`<button class="log-locate" data-log-focus="${esc(o.id)}" title="Show on map" aria-label="Show ${esc(o.label)} on map">⌖</button>`:''}</div>`).join('')}</div>
-      ${s.complete?'<button class="primary" data-log-retry>Retry saving</button>':''}
-      <details class="log-import-note"><summary>Log · ${esc(fixture.reportCode)} · ${time(fixture.duration)}</summary><p>${esc(fixture.note)} Invisibility and portal transitions during boss combat are omitted.</p></details>`;
+      <div class="log-options">${s.options.map((o,i)=>`<div class="log-option"><button data-log-choice="${esc(o.id)}"><span class="log-option-number">${i+1}</span><span><strong>${esc(o.label)}</strong><small>${esc(o.groups.length?describe(ids(o.groups)):'Continue with the enemies already selected')}</small>${o.proximity?`<small class="log-proximity" title="Closest approach before engagement, in world units. Estimates across log gaps and patrol paths are possible positions, not observed contact or a probability.">${esc(proximityLabel(o))}</small>`:''}</span><span class="log-option-add" aria-hidden="true">＋</span></button>${o.groups.length?`<button class="log-locate" data-log-focus="${esc(o.id)}" title="Show on map" aria-label="Show ${esc(o.label)} on map">⌖</button>`:''}</div>`).join('')}</div>
+      ${s.complete?'<button class="primary" data-log-retry>Retry saving</button>':''}`;
     for(const b of panel.querySelectorAll('[data-log-choice]')){
       const option=s.options.find(o=>o.id===b.dataset.logChoice);
       b.onpointerenter=b.onfocus=()=>highlight(ids(option.groups));

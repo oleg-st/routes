@@ -67,7 +67,7 @@ try{
   const beforeList=requests.length;await page.locator('#log-load').click();await page.locator('#log-fight').waitFor();
   assert.equal(requests.length,beforeList+1,'listing must not fetch actors or events');
   assert.equal(await page.locator('#log-fight').inputValue(),'6');
-  assert.deepEqual(await page.locator('#log-fight option').allTextContents(),['#6 · Wipe · Urrak Markets · Eternal 56 · 8:07','#5 · Clear · Empyrean Sands · Eternal 55 · 10:31']);
+  assert.deepEqual(await page.locator('#log-fight option').allTextContents(),['Urrak Markets · #6 · Eternal 56 · Wipe · 8:07','Empyrean Sands · #5 · Eternal 55 · 10:31']);
   assert.equal(await page.getByText(/Dungeon data:/).count(),0);
   await page.screenshot({path:'tmp/log-import-fight-list.png'});
   await page.locator('#log-fight').selectOption('5');await page.locator('#log-load').click();
