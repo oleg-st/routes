@@ -39,6 +39,42 @@ test('Original Urrak G21 is six mobs in Fellership and two separate trios in Cus
   assert.ok(groups.every(ps=>ps.every(p=>!!p.patrolPath?.length===!!ps[0].patrolPath?.length)));
 });
 
+test('Xul keeps all eight sets of distinct same-label packs separate',()=>{
+  const dungeon=variants[1].find(d=>d.id==='Level.ID.SandTomb');
+  const owners=new Map(dungeon.enemies.map(p=>[p.placementId,p.packId]));
+  const partitions=read('tests/fixtures/xul-pack-partitions.json');
+  assert.equal(partitions.length,8);
+  assert.equal(partitions.flat().length,27);
+  for(const parts of partitions){
+    const seen=new Set();
+    for(const members of parts){
+      assert.ok(members.every(id=>owners.has(id)));
+      const packs=new Set(members.map(id=>owners.get(id)));
+      for(const pack of packs){assert.ok(!seen.has(pack),'Distinct packs sharing a display label must not merge');seen.add(pack);}
+    }
+  }
+});
+
+test('Xul Crusher is solo and the corrected four-mob pack exports without him in both modes',async()=>{
+  const custom=variants[1].find(d=>d.id==='Level.ID.SandTomb');
+  const crusher='placement-bf6bb4aa34d50c27fc0a3fe99b96a02c24c956612a47157d8ae5b30324134e8e';
+  const peer='placement-f1da8f980851b348d05292dc9621c6da402889f10c0c6c731ed4301d02b2a7a7';
+  const group=id=>custom.enemies.filter(p=>p.packId===custom.enemies.find(p=>p.placementId===id).packId).map(p=>p.placementId);
+  assert.deepEqual(group(crusher),[crusher]);
+  const neighbors=group(peer);assert.equal(neighbors.length,4);assert.ok(!neighbors.includes(crusher));
+  const dictionary=routeDictionary(custom.id);
+  // This existing mapping slot was corrected in place with the data, not appended.
+  assert.deepEqual(decodeMembers(dictionary,[104]),neighbors);
+  for(const selected of [[crusher],neighbors]){
+    const r=newRoute(custom,'25647984');r.pulls[0].enemies=[...selected];
+    for(const modes of variants){
+      const target=modes.find(d=>d.id===custom.id),exported=await encodeRoute(r,target);
+      assert.deepEqual((await decodeRoute(exported,[target],enemies)).pulls[0].enemies,selected);
+      assert.deepEqual((await decodeRoute(exported,[custom],enemies)).pulls[0].enemies,selected);
+    }
+  }
+});
+
 test('Permanent mapping prefixes are immutable and generator only appends missing entries',()=>{
   for(const [id,fields]of Object.entries(read('tests/fixtures/route-mapping-lock.json')))for(const [key,lock]of Object.entries(fields)){
     assert.equal(createHash('sha256').update(JSON.stringify(routeMapping.dungeons[id][key].slice(0,lock.length))).digest('hex'),lock.sha256,id+' '+key);
