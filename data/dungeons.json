@@ -361353,6 +361353,24 @@
         "groupId": 35,
         "patrolPath": null,
         "mapPatrolPath": null
+      },
+      {
+        "id": "sh-bossspider",
+        "placementId": "placement-custom-silken-vexira",
+        "packId": "pack-custom-silken-vexira",
+        "worldPosition": {
+          "x": 46598.22,
+          "y": -7388.671,
+          "z": -10595.042
+        },
+        "mapPosition": {
+          "x": 0.508930363450776,
+          "y": 0.4300701975358712
+        },
+        "mapImageId": "Level.ID.SpiderForest:T_Map_SF_Lair",
+        "groupId": null,
+        "patrolPath": null,
+        "mapPatrolPath": null
       }
     ]
   },

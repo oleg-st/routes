@@ -8304,7 +8304,7 @@ export const combinedLayouts={
       }
     },
     "referenceId": "Level.ID.SpiderForest",
-    "referenceSha256": "c1b6d261f723f042cc7be174b42c88d98b05e3931676c6c79293b77eb46e7c28",
+    "referenceSha256": "bf727470bd0113da2e91dbd01f983a3ccb943c07e34b3038f7706f986ee9a121",
     "placements": {
       "placement-9aec2595f400023654a6005eb6f85258343f363cef4ae6b1608ec490cb48b38f": [
         3403.7756781961443,

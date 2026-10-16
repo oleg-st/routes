@@ -7101,6 +7101,12 @@ export const customDungeons={
           "placement-338215351ef1109bd000db356549ce9669e7b05e65a0e956a2dfb422f61535cd",
           "placement-92a49a8ca76a03663241f82be4ad78aa51cc5573a769166b55d6d0d4d0947f03"
         ]
+      },
+      {
+        "id": "pack-custom-silken-vexira",
+        "members": [
+          "placement-custom-silken-vexira"
+        ]
       }
     ],
     "burried": []

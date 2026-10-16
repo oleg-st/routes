@@ -4671,5 +4671,26 @@
     "classification": "normal",
     "armorType": null,
     "images": []
+  },
+  {
+    "id": "sh-bossspider",
+    "gameId": 92,
+    "name": "Vexira, Mother of Nightmares",
+    "dungeonScore": 0,
+    "isBoss": true,
+    "canBeControlled": false,
+    "images": [
+      {
+        "id": "sh-bossspider",
+        "type": "portrait",
+        "size": "200",
+        "path": "images/enemies/sh-bossspider-portrait-200.avif",
+        "sha256": "59b296e14b30b75b2a1427fe6a16e3194ef9de5338e47248ea303d0ac9e2f343",
+        "width": 64,
+        "height": 64,
+        "sourcePath": "images/enemies/sh-bossspider-portrait-200.png",
+        "sourceSha256": "e118f530fc199368b833a6ac3fe981ea141c64441b0f0e673a8b3688fa57ab20"
+      }
+    ]
   }
 ]

@@ -56,3 +56,17 @@ test('Invisibility repeats after long waits collapse only when both endpoints ar
   const bossFirst=use('invis',500,0,5000),later=use('invis',5000,0,5000);
   assert.deepEqual(deduplicateRelicUsages([bossFirst,later].filter(u=>outsideBossCombat(u,[[400,700]]))),[later]);
 });
+
+test('Concurrent nearby invisibility casts in Silken Hollow produce one earliest marker',()=>{
+  const use=(start,end,x,y,ex,ey,kind='invis')=>({kind,start:{time:start,position:{x,y}},end:{time:end,position:{x:ex,y:ey}}});
+  const first=use(3386226,3395174,-7710,34075,-6928,41265);
+  const second=use(3387027,3394375,-8102,34212,-6845,40471);
+  assert.deepEqual(deduplicateRelicUsages([second,first]),[first]);
+  for(const other of [
+    {...second,start:{...second.start,time:first.end.time},end:{...second.end,time:first.end.time+1000}},
+    {...second,end:{...second.end,position:{x:-6928,y:39000}}},
+    use(3387027,3394375,-6928,41265,-7710,34075),
+  ])assert.equal(deduplicateRelicUsages([first,other]).length,2);
+  assert.equal(deduplicateRelicUsages([{...first,kind:'portal'},{...second,kind:'portal'}]).length,2);
+  assert.equal(deduplicateRelicUsages([first,second],{overlappingInvisibilityRadius:250}).length,2);
+});

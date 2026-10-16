@@ -8114,6 +8114,10 @@ export const fullMaps={
       "placement-92a49a8ca76a03663241f82be4ad78aa51cc5573a769166b55d6d0d4d0947f03": [
         3457.6851851851843,
         1988.9814668384784
+      ],
+      "placement-custom-silken-vexira": [
+        3257.1428571428573,
+        271.2365388960006
       ]
     },
     "patrols": {
