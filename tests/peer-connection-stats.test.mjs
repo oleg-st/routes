@@ -22,5 +22,30 @@ test('Missing stats stay unknown; nominated pair is used if selected-pair refere
   const stats=new Map(),pc={connectionState:'connected',getStats:async()=>stats};
   assert.deepEqual(await peerConnectionStats(pc),{connection:'unknown',pingMs:null});
   stats.set('pair',{type:'candidate-pair',nominated:true,state:'succeeded',currentRoundTripTime:.1});
+  assert.deepEqual(await peerConnectionStats(pc),{connection:'unknown',pingMs:100});
+  Object.assign(stats.get('pair'),{localCandidateId:'local',remoteCandidateId:'remote'});
+  stats.set('local',{candidateType:'host'});stats.set('remote',{candidateType:'prflx'});
   assert.deepEqual(await peerConnectionStats(pc),{connection:'direct',pingMs:100});
+});
+
+test('Incomplete candidate details never imply direct; a known relay on either side is sufficient',async()=>{
+  const stats=new Map([
+    ['transport',{type:'transport',selectedCandidatePairId:'pair'}],
+    ['pair',{type:'candidate-pair',localCandidateId:'local',remoteCandidateId:'remote',currentRoundTripTime:.02}],
+  ]);
+  const pc={connectionState:'connected',getStats:async()=>stats};
+  for(const [local,remote,expected] of [
+    [undefined,undefined,'unknown'],
+    ['host',undefined,'unknown'],
+    [undefined,'srflx','unknown'],
+    ['host','unexpected','unknown'],
+    ['relay',undefined,'relay'],
+    [undefined,'relay','relay'],
+    ['relay','host','relay'],
+    ['srflx','host','direct'],
+  ]){
+    if(local===undefined)stats.delete('local');else stats.set('local',{candidateType:local});
+    if(remote===undefined)stats.delete('remote');else stats.set('remote',{candidateType:remote});
+    assert.deepEqual(await peerConnectionStats(pc),{connection:expected,pingMs:20},`${local}/${remote}`);
+  }
 });
