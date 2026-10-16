@@ -64,6 +64,10 @@ function changeDungeonData(mode){
   if($('#search').value)search();
 }
 function pointScore(p){return placementScore(p,enemies.get(p.id),route,data.shadow);}
+function positionsPercent(members){
+  const scores=members.map(pointScore);
+  return dungeon.requiredScore>0&&!scores.some(score=>score==null)?scores.reduce((sum,score)=>sum+score,0)/dungeon.requiredScore*100:null;
+}
 function isEmpowered(p){return route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(p.placementId)&&!enemies.get(p.id)?.isBoss;}
 function coordinates(e){return mapCoordinates(e,mapLayer);}
 function availableImage(e){return e?.images?.find(i=>i.size==='200')?.path||e?.images?.[0]?.path;}
@@ -285,7 +289,7 @@ function showPullTooltip(anchor){
   tip.dataset.pull=pull.id;
   tip.innerHTML=`<strong>${esc(pull.name)}</strong><div class="tip-score">${pct(score.percent)} · ${members.length} ${members.length===1?'mob':'mobs'}</div>${rows.length?`<ul class="tip-pack">${rows.map(({p,count,ids,empowered,chicken})=>{
     const enemy=enemies.get(p.id),icon=availableImage(enemy);
-    return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify(ids))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}${count>1?` ×${count}`:''}</span><span class="tip-pack-status">${empowered?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${chicken?`<img src="${chickenIcon}" alt="Chicken" title="Chicken">`:''}</span></button></li>`;
+    return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify(ids))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}${count>1?` ×${count}`:''}</span><span class="tip-pack-status">${empowered?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${chicken?`<img src="${chickenIcon}" alt="Chicken" title="Chicken">`:''}<span class="tip-pack-percent">${pct(positionsPercent(ids.map(id=>positions.get(id))))}</span></span></button></li>`;
   }).join('')}</ul>`:'<div class="muted">No mobs in this pull.</div>'}`;
   positionSidebarTooltip(tip,anchor);
 }
@@ -789,8 +793,8 @@ function bind(){
     const tip=$('#tooltip');
     if(tip.hidden||tip.dataset.placement!==id){
       tip.dataset.placement=id;
-      const packScores=pack.map(pointScore),packPercent=packScores.some(score=>score==null)?null:packScores.reduce((sum,score)=>sum+score,0)/dungeon.requiredScore*100;
-      tip.innerHTML=`<strong>${esc(placementName(p,enemy))}</strong>${isEmpowered(p)?`<div class="tip-empowered"><img src="${empoweredIcon}" alt="">Empowered</div>`:''}<span class="tip-score">${fmt(score)} points · ${pct(score/dungeon.requiredScore*100)}</span>${!enemy.isBoss&&route.excluded.includes(id)?'<div>Chicken</div>':''}<div class="tip-pack-heading">${p.modifier?esc(enemy.name):'G'+packNumbers.get(p.packId)} · ${pack.length} enemies in pack · ${pct(packPercent)}</div><ul class="tip-pack">${pack.map(member=>{const mob=enemies.get(member.id),icon=availableImage(mob);return `<li class="${member.placementId===id?'current':''}" ${member.placementId===id?'aria-current="true"':''}>${icon?`<img src="${icon}" alt="">`:''}<span>${esc(placementName(member,mob))}</span><span class="tip-pack-status">${isEmpowered(member)?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${route.excluded.includes(member.placementId)?`<img class="tip-chicken" src="${chickenIcon}" alt="Chicken">`:''}</span></li>`;}).join('')}</ul>`;
+      const packPercent=positionsPercent(pack);
+      tip.innerHTML=`<strong>${esc(placementName(p,enemy))}</strong>${isEmpowered(p)?`<div class="tip-empowered"><img src="${empoweredIcon}" alt="">Empowered</div>`:''}<span class="tip-score">${fmt(score)} points · ${pct(positionsPercent([p]))}</span>${!enemy.isBoss&&route.excluded.includes(id)?'<div>Chicken</div>':''}<div class="tip-pack-heading">${p.modifier?esc(enemy.name):'G'+packNumbers.get(p.packId)} · ${pack.length} enemies in pack · ${pct(packPercent)}</div><ul class="tip-pack">${pack.map(member=>{const mob=enemies.get(member.id),icon=availableImage(mob);return `<li class="${member.placementId===id?'current':''}" ${member.placementId===id?'aria-current="true"':''}>${icon?`<img src="${icon}" alt="">`:''}<span>${esc(placementName(member,mob))}</span><span class="tip-pack-status">${isEmpowered(member)?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${route.excluded.includes(member.placementId)?`<img class="tip-chicken" src="${chickenIcon}" alt="Chicken">`:''}<span class="tip-pack-percent">${pct(positionsPercent([member]))}</span></span></li>`;}).join('')}</ul>`;
     }
     positionPopover(tip,e);
   });
