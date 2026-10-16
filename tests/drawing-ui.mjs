@@ -89,7 +89,7 @@ try{
     await page.locator('#undo').click();assert.equal(await drawings.count(),3);
     // Focused annotations also expose the same context actions from the keyboard.
     await drawings.nth(1).focus();await page.keyboard.press('Shift+F10');assert.equal(await page.getByRole('menuitem',{name:'Edit note',exact:true}).isVisible(),true);await page.keyboard.press('Escape');
-    await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
+    await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
     assert.equal(await drawings.count(),3);assert.equal(await stroke().getAttribute('stroke-width'),'5');assert.equal(await stroke().getAttribute('points'),edited);
     assert.deepEqual(await notePosition(),afterNote);
     await move(340,630);assert.equal(await page.locator('.note-tooltip-text').innerText(),'Edited note');

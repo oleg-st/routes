@@ -14,6 +14,9 @@ __pycache__/
 /private/
 images-archive/
 /tmp/
+/fellowship-route-probe.json
+/fellowship-route-events-probe*.json
+/route-import-*.json
 /docs/*-preview.png
 /docs/*-preview.jpg
 /docs/preview.jpg

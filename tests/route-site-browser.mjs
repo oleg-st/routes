@@ -16,7 +16,12 @@ try{
   page.on('pageerror',e=>errors.push(e.message));page.on('websocket',socket=>external.push(socket.url()));
   await page.route('**/*',r=>{if(!r.request().url().startsWith(origin)){external.push(r.request().url());return r.abort();}return r.continue();});
   await page.goto(origin+prefix);await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#floor-panel').count(),0);
-  await page.locator('#add-pull').click();await page.locator('#shadow').click();await page.locator('#storage-status[data-state=saved]').waitFor();
+  await page.locator('#add-pull').click();await page.locator('#shadow').click();await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
   await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#pull-count').textContent(),'2');assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');
-  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log('Published bundle: Pages prefix, embedded WASM, edits and refresh passed without external requests.');
+  await page.locator('#import-log-button').click();await page.locator('#log-url').waitFor();
+  assert.equal(await page.getByText('Saved examples',{exact:true}).count(),0);assert.equal(await page.locator('[data-log-fixture]').count(),0);
+  await page.locator('#log-url').press('Escape');assert.equal(await page.locator('#pull-count').textContent(),'2');
+  await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#pull-count').textContent(),'2');
+  assert.equal(fs.existsSync(path.join(root,'log-import/prototype-fixtures.js')),false);
+  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log('Published bundle: Pages prefix, embedded WASM, edits, URL-only log dialog and refresh passed without external requests.');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

@@ -13,7 +13,7 @@ const server=http.createServer(async(req,res)=>{
   let pathname;
   try { pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname); } catch {res.writeHead(400).end();return;}
   if(pathname.includes('\\')||pathname.split('/').includes('..')){res.writeHead(403).end('Forbidden');return;}
-  const allowed=pathname==='/'||['/index.html','/app.js','/route-model.js','/map-geometry.js','/map-views.js','/styles.css'].includes(pathname)||pathname.startsWith('/data/')||pathname.startsWith('/images/')||referencedImages.has(pathname);
+  const allowed=pathname==='/'||['/index.html','/app.js','/route-model.js','/map-geometry.js','/map-views.js','/styles.css'].includes(pathname)||/^\/log-import\/[a-z-]+\.js$/.test(pathname)&&!pathname.endsWith('/probe.js')||pathname.startsWith('/data/')||pathname.startsWith('/images/')||referencedImages.has(pathname);
   const filename=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
   if(!allowed||!filename.startsWith(root+path.sep)){res.writeHead(403).end('Forbidden');return;}
   if(pathname==='/app.js'){

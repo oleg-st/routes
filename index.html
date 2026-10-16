@@ -6,12 +6,13 @@
   <a class="brand" href="index.html" aria-label="Fellowship Route Planner"><span class="brand-icon">◈</span><span>FELLOWSHIP<small>ROUTE PLANNER</small></span></a>
   <div class="dungeon-picker"><label for="dungeon">DUNGEON</label><select id="dungeon" aria-label="Dungeon"></select></div>
   <ul id="room-avatars" aria-label="Room participants" hidden></ul>
-  <div class="header-actions"><button id="together" title="Route Together">Route Together</button><button id="library" title="Saved routes">▤ <span>Routes</span></button><button id="import" aria-label="Import" title="Import a route string">↓ <span>Import</span></button><button id="export" aria-label="Export" title="Copy route to clipboard">↑ <span>Export</span></button><button id="share" aria-label="Share" title="Copy route link">↗ <span>Share</span></button><button id="help" class="square" aria-label="Help">?</button></div>
+  <div class="header-actions"><button id="together" title="Route Together">Route Together</button><button id="import-log-button" title="Import a Fellowship Logs report">Import from log</button><button id="import" aria-label="Import" title="Import a route string">↓ <span>Import</span></button><button id="export" aria-label="Export" title="Copy route to clipboard">↑ <span>Export</span></button><button id="share" aria-label="Share" title="Copy route link">↗ <span>Share</span></button><button id="library" title="Saved routes">▤ <span>Routes</span></button><button id="help" class="square" aria-label="Help">?</button></div>
 </header>
 <section id="room-bar" aria-label="Route Together session" hidden><strong id="room-code-display"></strong><span id="room-status" role="status"></span><button id="room-copy-code">Copy code</button><button id="room-copy-link">Copy link</button><details id="room-sessions"><summary id="room-session-count">Sessions</summary><ul id="room-session-list"></ul><small id="room-leader-status"></small></details><button id="room-reconnect">Reconnect</button><button id="room-profile">Profile</button><button id="room-settings">Network</button><button id="room-leave">Leave room</button><p id="room-diagnostic" role="alert" hidden></p></section>
 <section id="room-waiting" hidden><h1 id="room-waiting-title">Waiting for route</h1><p id="room-waiting-text"></p></section>
 <main id="workspace">
   <section class="map-section" aria-label="Dungeon map">
+    <section id="log-review" class="log-review" aria-label="Import from log" hidden></section>
     <div id="floor-panel" class="map-toolbar" hidden><div class="toolbar-group"><div id="floors" class="floor-tabs"></div></div></div>
     <div id="map-stage" class="map-stage">
       <button id="layers" class="display-options-button" title="Display options" aria-label="Display options" aria-expanded="false" aria-controls="layers-panel">☷</button>

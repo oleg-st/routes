@@ -105,7 +105,7 @@ try{
   assert.ok(archived.some(route=>route.dungeonId===previousDungeon));assert.ok(archived.some(route=>route.dungeonId===nextDungeon));
   await a.reload();await a.waitForFunction(()=>!document.querySelector('#room-bar').hidden&&!document.querySelector('#workspace').hidden);await a.waitForFunction(()=>document.querySelector('#room-session-list [data-leader=true]')?.textContent.includes('(you)'));
   // Persisting and reconnecting keeps lineage and role without sharing IndexedDB across contexts.
-  await b.locator('#storage-status[data-state=saved]').waitFor();await b.reload();await b.waitForFunction(()=>!document.querySelector('#room-bar').hidden&&!document.querySelector('#workspace').hidden);
+  await b.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});await b.reload();await b.waitForFunction(()=>!document.querySelector('#room-bar').hidden&&!document.querySelector('#workspace').hidden);
   assert.equal(await b.locator('#pull-count').textContent(),'2');await b.locator('#add-pull').click();await a.waitForFunction(()=>document.querySelector('#pull-count').textContent==='3');
   await moveCursor(a);const creatorCursor=b.locator('#remote-cursors [data-cursor-session]');await creatorCursor.waitFor();await a.locator('#room-leave').click();await creatorCursor.waitFor({state:'detached'});await b.waitForFunction(()=>document.querySelectorAll('#room-session-list li[data-session]').length===2);
   assert.equal(await b.locator('#room-session-list [data-leader=true]').count(),0);

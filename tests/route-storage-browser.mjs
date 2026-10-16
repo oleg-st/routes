@@ -75,7 +75,7 @@ try{
   await page.locator('#apply-pull').click();assert.equal(await page.locator('#dialog').isVisible(),true);assert.equal(await page.locator('#edit-pull-note').inputValue(),'Local draft');
   await page.locator('#close-dialog').click();await page.locator('[data-action=rename]').click();assert.equal(await page.locator('#edit-pull-note').inputValue(),'Remote note');await page.locator('#close-dialog').click();
   await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#undo').isDisabled(),true);
-  await page.locator('#storage-status[data-state=saved]').waitFor();
+  await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
   assert.deepEqual(errors,[]);console.log('Editor: legacy migration, two-tab convergence, local-only Undo and refresh passed.');
   await context.close();
 }finally{await browser?.close();server.kill();}

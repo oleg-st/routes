@@ -21,7 +21,7 @@ export function compactPublicData(destination) {
     return {...compact, sharedPatrols};
   }));
   write('enemies', read('enemies').filter(enemy => enemyIds.has(enemy.id)).map(enemy => {
-    const compact = pick(enemy, ['id', 'name', 'dungeonScore', 'baseHealth', 'isBoss', 'canBeControlled']);
+    const compact = pick(enemy, ['id', 'gameId', 'name', 'dungeonScore', 'baseHealth', 'isBoss', 'canBeControlled']);
     const image = enemy.images?.find(image => image.size === '200') || enemy.images?.[0];
     return {...compact, images: image ? [pick(image, ['path', 'size'])] : []};
   }));

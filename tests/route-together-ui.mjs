@@ -1,4 +1,4 @@
-// New editor surfaces: marker lifecycle, path vertices, R2 and gesture recovery.
+// New editor surfaces: marker lifecycle, path vertices, R3 and gesture recovery.
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
@@ -29,13 +29,13 @@ try{
     const before=await points();await page.mouse.move(map.x+440,map.y+220);await page.mouse.down();await page.mouse.move(map.x+450,map.y+280);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.mouse.up();assert.notEqual(await points(),before);await page.locator('#undo').click();assert.equal(await points(),before);
     await page.mouse.move(map.x+440,map.y+220);await page.mouse.down();await page.mouse.move(map.x+450,map.y+280);await page.keyboard.press('Escape');await page.mouse.up();assert.equal(await points(),before);
     await page.locator('[data-action=rename]').click();await page.locator('#edit-pull-note').fill('Pull note 🐉');await page.locator('#apply-pull').click();
-    await page.locator('#export').click();await page.waitForFunction(()=>window.copied?.startsWith('R2.'));const encoded=await page.evaluate(()=>copied);
-    await page.locator('#storage-status[data-state=saved]').waitFor();await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
+    await page.locator('#export').click();await page.waitForFunction(()=>window.copied?.startsWith('R3.'));const encoded=await page.evaluate(()=>copied);
+    await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
     assert.equal(await marker.getAttribute('data-drawing'),originalId);assert.equal(await marker.locator('title').textContent(),'Updated label');assert.equal((await points()).split(' ').length,3);
     await page.locator('#import').click();await page.locator('#import-route-text').fill(encoded);await page.locator('#import-route-button').click();await page.locator('#dialog').waitFor({state:'hidden'});
     assert.notEqual(await marker.getAttribute('data-drawing'),originalId);assert.equal((await points()).split(' ').length,3);assert.equal(await marker.locator('title').textContent(),'Updated label');
     await page.locator('[data-action=rename]').click();assert.equal(await page.locator('#edit-pull-note').inputValue(),'Pull note 🐉');await page.locator('#close-dialog').click();
     await page.screenshot({path:`tmp/route-together-${url===origin?'server':'local'}.png`});assert.deepEqual(errors,[]);
-    console.log(`Markers, vertices, gesture recovery and R2 passed: ${url===origin?'server':'local file'}`);await context.close();
+    console.log(`Markers, vertices, gesture recovery and R3 passed: ${url===origin?'server':'local file'}`);await context.close();
   }
 }finally{await browser?.close();server.kill();}

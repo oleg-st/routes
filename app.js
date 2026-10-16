@@ -13,6 +13,10 @@ import {newRoomCode,roomCode} from './collaboration/room-protocol.js';
 import {createRouteDocument,restoreRouteDocument} from './collaboration/route-document.js';
 import {openRouteStorage} from './collaboration/route-storage.js';
 import {migrateLegacyLibrary} from './collaboration/route-library.js';
+import {createLogImportUI} from './log-import/import-ui.js';
+import {captureLogCallback,createLiveImport} from './log-import/live-import.js';
+let logCallback;
+try{logCallback=captureLogCallback(location,history,sessionStorage);}catch(error){logCallback={error};}
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
@@ -29,6 +33,7 @@ let drag=null,toastTimer,suppressClick=false;
 let routeDocument,routeBinding,routeStorage,stopRoute,routeBusy=false,selectionQueue=Promise.resolve();
 let roomSession=null,roomUI,cursorUI,roomTransition=false,roomResume=null;
 let hoveredPack=null;
+let logImportUI,logPreview=null,logHighlights=new Set();
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
 const enemyFocusDuration=1000;
 const enemyHoverDelay=200;
@@ -38,8 +43,8 @@ const dungeonDataKey='fellowship-dungeon-data';
 let dungeonDataMode='custom';
 let store={drafts:{},saved:[],lastDungeon:null};
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4500);}
-function canEdit(){return !routeBusy&&!roomTransition&&(!roomSession||roomSession.document&&!roomSession.state().full&&!roomSession.state().kicked&&!roomSession.state().switching)&&routeDocument?.role==='player';}
-function storageStatus({state,error}){const label=$('#storage-status');label.textContent=state==='saved'?'Saved locally':state==='saving'?'Saving…':'Save failed · click to retry';label.dataset.state=state;label.title=error?.message||'Route Together · browser storage';}
+function canEdit(){return !logPreview&&!routeBusy&&!roomTransition&&(!roomSession||roomSession.document&&!roomSession.state().full&&!roomSession.state().kicked&&!roomSession.state().switching)&&routeDocument?.role==='player';}
+function storageStatus({state,error}){const label=$('#storage-status');label.textContent=state==='saved'?'':state==='saving'?'Saving…':'Save failed · click to retry';label.dataset.state=state;label.title=error?.message||'Route Together · browser storage';}
 async function persist(){try{await routeBinding?.flush();}catch(error){toast('Unable to save: '+error.message);throw error;}}
 function refreshRoute(){route=routeDocument.snapshot();repairSelection();render();}
 function change(commands){if(!canEdit())return false;if(Array.isArray(commands)&&!commands.length)return true;try{Array.isArray(commands)?routeDocument.executeBatch(commands):routeDocument.execute(commands);refreshRoute();return true;}catch(error){toast(error.message);return false;}}
@@ -52,7 +57,7 @@ function assigned(){return new Map(route.pulls.flatMap((p,i)=>p.enemies.map(id=>
 function currentPositions(){return effectivePositions(route,dungeon).filter(e=>onMap(e,mapLayer));}
 function refreshPositions(){positions=new Map(effectivePositions(route,dungeon).map(p=>[p.placementId,p]));}
 function changeDungeonData(mode){
-  if(routeBusy||roomTransition){$('#dungeon-data').value=dungeonDataMode;throw new Error('Finish the current operation before changing dungeon data.');}
+  if(logPreview||routeBusy||roomTransition){$('#dungeon-data').value=dungeonDataMode;throw new Error('Finish the current operation before changing dungeon data.');}
   if(!['custom','fellership'].includes(mode))return;
   for(const d of data.dungeons)Object.assign(d,correctDungeon(d,mode));
   dungeonDataMode=mode;
@@ -79,6 +84,7 @@ function floorName(m,i){
 }
 async function createRoute(target=dungeon){const fresh=newRoute(target,data.manifest.buildId,await routeStorage.nextName(Math.max(0,...[...store.saved,route].filter(Boolean).map(r=>Number(/^Route (\d+)$/.exec(r.name)?.[1])||0))+1));applyModifierPresets(fresh,target,data['modifier-placements']);return fresh;}
 function selectDungeon(id,imported){
+  if(logPreview)return Promise.reject(new Error('Finish or cancel the log import first.'));
   if(roomSession||roomTransition)return Promise.reject(new Error('Leave the room before opening another route.'));
   const operation=selectionQueue.then(()=>loadDungeon(id,imported));selectionQueue=operation.catch(()=>{});return operation;
 }
@@ -114,6 +120,7 @@ function displayRouteDocument(next,binding){
   if(roomSession)roomUI.update(roomSession.state());
 }
 async function startRoom({code,name,classId='',role='player',config={},create=false}){
+  if(logPreview)throw new Error('Finish or cancel the log import first.');
   if(roomSession||roomTransition)throw new Error('Leave your current room first.');
   roomTransition=true;const previous={dungeonId:dungeon.id,routeId:route.id},packet=create?routeDocument.exportSnapshot():undefined;
   try{
@@ -148,10 +155,10 @@ async function changeDungeon(id){
   }finally{roomTransition=false;$('#dungeon').value=dungeon.id;if(routeDocument)render();updateRoomControls();}
 }
 function updateRoomControls(){
-  $('#dungeon').disabled=Boolean(roomTransition||roomSession&&!roomSession.state().canChangeDungeon);
+  $('#dungeon').disabled=Boolean(logPreview||roomTransition||roomSession&&!roomSession.state().canChangeDungeon);
   $('#dungeon').title=roomSession?'Only the room creator can change the dungeon. The current route is saved locally.':'';
-  for(const el of $$('#library,#new-route,#import'))el.disabled=Boolean(roomSession||roomTransition);
-  for(const el of $$('#export,#share'))el.disabled=Boolean(roomTransition||roomSession&&(!roomSession.document||roomSession.state().full));
+  for(const el of $$('#library,#new-route,#import,#import-log-button'))el.disabled=Boolean(logPreview||roomSession||roomTransition);
+  for(const el of $$('#export,#share'))el.disabled=Boolean(logPreview||roomTransition||roomSession&&(!roomSession.document||roomSession.state().full));
   if(routeDocument){updateSaveButton();$('#route-name').disabled=!canEdit();$('#undo').disabled=!canEdit()||!routeDocument.canUndo();$('#redo').disabled=!canEdit()||!routeDocument.canRedo();}
 }
 async function leaveRoom(){
@@ -233,8 +240,9 @@ function render(){
   $('#score-remaining').textContent=totals.unknown?`Unknown scores: ${totals.unknown} enemies` : remaining>0?`${fmt(remaining)} points to reach 100%`: `${fmt(-remaining)} extra points`;
   if(route.shadow){$('#total-score').textContent=`${fmt(totals.score)} KS · ${pct(totals.percent)}`;$('#score-remaining').textContent=`${Math.max(0,shadowTarget(dungeon)-orbs)} orbs remaining · estimated`;}
   $('#shadow').setAttribute('aria-pressed',String(route.shadow));
-  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=!canEdit()||(kind==='empowered'?!route.modifiers.empowered.enemies.length:!route.modifiers[kind].packId);$('#'+kind).title=$('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?(packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'):'Choose a pack'}`;}
-  $('#pull-count').textContent=route.pulls.length;$('#undo').disabled=!routeDocument.canUndo();$('#redo').disabled=!routeDocument.canRedo();
+  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=!canEdit()||(kind==='empowered'?!(route.modifiers.empowered.enemies.length||data['modifier-placements'].dungeons[dungeon.id]?.empowered?.length):!route.modifiers[kind].packId);$('#'+kind).title=$('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?(packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'):'Choose a pack'}`;}
+  $('#pull-count').textContent=route.pulls.length;$('#undo').disabled=!canEdit()||!routeDocument.canUndo();$('#redo').disabled=!canEdit()||!routeDocument.canRedo();
+  for(const el of $$('#dungeon,#library,#together,#export,#share,#delete-route'))el.disabled=!!logPreview;
   for(const el of $$('#route-name,#shadow,#add-pull,#clear-route,#new-route,#import,[data-tool]'))el.disabled=!canEdit()&&el.dataset.tool!=='select';
   const chickens=chickenPositions().length;
   const invis=route.drawings.filter(d=>d.kind==='invis').length;
@@ -248,7 +256,7 @@ function render(){
   updateRoomControls();updateSaveButton();renderMap();if(inspected)renderInspector(inspected);
 }
 function matchesSearch(pos){const q=$('#search').value.trim().toLowerCase();if(!q)return true;return placementName(pos,enemies.get(pos.id)).toLowerCase().includes(q)||`g${packNumbers.get(pos.packId)}`===q;}
-function visiblePositions(){const owners=assigned();return currentPositions().filter(p=>!$('#hide-unselected').checked||owners.has(p.placementId));}
+function visiblePositions(){const owners=assigned();return currentPositions().filter(p=>logHighlights.has(p.placementId)||!$('#hide-unselected').checked||owners.has(p.placementId));}
 function relicSummary(chickens,invis){
   return [[chickenIcon,'Chicken',chickens],[relicIcons.invis,'Invisibility',invis]].map(([icon,name,count])=>`<span class="route-relic ${count?'present':''}" ${name==='Chicken'?'data-route-chicken tabindex="0" aria-describedby="chicken-tooltip"':`title="${name}: ${count}"`}><img src="${icon}" alt=""><span>${name}</span><b>${count}</b></span>`).join('');
 }
@@ -453,6 +461,10 @@ function renderMap(){
     }
   }
   setHoveredPack(hoveredPack);
+  for(const group of $$('#markers > g'))if(logHighlights.has(group.dataset.placement)){
+    const ring=group.querySelector('.mob-ring');if(!ring)continue;
+    group.style.opacity='1';group.append(svg('circle',{cx:ring.getAttribute('cx'),cy:ring.getAttribute('cy'),r:Number(ring.getAttribute('r'))+6*scale(),class:'log-choice-ring','pointer-events':'none'}));
+  }
   if($('#show-pack-efficiency').checked){
     const packs=new Map(),efficiency=dungeonPackEfficiencies(dungeon,enemies,route,data.shadow);
     for(const p of visible){
@@ -631,6 +643,69 @@ async function importRouteText(text){
   await selectDungeon(incoming.dungeonId,incoming);
   toast(incoming.buildId!==data.manifest.buildId?'Imported a route from another build. Check scores and pull contents.':'Route imported.');
 }
+function logPreviewRoute(fixture,state,id){
+  if(fixture.dungeonData!==dungeonDataMode)throw new Error('Dungeon data changed. Reopen Import from log.');
+  const target=data.dungeons.find(d=>d.id===fixture.dungeonID);
+  if(!target)throw new Error('The log dungeon is not available in this game data.');
+  const known=new Set(target.enemies.map(p=>p.placementId));
+  if(Object.values(fixture.groups).some(g=>g.enemies.some(id=>!id.startsWith('modifier:')&&!known.has(id))))throw new Error('The imported route no longer matches this dungeon data. Import the log again.');
+  const next=newRoute(target,data.manifest.buildId,`${fixture.title} · #${fixture.fightID}`);next.id=id;
+  applyModifierPresets(next,target,data['modifier-placements']);next.shadow=fixture.shadow;
+  const groups=state.pulls.flatMap(p=>p.groups.map(id=>fixture.groups[id]));
+  next.modifiers.empowered={active:fixture.empowered,enemies:[...new Set([...next.modifiers.empowered.enemies,...groups.flatMap(g=>g.empowered)])]};
+  for(const kind of ['ghorn','witch'])next.modifiers[kind].active=fixture.replacement[kind].active;
+  next.pulls=state.pulls.filter(p=>p.groups.length||!state.complete&&p===state.pulls.at(-1)).map((p,i)=>{
+    const members=p.groups.flatMap(id=>fixture.groups[id].enemies),inferred=fixture.inferredPlacements?.filter(id=>members.includes(id))??[];
+    return {...newPull(i),id:`log-pull-${i}`,enemies:members,note:`Log ${p.id}.${inferred.length?' '+fixture.assumption:''}`};
+  });
+  next.excluded=groups.flatMap(g=>g.excluded);
+  next.drawings=fixture.drawings.filter(d=>state.complete||d.afterTime<=(state.pulls.at(-2)?.end??-Infinity)).map(({afterTime,...d})=>d);
+  return {next,target};
+}
+async function previewLogRoute(fixture,state){
+  if(!logPreview&&!canEdit())throw new Error('Leave the room before importing a log.');
+  if(roomSession||roomTransition)throw new Error('Leave the room before importing a log.');
+  const id=logPreview?.id??uid(),{next,target}=logPreviewRoute(fixture,state,id);
+  const document=createRouteDocument(next,{dungeon:target,enemies,role:'player'});
+  if(!logPreview){
+    try{await persist();}catch(error){document.dispose();throw error;}
+    logPreview={id,document:routeDocument,binding:routeBinding,store:structuredClone(store),snapshot:routeDocument.snapshot()};
+    drag=null;draft=[];setTool('select',{cancel:true});
+  }else{stopRoute?.();routeDocument.dispose();}
+  stopRoute?.();
+  displayRouteDocument(document,null);
+  activePull=route.pulls[state.pullIndex]?.id;render();
+  $('#storage-status').textContent='Import preview · not saved yet';
+}
+async function cancelLogImport(){
+  if(!logPreview)return;
+  const previous=logPreview;stopRoute?.();routeDocument.dispose();logPreview=null;store=previous.store;
+  displayRouteDocument(previous.document,previous.binding);storageStatus({state:'saved'});
+}
+async function commitLogImport(){
+  if(!logPreview)return;
+  const previous=logPreview,binding=routeStorage.bind(routeDocument,storageStatus);
+  try{
+    await binding.flush();
+    // Keep a changed prior draft discoverable even when importing the same dungeon.
+    if(hasRouteChanges(previous.snapshot,previous.store.saved.find(r=>r.id===previous.snapshot.id))){
+      await routeStorage.saveBookmark(previous.snapshot);
+      const index=store.saved.findIndex(r=>r.id===previous.snapshot.id);
+      if(index<0)store.saved.push(previous.snapshot);else store.saved[index]=previous.snapshot;
+    }
+    await routeStorage.setDraft(dungeon.id,route.id);
+  }catch(error){await binding.dispose().catch(()=>{});throw error;}
+  await previous.binding?.dispose();previous.document.dispose();routeBinding=binding;logPreview=null;render();
+}
+function setupLogImport(){
+  logImportUI=createLogImportUI({panel:$('#log-review'),showDialog,closeDialog:()=>$('#dialog').close(),
+    live:createLiveImport({data,dungeonData:()=>dungeonDataMode,persist,callback:logCallback}),
+    dungeonData:()=>dungeonDataMode,
+    preview:previewLogRoute,commit:commitLogImport,cancel:cancelLogImport,
+    highlight:ids=>{logHighlights=new Set(ids);renderMap();},focus:ids=>{focusEnemies(ids);logHighlights=new Set(ids);renderMap();},
+    describe:ids=>[...Map.groupBy(ids,id=>{const p=positions.get(id);return p?placementName(p,enemies.get(p.id)):id;})].map(([name,members])=>`${name} ×${members.length}`).join(', '),
+    onError:message=>toast('Log import: '+message)});
+}
 function showImport(){
   showDialog('Import route','<label for="import-route-text">Paste a route string or Share link</label><textarea id="import-route-text" spellcheck="false" placeholder="Route string or Share link"></textarea><p id="import-error" role="alert" hidden></p><button id="import-route-button" class="primary">Import</button>');
   $('#import-route-text').focus();
@@ -652,7 +727,14 @@ function search(){
 }
 function addPull(){const p=newPull(route.pulls.length);let index=route.pulls.length;while(route.pulls.some(pull=>pull.color===p.color))p.color=pullColor(++index);if(change({type:'add-pull',id:p.id,color:p.color})){activePull=p.id;render();$('#pulls').scrollTop=$('#pulls').scrollHeight;}}
 function movePullTo(id,to){const from=route.pulls.findIndex(p=>p.id===id),target=route.pulls[to];if(!target||from===to)return;change({type:'move-pull',pullId:id,[from<to?'afterId':'beforeId']:target.id});}
-function toggleRouteModifier(kind){const mod=route.modifiers[kind],commands=[{type:'set-modifier',kind,patch:{active:!mod.active}}];if(kind!=='empowered'&&!mod.active&&!route.pulls.some(p=>p.enemies.includes('modifier:'+kind))){const pull=route.pulls.find(p=>p.enemies.some(id=>mod.replacedEnemies?.includes(id)));if(pull)commands.push({type:'assign-mobs',pullId:pull.id,mobIds:['modifier:'+kind]});}change(commands);}
+function toggleRouteModifier(kind){
+  const mod=route.modifiers[kind],patch={active:!mod.active};
+  // Restore fixed map markers even for routes saved by older log imports.
+  if(kind==='empowered')patch.enemies=[...new Set([...mod.enemies,...(data['modifier-placements'].dungeons[dungeon.id]?.empowered??[])])];
+  const commands=[{type:'set-modifier',kind,patch}];
+  if(kind!=='empowered'&&!mod.active&&!route.pulls.some(p=>p.enemies.includes('modifier:'+kind))){const pull=route.pulls.find(p=>p.enemies.some(id=>mod.replacedEnemies?.includes(id)));if(pull)commands.push({type:'assign-mobs',pullId:pull.id,mobIds:['modifier:'+kind]});}
+  change(commands);
+}
 function bind(){
   $('#dungeon-data').onchange=run(e=>changeDungeonData(e.target.value));
   const pullList=$('#pulls'),pullTip=$('#pull-tooltip');
@@ -710,6 +792,7 @@ function bind(){
   $('#help').onclick=showHelp;$('#close-dialog').onclick=()=>$('#dialog').close();
   $('#add-pull').onclick=addPull;$('#undo').onclick=undo;$('#redo').onclick=redo;$('#save-route').onclick=run(saveNamed);$('#library').onclick=showLibrary;$('#export').onclick=exportRoute;
   $('#import').onclick=showImport;$('#share').onclick=shareRoute;
+  $('#import-log-button').onclick=()=>logImportUI.open();
   window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#room='))openRoomHash();else importRouteHash();});
   $('#delete-route').onclick=run(()=>removeSavedRoute(store.saved.findIndex(r=>r.id===route.id)));
   $('#clear-route').onclick=()=>{drag=null;draft=[];hideHover();$('#enemy-menu').hidden=true;$('#inspector').hidden=true;inspected=null;$('#map').classList.remove('dragging');closeArrowOptions();const preset=newRoute(dungeon,data.manifest.buildId);applyModifierPresets(preset,dungeon,data['modifier-placements']);change([{type:'clear-route'},...['empowered','ghorn','witch'].map(kind=>({type:'set-modifier',kind,patch:preset.modifiers[kind]}))]);setTool('select',{cancel:true});toast('Route cleared. Undo to restore it.');};
@@ -863,10 +946,11 @@ async function init(){
   routeStorage=await openRouteStorage();
   const errors=await migrateLegacyLibrary(routeStorage,store,{dungeons:data.dungeons,enemies,presets:data['modifier-placements']});
   store=await routeStorage.library();
-  bind();setupRooms();await selectDungeon(store.lastDungeon||'Level.ID.FrozenKingdom');
+  bind();setupRooms();setupLogImport();await selectDungeon(store.lastDungeon||'Level.ID.FrozenKingdom');
   let resume;try{resume=JSON.parse(sessionStorage.getItem('rt-room'));}catch{}
   if(location.hash.startsWith('#room=')){const code=roomCode(location.hash);if(resume?.code===code)await startRoom({...resume,code});else openRoomHash();}
   else await importRouteHash();setTool('select');
   if(errors.length)toast('Some older routes could not be migrated. Their original browser backup is preserved.');
+  await logImportUI.resume();
 }
 init().catch(err=>{$('#map-loading').hidden=false;$('#map-loading').textContent=err.message;$('#map-loading').classList.add('fatal');console.error(err);});
