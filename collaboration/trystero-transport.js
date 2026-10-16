@@ -1,8 +1,14 @@
 import {roomTransportConfig,roomAppId} from './room-config.js';
 import {MAX_BYTES,MAX_HEADER} from './room-protocol.js';
-export async function createTrysteroTransport({roomId,connectionConfig={},onPeerJoin,onPeerLeave,onMessage,onPresence=()=>{},onError}) {
+import {turnServiceConfig} from './turn-service-config.js';
+import {createTurnCredentials} from './turn-credentials.js';
+import {verifyTurnstile} from './turn-verification.js';
+const prepareTurn=createTurnCredentials({settings:turnServiceConfig,verify:verifyTurnstile});
+export async function createTrysteroTransport({roomId,connectionConfig={},signal,onPeerJoin,onPeerLeave,onMessage,onPresence=()=>{},onError}) {
   // Importing/joining happens only after an explicit create/join (or resuming that tab's room).
+  connectionConfig=await prepareTurn(connectionConfig,signal);signal?.throwIfAborted();
   const {joinRoom}=await import('trystero');
+  signal?.throwIfAborted();
   const room=joinRoom({...roomTransportConfig,...connectionConfig,rtcConfig:{...roomTransportConfig.rtcConfig,...connectionConfig.rtcConfig},appId:roomAppId,maxReceiveBytes:MAX_BYTES+MAX_HEADER+4},roomId,{onJoinError:({error})=>onError(new Error(String(error)))});
   const presence=room.makeAction('rt-cursor');
   presence.onReceive=({byteLength})=>!closed&&byteLength<=2048;
@@ -20,6 +26,7 @@ export async function createTrysteroTransport({roomId,connectionConfig={},onPeer
   room.onPeerJoin=onPeerJoin;room.onPeerLeave=onPeerLeave;
   for(const peerId of Object.keys(room.getPeers()))queueMicrotask(()=>{if(!closed)onPeerJoin(peerId);});
   const controllers=new Set();
+  const expiryTimer=connectionConfig.turnExpiresAt?setTimeout(()=>{if(!closed)onError(new Error('Relay access is expiring. Reconnect to renew it.'));},Math.max(0,connectionConfig.turnExpiresAt-Date.now()-60000)):null;
   return {
     async send(peerId,frame){
       if(closed)throw new Error('Room transport is closed.');
@@ -35,6 +42,6 @@ export async function createTrysteroTransport({roomId,connectionConfig={},onPeer
       if(!pair)for(const row of stats.values())if(row.type==='candidate-pair'&&row.nominated&&row.state==='succeeded')pair=row;
       if(!pair)return 'unknown';return [stats.get(pair.localCandidateId),stats.get(pair.remoteCandidateId)].some(c=>c?.candidateType==='relay')?'relay':'direct';
     },
-    async close(){if(closed)return;closed=true;room.onPeerJoin=null;room.onPeerLeave=null;action.onMessage=null;presence.onMessage=null;cursorPending.clear();for(const c of controllers)c.abort();await room.leave();},
+    async close(){if(closed)return;closed=true;clearTimeout(expiryTimer);room.onPeerJoin=null;room.onPeerLeave=null;action.onMessage=null;presence.onMessage=null;cursorPending.clear();for(const c of controllers)c.abort();await room.leave();},
   };
 }

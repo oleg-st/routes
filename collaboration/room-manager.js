@@ -17,8 +17,8 @@ export async function createRoomSession({code,role='player',name='Player',classI
   const checkClass=value=>invariant(value===''||classes.some(c=>c.id===value),'Unknown hero/class.');checkClass(classId);
   let document,binding,identity=null,transport,closed=false,full=false,connecting=false,generation=0,tail=Promise.resolve(),queued=0,timer,error;
   let kicked=false,checkTimer,checkRevision=0,checkSequence=0,localCheck=null,fingerprintTask=null;
-  let localOrder=initialPacket?0:null,stopLocal,stopState,closing=Promise.resolve();
-  function disconnect(){const active=transport;transport=null;generation++;closing=closing.catch(()=>{}).then(()=>active?.close());return closing;}
+  let localOrder=initialPacket?0:null,stopLocal,stopState,closing=Promise.resolve(),connectAbort;
+  function disconnect(){connectAbort?.abort();const active=transport;transport=null;generation++;closing=closing.catch(()=>{}).then(()=>active?.close());return closing;}
   const peers=new Map(),hints=new Map(),departed=new Map();
   const localMember=()=>({sessionId,order:localOrder,name,role,participantId,classId,profileVersion});
   const self=()=>localOrder===null?null:localMember();
@@ -226,9 +226,10 @@ export async function createRoomSession({code,role='player',name='Player',classI
     for(const [peerId,p]of peers){hello(peerId);request(peerId,p);if(p.archiveRequest)queue(()=>requestArchive(peerId,p));transport?.connectionType?.(peerId).then(value=>{if(peers.get(peerId)===p){p.connection=value;emit();}}).catch(()=>{});}emit();
   }
   async function connect(){
+    connectAbort?.abort();const controller=new AbortController();connectAbort=controller;
     const current=++generation;connecting=true;emit();
     try{
-      const active=await transportFactory({roomId,connectionConfig,
+      const active=await transportFactory({roomId,connectionConfig,signal:controller.signal,
         onPeerJoin:peerId=>{if(current===generation)joinPeer(peerId);},
         onPeerLeave:peerId=>{if(current===generation)leavePeer(peerId);},
         onMessage:(peerId,frame)=>{if(current===generation)queue(async()=>{if(current!==generation)return;try{await receive(peerId,frame);}catch(reason){const p=peers.get(peerId);if(p){p.rejected=true;p.error=reason.message;}report(reason);}});},
@@ -236,7 +237,7 @@ export async function createRoomSession({code,role='player',name='Player',classI
         onError:reason=>{if(current===generation)report(reason);},
       });
       if(closed||current!==generation){await active.close();return;}transport=active;connecting=false;tick();
-    }catch(reason){connecting=false;report(reason);}
+    }catch(reason){if(!closed&&current===generation){connecting=false;report(reason);}}
   }
   try{
     if(initialPacket){identity=initialPacket.identity;await attach(initialPacket);}

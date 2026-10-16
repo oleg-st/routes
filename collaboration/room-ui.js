@@ -2,11 +2,13 @@ import {classPicker,mountClassPicker,classColor} from './class-picker.js';
 import {mountNetworkCheck} from './network-check-ui.js';
 import {displayCode,roomCode,MAX_SESSIONS} from './room-protocol.js';
 import {sessionColor} from './cursor-presence.js';
+import {turnServiceConfig} from './turn-service-config.js';
 import {connectionConfig} from './connection-config.js';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createRoomUI({showDialog,copyText,onCreate,onJoin,onLeave,onReconnect,onError,onProfile,onKick,classes=[]}) {
   let state=null,networkCheck,invitationCode='';
+  const automatic=Boolean(turnServiceConfig.endpoint&&turnServiceConfig.siteKey);
   function attachNetworkCheck(){networkCheck=mountNetworkCheck($('#room-network-check'),{getSessions:()=>state?.sessions||[]});}
   function stopNetworkCheck(){networkCheck?.dispose();networkCheck=null;}
   $('#dialog').addEventListener('close',()=>{
@@ -31,13 +33,13 @@ export function createRoomUI({showDialog,copyText,onCreate,onJoin,onLeave,onReco
     invitationCode=code&&!state?roomCode(code):'';
     const {name:lastName,classId:lastClass}=savedProfile(),invited=Boolean(invitationCode);
     showDialog(invited?'Join Route Together':'Route Together',`<div class="room-form"><section id="room-network-check" class="network-check" role="status" aria-live="polite"></section>${state?'<p>Connection settings for this session.</p>':`<p>${invited?'You have been invited to a shared route. Choose your profile and role to join.':'Share the current route or join a room.'} Up to ${MAX_SESSIONS} sessions, including spectators.</p>${profileFields(lastName,lastClass)}${invited?'':'<div class="room-create-section"><button id="room-create" class="primary">Create room from current route</button></div>'}<label>${invited?'Invitation code':'Room code or invitation'}<input ${invited?'readonly':''} id="room-code" value="${esc(code)}" autocomplete="off" placeholder="XXXX-XXXX-XXXX"></label><label>Join as<select id="room-role"><option value="player">Player — can edit</option><option value="spectator">Spectator — view only</option></select></label>`}
-      <details id="room-network"><summary>Network / TURN (optional)</summary><p>Direct WebRTC works through many NATs. Restrictive networks may require a TURN relay. Use credentials from your TURN provider; they stay in this page's memory.</p><label>TURN server URLs<textarea id="turn-urls" placeholder="turns:turn.example.com:443?transport=tcp"></textarea></label><label>Username<input id="turn-username" autocomplete="off"></label><label>Password<input id="turn-password" type="password" autocomplete="off"></label><label class="room-checkbox"><input type="checkbox" id="turn-only"> Force TURN relay (connection test)</label><p>Reloading clears these credentials. Re-enter them here if your network needs TURN.</p></details>
+      <details id="room-network"><summary>Network / TURN (optional)</summary>${automatic?'<p>Automatic relay is enabled. A verification may appear when connecting. Manual settings below override it.</p>':''}<p>Direct WebRTC works through many NATs. Restrictive networks may require a TURN relay. Use credentials from your TURN provider; they stay in this page's memory.</p><label>TURN server URLs<textarea id="turn-urls" placeholder="turns:turn.example.com:443?transport=tcp"></textarea></label><label>Username<input id="turn-username" autocomplete="off"></label><label>Password<input id="turn-password" type="password" autocomplete="off"></label><label class="room-checkbox"><input type="checkbox" id="turn-only"> Force TURN relay (connection test)</label><p>Reloading clears these credentials. Re-enter them here if your network needs TURN.</p></details>
       <p id="room-form-error" role="alert" hidden></p><div class="room-form-actions">${invited?'<button id="room-decline">Decline invitation</button>':''}<button id="room-join" class="primary">${state?'Apply and reconnect':'Join room'}</button></div></div>`);
     attachNetworkCheck();rememberFields();
     const act=async(create)=>{
       const button=create?$('#room-create'):$('#room-join');button.disabled=true;
       try{
-        const config=connectionConfig({urls:$('#turn-urls').value,username:$('#turn-username').value,credential:$('#turn-password').value,relayOnly:$('#turn-only').checked});
+        const config=connectionConfig({urls:$('#turn-urls').value,username:$('#turn-username').value,credential:$('#turn-password').value,relayOnly:$('#turn-only').checked,automatic});
         if(state)await onReconnect(config);
         else{const name=$('#room-name').value.trim()||'Player',classId=$('#room-class').value;remember(name,classId);if(create)await onCreate({name,classId,config});else await onJoin({code:roomCode($('#room-code').value),name,classId,role:$('#room-role').value,config});}
         $('#dialog').close();

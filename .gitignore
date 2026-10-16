@@ -30,6 +30,9 @@ images-archive/
 .env
 .env.*
 !.env.example
+.dev.vars
+.dev.vars.*
+.wrangler/
 /.idea/
 /.vscode/
 .DS_Store
