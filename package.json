@@ -17,6 +17,7 @@
     "test:crdt:browser": "node tests/route-crdt-browser.mjs",
     "test:storage:browser": "node tests/route-storage-browser.mjs",
     "test:editor": "node tests/route-ui.mjs && node tests/drawing-ui.mjs && node tests/pull-split-ui.mjs && node tests/transfer-ui.mjs && node tests/route-together-ui.mjs",
+    "test:keyboard": "node tests/keyboard-ui.mjs",
     "test:site:browser": "node tests/route-site-browser.mjs",
     "test:site:cache": "node tests/site-cache-browser.mjs",
     "test:rooms": "node --test tests/room-manager.test.mjs",

@@ -964,11 +964,13 @@ function bind(){
   map.addEventListener('keydown',e=>{const id=e.target.closest('[data-placement]')?.dataset.placement,drawing=e.target.closest('[data-drawing]')?.dataset.drawing;if(!id&&!drawing)return;if(e.key==='ContextMenu'||(e.shiftKey&&e.key==='F10')){e.preventDefault();const rect=e.target.getBoundingClientRect();(drawing?showDrawingMenu:showEnemyMenu)(drawing||id,{clientX:rect.right,clientY:rect.top});}else if(id&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(tool==='select')chooseEnemy(id);}});
   document.addEventListener('keydown',e=>{
     if(e.target.closest('input,textarea,select')||$('#dialog').open||roomSession&&!roomSession.document||roomTransition)return;
-    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}
-    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();return;}
-    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();$('#search').focus();return;}
+    // Physical letter keys keep shortcuts independent of the active keyboard layout.
+    const key=/^Key[A-Z]$/.test(e.code)?e.code.slice(3).toLowerCase():e.key.toLowerCase();
+    if((e.ctrlKey||e.metaKey)&&key==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}
+    if((e.ctrlKey||e.metaKey)&&key==='y'){e.preventDefault();redo();return;}
+    if((e.ctrlKey||e.metaKey)&&key==='f'){e.preventDefault();$('#search').focus();return;}
     if(e.ctrlKey||e.metaKey||e.altKey)return;
-    const key=e.key.toLowerCase();if(key==='n')addPull();if(key==='f')fitMap();if(key==='b')setTool('box');if(key==='v')setTool('select');if(key==='d')setTool('line');if(key==='s'&&canEdit())setTool('split');if(key==='escape'){if(drag?.split)suppressClick=true;drag=null;map.classList.remove('dragging');closeArrowOptions();setTool('select',{cancel:true});$('#inspector').hidden=true;inspected=null;$('#layers-panel').hidden=true;$('#search-results').hidden=true;}
+    if(key==='n')addPull();if(key==='f')fitMap();if(key==='b')setTool('box');if(key==='v')setTool('select');if(key==='d')setTool('line');if(key==='s'&&canEdit())setTool('split');if(key==='escape'){if(drag?.split)suppressClick=true;drag=null;map.classList.remove('dragging');closeArrowOptions();setTool('select',{cancel:true});$('#inspector').hidden=true;inspected=null;$('#layers-panel').hidden=true;$('#search-results').hidden=true;}
   });
   new ResizeObserver(()=>{if(route)renderMap();}).observe($('#map-stage'));
   $('#storage-status').onclick=run(persist);
