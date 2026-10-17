@@ -6,6 +6,7 @@ const fightStatus=f=>f?.inProgress?'progress':f?.kill===true?'clear':f?.kill===f
 const proximityLabel=o=>{
   if(!o.proximity)return '';
   const p=o.proximity,low=Math.round(p.minDistance),high=Math.round(p.maxDistance);
+  if(p.basis==='neighbor')return `Possible neighbor · Pack distance: ≈${low===high?low:`${low}–${high}`} · from ${p.sources.join(' / ')}`;
   return `${o.closestToPath?'Closest to path · ':''}${p.estimated?'Estimated across log gap · ':''}Path distance: ≈${low===high?low:`${low}–${high}`} · ${p.sources.join(' / ')}${p.patrol?' · patrol path':''}`;
 };
 export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,cancel,highlight,focus,describe,onError,live}){
@@ -49,8 +50,10 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
       const select=document.getElementById('log-fight'),field=document.getElementById('log-fight-field');
       const diagnosticActions=document.createElement('div');diagnosticActions.className='log-review-actions';form.append(diagnosticActions);
       const download=document.createElement('button');download.type='button';download.textContent='Download import diagnostics';download.hidden=true;diagnosticActions.append(download);
-      const proceed=document.createElement('button');proceed.id='log-continue';proceed.type='button';proceed.textContent='Ignore error and continue';proceed.hidden=true;diagnosticActions.append(proceed);
-      const recoveryHint=document.createElement('p');recoveryHint.className='muted';recoveryHint.textContent='Import the matched enemies. Unmatched enemies will be skipped; check pack contents and positions afterwards.';recoveryHint.hidden=true;form.append(recoveryHint);
+      const expand=document.createElement('button');expand.id='log-expand';expand.type='button';expand.hidden=true;diagnosticActions.append(expand);
+      const proceed=document.createElement('button');proceed.id='log-continue';proceed.type='button';proceed.textContent='Import without missing mobs';proceed.hidden=true;
+      diagnosticActions.append(expand,proceed,download);
+      const missing=document.createElement('div');missing.id='log-missing-enemies';missing.hidden=true;diagnosticActions.before(missing);
       download.onclick=()=>{
         const diagnostic=live.diagnostics?.();if(!diagnostic)return;
         const url=URL.createObjectURL(new Blob([JSON.stringify(diagnostic)],{type:'application/json'}));
@@ -75,7 +78,18 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
         let sameLog=false;
         try{const selected=parseReportURL(selectedURL()),saved=live.diagnostics?.();sameLog=selected.reportCode===saved?.log.reportCode&&selected.fightID===saved?.log.fight.id;}catch{}
         download.hidden=busy||!sameLog;
-        proceed.hidden=recoveryHint.hidden=busy||!sameLog||!live.canContinue?.();proceed.disabled=busy;
+        expand.hidden=busy||!sameLog||!live.canFindMissing?.();expand.disabled=busy;
+        expand.textContent='Find missing mobs';
+        expand.title='Look for matching mobs in packs near confirmed packs pulled earlier. Newly found packs do not extend the search. Nearby packs may not have been pulled.';
+        proceed.hidden=busy||!sameLog||!live.canContinue?.();proceed.disabled=busy;
+        const skipped=sameLog?live.missingEnemies?.():null;
+        missing.hidden=busy||!skipped?.length;
+        missing.innerHTML=skipped?.length?[...Map.groupBy(skipped,r=>r.pull??1)].sort(([a],[b])=>a-b).map(([pull,rows])=>
+          `<p><strong>Pull ${esc(pull)}</strong><br>${[...Map.groupBy(rows,r=>r.name)].map(([name,rs])=>`${esc(name)} ×${rs.length}`).join('<br>')}</p>`).join(''):'';
+      }
+      function showFailure(message){
+        const skipped=live.missingEnemies?.();
+        error.textContent=skipped?.length?'This run contains unmatched mobs.':message;error.hidden=false;
       }
       input.oninput=()=>{report=null;select.replaceChildren();field.hidden=true;status.textContent='';error.hidden=true;download.hidden=true;remember();controls();};
       another.onclick=()=>{input.value='';input.oninput();input.focus();};
@@ -91,7 +105,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
         if(selectedID&&!list.fights.some(f=>f.id===selectedID))throw new Error('The selected fight is not available in this report. Check the link.');
         showFights(list,selectedID);select.focus();
       }
-      async function importLog(recover=false){
+      async function importLog(mode='normal'){
         if(busy)return;busy=true;controller=new AbortController();
         controls();
         error.hidden=true;download.hidden=true;status.textContent=live.connected()?'Reading the log…':'Opening Fellowship Logs…';
@@ -103,20 +117,22 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
           }
           // Direct links use the same selected-fight view while events load.
           // Continue automatically after fetching the small report summary.
-          if(!report&&!recover&&live.fights)await loadFights(selection.fightID);
+          if(!report&&mode==='normal'&&live.fights)await loadFights(selection.fightID);
           remember();lastFightID=selection.fightID;
           const options={signal:controller.signal,onProgress:text=>status.textContent=text};
-          const result=await (recover?live.continueImport(selectedURL(),options):live.load(selectedURL(),options));
+          const result=await (mode==='expand'?live.expandSearch(selectedURL(),options):mode==='recover'?live.continueImport(selectedURL(),options):live.load(selectedURL(),options));
+          if(!result){status.textContent='Additional search finished. The mobs below still could not be matched.';showFailure('Could not match complete packs. You can import the matched mobs.');return;}
           controller.signal.throwIfAborted();fixture=result;session=createReviewSession(fixture);await advance();
         }catch(e){
           status.textContent=controller.signal.aborted?'Import cancelled.':'';
-          if(!controller.signal.aborted){error.textContent=e.message;error.hidden=false;download.hidden=!live.diagnostics?.();}
+          if(!controller.signal.aborted){showFailure(e.message);download.hidden=!live.diagnostics?.();}
         }finally{
           busy=false;controls();
         }
       }
       form.onsubmit=event=>{event.preventDefault();return importLog();};
-      proceed.onclick=()=>importLog(true);
+      proceed.onclick=()=>importLog('recover');
+      expand.onclick=()=>importLog('expand');
       if(report)showFights(report,lastFightID);
       controls();(report?select:input).focus();
       // Reuse the report summary on reopening; older sessions may lack it.

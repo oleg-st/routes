@@ -110,7 +110,8 @@ try{
   events.push({...events[0],timestamp:300,targetInstance:2});
   await page.locator('#log-load').click();
   const diagnosticsButton=page.getByRole('button',{name:'Download import diagnostics'});await diagnosticsButton.waitFor();
-  assert.match(await page.locator('#log-live-error').textContent(),/2 in log, 1 on map/);
+  assert.match(await page.locator('#log-live-error').textContent(),/unmatched mobs/);
+  assert.match(await page.locator('#log-missing-enemies').textContent(),/Pull 1/);
   assert.equal(await page.locator('#route-name').inputValue(),'Empyrean Sands · #6');
   const downloaded=page.waitForEvent('download');await diagnosticsButton.click();const download=await downloaded;
   assert.equal(download.suggestedFilename(),`route-import-${code}-5.json`);

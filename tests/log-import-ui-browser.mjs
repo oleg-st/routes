@@ -10,7 +10,11 @@ const bundle=await build({stdin:{contents:`
   const dialog=document.querySelector('dialog');
   window.ui=createLogImportUI({panel:document.querySelector('#panel'),
     showDialog:(title,html)=>{dialog.innerHTML=html;dialog.showModal();},closeDialog:()=>dialog.close(),
-    live:{connected:()=>true,load:async()=>window.extraFixture??logFixtures.find(f=>f.id===window.example&&f.dungeonData==='custom')},
+    live:{connected:()=>true,load:async()=>{if(window.failure)throw new Error('No complete route');return window.extraFixture??logFixtures.find(f=>f.id===window.example&&f.dungeonData==='custom');},
+      diagnostics:()=>window.failure?.diagnostics,missingEnemies:()=>window.failure?.skipped,
+      canFindMissing:()=>Boolean(window.failure&&!window.failure.searched),canContinue:()=>Boolean(window.failure&&!window.failure.done),
+      expandSearch:async()=>{window.failure.searched=true;window.failure.skipped=window.failure.skipped.filter(r=>r.pull===2);return null;},
+      continueImport:async()=>{window.failure.done=true;return window.extraFixture;}},
     preview:async(fixture,state)=>{window.result.preview=state;},commit:async()=>{window.result.saved=true;},cancel:async()=>{window.result.cancelled=true;},
     highlight:ids=>{window.result.highlight=ids;},focus:ids=>{window.result.focus=ids;},describe:ids=>ids.length+' enemies',onError:error=>{throw new Error(error);}});
   window.ui.open();`,resolveDir:process.cwd(),loader:'js'},bundle:true,format:'iife',write:false});
@@ -57,5 +61,28 @@ try{
   await page.evaluate(()=>{window.extraFixture.variants=window.extraFixture.variants.slice(1);window.ui.open();});await submit();
   assert.equal(await page.locator('[data-log-choice]').count(),0);
   assert.equal(await page.evaluate(()=>window.result.saved),true);assert.equal(await page.locator('#panel').isHidden(),true);assert.deepEqual(errors,[]);
-  console.log('Log import UI: hover, locate, compatible choices, Back, Cancel, immediate save and hypothesis choice passed.');
+  await page.evaluate(()=>{
+    window.result.saved=false;window.extraFixture.expandedSearch={maxRadius:3000};
+    window.extraFixture.assumption='Nearby packs may not have been pulled.';window.ui.open();
+  });await submit();
+  assert.equal(await page.evaluate(()=>window.result.saved),true,'a complete expanded result saves without another confirmation');
+  assert.equal(await page.locator('#panel').isHidden(),true);assert.deepEqual(errors,[]);
+  await page.evaluate(()=>{
+    delete window.extraFixture.expandedSearch;
+    window.failure={diagnostics:{log:{reportCode:'JLhT1y4Fa3n9Xjx8',fight:{id:6}}},skipped:[
+      {name:'Raider',pull:1},{name:'Shade',pull:1},{name:'Shade',pull:1},{name:'Soul',pull:2}]};
+    window.ui.open();
+  });await submit();
+  assert.match(await page.locator('#log-missing-enemies').textContent(),/Pull 1Raider ×1Shade ×2Pull 2Soul ×1/);
+  assert.equal(await page.locator('#log-expand').isVisible(),true);
+  assert.equal(await page.locator('#log-expand').textContent(),'Find missing mobs');
+  assert.match(await page.locator('#log-expand').getAttribute('title'),/confirmed packs pulled earlier.*Newly found packs do not extend/);
+  assert.equal(await page.locator('#log-live-form > p.muted').count(),0);
+  await page.locator('#log-expand').click();
+  assert.equal(await page.locator('#log-missing-enemies').textContent(),'Pull 2Soul ×1');
+  assert.equal(await page.locator('#log-expand').isHidden(),true);
+  assert.equal(await page.getByRole('button',{name:'Download import diagnostics'}).isVisible(),true);
+  await page.getByRole('button',{name:'Import without missing mobs'}).click();
+  assert.equal(await page.evaluate(()=>window.result.saved),true);assert.deepEqual(errors,[]);
+  console.log('Log import UI: choices, recovery by pull, search tooltip and automatic expanded import passed.');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

@@ -657,7 +657,7 @@ function logPreviewRoute(fixture,state,id){
   for(const kind of ['ghorn','witch'])next.modifiers[kind].active=fixture.replacement[kind].active;
   next.pulls=state.pulls.filter(p=>p.groups.length||!state.complete&&p===state.pulls.at(-1)).map((p,i)=>{
     const members=p.groups.flatMap(id=>fixture.groups[id].enemies),inferred=fixture.inferredPlacements?.filter(id=>members.includes(id))??[];
-    return {...newPull(i),id:`log-pull-${i}`,enemies:members,note:`Log ${p.id}.${inferred.length||fixture.partial?' '+fixture.assumption:''}`};
+    return {...newPull(i),id:`log-pull-${i}`,enemies:members,note:`Log ${p.id}.${inferred.length||fixture.partial||fixture.expandedSearch?' '+fixture.assumption:''}`};
   });
   next.excluded=groups.flatMap(g=>g.excluded);
   next.drawings=fixture.drawings.filter(d=>state.complete||d.afterTime<=(state.pulls.at(-2)?.end??-Infinity)).map(({afterTime,...d})=>d);

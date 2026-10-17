@@ -30,5 +30,6 @@ export function createPathProximity(packs,observations){
 export function combineProximity(values){
   if(!values.length||values.some(v=>!v))return null;
   return {minDistance:Math.min(...values.map(v=>v.minDistance)),maxDistance:Math.max(...values.map(v=>v.maxDistance)),
-    sources:[...new Set(values.flatMap(v=>v.sources))],patrol:values.some(v=>v.patrol),...(values.some(v=>v.estimated)?{estimated:true}:{})};
+    sources:[...new Set(values.flatMap(v=>v.sources))],patrol:values.some(v=>v.patrol),...(values.some(v=>v.estimated)?{estimated:true}:{}),
+    ...(values.every(v=>v.basis==='neighbor')?{basis:'neighbor'}:{})};
 }

@@ -16,9 +16,10 @@ import {createPathProximity,combineProximity} from './path-proximity.js';
 import {createGapApproach} from './gap-approach.js';
 import {mapViews,worldMapCoordinates} from '../map-views.js';
 import {encounterIdentity} from './boss-encounters.js';
+import {createNeighborApproach} from './neighbor-approach.js';
 
 const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
-export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false,allowPartial=false}){
+export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false,allowPartial=false,neighborRadius=0}){
   if(!log.complete)throw new Error('Incomplete log; no route was created.');
   const {fight,actors,events}=log;
   onProgress('Matching enemies to the selected dungeon data…');await yieldUI();signal?.throwIfAborted();
@@ -74,6 +75,10 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   observations.push(...interpolatePlayerPositions(trajectories,rows.map(r=>r.firstTime),{visibility,mapChanges:events.filter(e=>e.type==='mapchange')}));
   const anchor=r=>encounters.placements.get(r.key)??(r.nearest[0]?.distance<2&&(!r.nearest[1]||r.nearest[1].distance>=2)?r.nearest[0].placementId:null);
   const anchors=Map.groupBy(rows.filter(anchor),r=>packByPlacement.get(anchor(r))?.id);
+  const neighbors=neighborRadius?createNeighborApproach({packs,radius:neighborRadius,confirmed:[...anchors].flatMap(([packId,rs])=>{
+    const pack=packByID.get(packId);
+    return pack&&!pack.placements.some(p=>catalog.get(p.id).isBoss)?[{packId,pack:pack.number,time:Math.min(...rs.map(r=>r.firstTime))}]:[];
+  })}):null;
   const attacks=events.filter(e=>['cast','damage'].includes(e.type)&&e.abilityGameID!==1002109&&actorByID.get(e.sourceID)?.type==='Player'&&actorByID.get(e.targetID)?.type==='NPC'&&Number.isFinite(e.sourceResources?.x)&&Number.isFinite(e.sourceResources?.y))
     .map(e=>({x:e.sourceResources.y,y:e.sourceResources.x,t:e.timestamp,key:`${e.sourceID}:1`,targetKey:encounters.key(e,'target'),abilityGameID:e.abilityGameID,range:config.attackRange}));
   const radiusAttempts=[];
@@ -85,7 +90,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   let gapApproach;
   for(let radius=config.aggroRadius;radius<=maximum;radius+=step){
     signal?.throwIfAborted();
-    onProgress(`Matching packs with approach radius ${radius}…`);await yieldUI();
+    onProgress(neighborRadius?'Searching near confirmed pulled packs…':`Matching packs with approach radius ${radius}…`);await yieldUI();
     try{
       let result;
       try{result=await matchAtRadius({...config,aggroRadius:radius});}
@@ -95,7 +100,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
         onProgress('Checking possible movement through gaps in the log…');
         result=await matchAtRadius({...config,aggroRadius:radius},true);
       }
-      return {...result,matching:{aggroRadius:radius,buriedRadius:config.buriedRadius,attackRange:config.attackRange,
+      return {...result,matching:{aggroRadius:radius,buriedRadius:config.buriedRadius,attackRange:config.attackRange,...(neighborRadius?{neighborRadius}:{}),
         radiusAttempts:[...radiusAttempts,{radius,matched:true}]}};
     }catch(error){
       if(error.diagnostics?.code!=='no-compatible-route')throw error;
@@ -120,8 +125,9 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     if(anchor(r)&&anchor(r)!==p.placementId)reasons.push('different-spawn-position');
     if(!empoweredCompatible(r.key,p.placementId))reasons.push('empowered-mismatch');
     const gap=!support.supported&&!identity&&allowGaps?gapApproach(p.packId,r.firstTime,config.aggroRadius):null;
-    if(!support.supported&&!identity&&!gap)reasons.push(support.reason);
-    pair.set(`${r.key}|${p.placementId}`,{allowed:!reasons.length,reasons,gap,
+    const neighbor=!support.supported&&!identity&&!gap?neighbors?.(p.packId,r.firstTime):null;
+    if(!support.supported&&!identity&&!gap&&!neighbor)reasons.push(support.reason);
+    pair.set(`${r.key}|${p.placementId}`,{allowed:!reasons.length,reasons,gap,neighbor,
       distance:r.firstPosition?placementDistance({x:r.firstPosition.y,y:r.firstPosition.x},p).distance:0});
   }
   const rowsByType=Map.groupBy(rows,r=>r.gameID),requiredIDs=[...new Set(rows.filter(anchor).map(r=>packByPlacement.get(anchor(r))?.id).filter(Boolean))];
@@ -142,13 +148,15 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       const result=minimumAssignment(rs.map(r=>[...ps.map(p=>allowed(r,p)?Math.min(unit,pair.get(`${r.key}|${p.placementId}`).distance):blocked),...rs.map(()=>omit)]));
       result.columns.forEach((col,i)=>{
         const r=rs[i],p=ps[col];
-        if(p&&allowed(r,p))assignments.push({key:r.key,placementId:p.placementId,firstTime:r.firstTime});
-        else skipped.push({key:r.key,name:r.name,gameID:r.gameID,reason:'No unused compatible map position'});
+        if(p&&allowed(r,p)){
+          const neighbor=pair.get(`${r.key}|${p.placementId}`).neighbor;
+          assignments.push({key:r.key,placementId:p.placementId,firstTime:r.firstTime,...(neighbor?{neighbor}:{})});
+        }else skipped.push({key:r.key,name:r.name,gameID:r.gameID,pull:Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=r.firstTime))+1,reason:'No unused compatible map position'});
       });
     }
     for(const c of unknownChickens){
       const key=`${c.targetID}:${c.targetInstance??1}`;
-      if(!skipped.some(r=>r.key===key))skipped.push({key,name:'Unknown Chicken target',reason:'Original map enemy could not be identified'});
+      if(!skipped.some(r=>r.key===key))skipped.push({key,name:'Unknown Chicken target',pull:Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=c.timestamp))+1,reason:'Original map enemy could not be identified'});
     }
     if(!assignments.length)throw new Error('No enemies could be matched. Download import diagnostics to investigate.');
     partial={matched:assignments.length,skipped};
@@ -173,8 +181,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     const s=enumeration.solutions[index],placements=s.packIDs.flatMap(id=>packByID.get(id).placements),assignments=[];let valid=true,score=0;
     for(const [type,rs]of rowsByType){
       const ps=placements.filter(p=>catalog.get(p.id).gameId===type);
-      const result=minimumAssignment(rs.map(r=>ps.map(p=>{const e=pair.get(`${r.key}|${p.placementId}`);return e.allowed?e.distance+(e.gap?1e9:0):1e12;})));
-      result.columns.forEach((col,i)=>{const r=rs[i],p=ps[col],e=pair.get(`${r.key}|${p.placementId}`);valid&&=e.allowed;score+=e.distance;assignments.push({key:r.key,placementId:p.placementId,firstTime:r.firstTime,...(e.gap?{gap:e.gap}:{})});});
+      const result=minimumAssignment(rs.map(r=>ps.map(p=>{const e=pair.get(`${r.key}|${p.placementId}`);return e.allowed?e.distance+(e.gap||e.neighbor?1e9:0):1e12;})));
+      result.columns.forEach((col,i)=>{const r=rs[i],p=ps[col],e=pair.get(`${r.key}|${p.placementId}`);valid&&=e.allowed;score+=e.distance;assignments.push({key:r.key,placementId:p.placementId,firstTime:r.firstTime,...(e.gap?{gap:e.gap}:{}),...(e.neighbor?{neighbor:e.neighbor}:{})});});
     }
     if(missingBudget){
       const matched=new Set(assignments.map(a=>a.placementId));
@@ -209,10 +217,11 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     throw error;
   }
   if(candidates.length>100)throw Object.assign(new Error('More than 100 compatible routes remain. Manual analysis is needed before importing.'),{diagnostics:{code:'matching-limit'}});
-  const gapCount=c=>new Set(c.assignments.filter(a=>a.gap).map(a=>packByPlacement.get(a.placementId).id)).size;
+  const gapCount=c=>new Set(c.assignments.filter(a=>a.gap||a.neighbor).map(a=>packByPlacement.get(a.placementId).id)).size;
   candidates.sort((a,b)=>gapCount(a)-gapCount(b)||compareReverseRank(a,b));
   const inferredPlacements=[...new Set(candidates.flatMap(c=>c.assignments.filter(a=>a.inferred).map(a=>a.placementId)))];
   const movementHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.gap).map(a=>[`${a.placementId}|${a.gap.key}|${a.gap.start}`,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,...a.gap}]))).values()];
+  const neighborHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.neighbor).map(a=>[a.placementId,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,source:a.neighbor}]))).values()];
   const assumption=[partial?`Partial import: ${partial.matched} enemies matched, ${partial.skipped.length} observations skipped. Pack membership and ambiguous positions need manual review.${partial.skipped.length?' Skipped: '+[...Map.groupBy(partial.skipped,r=>r.name)].map(([name,rs])=>`${name} ×${rs.length}`).join(', ')+'.':''}`:null,
     inferredPlacements.length?'Each candidate includes one unobserved pack member by the whole-pack rule. It may instead be absent or replaced; choose only if you accept this intended-route hypothesis.':null,
     movementHypotheses.length?`Possible approach to ${[...new Set(movementHypotheses.map(h=>h.pack))].join(', ')} is estimated across gaps in the log. The actual path is unknown; review this movement hypothesis before accepting.`:null].filter(Boolean).join(' ')||null;
@@ -232,6 +241,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       proximity[id]=pathProximity(pack.id,time);
       const gap=as.filter(a=>a.gap).sort((a,b)=>a.gap.distance-b.gap.distance)[0]?.gap;
       if(gap)proximity[id]={minDistance:gap.distance,maxDistance:gap.distance,sources:[gap.source],patrol:gap.patrol,estimated:true};
+      const neighbor=as.filter(a=>a.neighbor).sort((a,b)=>a.neighbor.distance-b.neighbor.distance)[0]?.neighbor;
+      if(neighbor)proximity[id]={minDistance:neighbor.distance,maxDistance:neighbor.distance,sources:[neighbor.pack],patrol:false,estimated:true,basis:'neighbor'};
       pulls[segment].groups.push(id);
     }
     for(const kind of ['ghorn','witch'])if(affixes[kind].active){
@@ -258,7 +269,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       if(!point?.every(Number.isFinite))throw new Error('Could not project a relic position onto this dungeon map. Download import diagnostics to investigate.');
       return point;
     }),afterTime:(u.end.time-fight.startTime)/1000}));
-  return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
+  return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,...(neighborRadius?{neighborHypotheses}:{}),dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
     duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
     replacement:Object.fromEntries(['ghorn','witch'].map(k=>[k,{active:affixes[k].active===true}])),
     note:'Matched from the selected log using current dungeon data. Whole packs stay in their first pull; repeated attempts are omitted.'};
