@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {solveCompletePacks} from '../log-import/pack-solver.js';
-import {minimumAssignment} from '../log-import/assignment.js';
+import {minimumAssignment,hasCompatibleAssignment} from '../log-import/assignment.js';
 
 test('Whole packs cannot contribute only their matching members', () => {
   const packs = [{id:'a',counts:{husk:2,reaver:1}},{id:'b',counts:{husk:2}}];
@@ -39,4 +39,31 @@ test('Assignment agrees with independent exhaustive permutations on small matric
     const result=minimumAssignment(rows);
     assert.equal(result.cost,brute(rows));assert.equal(new Set(result.columns).size,rows.length);
   }
+});
+
+test('Compatibility pruning reassigns shared observations and limits missing members across types',()=>{
+ assert.equal(hasCompatibleAssignment([['a','b'],['a']]),true);
+ assert.equal(hasCompatibleAssignment([['a'],['a']]),false);
+ assert.equal(hasCompatibleAssignment([['a'],['a']],1),true);
+ assert.equal(hasCompatibleAssignment([['a'],['a'],[],['b']],1),false);
+ // Compare augmenting paths against the independent minimum-cost solver.
+ for(let seed=1;seed<=40;seed++)for(const missing of [0,1,2]){
+   const choices=Array.from({length:6},(_,i)=>Array.from({length:5},(_,j)=>j).filter(j=>(seed*(i+3)*(j+7)+i+j)%7<3));
+   const cost=minimumAssignment(choices.map(cs=>[...Array.from({length:5},(_,j)=>cs.includes(j)?0:10),...Array(6).fill(1)])).cost;
+   assert.equal(hasCompatibleAssignment(choices,missing),cost<=missing);
+ }
+});
+
+test('Pack pruning preserves exhaustive valid solutions without spending the limit on impossible assignments',()=>{
+ const packs=Array.from({length:12},(_,i)=>({id:String(i),counts:{mob:1}}));
+ const choices=new Map(packs.map((p,i)=>[p.id,[i<6?'shared':p.id]]));
+ const canSelect=ids=>hasCompatibleAssignment(ids.map(id=>choices.get(id)));
+ const brute=solveCompletePacks(packs,{mob:6});
+ const valid=brute.solutions.filter(s=>canSelect(s.packIDs));
+ assert.ok(valid.length<brute.solutions.length);
+ const pruned=solveCompletePacks(packs,{mob:6},{canSelect,maxSolutions:valid.length});
+ assert.equal(pruned.exhaustive,true);assert.deepEqual(pruned.solutions,valid);
+ assert.equal(solveCompletePacks(packs,{mob:6},{maxSolutions:valid.length}).exhaustive,false);
+ assert.deepEqual(solveCompletePacks(packs,{mob:6},{canSelect,requiredIDs:['0','1']}).solutions,[]);
+ assert.equal(solveCompletePacks(packs,{mob:6},{canSelect,maxNodes:1}).exhaustive,false);
 });

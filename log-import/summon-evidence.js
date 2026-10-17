@@ -1,5 +1,7 @@
-// Prefer direct Fellowship Logs evidence. The boss rule below is deliberately
-// narrow: user-confirmed Brogg mechanic + observed Raiders! cast, not any late NPC.
+import {matchingConfig} from './matching-config.js';
+import {repeatedSummonPatterns} from './summon-patterns.js';
+// Direct Fellowship Logs identity and known mechanics take precedence over
+// the generic proximity and repeated-wave fallbacks below.
 export const verifiedSummonRules=Object.freeze([
   {bossGameID:133,abilityGameID:631,childGameIDs:[134],windowMs:3000,id:'brogg-raiders'},
   // Chilgar's Grasping Pillar (222) releases Frozen Remnants when broken.
@@ -11,7 +13,7 @@ export const verifiedSummonRules=Object.freeze([
   // within 3,072 units of the boss and far from their static spawns.
   {bossGameID:92,abilityGameID:1396,childGameIDs:[90,91],windowMs:8000,maxDistance:4000,minSpawnDistance:1000,id:'silken-boss-adds'},
 ]);
-export function classifySummons({fightID,actors,rows,events,rules=verifiedSummonRules}){
+export function classifySummons({fightID,actors,rows,events,rules=verifiedSummonRules,bossAddRadius=matchingConfig.bossAddRadius}){
   const actorByID=new Map(actors.map(a=>[a.id,a])),result=new Map();
   const scoped=events.filter(e=>e.fight===fightID);
   for(const row of rows){
@@ -48,10 +50,14 @@ export function classifySummons({fightID,actors,rows,events,rules=verifiedSummon
     for(const row of children)result.set(row.key,{key:row.key,classification:'probable-summon',basis:'verified-death-spawn-trio',
       rule:'golem-shatter',sourceID:parent.actorID,sourceKey:parent.key,time:death.timestamp,delayMs:row.firstTime-death.timestamp});
   }
-  // Overlay's 12-second heuristic, restricted to user-confirmed boss/add pairs.
-  // A first observation near a static spawn remains an ordinary map enemy.
+  // Retain earlier confirmed mechanics beyond the conservative generic
+  // radius (e.g. Titan's distant Wardstones). New bosses need no entry here.
   const encounterRules=[{boss:168,children:[164,165],id:'noor-ambush'},
-    {boss:172,children:[241],id:'titan-wardstones'},{boss:199,children:[182],id:'vunkahr-vines'}];
+    {boss:172,children:[241],id:'titan-wardstones'},{boss:199,children:[182],id:'vunkahr-vines'},
+    // Han-Eth's Palace Response Unit includes Broods and, on Nightmare,
+    // a Heart of Rot with two Echoes. One Echo in hxH8B2mjM7D34Azt/8
+    // is first recorded 3,533 units from the stationary boss.
+    {boss:319,children:[334,326,316],id:'han-eth-response-unit'}];
   for(const suspected of suspectLateEncounterNPCs({fightID,actors,rows,events})){
     const row=rows.find(r=>r.key===suspected.key);
     if(result.has(row.key)||!(row.nearest?.[0]?.distance>=1000))continue;
@@ -65,7 +71,54 @@ export function classifySummons({fightID,actors,rows,events,rules=verifiedSummon
       result.set(row.key,{...suspected,classification:'probable-summon',exclude:true,basis:'verified-boss-add-and-late-appearance',rule:rule.id,sourceKey:parent.key});break;
     }
   }
+  for(const add of bossProximityAdds({fightID,actors,rows,events,radius:bossAddRadius}))if(!result.has(add.key))result.set(add.key,add);
+  for(const summon of repeatedSummonPatterns({fightID,actors,rows,events}))if(!result.has(summon.key))result.set(summon.key,summon);
   return [...result.values()];
+}
+
+// User-confirmed game rule: ordinary packs do not spawn next to bosses.
+// Classify only at first appearance, using fresh combat coordinates, never a
+// mob's later arrival beside a boss. Near-static spawns stay ordinary enemies;
+// Types absent from the map also need classification when Chicken targets them.
+export function bossProximityAdds({fightID,actors,rows,events,radius=matchingConfig.bossAddRadius}){
+  if(!Number.isFinite(radius)||radius<0)throw new Error('Invalid boss add radius');
+  const bossIDs=new Set(actors.filter(a=>a.type==='NPC'&&a.subType==='Boss').map(a=>a.id));
+  const intervals=encounterIntervals(events,fightID),hasBoundaries=events.some(e=>e.fight===fightID&&e.type.startsWith('dungeonencounter'));
+  const combat=new Set(['damage','cast','begincast']);
+  const bosses=rows.filter(r=>bossIDs.has(r.actorID));
+  return rows.flatMap(row=>{
+    const p=row.firstPosition;
+    if(bossIDs.has(row.actorID)||!Number.isFinite(row.firstTime)||!Number.isFinite(p?.x)||!Number.isFinite(p?.y)||
+      !Number.isFinite(p.t)||Math.abs(p.t-row.firstTime)>3000||
+      (row.nearest?.length&&!(row.nearest[0].distance>=1000)))return [];
+    const encounter=intervals.find(e=>row.firstTime>=e.start-1000&&row.firstTime<e.end);
+    if(hasBoundaries&&!encounter)return [];
+    const witnesses=bosses.flatMap(boss=>{
+      // A recorded death in this attempt rules out stale post-death samples.
+      if(boss.deaths?.some(d=>d.timestamp>=(encounter?.start??-Infinity)&&d.timestamp<=row.firstTime))return [];
+      const positions=(boss.positions??[]).filter(b=>b.hp>0&&combat.has(b.eventType)&&
+        Math.abs(b.t-row.firstTime)<=3000&&(!encounter||b.t>=encounter.start&&b.t<encounter.end));
+      positions.sort((a,b)=>Math.abs(a.t-row.firstTime)-Math.abs(b.t-row.firstTime));
+      const b=positions[0];if(!b)return [];
+      const distance=Math.hypot(p.x-b.x,p.y-b.y);
+      return distance<=radius?[{boss,b,distance}]:[];
+    }).sort((a,b)=>a.distance-b.distance);
+    const witness=witnesses[0];
+    return witness?[{key:row.key,classification:'probable-summon',exclude:true,basis:'first-appearance-near-active-boss',
+      sourceKey:witness.boss.key,time:row.firstTime,bossSampleTime:witness.b.t,distance:witness.distance}]:[];
+  });
+}
+
+function encounterIntervals(events,fightID){
+  const intervals=[],active=new Map();
+  for(const e of events.filter(e=>e.fight===fightID).toSorted((a,b)=>a.timestamp-b.timestamp)){
+    if(e.type==='dungeonencounterstart')active.set(e.encounterID,e.timestamp);
+    if(e.type==='dungeonencounterend'&&active.has(e.encounterID)){
+      intervals.push({id:e.encounterID,start:active.get(e.encounterID),end:e.timestamp});active.delete(e.encounterID);
+    }
+  }
+  for(const [id,start]of active)intervals.push({id,start,end:Infinity});
+  return intervals;
 }
 
 // General overlay heuristic, retained as a diagnostic across ALL encounters.

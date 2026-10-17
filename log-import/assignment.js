@@ -36,3 +36,22 @@ export function minimumAssignment(costs) {
   for (let j = 1; j <= m; j++) if (owner[j]) columns[owner[j] - 1] = j - 1;
   return {cost: columns.reduce((sum, j, i) => sum + costs[i][j], 0), columns};
 }
+
+// Whether these placements can use distinct observations, allowing at most
+// maxUnmatched missing members. Reassign earlier choices through augmenting
+// paths; a greedy match would incorrectly discard valid pack combinations.
+export function hasCompatibleAssignment(choices,maxUnmatched=0){
+  const owner=new Map();let unmatched=0;
+  function assign(row,visited){
+    for(const observation of choices[row]){
+      if(visited.has(observation))continue;
+      visited.add(observation);
+      if(!owner.has(observation)||assign(owner.get(observation),visited)){
+        owner.set(observation,row);return true;
+      }
+    }
+    return false;
+  }
+  for(let row=0;row<choices.length;row++)if(!assign(row,new Set())&&++unmatched>maxUnmatched)return false;
+  return true;
+}

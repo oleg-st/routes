@@ -20,7 +20,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
     await preview(fixture,session.state());
     closeDialog();
     if(!session.state().complete){draw();return;}
-    try{await commit();hide();}catch(error){draw();throw error;}
+    try{await commit();hide();if(fixture.partial)onError(fixture.assumption);}catch(error){draw();throw error;}
   }
   function draw(){
     const s=session.state();panel.hidden=false;
@@ -47,7 +47,10 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
     if(live){
       const form=document.getElementById('log-live-form'),input=document.getElementById('log-url'),load=document.getElementById('log-load'),stop=document.getElementById('log-stop'),status=document.getElementById('log-live-status'),error=document.getElementById('log-live-error');
       const select=document.getElementById('log-fight'),field=document.getElementById('log-fight-field');
-      const download=document.createElement('button');download.type='button';download.textContent='Download import diagnostics';download.hidden=true;form.append(download);
+      const diagnosticActions=document.createElement('div');diagnosticActions.className='log-review-actions';form.append(diagnosticActions);
+      const download=document.createElement('button');download.type='button';download.textContent='Download import diagnostics';download.hidden=true;diagnosticActions.append(download);
+      const proceed=document.createElement('button');proceed.id='log-continue';proceed.type='button';proceed.textContent='Ignore error and continue';proceed.hidden=true;diagnosticActions.append(proceed);
+      const recoveryHint=document.createElement('p');recoveryHint.className='muted';recoveryHint.textContent='Import the matched enemies. Unmatched enemies will be skipped; check pack contents and positions afterwards.';recoveryHint.hidden=true;form.append(recoveryHint);
       download.onclick=()=>{
         const diagnostic=live.diagnostics?.();if(!diagnostic)return;
         const url=URL.createObjectURL(new Blob([JSON.stringify(diagnostic)],{type:'application/json'}));
@@ -69,6 +72,10 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
         input.disabled=select.disabled=busy;load.disabled=busy||Boolean(live.connected()&&report&&(!chosen||chosen.inProgress));
         stop.hidden=!busy;if(disconnect)disconnect.disabled=busy;
         another.hidden=!report;another.disabled=busy;
+        let sameLog=false;
+        try{const selected=parseReportURL(selectedURL()),saved=live.diagnostics?.();sameLog=selected.reportCode===saved?.log.reportCode&&selected.fightID===saved?.log.fight.id;}catch{}
+        download.hidden=busy||!sameLog;
+        proceed.hidden=recoveryHint.hidden=busy||!sameLog||!live.canContinue?.();proceed.disabled=busy;
       }
       input.oninput=()=>{report=null;select.replaceChildren();field.hidden=true;status.textContent='';error.hidden=true;download.hidden=true;remember();controls();};
       another.onclick=()=>{input.value='';input.oninput();input.focus();};
@@ -83,8 +90,8 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
         const list=await live.fights(input.value.trim(),{signal:controller.signal});controller.signal.throwIfAborted();
         showFights(list,selectedID);select.focus();
       }
-      form.onsubmit=async event=>{
-        event.preventDefault();if(busy)return;busy=true;controller=new AbortController();
+      async function importLog(recover=false){
+        if(busy)return;busy=true;controller=new AbortController();
         controls();
         error.hidden=true;download.hidden=true;status.textContent=live.connected()?'Reading the log…':'Opening Fellowship Logs…';
         try{
@@ -94,7 +101,8 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
             await loadFights();return;
           }
           remember();lastFightID=selection.fightID;
-          const result=await live.load(selectedURL(),{signal:controller.signal,onProgress:text=>status.textContent=text});
+          const options={signal:controller.signal,onProgress:text=>status.textContent=text};
+          const result=await (recover?live.continueImport(selectedURL(),options):live.load(selectedURL(),options));
           controller.signal.throwIfAborted();fixture=result;session=createReviewSession(fixture);await advance();
         }catch(e){
           status.textContent=controller.signal.aborted?'Import cancelled.':'';
@@ -102,7 +110,9 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
         }finally{
           busy=false;controls();
         }
-      };
+      }
+      form.onsubmit=event=>{event.preventDefault();return importLog();};
+      proceed.onclick=()=>importLog(true);
       if(report)showFights(report,lastFightID);
       controls();(report?select:input).focus();
       // Direct fight links skip the list on first import. Fetch that small list

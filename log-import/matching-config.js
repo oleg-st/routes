@@ -9,4 +9,5 @@ export const matchingConfig = Object.freeze({
   maxAggroRadius: 3000,
   buriedRadius: 100,
   attackRange: 6000,
+  bossAddRadius: 3000,
 });

@@ -1,6 +1,6 @@
 // Enumerate complete-pack explanations. No geometric guess is accepted as fact.
 // Wildcards are observed transformed enemies whose original type is unknown.
-export function solveCompletePacks(packs,target,{requiredIDs=[],wildcards=0,maxSolutions=10000,maxNodes=1000000}={}){
+export function solveCompletePacks(packs,target,{requiredIDs=[],wildcards=0,maxSolutions=10000,maxNodes=1000000,canSelect}={}){
   const required=new Set(requiredIDs),knownIDs=new Set(packs.map(p=>p.id));
   if([...required].some(id=>!knownIDs.has(id)))throw new Error('Required pack is missing.');
   const types=[...new Set([...Object.keys(target),...packs.flatMap(p=>Object.keys(p.counts))])];
@@ -12,10 +12,13 @@ export function solveCompletePacks(packs,target,{requiredIDs=[],wildcards=0,maxS
   const suffix=Array.from({length:optional.length+1},()=>types.map(()=>0));
   for(let i=optional.length-1;i>=0;i--)suffix[i]=suffix[i+1].map((n,j)=>n+optional[i].vector[j]);
   const solutions=[];let nodes=0,truncated=false;
-  function visit(index,counts,size,selected){
+  // canSelect must reject only sets whose supersets are also incompatible.
+  // This prunes impossible assignments before they consume the solution cap.
+  function visit(index,counts,size,selected,changed=true){
     if(truncated)return;
     if(++nodes>maxNodes){truncated=true;return;}
     if(size>budget||excess(counts)>wildcards||counts.some((n,j)=>n+suffix[index][j]<wanted[j]))return;
+    if(changed&&canSelect&&!canSelect(selected))return;
     if(size===budget){
       if(counts.every((n,j)=>n>=wanted[j])){
         if(solutions.length===maxSolutions){truncated=true;return;}
@@ -25,7 +28,7 @@ export function solveCompletePacks(packs,target,{requiredIDs=[],wildcards=0,maxS
     if(index===optional.length)return;
     const pack=optional[index];
     visit(index+1,counts.map((n,j)=>n+pack.vector[j]),size+pack.size,[...selected,pack.id]);
-    visit(index+1,counts,size,selected);
+    visit(index+1,counts,size,selected,false);
   }
   visit(0,initial,forced.reduce((s,p)=>s+p.size,0),forced.map(p=>p.id));
   return {solutions,exhaustive:!truncated,nodes};

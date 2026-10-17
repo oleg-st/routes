@@ -113,3 +113,70 @@ test('Chicken on an identified summon does not require or exclude a map placemen
   const ordinary=structuredClone(input);ordinary.events.at(-1).targetInstance=1;
   assert.deepEqual(Object.values((await matchLiveLog(ordinary,options)).groups).flatMap(g=>g.excluded),['static']);
 });
+
+test('Chicken on a new boss add uses its unique replacement without excluding ordinary mobs of the same type',async()=>{
+  const placement=(id,x)=>({id,placementId:id,packId:id,worldPosition:{x,y:x},mapPosition:{x:0.5,y:0.5},mapImageId:'map'});
+  const dungeon={id:'test',name:'Test',enemies:[placement('static',100),placement('boss',10000)],mapImages:[{id:'map',width:100,height:100}]};
+  const catalog=new Map([['static',{id:'static',gameId:999,name:'Ordinary mob'}],['boss',{id:'boss',gameId:900,name:'Boss',isBoss:true}]]);
+  const resources=x=>({x,y:x,hitPoints:100,maxHitPoints:100});
+  const input={complete:true,reportCode:'example',fight,actors:[{id:1,type:'Player'},
+    {id:2,type:'NPC',gameID:999},{id:3,type:'NPC',subType:'Boss',gameID:900},{id:4,type:'NPC',gameID:277}],events:[
+    {...event,targetResources:resources(100)},
+    {...event,timestamp:140,targetID:3,targetResources:resources(10000),sourceResources:resources(10000)},
+    {fight:5,type:'cast',timestamp:150,sourceID:1,targetID:2,targetInstance:2,abilityGameID:1478},
+    {...event,timestamp:151,targetID:4,targetResources:resources(10010),sourceResources:resources(10000)},
+  ]};
+  const result=await matchLiveLog(input,{dungeon,catalog,presets:{},dungeonData:'custom'});
+  assert.equal(result.variants.length,1);
+  assert.deepEqual(Object.values(result.groups).flatMap(g=>g.enemies).sort(),['boss','static']);
+  assert.deepEqual(Object.values(result.groups).flatMap(g=>g.excluded),[]);
+  const ambiguous=structuredClone(input);
+  ambiguous.events.push({...ambiguous.events.at(-1),targetInstance:2});
+  await assert.rejects(matchLiveLog(ambiguous,{dungeon,catalog,presets:{},dungeonData:'custom'}));
+});
+
+test('Chicken on an unmapped boss add imports normally only with fresh nearby boss evidence',async()=>{
+ const p={id:'boss',placementId:'boss',packId:'boss',worldPosition:{x:10000,y:10000},mapPosition:{x:0.5,y:0.5},mapImageId:'map'};
+ const dungeon={id:'test',name:'Test',enemies:[p],mapImages:[{id:'map',width:100,height:100}]};
+ const catalog=new Map([['boss',{id:'boss',gameId:900,name:'Boss',isBoss:true}]]);
+ const resources=x=>({x,y:x,hitPoints:100,maxHitPoints:100});
+ const input={complete:true,reportCode:'example',fight,actors:[{id:1,type:'Player'},
+   {id:2,type:'NPC',gameID:279},{id:3,type:'NPC',subType:'Boss',gameID:900},{id:4,type:'NPC',gameID:277}],events:[
+   {...event,timestamp:140,targetID:3,targetResources:resources(10000),sourceResources:resources(10000)},
+   {...event,timestamp:145,targetResources:resources(10100),sourceResources:resources(10000)},
+   {fight:5,type:'cast',timestamp:150,sourceID:1,targetID:2,targetInstance:1,abilityGameID:1478},
+   {...event,timestamp:151,targetID:4,targetResources:resources(10100)},
+ ]};
+ const options={dungeon,catalog,presets:{},dungeonData:'custom'};
+ for(const castOnly of [false,true]){
+   const log=structuredClone(input);if(castOnly)log.events.splice(1,1);
+   const result=await matchLiveLog(log,options);
+   assert.equal(result.partial,undefined);assert.equal(result.variants.length,1);
+   assert.deepEqual(Object.values(result.groups).flatMap(g=>g.enemies),['boss']);
+   assert.deepEqual(Object.values(result.groups).flatMap(g=>g.excluded),[]);
+   const remote=structuredClone(log);
+   for(const e of remote.events.filter(e=>[2,4].includes(e.targetID)&&e.targetResources))e.targetResources=resources(20000);
+   await assert.rejects(matchLiveLog(remote,options),/Chicken target could not be identified/);
+ }
+});
+
+test('Delayed Chicken geometry is usable within ten seconds, but ambiguous or later replacements are not',async()=>{
+ const p={id:'mob',placementId:'static',packId:'pack',worldPosition:{x:100,y:100},mapPosition:{x:0.5,y:0.5},mapImageId:'map'};
+ const options={dungeon:{id:'test',name:'Test',enemies:[p],mapImages:[{id:'map',width:100,height:100}]},
+   catalog:new Map([['mob',{id:'mob',gameId:331,name:'Sanguine Disciple'}]]),presets:{},dungeonData:'custom',allowPartial:true};
+ const input={complete:true,reportCode:'example',fight:{...fight,endTime:20000,dungeonPulls:[{id:1,startTime:100,endTime:20000}]},
+   actors:[{id:1,type:'Player'},{id:2,type:'NPC',gameID:331},{id:3,type:'NPC',gameID:278}],events:[
+     {...event,type:'cast',abilityGameID:1478,timestamp:150},
+     {...event,timestamp:7801,targetID:3,targetResources:{x:100,y:100,hitPoints:100,maxHitPoints:100}},
+   ]};
+ const result=await matchLiveLog(input,options);
+ assert.deepEqual(result.partial.skipped,[]);
+ assert.deepEqual(Object.values(result.groups).flatMap(g=>g.excluded),['static']);
+ const late=structuredClone(input);late.events[1].timestamp=10151;
+ await assert.rejects(matchLiveLog(late,options),/No enemies could be matched/);
+ const ambiguous=structuredClone(input);ambiguous.events.push({...ambiguous.events[1],targetInstance:2});
+ await assert.rejects(matchLiveLog(ambiguous,options),/No enemies could be matched/);
+ const nextCast=structuredClone(input);nextCast.events.push({...nextCast.events[0],timestamp:1000,targetInstance:2});
+ const nextResult=await matchLiveLog(nextCast,options);
+ assert.deepEqual(nextResult.partial.skipped.map(r=>r.key),['2:1']);
+});

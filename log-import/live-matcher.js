@@ -1,7 +1,7 @@
 import {analyzeRouteEvents,routeHealthEvidence,interpolatePlayerPositions} from './live-analysis.js';
 import {correctImportPacks} from './pack-corrections.js';
 import {placementDistance} from './placement-geometry.js';
-import {minimumAssignment} from './assignment.js';
+import {minimumAssignment,hasCompatibleAssignment} from './assignment.js';
 import {solveCompletePacks} from './pack-solver.js';
 import {createApproachFilter} from './approach-filter.js';
 import {reverseApproachEvidence,scoreReverseApproach,compareReverseRank} from './reverse-approach.js';
@@ -18,7 +18,7 @@ import {mapViews,mapCoordinates} from '../map-views.js';
 import {encounterIdentity} from './boss-encounters.js';
 
 const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
-export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false}){
+export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false,allowPartial=false}){
   if(!log.complete)throw new Error('Incomplete log; no route was created.');
   const {fight,actors,events}=log;
   onProgress('Matching enemies to the selected dungeon data…');await yieldUI();signal?.throwIfAborted();
@@ -34,21 +34,34 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   }).filter(p=>p.placements.length),{dungeonID:dungeon.id,catalog,dungeonData});
   const packByID=new Map(packs.map(p=>[p.id,p])),packByPlacement=new Map(packs.flatMap(p=>p.placements.map(m=>[m.placementId,p])));
   const staticTypes=new Set(packs.flatMap(p=>Object.keys(p.counts).map(Number)));
-  const summons=new Set(classifySummons({fightID:fight.id,actors,rows:npcRows,events}).map(r=>r.key));
   const chickenCasts=events.filter(e=>e.type==='cast'&&e.abilityGameID===1478);
   const chickenKeys=new Set(chickenCasts.map(e=>`${e.targetID}:${e.targetInstance??1}`));
-  let rows=npcRows.filter(r=>staticTypes.has(r.gameID)&&!summons.has(r.key));
+  let rows=npcRows;
   // Replacement geometry is a hint; original identity always comes from the cast.
+  // Xul can first record the chicken 7.7 seconds later. Keep a bounded window
+  // ending at the next cast, require uniqueness, and never turn this into an anchor.
   rows=rows.map(r=>{
     if(r.firstPosition||!chickenKeys.has(r.key))return r;
     const cast=chickenCasts.find(e=>`${e.targetID}:${e.targetInstance??1}`===r.key);
     const nextCast=chickenCasts.find(e=>e.timestamp>cast.timestamp)?.timestamp??Infinity;
-    const chickens=npcRows.filter(c=>[277,278].includes(c.gameID)&&c.firstTime>=cast.timestamp&&c.firstTime<Math.min(nextCast,cast.timestamp+5000));
+    const chickens=npcRows.filter(c=>[277,278].includes(c.gameID)&&c.firstTime>=cast.timestamp&&c.firstTime<Math.min(nextCast,cast.timestamp+10000));
     return {...r,firstTime:cast.timestamp,firstPosition:chickens.length===1?chickens[0].firstPosition:undefined};
   });
+  // A cast-only Chicken target can also be a boss add. Let summon checks
+  // use its unique replacement's position, without making it a spawn anchor.
+  const positioned=new Map(rows.map(r=>[r.key,r]));
+  const summonRows=npcRows.map(r=>{
+    const p=positioned.get(r.key)?.firstPosition;
+    if(r.firstPosition||!p)return r;
+    return {...r,firstPosition:p,nearest:dungeon.enemies.filter(e=>catalog.get(e.id).gameId===r.gameID)
+      .map(e=>({placementId:e.placementId,distance:Math.hypot(p.y-e.worldPosition.x,p.x-e.worldPosition.y)})).sort((a,b)=>a.distance-b.distance).slice(0,2)};
+  });
+  const summons=new Set(classifySummons({fightID:fight.id,actors,rows:summonRows,events,bossAddRadius:config.bossAddRadius??matchingConfig.bossAddRadius}).map(r=>r.key));
+  rows=rows.filter(r=>staticTypes.has(r.gameID)&&!summons.has(r.key));
   // A known summon can be Chickenized, but has no original map placement.
   // Only unresolved targets need manual analysis.
-  if(chickenCasts.some(c=>!summons.has(`${c.targetID}:${c.targetInstance??1}`)&&!rows.some(r=>r.key===`${c.targetID}:${c.targetInstance??1}`)))throw new Error('A Chicken target could not be identified. The route needs manual analysis.');
+  const unknownChickens=chickenCasts.filter(c=>!summons.has(`${c.targetID}:${c.targetInstance??1}`)&&!rows.some(r=>r.key===`${c.targetID}:${c.targetInstance??1}`));
+  if(unknownChickens.length&&!allowPartial)throw Object.assign(new Error('A Chicken target could not be identified. The route needs manual analysis.'),{diagnostics:{code:'unknown-chicken-target'}});
   if(!rows.length)throw new Error('No enemies could be matched to this dungeon.');
   const players=actors.filter(a=>a.type==='Player'),actorByID=new Map(actors.map(a=>[a.id,a]));
   const invisible=extractInvisibility(events,{fightID:fight.id,players,complete:true}),visibility=createVisibilityIndex(invisible.intervals);
@@ -112,19 +125,48 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       distance:r.firstPosition?placementDistance({x:r.firstPosition.y,y:r.firstPosition.x},p).distance:0});
   }
   const rowsByType=Map.groupBy(rows,r=>r.gameID),requiredIDs=[...new Set(rows.filter(anchor).map(r=>packByPlacement.get(anchor(r))?.id).filter(Boolean))];
+  const compatibleRows=new Map(allPlacements.map(p=>[p.placementId,(rowsByType.get(catalog.get(p.id).gameId)??[])
+    .filter(r=>pair.get(`${r.key}|${p.placementId}`).allowed).map(r=>r.key)]));
   onProgress('Checking complete pack combinations…');await yieldUI();signal?.throwIfAborted();
   const candidates=[],attempts=[];let closestRejected=null;
+  let partial=null;
+  if(allowPartial){
+    // Explicit recovery only: one-to-one matches retain identity, movement and
+    // empowered checks, but may omit observations and leave packs incomplete.
+    const assignments=[],skipped=[];
+    for(const [type,rs]of rowsByType){
+      signal?.throwIfAborted();await yieldUI();
+      const ps=byType.get(type)??[],unit=1e7,omit=(rs.length+1)*unit,blocked=(rs.length+1)*omit;
+      const allowed=(r,p)=>pair.get(`${r.key}|${p.placementId}`).allowed&&
+        (r.firstPosition||anchor(r)===p.placementId||ps.length===1&&catalog.get(p.id).isBoss);
+      const result=minimumAssignment(rs.map(r=>[...ps.map(p=>allowed(r,p)?Math.min(unit,pair.get(`${r.key}|${p.placementId}`).distance):blocked),...rs.map(()=>omit)]));
+      result.columns.forEach((col,i)=>{
+        const r=rs[i],p=ps[col];
+        if(p&&allowed(r,p))assignments.push({key:r.key,placementId:p.placementId,firstTime:r.firstTime});
+        else skipped.push({key:r.key,name:r.name,gameID:r.gameID,reason:'No unused compatible map position'});
+      });
+    }
+    for(const c of unknownChickens){
+      const key=`${c.targetID}:${c.targetInstance??1}`;
+      if(!skipped.some(r=>r.key===key))skipped.push({key,name:'Unknown Chicken target',reason:'Original map enemy could not be identified'});
+    }
+    if(!assignments.length)throw new Error('No enemies could be matched. Download import diagnostics to investigate.');
+    partial={matched:assignments.length,skipped};
+    const packIDs=[...new Set(assignments.map(a=>packByPlacement.get(a.placementId).id))];
+    candidates.push({packIDs,assignments,reverse:scoreReverseApproach(reverse,packIDs)});
+  }
   // One missing sibling is the existing intended-route hypothesis, never a
   // silently invented whole pack. It requires explicit review in the UI.
-  for(const missingBudget of [0,1]){
+  for(const missingBudget of allowPartial?[]:[0,1]){
   const feasible=packs.filter(pack=>[...Map.groupBy(pack.placements,p=>catalog.get(p.id).gameId)].every(([type,ps])=>{
     const rs=rowsByType.get(type)??[];
     return rs.length+missingBudget>=ps.length&&minimumAssignment(ps.map(p=>[...rs.map(r=>pair.get(`${r.key}|${p.placementId}`).allowed?0:1),...Array(missingBudget).fill(0)])).cost===0;
   }));
   const attempt={missingBudget,feasiblePacks:feasible.map(p=>p.id),infeasibleRequiredPacks:requiredIDs.filter(id=>!feasible.some(p=>p.id===id))};attempts.push(attempt);
   if(attempt.infeasibleRequiredPacks.length)continue;
-  const enumeration=solveCompletePacks(feasible,Object.fromEntries([...rowsByType].map(([t,rs])=>[t,rs.length])),{requiredIDs,wildcards:missingBudget,maxSolutions:20000,maxNodes:1000000});
-  if(!enumeration.exhaustive)throw new Error('Too many pack combinations to check completely. No route was created.');
+  const enumeration=solveCompletePacks(feasible,Object.fromEntries([...rowsByType].map(([t,rs])=>[t,rs.length])),{requiredIDs,wildcards:missingBudget,maxSolutions:20000,maxNodes:1000000,
+    canSelect:ids=>hasCompatibleAssignment(ids.flatMap(id=>packByID.get(id).placements.map(p=>compatibleRows.get(p.placementId))),missingBudget)});
+  if(!enumeration.exhaustive)throw Object.assign(new Error('Too many pack combinations to check completely. No route was created.'),{diagnostics:{code:'matching-limit'}});
   attempt.combinations=enumeration.solutions.length;
   for(let index=0;index<enumeration.solutions.length;index++){
     if(index%100===0){await yieldUI();signal?.throwIfAborted();}
@@ -166,12 +208,13 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       placements:(byType.get(r.gameID)??[]).map(p=>({placementId:p.placementId,packId:p.packId,...pair.get(`${r.key}|${p.placementId}`)}))}))};
     throw error;
   }
-  if(candidates.length>100)throw new Error('More than 100 compatible routes remain. Manual analysis is needed before importing.');
+  if(candidates.length>100)throw Object.assign(new Error('More than 100 compatible routes remain. Manual analysis is needed before importing.'),{diagnostics:{code:'matching-limit'}});
   const gapCount=c=>new Set(c.assignments.filter(a=>a.gap).map(a=>packByPlacement.get(a.placementId).id)).size;
   candidates.sort((a,b)=>gapCount(a)-gapCount(b)||compareReverseRank(a,b));
   const inferredPlacements=[...new Set(candidates.flatMap(c=>c.assignments.filter(a=>a.inferred).map(a=>a.placementId)))];
   const movementHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.gap).map(a=>[`${a.placementId}|${a.gap.key}|${a.gap.start}`,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,...a.gap}]))).values()];
-  const assumption=[inferredPlacements.length?'Each candidate includes one unobserved pack member by the whole-pack rule. It may instead be absent or replaced; choose only if you accept this intended-route hypothesis.':null,
+  const assumption=[partial?`Partial import: ${partial.matched} enemies matched, ${partial.skipped.length} observations skipped. Pack membership and ambiguous positions need manual review.${partial.skipped.length?' Skipped: '+[...Map.groupBy(partial.skipped,r=>r.name)].map(([name,rs])=>`${name} ×${rs.length}`).join(', ')+'.':''}`:null,
+    inferredPlacements.length?'Each candidate includes one unobserved pack member by the whole-pack rule. It may instead be absent or replaced; choose only if you accept this intended-route hypothesis.':null,
     movementHypotheses.length?`Possible approach to ${[...new Set(movementHypotheses.map(h=>h.pack))].join(', ')} is estimated across gaps in the log. The actual path is unknown; review this movement hypothesis before accepting.`:null].filter(Boolean).join(' ')||null;
   const groups={},variants=[],first=firstEngagements(events,{fightID:fight.id,actors,key:encounters.key});
   const pathProximity=createPathProximity(packs,observations);
@@ -213,7 +256,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       const map=dungeon.mapImages.find(m=>m.name===(change?.mapName??'Start'))??dungeon.mapImages[0];
       return mapCoordinates({worldPosition:{x:b.position.y,y:b.position.x},mapImageId:map.id,mapPosition:{x:0,y:0}},view);
     }),afterTime:(u.end.time-fight.startTime)/1000}));
-  return {id:`${log.reportCode}-${fight.id}`,live:true,assumption,inferredPlacements,movementHypotheses,dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
+  return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
     duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
     replacement:Object.fromEntries(['ghorn','witch'].map(k=>[k,{active:affixes[k].active===true}])),
     note:'Matched from the selected log using current dungeon data. Whole packs stay in their first pull; repeated attempts are omitted.'};

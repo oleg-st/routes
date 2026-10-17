@@ -1,0 +1,626 @@
+{
+  "fightID": 5,
+  "actors": [
+    {
+      "id": 89,
+      "type": "NPC",
+      "gameID": 9001
+    },
+    {
+      "id": 87,
+      "type": "NPC",
+      "gameID": 9002
+    }
+  ],
+  "rows": [
+    {
+      "key": "89:1",
+      "actorID": 89,
+      "instance": 1,
+      "gameID": 9001,
+      "firstTime": 10355,
+      "firstPosition": {
+        "t": 10355,
+        "x": -4296,
+        "y": -13850,
+        "hp": 1127902,
+        "maxHP": 1127902,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 2785.927254199774
+        },
+        {
+          "distance": 7611.66079702286
+        }
+      ],
+      "positions": [
+        {
+          "t": 96180,
+          "x": 2448,
+          "y": -5679,
+          "hp": 4294967183,
+          "maxHP": 1127902,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 96216
+        }
+      ]
+    },
+    {
+      "key": "87:1",
+      "actorID": 87,
+      "instance": 1,
+      "gameID": 9002,
+      "firstTime": 97086,
+      "firstPosition": {
+        "t": 97086,
+        "x": 2448,
+        "y": -5479,
+        "hp": 185525,
+        "maxHP": 185525,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 2196.3951717778386
+        },
+        {
+          "distance": 2846.3314092188994
+        }
+      ],
+      "positions": [
+        {
+          "t": 107836,
+          "x": 2503,
+          "y": -5366,
+          "hp": 1913,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 107837
+        }
+      ]
+    },
+    {
+      "key": "87:2",
+      "actorID": 87,
+      "instance": 2,
+      "gameID": 9002,
+      "firstTime": 97117,
+      "firstPosition": {
+        "t": 97117,
+        "x": 2274,
+        "y": -5779,
+        "hp": 185525,
+        "maxHP": 185525,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 2415.891576749462
+        },
+        {
+          "distance": 3081.5470315258935
+        }
+      ],
+      "positions": [
+        {
+          "t": 106835,
+          "x": 2285,
+          "y": -5345,
+          "hp": 4294967120,
+          "maxHP": 185525,
+          "eventType": "applydebuff"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 106868
+        }
+      ]
+    },
+    {
+      "key": "87:3",
+      "actorID": 87,
+      "instance": 3,
+      "gameID": 9002,
+      "firstTime": 97318,
+      "firstPosition": {
+        "t": 97318,
+        "x": 2532,
+        "y": -5651,
+        "hp": 185525,
+        "maxHP": 185525,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 2137.5404928583225
+        },
+        {
+          "distance": 2799.777298126772
+        }
+      ],
+      "positions": [
+        {
+          "t": 106968,
+          "x": 2379,
+          "y": -5340,
+          "hp": 4294966793,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 106968
+        }
+      ]
+    },
+    {
+      "key": "89:2",
+      "actorID": 89,
+      "instance": 2,
+      "gameID": 9001,
+      "firstTime": 112077,
+      "firstPosition": {
+        "t": 112077,
+        "x": 4758,
+        "y": -4823,
+        "hp": 1127902,
+        "maxHP": 1127902,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 170.5883919768578
+        },
+        {
+          "distance": 5648.395833784831
+        }
+      ],
+      "positions": [
+        {
+          "t": 156554,
+          "x": 4963,
+          "y": 101,
+          "hp": 4294966270,
+          "maxHP": 1127902,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 156555
+        }
+      ]
+    },
+    {
+      "key": "87:4",
+      "actorID": 87,
+      "instance": 4,
+      "gameID": 9002,
+      "firstTime": 112946,
+      "firstPosition": {
+        "t": 112946,
+        "x": 5220,
+        "y": -3345,
+        "hp": 185101,
+        "maxHP": 185525,
+        "eventType": "damage"
+      },
+      "nearest": [
+        {
+          "distance": 1131.929931786809
+        },
+        {
+          "distance": 1235.3599856820242
+        }
+      ],
+      "positions": [
+        {
+          "t": 131477,
+          "x": 4865,
+          "y": 384,
+          "hp": 4294965944,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 131510
+        }
+      ]
+    },
+    {
+      "key": "87:5",
+      "actorID": 87,
+      "instance": 5,
+      "gameID": 9002,
+      "firstTime": 112946,
+      "firstPosition": {
+        "t": 112946,
+        "x": 5239,
+        "y": -2991,
+        "hp": 185311,
+        "maxHP": 185525,
+        "eventType": "damage"
+      },
+      "nearest": [
+        {
+          "distance": 1236.5618872805721
+        },
+        {
+          "distance": 1340.4484049403354
+        }
+      ],
+      "positions": [
+        {
+          "t": 129974,
+          "x": 4720,
+          "y": 423,
+          "hp": 4294966417,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 130008
+        }
+      ]
+    },
+    {
+      "key": "87:6",
+      "actorID": 87,
+      "instance": 6,
+      "gameID": 9002,
+      "firstTime": 112946,
+      "firstPosition": {
+        "t": 112946,
+        "x": 5408,
+        "y": -3489,
+        "hp": 185326,
+        "maxHP": 185525,
+        "eventType": "damage"
+      },
+      "nearest": [
+        {
+          "distance": 924.1011382283272
+        },
+        {
+          "distance": 1007.3191672078372
+        }
+      ],
+      "positions": [
+        {
+          "t": 130175,
+          "x": 4839,
+          "y": 268,
+          "hp": 4294958719,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 130208
+        }
+      ]
+    },
+    {
+      "key": "87:7",
+      "actorID": 87,
+      "instance": 7,
+      "gameID": 9002,
+      "firstTime": 112946,
+      "firstPosition": {
+        "t": 112946,
+        "x": 4524,
+        "y": -4466,
+        "hp": 185133,
+        "maxHP": 185525,
+        "eventType": "damage"
+      },
+      "nearest": [
+        {
+          "distance": 801.2098280781388
+        },
+        {
+          "distance": 890.4494179379587
+        }
+      ],
+      "positions": [
+        {
+          "t": 131209,
+          "x": 4885,
+          "y": 258,
+          "hp": 4294965116,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 131211
+        }
+      ]
+    },
+    {
+      "key": "87:8",
+      "actorID": 87,
+      "instance": 8,
+      "gameID": 9002,
+      "firstTime": 112946,
+      "firstPosition": {
+        "t": 112946,
+        "x": 4821,
+        "y": -4719,
+        "hp": 185310,
+        "maxHP": 185525,
+        "eventType": "damage"
+      },
+      "nearest": [
+        {
+          "distance": 503.0313422700913
+        },
+        {
+          "distance": 572.3163378840416
+        }
+      ],
+      "positions": [
+        {
+          "t": 131009,
+          "x": 4815,
+          "y": 271,
+          "hp": 509,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 131042
+        }
+      ]
+    },
+    {
+      "key": "87:9",
+      "actorID": 87,
+      "instance": 9,
+      "gameID": 9002,
+      "firstTime": 114449,
+      "firstPosition": {
+        "t": 114449,
+        "x": 4732,
+        "y": -2500,
+        "hp": 185353,
+        "maxHP": 185525,
+        "eventType": "damage"
+      },
+      "nearest": [
+        {
+          "distance": 1925.3045398780137
+        },
+        {
+          "distance": 1983.8450286519583
+        }
+      ],
+      "positions": [
+        {
+          "t": 131710,
+          "x": 4827,
+          "y": 472,
+          "hp": 4294963142,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 131712
+        }
+      ]
+    },
+    {
+      "key": "87:10",
+      "actorID": 87,
+      "instance": 10,
+      "gameID": 9002,
+      "firstTime": 157188,
+      "firstPosition": {
+        "t": 157188,
+        "x": 5137,
+        "y": 1,
+        "hp": 185525,
+        "maxHP": 185525,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 3604.584842545267
+        },
+        {
+          "distance": 3770.9688227662245
+        }
+      ],
+      "positions": [
+        {
+          "t": 171413,
+          "x": 5137,
+          "y": 1,
+          "hp": 4294964274,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 171414
+        }
+      ]
+    },
+    {
+      "key": "87:11",
+      "actorID": 87,
+      "instance": 11,
+      "gameID": 9002,
+      "firstTime": 157556,
+      "firstPosition": {
+        "t": 157556,
+        "x": 4837,
+        "y": 1,
+        "hp": 185525,
+        "maxHP": 185525,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 3731.474411959312
+        },
+        {
+          "distance": 3876.1769621980484
+        }
+      ],
+      "positions": [
+        {
+          "t": 169744,
+          "x": 4987,
+          "y": -8,
+          "hp": 3123,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 169745
+        }
+      ]
+    },
+    {
+      "key": "87:12",
+      "actorID": 87,
+      "instance": 12,
+      "gameID": 9002,
+      "firstTime": 157623,
+      "firstPosition": {
+        "t": 157623,
+        "x": 4963,
+        "y": 301,
+        "hp": 185066,
+        "maxHP": 185525,
+        "eventType": "damage"
+      },
+      "nearest": [
+        {
+          "distance": 3948.8740115515316
+        },
+        {
+          "distance": 4111.168375373951
+        }
+      ],
+      "positions": [
+        {
+          "t": 166339,
+          "x": 5057,
+          "y": 90,
+          "hp": 4294966737,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 166372
+        }
+      ]
+    },
+    {
+      "key": "87:13",
+      "actorID": 87,
+      "instance": 13,
+      "gameID": 9002,
+      "firstTime": 292234,
+      "firstPosition": {
+        "t": 292234,
+        "x": -17959,
+        "y": 5322,
+        "hp": 185525,
+        "maxHP": 185525,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 184.19463781622434
+        },
+        {
+          "distance": 329.33813173357277
+        }
+      ],
+      "positions": [
+        {
+          "t": 323894,
+          "x": -22848,
+          "y": 5071,
+          "hp": 4294965910,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 323896
+        }
+      ]
+    },
+    {
+      "key": "87:14",
+      "actorID": 87,
+      "instance": 14,
+      "gameID": 9002,
+      "firstTime": 292268,
+      "firstPosition": {
+        "t": 292268,
+        "x": -18024,
+        "y": 5266,
+        "hp": 185525,
+        "maxHP": 185525,
+        "eventType": "cast"
+      },
+      "nearest": [
+        {
+          "distance": 129.0310838528836
+        },
+        {
+          "distance": 265.629128323232
+        }
+      ],
+      "positions": [
+        {
+          "t": 324730,
+          "x": -22883,
+          "y": 4984,
+          "hp": 4294966999,
+          "maxHP": 185525,
+          "eventType": "damage"
+        }
+      ],
+      "deaths": [
+        {
+          "timestamp": 324762
+        }
+      ]
+    }
+  ],
+  "events": []
+}

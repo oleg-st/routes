@@ -55,6 +55,10 @@ try{
   await page.locator('#import-log-button').click();await page.locator('#log-fight').waitFor();
   assert.equal(await page.locator('#log-fight').inputValue(),'5');
   assert.equal(requests.length,3,'reopening a direct import loads only the missing fight list');
+  const successDownload=page.waitForEvent('download');await page.getByRole('button',{name:'Download import diagnostics'}).click();
+  const successPayload=JSON.parse(fs.readFileSync(await (await successDownload).path(),'utf8'));
+  assert.equal(successPayload.log.fight.id,5);assert.equal(successPayload.error,undefined);
+  assert.equal(await page.locator('#log-continue').isHidden(),true);
   await page.locator('#dialog').evaluate(d=>d.close());
   await page.locator('#import-log-button').click();
   assert.equal(await page.locator('#log-fight').inputValue(),'5');assert.equal(requests.length,3,'cached fights reopen without requests');
@@ -105,6 +109,17 @@ try{
   assert.equal(diagnostic.details.code,'no-compatible-route');assert.equal(diagnostic.log.events.length,2);
   const {matchLiveLog}=await import('../log-import/live-matcher.js');
   await assert.rejects(matchLiveLog(diagnostic.log,{...diagnostic.matching,catalog:new Map(diagnostic.matching.catalog.map(e=>[e.id,e]))}),e=>e.diagnostics?.code==='no-compatible-route');
+  const beforeRecovery=requests.length;
+  await page.locator('#log-continue').click();
+  await page.waitForFunction(()=>!document.querySelector('#dialog').open);
+  assert.equal(requests.length,beforeRecovery,'recovery reuses the downloaded log without API requests');
+  assert.equal(await page.locator('#route-name').inputValue(),'Empyrean Sands · #5');
+  assert.equal(await page.locator('#pull-count').textContent(),'1');
+  await page.locator('#import-log-button').click();
+  assert.equal(await page.locator('#log-continue').isHidden(),true);
+  const recoveredDownload=page.waitForEvent('download');await diagnosticsButton.click();
+  const recovered=JSON.parse(fs.readFileSync(await (await recoveredDownload).path(),'utf8'));
+  assert.equal(recovered.recovery.matched,1);assert.equal(recovered.recovery.skipped.length,1);
   await page.locator('#log-url').fill(`https://www.fellowshiplogs.com/reports/${code}`);assert.equal(await diagnosticsButton.isHidden(),true);
   assert.deepEqual(errors,[]);console.log('Live import: direct fight URLs, summary-only fight list, latest default, selected fight import, labels, PKCE, worker and cancel passed (mocked API).');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}
