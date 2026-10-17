@@ -11,7 +11,7 @@ const bundle=await build({stdin:{contents:`
   window.ui=createLogImportUI({panel:document.querySelector('#panel'),
     showDialog:(title,html)=>{dialog.innerHTML=html;dialog.showModal();},closeDialog:()=>dialog.close(),
     live:{connected:()=>true,load:async()=>{if(window.failure)throw new Error('No complete route');return window.extraFixture??logFixtures.find(f=>f.id===window.example&&f.dungeonData==='custom');},
-      diagnostics:()=>window.failure?.diagnostics,missingEnemies:()=>window.failure?.skipped,
+      diagnostics:()=>window.failure?.diagnostics,missingEnemies:()=>window.failure?.skipped,cancelImport:()=>{window.failure=null;},
       canFindMissing:()=>Boolean(window.failure&&!window.failure.searched),canContinue:()=>Boolean(window.failure&&!window.failure.done),
       expandSearch:async()=>{window.failure.searched=true;window.failure.skipped=window.failure.skipped.filter(r=>r.pull===2);return null;},
       continueImport:async()=>{window.failure.done=true;return window.extraFixture;}},
@@ -78,6 +78,17 @@ try{
   assert.equal(await page.locator('#log-expand').textContent(),'Find missing mobs');
   assert.match(await page.locator('#log-expand').getAttribute('title'),/confirmed packs pulled earlier.*Newly found packs do not extend/);
   assert.equal(await page.locator('#log-live-form > p.muted').count(),0);
+  const previousURL=await page.locator('#log-url').inputValue();
+  await page.evaluate(()=>{window.cancelledFailure=window.failure;window.result.saved=false;});
+  await page.locator('#log-dismiss').click();
+  assert.equal(await page.locator('dialog').evaluate(d=>d.open),true);
+  assert.equal(await page.locator('#log-url').inputValue(),previousURL);
+  assert.equal(await page.locator('#log-load').evaluate(e=>e.classList.contains('primary')&&e===document.activeElement),true);
+  for(const selector of ['#log-missing-enemies','#log-expand','#log-continue','#log-dismiss','#log-live-error'])assert.equal(await page.locator(selector).isHidden(),true);
+  assert.equal(await page.getByRole('button',{name:'Download import diagnostics'}).isHidden(),true);
+  assert.equal(await page.evaluate(()=>window.result.saved),false);
+  await page.evaluate(()=>{window.failure=window.cancelledFailure;});await submit();
+  assert.equal(await page.locator('#log-expand').evaluate(e=>e.classList.contains('primary')),true);
   await page.locator('#log-expand').click();
   assert.equal(await page.locator('#log-missing-enemies').textContent(),'Pull 2Soul ×1');
   assert.equal(await page.locator('#log-expand').isHidden(),true);

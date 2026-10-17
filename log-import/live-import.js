@@ -37,6 +37,7 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
   return {
     connected:()=>Boolean(token),
     disconnect(){token=null;diagnostics=null;recoveryResult=null;},
+    cancelImport(){diagnostics=null;recoveryResult=null;},
     diagnostics:()=>diagnostics,
     canContinue,
     canFindMissing,

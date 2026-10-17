@@ -52,7 +52,8 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
       const download=document.createElement('button');download.type='button';download.textContent='Download import diagnostics';download.hidden=true;diagnosticActions.append(download);
       const expand=document.createElement('button');expand.id='log-expand';expand.type='button';expand.hidden=true;diagnosticActions.append(expand);
       const proceed=document.createElement('button');proceed.id='log-continue';proceed.type='button';proceed.textContent='Import without missing mobs';proceed.hidden=true;
-      diagnosticActions.append(expand,proceed,download);
+      const dismiss=document.createElement('button');dismiss.id='log-dismiss';dismiss.type='button';dismiss.textContent='Cancel import';dismiss.hidden=true;
+      diagnosticActions.append(expand,proceed,download,dismiss);
       const missing=document.createElement('div');missing.id='log-missing-enemies';missing.hidden=true;diagnosticActions.before(missing);
       download.onclick=()=>{
         const diagnostic=live.diagnostics?.();if(!diagnostic)return;
@@ -67,6 +68,11 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
       const remember=()=>{lastURL=input.value;lastReport=report;lastFightID=report?Number(select.value):null;};
       const disconnect=document.getElementById('log-disconnect');if(disconnect)disconnect.onclick=()=>{remember();live.disconnect();api.open();};
       const selectedURL=()=>report?`https://www.fellowshiplogs.com/reports/${report.reportCode}?fight=${select.value}`:input.value.trim();
+      dismiss.onclick=()=>{
+        if(busy)return;
+        live.cancelImport();status.textContent='';error.textContent='';error.hidden=true;
+        controls();load.focus();
+      };
       function controls(){
         let explicit=false;try{explicit=Boolean(parseReportURL(input.value.trim(),{requireFight:false}).fightID);}catch{}
         const chosen=report?.fights.find(f=>String(f.id)===select.value);
@@ -78,10 +84,15 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
         let sameLog=false;
         try{const selected=parseReportURL(selectedURL()),saved=live.diagnostics?.();sameLog=selected.reportCode===saved?.log.reportCode&&selected.fightID===saved?.log.fight.id;}catch{}
         download.hidden=busy||!sameLog;
-        expand.hidden=busy||!sameLog||!live.canFindMissing?.();expand.disabled=busy;
+        const recommendSearch=Boolean(sameLog&&live.canFindMissing?.());
+        expand.hidden=busy||!recommendSearch;expand.disabled=busy;
+        expand.classList.toggle('primary',recommendSearch);
+        load.classList.toggle('primary',!recommendSearch);
         expand.textContent='Find missing mobs';
         expand.title='Look for matching mobs in packs near confirmed packs pulled earlier. Newly found packs do not extend the search. Nearby packs may not have been pulled.';
         proceed.hidden=busy||!sameLog||!live.canContinue?.();proceed.disabled=busy;
+        dismiss.hidden=busy||!sameLog||!(live.canFindMissing?.()||live.canContinue?.());dismiss.disabled=busy;
+        diagnosticActions.hidden=[expand,proceed,download,dismiss].every(button=>button.hidden);
         const skipped=sameLog?live.missingEnemies?.():null;
         missing.hidden=busy||!skipped?.length;
         missing.innerHTML=skipped?.length?[...Map.groupBy(skipped,r=>r.pull??1)].sort(([a],[b])=>a-b).map(([pull,rows])=>

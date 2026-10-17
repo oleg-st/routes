@@ -95,6 +95,9 @@ test('Recovery lists missing mobs by pull, searches once, retains additions and 
     assert.equal(result.partial.matched,2);assert.equal(result.partial.skipped.length,1);
     assert.deepEqual(Object.values(result.groups).flatMap(g=>g.enemies).sort(),['a','b']);
     assert.equal(live.canContinue(),false);assert.equal(result.expandedSearch.maxRadius,6000);
+    live.cancelImport();assert.equal(live.diagnostics(),null);assert.equal(live.missingEnemies(),null);
+    assert.equal(live.connected(),true,'cancelling an import keeps the log connection');
+    await assert.rejects(live.continueImport(url),/Import this log first/);
     live.disconnect();assert.equal(live.missingEnemies(),null);assert.equal(live.canFindMissing(),false);
   }finally{globalThis.document=previousDocument;globalThis.Worker=previousWorker;}
 });
