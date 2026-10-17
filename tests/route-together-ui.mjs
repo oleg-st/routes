@@ -14,11 +14,21 @@ try{
     await page.goto(url);await page.locator('#map-loading').waitFor({state:'hidden'});
     const map=await page.locator('#map').boundingBox(),click=(x,y,options)=>page.mouse.click(map.x+x,map.y+y,options);
     await page.locator('[data-tool=marker]').click();await click(400,380);
-    await page.locator('#marker-label').fill('Meet here 🐉');await page.locator('#marker-icon').selectOption('star');await page.locator('#place-marker').click();
+    await page.locator('#marker-label').fill('Meet here 🐉');await page.getByRole('button',{name:'Marker 1',exact:true}).click();await page.locator('#place-marker').click();
     const marker=page.locator('#drawings [aria-label=marker]');assert.equal(await marker.locator('title').textContent(),'Meet here 🐉');
     const originalId=await marker.getAttribute('data-drawing');
+    assert.equal(await page.locator('[data-tool=note]').count(),0,'one entry point replaces the separate note tool');
+    await click(400,380,{button:'right'});await page.getByRole('menuitem',{name:'Edit marker',exact:true}).click();
+    assert.equal(await page.locator('[data-marker-icon]').count(),6);
+    await page.getByRole('button',{name:'Number',exact:true}).click();await page.getByRole('button',{name:'Orange',exact:true}).click();
+    await page.locator('#place-marker').click();assert.equal(await marker.locator('text').textContent(),'1');assert.equal(await marker.getAttribute('data-drawing'),originalId);
+    await click(400,380,{button:'right'});await page.getByRole('menuitem',{name:'Edit note',exact:true}).click();
+    for(let i=1;i<=5;i++){await page.getByRole('button',{name:`Marker ${i}`,exact:true}).click();assert.equal(await page.locator('#marker-preview-symbol path').count(),1);}
+    await page.getByRole('button',{name:'Marker 1',exact:true}).click();
+    await page.screenshot({path:`tmp/marker-editor-${url===origin?'server':'local'}.png`});
+    await page.locator('#place-marker').click();assert.equal(await marker.locator('circle').last().getAttribute('stroke'),'#ffa500');
     await page.mouse.move(map.x+400,map.y+380);await page.mouse.down();await page.mouse.move(map.x+470,map.y+420);await page.mouse.up();
-    const moved=await marker.locator('circle').getAttribute('cx');await page.locator('#undo').click();assert.notEqual(await marker.locator('circle').getAttribute('cx'),moved);await page.locator('#redo').click();
+    const moved=await marker.locator('circle').last().getAttribute('cx');await page.locator('#undo').click();assert.notEqual(await marker.locator('circle').last().getAttribute('cx'),moved);await page.locator('#redo').click();
     await click(470,420,{button:'right'});await page.getByRole('menuitem',{name:'Edit marker',exact:true}).click();await page.locator('#marker-label').fill('Updated label');await page.locator('#place-marker').click();assert.equal(await marker.locator('title').textContent(),'Updated label');
     await click(470,420,{button:'right'});await page.getByRole('menuitem',{name:'Delete marker',exact:true}).click();assert.equal(await marker.count(),0);await page.locator('#undo').click();assert.equal(await marker.getAttribute('data-drawing'),originalId);
     await page.locator('[data-tool=line]').click();await click(280,220);await click(600,220);

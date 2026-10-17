@@ -7,6 +7,7 @@ import {COMMAND_TYPES} from '../collaboration/route-commands.js';
 import {newRoute, newPull, movePull, validateRoute, scoreRoute, encodeRoute, decodeRoute} from '../route-model.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 import {mapViews} from '../map-views.js';
+import {numberedAnnotations} from '../marker-symbols.js';
 const read = name => JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`, import.meta.url)));
 const dungeons = read('dungeons').map(correctDungeon), enemies = new Map(read('enemies').map(e => [e.id, e]));
 const dungeon = dungeons.find(d => d.name === "Sailor's Abyss"), mapId = mapViews(dungeon)[0].id;
@@ -36,6 +37,27 @@ function assertUnchanged(doc, fn, pattern) {
   assert.throws(fn, pattern);
   assert.equal(doc.canonical(), before); assert.deepEqual(doc.version(), version);
 }
+
+test('Unified notes keep identity while concurrent symbols, text and position merge and export', async t => {
+  const a=seed(t);addDrawing(a,'note','legacy-note');
+  a.execute({type:'add-marker',id:'number-note',mapId,position:[20,30],icon:'number',label:'Second'});
+  const b=peer(t,a),spectator=peer(t,a,'spectator');
+  assert.deepEqual(numberedAnnotations(a.snapshot()).map(d=>d.id),['legacy-note','number-note']);
+  a.execute({type:'update-drawing',drawingId:'legacy-note',patch:{icon:'marker-3',color:'#22e628'}});
+  b.execute({type:'set-text',group:'drawings',id:'legacy-note',text:'Shared text'});
+  b.execute({type:'move-point',drawingId:'legacy-note',pointId:'point-0',position:[40,50]});
+  sync(a,b,spectator);
+  const note=a.snapshot().drawings[0];
+  assert.equal(note.id,'legacy-note');assert.equal(note.icon,'marker-3');assert.equal(note.text,'Shared text');assert.deepEqual(note.points,[[40,50]]);
+  assert.deepEqual(numberedAnnotations(a.snapshot()).map(d=>d.id),['number-note']);
+  const decoded=await decodeRoute(await encodeRoute(a.snapshot(),dungeon),dungeons,enemies);
+  assert.equal(decoded.drawings[0].icon,'marker-3');assert.equal(decoded.markers[0].icon,'number');
+  a.undo();sync(a,b);assert.equal(a.snapshot().drawings[0].text,'Shared text');assert.equal(numberedAnnotations(a.snapshot()).length,2);
+  a.redo();sync(a,b);assert.equal(a.snapshot().drawings[0].icon,'marker-3');
+  a.execute({type:'delete-drawing',drawingId:'legacy-note'});
+  b.execute({type:'update-drawing',drawingId:'legacy-note',patch:{icon:'number'}});
+  sync(a,b);assert.equal(a.snapshot().drawings.length,0);
+});
 
 test('Concurrent inserts and moves converge without duplicate pull IDs; colors stay at positions', t => {
   const a = seed(t), b = peer(t, a), colors = a.snapshot().pulls.map(p => p.color);

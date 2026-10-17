@@ -15,6 +15,7 @@ export function selectRoute(doc, identity) {
     const row = rows(doc, 'drawings').get(id), keys = pointIds(row);
     return {id, mapId: row.get('mapId'), kind: row.get('kind'), color: row.get('color'),
       ...(row.get('kind') === 'line' ? {width: row.get('width')} : {}),
+      ...(row.get('kind') === 'note' && row.get('icon') !== undefined ? {icon: row.get('icon')} : {}),
       text: row.get('text')?.toString() ?? '', pointIds: keys,
       points: keys.map(key => row.get('points').get(key).get('position'))};
   });

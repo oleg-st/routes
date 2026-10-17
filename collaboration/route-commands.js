@@ -8,7 +8,7 @@ const commandFields = {
   'update-pull': ['pullId', 'patch'], 'delete-pull': ['pullId'],
   'move-pull': ['pullId', 'beforeId', 'afterId'], 'assign-mobs': ['pullId', 'mobIds', 'toggle'],
   'set-meta': ['patch'], 'set-excluded': ['mobId', 'excluded'], 'set-modifier': ['kind', 'patch'],
-  'add-drawing': ['id', 'mapId', 'kind', 'color', 'width', 'text', 'points', 'pointIds'],
+  'add-drawing': ['id', 'mapId', 'kind', 'color', 'width', 'icon', 'text', 'points', 'pointIds'],
   'update-drawing': ['drawingId', 'patch'], 'delete-drawing': ['drawingId'],
   'insert-point': ['drawingId', 'id', 'position', 'beforeId', 'afterId'],
   'move-point': ['drawingId', 'pointId', 'position'], 'delete-point': ['drawingId', 'pointId'],
@@ -163,10 +163,12 @@ function prepare(doc, c, context) {
       invariant(keys.length === count && (c.pointIds === undefined || c.pointIds.length === count), 'Point IDs must be unique and match coordinates.');
       const shade = color(c.color ?? '#e43969'), text = string(c.text ?? '', 1_000_000), width = c.width ?? 3;
       invariant([2, 3, 5].includes(width) && (c.width === undefined || c.kind === 'line'), 'Invalid line width.');
+      if (c.icon !== undefined) {invariant(c.kind === 'note', 'Only notes support symbols.'); string(c.icon, 50);}
       return () => {
         const row = rows(doc, 'drawings').ensureMergeableMap(key);
         for (const [field, value] of Object.entries({mapId: c.mapId, kind: c.kind, color: shade})) row.set(field, value);
         if (c.kind === 'line') row.set('width', width);
+        if (c.icon !== undefined) row.set('icon', c.icon);
         row.ensureMergeableText('text').insert(0, text);
         row.ensureMergeableMap('pointsDeleted');
         coordinates.forEach((point, index) => writePoint(row, keys[index], point, index));
@@ -175,7 +177,8 @@ function prepare(doc, c, context) {
       };
     }
     case 'update-drawing': {
-      const row = existing(doc, 'drawings', c.drawingId), patch = record(c.patch, ['color', 'width']);
+      const row = existing(doc, 'drawings', c.drawingId), patch = record(c.patch, ['color', 'width', 'icon']);
+      if ('icon' in patch) {invariant(row.get('kind') === 'note', 'Only notes support symbols.'); string(patch.icon, 50);}
       if ('color' in patch) color(patch.color);
       if ('width' in patch) invariant(row.get('kind') === 'line' && [2, 3, 5].includes(patch.width), 'Invalid line width.');
       return () => {for (const [key, value] of Object.entries(patch)) row.set(key, value);};

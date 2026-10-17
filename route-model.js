@@ -59,7 +59,7 @@ export function hasRouteChanges(route,saved){
     modifiers:['empowered','ghorn','witch'].map(kind=>{const m=r.modifiers?.[kind];return m?.active?{active:true,enemies:m.enemies,packId:m.packId,replacedEnemies:m.replacedEnemies}:{active:false};}),
     pulls:r.pulls.map(p=>({name:p.name,customName:hasCustomPullName(p),color:p.color,enemies:p.enemies,note:p.note||''})),
     markers:(r.markers||[]).map(({mapId,position,color,icon,label})=>({mapId,position,color,icon,label})),
-    drawings:r.drawings.map(d=>({mapId:d.mapId,kind:d.kind,color:d.color,width:d.kind==='line'?(d.width??3):null,text:d.text||'',points:d.points})),excluded:r.excluded,
+    drawings:r.drawings.map(d=>({mapId:d.mapId,kind:d.kind,color:d.color,width:d.kind==='line'?(d.width??3):null,icon:d.kind==='note'?(d.icon||'number'):null,text:d.text||'',points:d.points})),excluded:r.excluded,
   });
   const baseline=saved||{name:/^Route [1-9]\d*$/.test(route.name)?route.name:'New route',shadow:false,modifiers:defaultModifiers(),pulls:route.pulls.length?[newPull()]:[],drawings:[],excluded:[]};
   return content(route)!==content(baseline);
@@ -244,7 +244,7 @@ export function validateRoute(value,dungeons,enemies){
     const points=kind==='line'&&value.version!==3?[d.points[0],d.points.at(-1)]:d.points;
     // Keep annotation identity across local reloads; legacy drawings acquire an ID once.
     const id=text(d.id)||uid();if(drawingIds.has(id))throw new Error('Duplicate drawing ID.');drawingIds.add(id);
-    return {id,mapId:d.mapId,kind,color:/^#[0-9a-f]{6}$/i.test(d.color)?d.color:COLORS[0],...(kind==='line'&&d.width!==undefined?{width:[2,3,5].includes(d.width)?d.width:3}:{}),text:text(d.text,value.version===3?1_000_000:500),points:points.map(p=>[...p])};
+    return {id,mapId:d.mapId,kind,color:/^#[0-9a-f]{6}$/i.test(d.color)?d.color:COLORS[0],...(kind==='line'&&d.width!==undefined?{width:[2,3,5].includes(d.width)?d.width:3}:{}),...(kind==='note'&&d.icon!==undefined?{icon:text(d.icon,50)||'number'}:{}),text:text(d.text,value.version===3?1_000_000:500),points:points.map(p=>[...p])};
   });
   const markerIds=new Set();
   if(value.markers!==undefined&&(!Array.isArray(value.markers)||value.markers.length>(value.version===3?10000:500)))throw new Error('Invalid markers.');
@@ -312,7 +312,7 @@ function flag(value){if(value!=null&&value!==1)throw invalid();return value===1;
 
 export async function encodeRoute(route,dungeon){
   route=structuredClone(route);
-  const extended=Boolean(route.markers?.length||route.pulls.length>500||route.drawings.length>500||route.pulls.some(p=>p.note?.length>4000)||route.drawings.some(d=>d.kind==='line'&&d.points.length>2||d.text?.length>500));
+  const extended=Boolean(route.markers?.length||route.pulls.length>500||route.drawings.length>500||route.pulls.some(p=>p.note?.length>4000)||route.drawings.some(d=>d.icon||d.kind==='line'&&d.points.length>2||d.text?.length>500));
   if(extended)validateRoute({...route,version:3},[dungeon]); // Reject oversized content; never silently truncate a CRDT view.
   const permanent=routeDictionary(dungeon.id);
   const {placements,packs,fingerprint}=await dictionary(dungeon);
@@ -323,7 +323,7 @@ export async function encodeRoute(route,dungeon){
   ]));
   const drawings=route.drawings.map(d=>trim([
     d.mapId,['line','portal','invis','note'].indexOf(d.kind),d.points,
-    d.color===COLORS[0]?null:colorCode(d.color),d.text||null,d.width??null,
+    d.color===COLORS[0]?null:colorCode(d.color),d.text||null,d.width??null,d.kind==='note'?(d.icon??null):null,
   ]));
   const modifiers=['empowered','ghorn','witch'].map(kind=>{
     const m=route.modifiers?.[kind];if(!m)return null;
@@ -381,8 +381,8 @@ async function expandRoute(payload,dungeons,extended=false,mapped=false){
     }),
     ...(extended?{markers:list(markers).map(row=>{const [mapId,position,color,icon,label]=tuple(row,5);return {mapId,position,color:readColor(color,COLORS[0]),icon,label};})}:{}),
     drawings:list(drawings).map(row=>{
-      const [mapId,kind,points,color,text,width]=tuple(row,6);
-      return {mapId,kind:itemAt(['line','portal','invis','note'],kind),points,color:readColor(color,COLORS[0]),text:text??'',...(width==null?{}:{width})};
+      const [mapId,kind,points,color,text,width,icon]=tuple(row,extended?7:6);
+      return {mapId,kind:itemAt(['line','portal','invis','note'],kind),points,color:readColor(color,COLORS[0]),text:text??'',...(width==null?{}:{width}),...(icon==null?{}:{icon})};
     }),
   };
 }

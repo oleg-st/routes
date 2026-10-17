@@ -1,5 +1,23 @@
 # Route Together CRDT model
 
+## Unified marker / note prototype
+
+The map toolbar opens one editor for numbered notes and five temporary vector
+symbols, with optional text and a fixed color palette. New annotations use the
+existing marker entity (`icon: "number"` for numbered notes). Legacy note
+drawings retain their IDs, point IDs and CRDT text; an optional `icon` field changes
+their appearance in place. Numbering derives from visible legacy notes followed
+by numbered markers, so peers converge without storing a mutable counter.
+Symbol and color edits are independent commands; text uses the existing conflict
+guard and CRDT text. Undo, deletion, spectator restrictions and persistence remain
+on the shared document path. Compact exports retain optional note icons in a
+seventh drawing tuple field; older clients must update to read those exports.
+
+The five vectors in `marker-symbols.js` are placeholders, not verified game
+artwork. The installed Fellowship data package and public searches did not yield
+the original marker assets. Do not assign real log marker IDs to these shapes
+until verified.
+
 Stage 2 implements the shared model and commands independently of the DOM, IndexedDB, and P2P. The entry point is `collaboration/route-document.js`; legacy route migration is in `collaboration/route-migration.js`. The dependency is pinned to `loro-crdt@1.16.4`.
 
 ## Public API

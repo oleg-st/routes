@@ -67,11 +67,11 @@ try{
       if(tool==='invis')assert.equal(await page.locator('#route-relics b').nth(1).innerText(),'0');
     }
     for(const [text,x] of [['First note\n<keep this text>',340],['Second note',560]]){
-      await page.locator('[data-tool=note]').click();await click(x,630);await page.getByRole('textbox',{name:'Note text'}).fill(text);await page.locator('#place-note').click();
+      await page.locator('[data-tool=marker]').click();await click(x,630);await page.getByRole('textbox',{name:'Marker text'}).fill(text);await page.locator('#place-marker').click();
     }
     assert.equal(await drawings.count(),3);
     assert.equal(await drawings.nth(1).locator('text').textContent(),'1');assert.equal(await drawings.nth(2).locator('text').textContent(),'2');
-    const notePosition=()=>drawings.nth(2).locator('circle').evaluate(el=>[el.getAttribute('cx'),el.getAttribute('cy')]);
+    const notePosition=()=>drawings.nth(2).locator('circle').last().evaluate(el=>[el.getAttribute('cx'),el.getAttribute('cy')]);
     const beforeNote=await notePosition(),beforeNoteView=await map.getAttribute('viewBox');
     await move(560,630);await page.mouse.down();await move(600,680);await page.mouse.up();
     const afterNote=await notePosition();assert.notDeepEqual(afterNote,beforeNote);assert.equal(await map.getAttribute('viewBox'),beforeNoteView);
@@ -80,7 +80,7 @@ try{
     await move(600,680);assert.equal(await page.locator('.note-tooltip-text').innerText(),'Second note');
     await move(340,630);assert.equal(await page.locator('.note-tooltip-text').innerText(),'First note\n<keep this text>');
     await click(340,630,{button:'right'});await page.getByRole('menuitem',{name:'Edit note',exact:true}).click();
-    await page.getByRole('textbox',{name:'Note text'}).fill('Edited note');await page.locator('#place-note').click();
+    await page.getByRole('textbox',{name:'Marker text'}).fill('Edited note');await page.locator('#place-marker').click();
     await move(340,630);assert.equal(await page.locator('.note-tooltip-text').innerText(),'Edited note');
     await page.locator('#undo').click();await move(340,630);assert.equal(await page.locator('.note-tooltip-text').innerText(),'First note\n<keep this text>');
     await page.locator('#redo').click();

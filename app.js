@@ -1,5 +1,6 @@
 import {uid,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute} from './route-model.js';
 import {pullOutline} from './map-geometry.js';
+import {markerSymbols,markerColors,markerIcon,numberedAnnotations,markerSymbol,legacyMarkerGlyph} from './marker-symbols.js';
 import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
 import {correctDungeon,placementName} from './data/placement-corrections.js';
 import {enemyAbilities} from './data/ability-corrections.js';
@@ -340,37 +341,42 @@ function showEnemyMenu(id,event){
 }
 function showDrawingMenu(id,event,vertex){
   const drawing=annotation(id);if(!drawing||!canEdit())return;const endpoint=vertex??Number(event.target?.closest('[data-endpoint]')?.dataset.endpoint);
-  hideHover();const menu=$('#enemy-menu'),name={line:'arrow',portal:'portal',invis:'invis',note:'note',marker:'marker'}[drawing.kind];
+  hideHover();const menu=$('#enemy-menu'),name=['note','marker'].includes(drawing.kind)?(markerIcon(drawing)==='number'?'note':'marker'):{line:'arrow',portal:'portal',invis:'invis'}[drawing.kind];
   menu.setAttribute('aria-label','Drawing actions');
-  menu.innerHTML=`${['note','marker'].includes(drawing.kind)?'<button role="menuitem" data-drawing-action="edit">Edit '+(drawing.kind==='note'?'note':'marker')+'</button>':''}${drawing.kind==='line'?'<button role="menuitem" data-drawing-action="insert">Add vertex after this point</button>':''}${drawing.kind==='line'&&drawing.points.length>2&&Number.isInteger(endpoint)?'<button role="menuitem" data-drawing-action="vertex">Remove vertex</button>':''}<button role="menuitem" data-drawing-action="delete">Delete ${name}</button>`;
-  menu.onclick=e=>{const action=e.target.closest('[data-drawing-action]')?.dataset.drawingAction;if(!action)return;menu.hidden=true;if(action==='edit'){drawing.kind==='marker'?editMarker(drawing):editNote(drawing);}else if(action==='insert'){const index=Number.isInteger(endpoint)?Math.min(endpoint,drawing.points.length-2):0;change({type:'insert-point',drawingId:id,afterId:drawing.pointIds[index],position:drawing.points[index].map((n,i)=>(n+drawing.points[index+1][i])/2)});}else if(action==='vertex'){change({type:'delete-point',drawingId:id,pointId:drawing.pointIds[endpoint]});}else{change(drawing.kind==='marker'?{type:'delete-marker',markerId:id}:{type:'delete-drawing',drawingId:id});$('#map').focus();}};
+  menu.innerHTML=`${['note','marker'].includes(drawing.kind)?'<button role="menuitem" data-drawing-action="edit">Edit '+name+'</button>':''}${drawing.kind==='line'?'<button role="menuitem" data-drawing-action="insert">Add vertex after this point</button>':''}${drawing.kind==='line'&&drawing.points.length>2&&Number.isInteger(endpoint)?'<button role="menuitem" data-drawing-action="vertex">Remove vertex</button>':''}<button role="menuitem" data-drawing-action="delete">Delete ${name}</button>`;
+  menu.onclick=e=>{const action=e.target.closest('[data-drawing-action]')?.dataset.drawingAction;if(!action)return;menu.hidden=true;if(action==='edit'){editMarker(drawing);}else if(action==='insert'){const index=Number.isInteger(endpoint)?Math.min(endpoint,drawing.points.length-2):0;change({type:'insert-point',drawingId:id,afterId:drawing.pointIds[index],position:drawing.points[index].map((n,i)=>(n+drawing.points[index+1][i])/2)});}else if(action==='vertex'){change({type:'delete-point',drawingId:id,pointId:drawing.pointIds[endpoint]});}else{change(drawing.kind==='marker'?{type:'delete-marker',markerId:id}:{type:'delete-drawing',drawingId:id});$('#map').focus();}};
   positionPopover(menu,event);menu.querySelector('button').focus({preventScroll:true});
 }
 function annotation(id){return route.drawings.find(d=>d.id===id)||markerAnnotation(route.markers.find(m=>m.id===id));}
 function markerAnnotation(marker){return marker&&{...marker,kind:'marker',points:[marker.position],text:marker.label};}
 function editMarker(marker,pos){
   if(!canEdit())return;
-  showDialog(marker?'Edit marker':'Map marker',`<label>Label<textarea id="marker-label" maxlength="4000">${esc(marker?.label||'')}</textarea></label><label>Color<input type="color" id="marker-color" value="${marker?.color||active()?.color||pullColor(0)}"></label><label>Symbol<select id="marker-icon">${['pin','star','flag'].map(icon=>'<option '+(marker?.icon===icon?'selected':'')+'>'+icon+'</option>').join('')}</select></label><button id="place-marker" class="primary">Save</button>`);
-  $('#place-marker').onclick=()=>{const label=$('#marker-label').value,color=$('#marker-color').value,icon=$('#marker-icon').value;
-    const commands=marker?[]:{type:'add-marker',mapId:mapLayer.id,position:pos,label,color,icon};
-    if(marker){const current=route.markers.find(m=>m.id===marker.id),patch={};if(!current){toast('This marker was deleted.');return;}
-      if(label!==marker.label){if(!unchangedText(current.label,marker.label))return;commands.push({type:'set-text',group:'markers',id:marker.id,text:label});}
-      if(color!==marker.color)patch.color=color;if(icon!==marker.icon)patch.icon=icon;
-      if(Object.keys(patch).length)commands.push({type:'update-marker',markerId:marker.id,patch});
+  const legacy=marker?.kind==='note',originalText=marker?(legacy?marker.text:marker.label):'',originalIcon=marker?markerIcon(marker):'number';
+  let icon=originalIcon,color=marker?.color||'#ffffff';
+  const palette=markerColors.some(([value])=>value===color)?markerColors:[...markerColors,[color,'Saved color']];
+  const symbols=markerSymbol(icon)?markerSymbols:[...markerSymbols,{id:icon,label:'Saved symbol'}];
+  const number=()=>{const notes=numberedAnnotations(route),index=notes.findIndex(n=>n.id===marker?.id);return index>=0?index+1:legacy?notes.filter(n=>n.kind==='note'&&route.drawings.indexOf(n)<route.drawings.findIndex(d=>d.id===marker.id)).length+1:notes.length+1;};
+  const glyph=(value)=>{const symbol=markerSymbol(value);return symbol?.path?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${symbol.path}"/></svg>`:`<span aria-hidden="true">${value==='number'?number():legacyMarkerGlyph(value)}</span>`;};
+  showDialog(marker?'Edit marker / note':'Add marker / note',`<div class="marker-editor"><fieldset><legend>Symbol</legend><div class="marker-symbols" role="group" aria-label="Marker symbol">${symbols.map(s=>`<button type="button" data-marker-icon="${esc(s.id)}" aria-label="${esc(s.label)}" aria-pressed="${icon===s.id}">${glyph(s.id)}<small>${esc(s.label)}</small></button>`).join('')}</div></fieldset><label for="marker-label">Text <span class="muted">· optional</span></label><textarea id="marker-label" aria-label="Marker text" placeholder="For example: stack here, then interrupt…" maxlength="${Math.max(4000,originalText.length)}">${esc(originalText)}</textarea><fieldset><legend>Color</legend><div class="marker-colors" role="group" aria-label="Marker color">${palette.map(([value,name])=>`<button type="button" data-marker-color="${value}" style="--swatch:${value}" aria-label="${name}" aria-pressed="${value===color}" title="${name}"></button>`).join('')}</div></fieldset><div class="marker-preview"><div id="marker-preview-symbol"></div><div><strong id="marker-preview-title"></strong><span id="marker-preview-text"></span></div></div><div class="marker-editor-footer"><button type="button" id="cancel-marker">Cancel</button><button type="button" id="place-marker" class="primary">${marker?'Save':'Add'}</button></div></div>`);
+  const refresh=()=>{$$('.marker-symbols [data-marker-icon]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.markerIcon===icon)));$$('.marker-colors button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.markerColor===color)));$('#marker-preview-symbol').innerHTML=glyph(icon);$('#marker-preview-symbol').style.color=color;$('#marker-preview-symbol').style.backgroundColor=color==='#000000'?'#e4e7ea':'';$('#marker-preview-title').textContent=icon==='number'?`Note ${number()}`:markerSymbol(icon)?.label||'Marker';$('#marker-preview-text').textContent=$('#marker-label').value||'Text appears on hover';};
+  $$('.marker-symbols button').forEach(b=>b.onclick=()=>{icon=b.dataset.markerIcon;refresh();});
+  $$('.marker-colors button').forEach(b=>b.onclick=()=>{color=b.dataset.markerColor;refresh();});
+  $('#marker-label').oninput=refresh;$('#cancel-marker').onclick=()=>$('#dialog').close();refresh();
+  const input=$('#marker-label');input.focus();input.setSelectionRange(input.value.length,input.value.length);input.scrollTop=input.scrollHeight;
+  // Capture the document: a room transition must not save a draft into another route.
+  const document=routeDocument,routeId=route.id;
+  $('#place-marker').onclick=()=>{
+    if(route.id!==routeId||routeDocument!==document){toast('The route changed. Reopen the editor.');return;}
+    const label=$('#marker-label').value,commands=marker?[]:{type:'add-marker',mapId:mapLayer.id,position:pos,label,color,icon};
+    if(marker){const current=(legacy?route.drawings:route.markers).find(m=>m.id===marker.id),patch={};if(!current){toast('This marker was deleted.');return;}
+      if(label!==originalText){if(!unchangedText(legacy?current.text:current.label,originalText))return;commands.push({type:'set-text',group:legacy?'drawings':'markers',id:marker.id,text:label});}
+      if(color!==marker.color)patch.color=color;if(icon!==originalIcon)patch.icon=icon;
+      if(Object.keys(patch).length)commands.push(legacy?{type:'update-drawing',drawingId:marker.id,patch}:{type:'update-marker',markerId:marker.id,patch});
     }
     if(change(commands)){$('#dialog').close();setTool('select');}
   };
 }
 function unchangedText(current,original){if(current===original)return true;toast('This text changed in another tab. Copy your draft, then reopen the editor to see the latest version.');return false;}
-function editNote(drawing,pos){
-  if(!canEdit())return;
-  showDialog(drawing?'Edit note':'Map note',`<textarea id="map-note" placeholder="For example: portal after this pack…" maxlength="4000" aria-label="Note text">${esc(drawing?.text||'')}</textarea><button id="place-note" class="primary">${drawing?'Save':'Add'}</button>`);
-  const input=$('#map-note');input.focus();input.setSelectionRange(input.value.length,input.value.length);
-  $('#place-note').onclick=()=>{const text=$('#map-note').value.trim();if(!text){$('#map-note').focus();return;}
-    if(drawing&&text!==drawing.text&&!unchangedText(route.drawings.find(d=>d.id===drawing.id)?.text,drawing.text))return;
-    if(change(drawing?(text===drawing.text?[]:{type:'set-text',group:'drawings',id:drawing.id,text}):{type:'add-drawing',id:uid(),mapId:mapLayer.id,kind:'note',color:(active()?.color||pullColor(0)),text,points:[pos]})){$('#dialog').close();setTool('select');}
-  };
-}
 function setArrowOptions(open){$('#arrow-options').hidden=!open;$('[data-tool="line"]').setAttribute('aria-expanded',String(open));}
 function closeArrowOptions(){setArrowOptions(false);}
 function renderCampfires(){
@@ -507,13 +513,14 @@ function drawAnnotation(d,root,unit){
   const color=relicColors[d.kind]||d.color;
   const isDraft=d.id==='draft',width=d.kind==='line'?(d.width||3):3;
   const g=svg('g',{'data-drawing':d.id,class:`annotation${drag?.edit?.id===d.id?' editing':''}`,...(!isDraft?{tabindex:0,role:'group','aria-label':d.kind==='line'?'Arrow':d.kind==='note'?'Note: '+d.text:d.kind}:{'pointer-events':'none'})});
-  if(d.kind==='marker'){
+  if(['marker','note'].includes(d.kind)){
     if(!isDraft){g.setAttribute('data-endpoint','0');g.classList.add('annotation-handle');}
-    const [x,y]=d.points[0];g.append(svg('circle',{cx:x,cy:y,r:12*unit,fill:'#11171b',stroke:color,'stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('text',{x,y:y+4*unit,'text-anchor':'middle','font-size':14*unit,fill:color},{pin:'◆',star:'★',flag:'⚑'}[d.icon]||'◆'),svg('title',{},d.label));
-  }else if(d.kind==='note'){
-    if(!isDraft){g.setAttribute('data-endpoint','0');g.classList.add('annotation-handle');}
-    const number=route.drawings.filter(item=>item.kind==='note').findIndex(item=>item.id===d.id)+1;
-    const [x,y]=d.points[0];g.append(svg('circle',{cx:x,cy:y,r:Math.max(9,4+String(number).length*3)*unit,fill:'#11171b',stroke:'#ffffff','stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('text',{x,y:y+3.5*unit,'text-anchor':'middle','font-size':11*unit,'font-weight':700,fill:'#ffffff'},number));
+    const icon=markerIcon(d),symbol=markerSymbol(icon),number=numberedAnnotations(route).findIndex(item=>item.id===d.id)+1;
+    const [x,y]=d.points[0],radius=Math.max(12,5+String(number).length*3)*unit;
+    g.append(svg('circle',{cx:x,cy:y,r:radius+unit,fill:'none',stroke:'#ffffff','stroke-opacity':.65,'stroke-width':1,'vector-effect':'non-scaling-stroke'}),svg('circle',{cx:x,cy:y,r:radius,fill:color==='#000000'?'#e4e7ea':'#11171b',stroke:color,'stroke-width':2,'vector-effect':'non-scaling-stroke'}));
+    if(symbol?.path)g.append(svg('path',{d:symbol.path,transform:`translate(${x-8*unit} ${y-8*unit}) scale(${16*unit/24})`,fill:color}));
+    else g.append(svg('text',{x,y:y+4*unit,'text-anchor':'middle','font-size':12*unit,'font-weight':700,fill:color},icon==='number'?number:legacyMarkerGlyph(icon)));
+    const text=d.text||d.label||'';if(text.trim())g.append(svg('title',{},text));
   }else{
     const points=d.points.map(p=>p.join(',')).join(' ');
     if(!isDraft)g.append(svg('polyline',{points,fill:'none',stroke:'transparent','stroke-width':Math.max(16,width*6),'vector-effect':'non-scaling-stroke','pointer-events':'stroke','stroke-linecap':'round'}));
@@ -871,7 +878,7 @@ function bind(){
     if(!$('#enemy-menu').hidden)return;
     if(draft.length===1&&['line','portal','invis'].includes(tool))renderDraft(point(e));
     const candidate=annotation(e.target.closest('[data-drawing]')?.dataset.drawing),note=['note','marker'].includes(candidate?.kind)?candidate:null;
-    if(note){hideHover();const tip=$('#tooltip');tip.dataset.placement='';tip.innerHTML=`<div class="note-tooltip-text">${esc(note.text)}</div>`;positionPopover(tip,e);return;}
+    if(note){hideHover();if(!note.text?.trim())return;const tip=$('#tooltip');tip.dataset.placement='';tip.innerHTML=`<div class="note-tooltip-text">${esc(note.text)}</div>`;positionPopover(tip,e);return;}
     const id=e.target.closest('[data-placement]')?.dataset.placement;if(!id){hideHover();return;}
     const p=positions.get(id),enemy=enemies.get(p.id),score=pointScore(p),pack=effectivePositions(route,dungeon).filter(v=>v.packId===p.packId);
     setHoveredPack(p.packId);
@@ -913,7 +920,6 @@ function bind(){
     const pos=point(e);
     if(!canEdit())return;
     if(tool==='marker'){editMarker(null,pos);return;}
-    if(tool==='note'){editNote(null,pos);return;}
     draft.push(pos);if(['line','portal','invis'].includes(tool)&&draft.length===2){if(Math.hypot(pos[0]-draft[0][0],pos[1]-draft[0][1])<4*scale()){draft.pop();return;}commitDrawing();setTool('select');}else renderDraft();
   });
   map.addEventListener('keydown',e=>{const id=e.target.closest('[data-placement]')?.dataset.placement,drawing=e.target.closest('[data-drawing]')?.dataset.drawing;if(!id&&!drawing)return;if(e.key==='ContextMenu'||(e.shiftKey&&e.key==='F10')){e.preventDefault();const rect=e.target.getBoundingClientRect();(drawing?showDrawingMenu:showEnemyMenu)(drawing||id,{clientX:rect.right,clientY:rect.top});}else if(id&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(tool==='select')chooseEnemy(id);}});
