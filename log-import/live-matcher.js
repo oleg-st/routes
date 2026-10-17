@@ -216,7 +216,9 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       placements:(byType.get(r.gameID)??[]).map(p=>({placementId:p.placementId,packId:p.packId,...pair.get(`${r.key}|${p.placementId}`)}))}))};
     throw error;
   }
-  if(candidates.length>100)throw Object.assign(new Error('More than 100 compatible routes remain. Manual analysis is needed before importing.'),{diagnostics:{code:'matching-limit'}});
+  // Exhaustive enumeration is already bounded by maxSolutions/maxNodes above.
+  // Independent choices can produce hundreds of complete routes while each
+  // review step still has only a few packs. Keep every candidate for review.
   const gapCount=c=>new Set(c.assignments.filter(a=>a.gap||a.neighbor).map(a=>packByPlacement.get(a.placementId).id)).size;
   candidates.sort((a,b)=>gapCount(a)-gapCount(b)||compareReverseRank(a,b));
   const inferredPlacements=[...new Set(candidates.flatMap(c=>c.assignments.filter(a=>a.inferred).map(a=>a.placementId)))];
@@ -225,10 +227,11 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const assumption=[partial?`Partial import: ${partial.matched} enemies matched, ${partial.skipped.length} observations skipped. Pack membership and ambiguous positions need manual review.${partial.skipped.length?' Skipped: '+[...Map.groupBy(partial.skipped,r=>r.name)].map(([name,rs])=>`${name} ×${rs.length}`).join(', ')+'.':''}`:null,
     inferredPlacements.length?'Each candidate includes one unobserved pack member by the whole-pack rule. It may instead be absent or replaced; choose only if you accept this intended-route hypothesis.':null,
     movementHypotheses.length?`Possible approach to ${[...new Set(movementHypotheses.map(h=>h.pack))].join(', ')} is estimated across gaps in the log. The actual path is unknown; review this movement hypothesis before accepting.`:null].filter(Boolean).join(' ')||null;
-  const groups={},variants=[],first=firstEngagements(events,{fightID:fight.id,actors,key:encounters.key});
+  const groups={},variants=[],groupByIdentity=new Map(),variantByPulls=new Map(),first=firstEngagements(events,{fightID:fight.id,actors,key:encounters.key});
   const pathProximity=createPathProximity(packs,observations);
   const empoweredKeys=new Set([...affixes.empowered.confirmedInstances.map(r=>r.key),...health.filter(r=>r.empoweredCandidate).map(r=>r.key)]);
-  for(const candidate of candidates){
+  for(const [index,candidate] of candidates.entries()){
+    if(index%100===0){await yieldUI();signal?.throwIfAborted();}
     const proximity={};
     const pulls=pullSegments.map(p=>({id:`segment-${p.id}`,start:(p.startTime-fight.startTime)/1000,end:(p.endTime-fight.startTime)/1000,groups:[]}));
     for(const [pack,as]of Map.groupBy(candidate.assignments,a=>packByPlacement.get(a.placementId))){
@@ -236,8 +239,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       const time=Math.min(...as.map(a=>first.get(a.key)??a.firstTime));
       const segment=Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=time));
       const identity=JSON.stringify([members,excluded,empowered]);
-      let id=Object.keys(groups).find(id=>groups[id].identity===identity);
-      if(!id){id=`group-${Object.keys(groups).length}`;groups[id]={id,identity,label:pack.number,enemies:members,excluded,empowered};}
+      let id=groupByIdentity.get(identity);
+      if(!id){id=`group-${groupByIdentity.size}`;groupByIdentity.set(identity,id);groups[id]={id,label:pack.number,enemies:members,excluded,empowered};}
       proximity[id]=pathProximity(pack.id,time);
       const gap=as.filter(a=>a.gap).sort((a,b)=>a.gap.distance-b.gap.distance)[0]?.gap;
       if(gap)proximity[id]={minDistance:gap.distance,maxDistance:gap.distance,sources:[gap.source],patrol:gap.patrol,estimated:true};
@@ -251,13 +254,12 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       groups[id]={id,label:kind==='ghorn'?'Ghorn':'Witch',enemies:[id],excluded:[],empowered:[]};pulls[segment].groups.push(id);
     }
     pulls.forEach(p=>p.groups.sort());
-    const duplicate=variants.find(v=>JSON.stringify(v.pulls)===JSON.stringify(pulls));
+    const routeKey=JSON.stringify(pulls),duplicate=variantByPulls.get(routeKey);
     if(duplicate){for(const id of Object.keys(proximity))duplicate.proximity[id]=combineProximity([duplicate.proximity[id],proximity[id]]);}
-    else variants.push({pulls,proximity});
+    else{const variant={pulls,proximity};variants.push(variant);variantByPulls.set(routeKey,variant);}
   }
   const kept=variants[0].pulls.map((_,i)=>i).filter(i=>variants.some(v=>v.pulls[i].groups.length));
   for(const v of variants)v.pulls=kept.map((i,n)=>({...v.pulls[i],label:`Pull ${n+1}`}));
-  for(const g of Object.values(groups))delete g.identity;
   const portals=extractPortals(events,{fightID:fight.id,players,endTime:fight.endTime});
   const intervals=bossIntervals(events,fight.id,fight.endTime),view=mapViews(dungeon)[0];
   const usages=deduplicateRelicUsages([...invisible.usages.map(u=>({...u,kind:'invis'})),...portals.usages].filter(u=>outsideBossCombat(u,intervals)));
