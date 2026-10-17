@@ -14,9 +14,15 @@ try{
     await page.goto(url);await page.locator('#map-loading').waitFor({state:'hidden'});
     const map=await page.locator('#map').boundingBox(),click=(x,y,options)=>page.mouse.click(map.x+x,map.y+y,options);
     await page.locator('[data-tool=marker]').click();await click(400,380);
-    await page.locator('#marker-label').fill('Meet here 🐉');await page.getByRole('button',{name:'Marker 1',exact:true}).click();await page.locator('#place-marker').click();
+    await page.locator('#marker-label').fill('Meet here 🐉');
+    for(const [i,color] of [[1,'#22e628'],[2,'#ffff00'],[3,'#329dff'],[4,'#ff0000'],[5,'#b45cff']]){
+      await page.getByRole('button',{name:`Marker ${i}`,exact:true}).click();
+      assert.equal(await page.locator(`[data-marker-color="${color}"]`).getAttribute('aria-pressed'),'true');
+    }
+    await page.getByRole('button',{name:'Marker 1',exact:true}).click();await page.locator('#place-marker').click();
     const marker=page.locator('#drawings [aria-label=marker]');assert.equal(await marker.locator('title').textContent(),'Meet here 🐉');
     const originalId=await marker.getAttribute('data-drawing');
+    assert.equal(await marker.locator('circle').last().getAttribute('stroke'),'#22e628');
     assert.equal(await page.locator('[data-tool=note]').count(),0,'one entry point replaces the separate note tool');
     await click(400,380,{button:'right'});await page.getByRole('menuitem',{name:'Edit marker',exact:true}).click();
     assert.equal(await page.locator('[data-marker-icon]').count(),6);
