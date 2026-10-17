@@ -95,5 +95,36 @@ try{
   assert.equal(await page.getByRole('button',{name:'Download import diagnostics'}).isVisible(),true);
   await page.getByRole('button',{name:'Import without missing mobs'}).click();
   assert.equal(await page.evaluate(()=>window.result.saved),true);assert.deepEqual(errors,[]);
+  // Reduced ty6T7RgJADPpZWcH-16 scenario: G24 has identical members and
+  // proximity, but only two of the three routes Chickenize one of its wolves.
+  await page.evaluate(()=>{
+    window.result.saved=false;window.failure=null;
+    const pack={label:'G24',enemies:['wolf-1','wolf-2','chopper-1','chopper-2','chopper-3'],empowered:['wolf-1']};
+    const score={minDistance:797,maxDistance:797,sources:['player'],patrol:false};
+    window.extraFixture={title:'Chicken assignment',fightID:16,reportCode:'ty6T7RgJADPpZWcH',duration:10,
+      groups:{chicken:{...pack,excluded:['wolf-2']},normal:{...pack,excluded:[]},
+        other:{label:'G37',enemies:['wolf-3'],excluded:['wolf-3'],empowered:[]},
+        a:{label:'G1',enemies:['a']},b:{label:'G2',enemies:['b']}},
+      variants:[
+        {pulls:[{groups:['chicken']},{groups:['a']}],proximity:{chicken:score}},
+        {pulls:[{groups:['chicken']},{groups:['b']}],proximity:{chicken:score}},
+        {pulls:[{groups:['normal','other']},{groups:['a']}],proximity:{normal:score}},
+      ]};window.ui.open();
+  });await submit();
+  const chicken=page.locator('[data-log-choice="chicken"]'),normal=page.locator('[data-log-choice="normal"]');
+  assert.equal(await page.locator('[data-log-choice]').count(),3);
+  assert.match(await chicken.textContent(),/G24.*5 enemies.*Chickenized: 1 enemies.*Empowered: 1 enemies.*797/);
+  assert.match(await normal.textContent(),/G24.*5 enemies.*Chickenized: None.*Empowered: 1 enemies.*797/);
+  assert.match(await page.locator('[data-log-choice="other"]').textContent(),/Chickenized: 1 enemies.*Empowered: None/);
+  await chicken.click();
+  assert.equal((await page.evaluate(()=>window.result.preview)).remaining,2,'both compatible downstream routes survive');
+  assert.equal(await page.locator('[data-log-choice]').count(),2);
+  assert.doesNotMatch(await page.locator('.log-options').textContent(),/Chickenized|Empowered/,'unmodified choices stay concise');
+  await page.locator('[data-log-back]').click();
+  assert.match(await chicken.textContent(),/Chickenized: 1 enemies/);
+  await normal.click();
+  assert.equal(await page.evaluate(()=>window.result.saved),true);
+  assert.deepEqual((await page.evaluate(()=>window.result.preview)).pulls[0].groups,['normal','other']);
+  assert.deepEqual(errors,[]);
   console.log('Log import UI: choices, recovery by pull, search tooltip and automatic expanded import passed.');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

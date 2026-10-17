@@ -25,10 +25,18 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
   }
   function draw(){
     const s=session.state();panel.hidden=false;
+    // The same pack can have different Chicken/Empowered assignments across
+    // compatible routes. Show those differences instead of identical cards.
+    const modifiers=[['excluded','Chickenized'],['empowered','Empowered']]
+      .filter(([key])=>s.options.some(o=>o.groups.some(id=>fixture.groups[id][key]?.length)));
+    const modifierDetails=o=>o.groups.length?modifiers.map(([key,label])=>{
+      const members=o.groups.flatMap(id=>fixture.groups[id][key]??[]);
+      return `<small>${esc(label)}: ${esc(members.length?describe(members):'None')}</small>`;
+    }).join(''):'';
     panel.innerHTML=`<div class="log-review-heading"><span class="eyebrow">IMPORT FROM LOG</span><div class="log-review-actions">${s.canBack?'<button data-log-back>← Back</button>':''}<button data-log-cancel>Cancel import</button></div></div>
       <div class="log-review-prompt" role="status" aria-live="polite"><span class="log-review-step">Pull ${s.pullIndex+1}</span><div><strong>${s.complete?'Could not save the imported route':'Choose a pack to add'}</strong><span>${s.complete?'Retry saving or cancel the import.':`${s.remaining} compatible routes remain · Select an option below to continue`}</span></div></div>
       ${fixture.assumption?`<p class="muted">${esc(fixture.assumption)}</p>`:''}
-      <div class="log-options">${s.options.map((o,i)=>`<div class="log-option"><button data-log-choice="${esc(o.id)}"><span class="log-option-number">${i+1}</span><span><strong>${esc(o.label)}</strong><small>${esc(o.groups.length?describe(ids(o.groups)):'Continue with the enemies already selected')}</small>${o.proximity?`<small class="log-proximity" title="Closest approach before engagement, in world units. Estimates across log gaps and patrol paths are possible positions, not observed contact or a probability.">${esc(proximityLabel(o))}</small>`:''}</span><span class="log-option-add" aria-hidden="true">＋</span></button>${o.groups.length?`<button class="log-locate" data-log-focus="${esc(o.id)}" title="Show on map" aria-label="Show ${esc(o.label)} on map">⌖</button>`:''}</div>`).join('')}</div>
+      <div class="log-options">${s.options.map((o,i)=>`<div class="log-option"><button data-log-choice="${esc(o.id)}"><span class="log-option-number">${i+1}</span><span><strong>${esc(o.label)}</strong><small>${esc(o.groups.length?describe(ids(o.groups)):'Continue with the enemies already selected')}</small>${modifierDetails(o)}${o.proximity?`<small class="log-proximity" title="Closest approach before engagement, in world units. Estimates across log gaps and patrol paths are possible positions, not observed contact or a probability.">${esc(proximityLabel(o))}</small>`:''}</span><span class="log-option-add" aria-hidden="true">＋</span></button>${o.groups.length?`<button class="log-locate" data-log-focus="${esc(o.id)}" title="Show on map" aria-label="Show ${esc(o.label)} on map">⌖</button>`:''}</div>`).join('')}</div>
       ${s.complete?'<button class="primary" data-log-retry>Retry saving</button>':''}`;
     for(const b of panel.querySelectorAll('[data-log-choice]')){
       const option=s.options.find(o=>o.id===b.dataset.logChoice);
