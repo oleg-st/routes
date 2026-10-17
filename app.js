@@ -1,5 +1,6 @@
 import {uid,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute} from './route-model.js';
 import {pullOutline} from './map-geometry.js';
+import {planPullSplit} from './pull-split.js';
 import {markerSymbols,markerColors,markerIcon,numberedAnnotations,markerSymbol,legacyMarkerGlyph} from './marker-symbols.js';
 import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
 import {correctDungeon,placementName} from './data/placement-corrections.js';
@@ -533,7 +534,40 @@ function drawAnnotation(d,root,unit){
   }
   root.append(g);
 }
-function renderDraft(preview){const root=$('#draft');root.replaceChildren();if(draft.length)drawAnnotation({id:'draft',mapId:mapLayer.id,kind:tool,color:tool==='line'?arrowColor:(active()?.color||pullColor(0)),width:arrowWidth,points:preview?[draft[0],preview]:draft},root,scale());}
+function splitColor(){let index=route.pulls.length;while(route.pulls.some(p=>p.color===pullColor(index)))index++;return pullColor(index);}
+function splitPlan(line){
+  const unit=scale(),iconPadding=$('#show-mob-icons').checked?(baseView.w/view.w>=1.5?5:3):0;
+  const radius=(Number($('#marker-size').value)+iconPadding)*.75*unit;
+  const visible=currentPositions();
+  return planPullSplit({pulls:route.pulls,points:new Map(visible.map(p=>[p.placementId,coordinates(p)])),padding:radius*1.6+9*unit,start:mapStart(dungeon,mapLayer),bosses:visible.filter(p=>enemies.get(p.id)?.isBoss).map(p=>p.placementId)},line);
+}
+function renderSplitDraft(line){
+  const root=$('#draft');root.replaceChildren();
+  if(line.length!==2)return;
+  const plan=splitPlan(line),unit=scale();
+  if(plan){
+    const moved=new Set(plan.move),kept=new Set(plan.keep),color=route.pulls[plan.index].color,nextColor=route.pulls[plan.index+1]?.color||splitColor();
+    const rings=new Map($$('#markers .mob-ring').map(el=>[el.parentElement.dataset.placement,Number(el.getAttribute('r'))]));
+    for(const p of currentPositions())if(moved.has(p.placementId)||kept.has(p.placementId)){
+      const [cx,cy]=coordinates(p);
+      root.append(svg('circle',{cx,cy,r:(rings.get(p.placementId)||10*unit)+4*unit,fill:'none',stroke:moved.has(p.placementId)?nextColor:color,'stroke-width':2,'vector-effect':'non-scaling-stroke'}));
+    }
+    root.append(svg('text',{x:line[1][0]+12*unit,y:line[1][1]-12*unit,fill:'#fff',stroke:'#111820','stroke-width':3*unit,'paint-order':'stroke','font-size':12*unit},`${plan.keep.length} / ${plan.move.length} mobs`));
+  }
+  root.append(svg('polyline',{class:'split-line',points:line.map(p=>p.join(',')).join(' '),fill:'none',stroke:plan?'#70d9ff':'#ffb366','stroke-width':2,'stroke-dasharray':'6 4','vector-effect':'non-scaling-stroke'}));
+}
+function commitSplit(line){
+  draft=[];
+  if(!canEdit()){renderMap();return;}
+  const plan=splitPlan(line);
+  if(!plan){renderMap();toast('Draw through a pull with mobs on both sides.');return;}
+  const id=uid();
+  // Match adding a pull at the end and moving it: colors belong to list positions.
+  if(change([{type:'add-pull',id,color:splitColor()},{type:'move-pull',pullId:id,afterId:plan.pullId},{type:'assign-mobs',pullId:id,mobIds:plan.move,toggle:false}])){
+    activePull=plan.pullId;setTool('select');toast(`Pull split: ${plan.keep.length} + ${plan.move.length} mobs`);
+  }
+}
+function renderDraft(preview){const root=$('#draft');root.replaceChildren();if(tool==='split'){renderSplitDraft(drag?.split&&drag.moved?[drag.start,drag.end||drag.start]:preview&&draft.length?[draft[0],preview]:draft);return;}if(draft.length)drawAnnotation({id:'draft',mapId:mapLayer.id,kind:tool,color:tool==='line'?arrowColor:(active()?.color||pullColor(0)),width:arrowWidth,points:preview?[draft[0],preview]:draft},root,scale());}
 function point(event){const p=$('#map').createSVGPoint();p.x=event.clientX;p.y=event.clientY;const v=p.matrixTransform($('#map').getScreenCTM().inverse());return[v.x,v.y];}
 function commitDrag(state){if(!state.edit||!state.moved)return;change(state.edit.kind==='marker'?{type:'update-marker',markerId:state.edit.id,patch:{position:state.edit.points[0]}}:{type:'move-point',drawingId:state.edit.id,pointId:state.edit.pointIds[state.endpoint],position:state.edit.points[state.endpoint]});}
 function draggedDrawingPoint(event,state){const pos=point(event).map((v,i)=>v+state.offset[i]);return drawingPointFromMap(pos,state.edit,mapLayer,dungeon);}
@@ -541,7 +575,7 @@ function zoom(factor,at){const anchor=at||[view.x+view.w/2,view.y+view.h/2];if(v
 function setTool(value,{cancel=false}={}){
   if(value!=='line')closeArrowOptions();
   if(value!==tool||cancel){
-    draft=[];
+    draft=[];if(drag?.split)drag=null;
   }
   tool=value;$$('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));$('#map').style.cursor=['select'].includes(tool)?'grab':'crosshair';$$('[data-configure]').forEach(b=>b.classList.toggle('active',b.dataset.configure===tool));renderMap();
 }
@@ -557,7 +591,7 @@ function showDialog(title,html){cursorUI?.pause();$('#dialog-title').textContent
 function showScoreInfo(){
   showDialog('Scoring',`<p>Kill score: selected mobs ÷ dungeon requirement. Replaced packs and Chicken mobs contribute zero.</p><p>Empowered: 3× raw score, 2× base health. Ghorn / Witch: 20 KS each.</p><p>Shadow Lord: estimated orbs from cumulative raw score; 30 orbs per Emissary. Miniboss replacements do not generate orbs in this model.</p><p class="muted">Modifier rules are historical and unverified for the current patch. Modifier targets are matched automatically by enemy name and world coordinates from reference data. Disabled modifiers have no recorded placements.</p>`);
 }
-function showHelp(){showDialog('Start your route with a pull',`<div class="help-grid"><kbd>Click</kbd><span>Add or remove a whole pack in the active pull.</span><kbd>Right-click enemy</kbd><span>Add or remove Chicken, or choose Info for stats and abilities.</span><kbd>B / V</kbd><span>Box selection of whole packs / pack selection.</span><kbd>N</kbd><span>Create and select the next pull.</span><kbd>D · Esc</kbd><span>Draw an arrow with two clicks · cancel. Choose color and thickness beside the arrow tool. Hover an arrow and drag either endpoint.</span><kbd>Right-click drawing</kbd><span>Delete an arrow, portal or invisibility path; edit or delete a note. Hover a numbered note to read its text.</span><kbd>Scroll / F</kbd><span>Zoom / fit the map.</span><kbd>Drag</kbd><span>Pan the map. With other tools, drag using the right mouse button.</span><kbd>Ctrl + Z / Y</kbd><span>Undo / redo a change.</span></div><p>Drag pulls to reorder them. Selecting an enemy assigned to another pull moves its whole pack to the active pull without double-counting. Routes are stored in this browser; export a route string to keep a separate copy.</p><p>The counter uses the base kill scores of selected enemies. <button id="help-score" class="text-button">Shadow Lord calculations and limitations ↗</button></p>`);$('#help-score').onclick=showScoreInfo;}
+function showHelp(){showDialog('Start your route with a pull',`<div class="help-grid"><kbd>Click</kbd><span>Add or remove a whole pack in the active pull.</span><kbd>Right-click enemy</kbd><span>Add or remove Chicken, or choose Info for stats and abilities.</span><kbd>B / V</kbd><span>Box selection of whole packs / pack selection.</span><kbd>N</kbd><span>Create and select the next pull.</span><kbd>S</kbd><span>Split a pull: drag a line or click two points. The pull with the longest intersection is split; mobs closer to the previous pull or entrance stay first. The other part is inserted immediately after it. Preview rings show both groups; Esc cancels.</span><kbd>D · Esc</kbd><span>Draw an arrow with two clicks · cancel. Choose color and thickness beside the arrow tool. Hover an arrow and drag either endpoint.</span><kbd>Right-click drawing</kbd><span>Delete an arrow, portal or invisibility path; edit or delete a note. Hover a numbered note to read its text.</span><kbd>Scroll / F</kbd><span>Zoom / fit the map.</span><kbd>Drag</kbd><span>Pan the map. With other tools, drag using the right mouse button.</span><kbd>Ctrl + Z / Y</kbd><span>Undo / redo a change.</span></div><p>Drag pulls to reorder them. Selecting an enemy assigned to another pull moves its whole pack to the active pull without double-counting. Routes are stored in this browser; export a route string to keep a separate copy.</p><p>The counter uses the base kill scores of selected enemies. <button id="help-score" class="text-button">Shadow Lord calculations and limitations ↗</button></p>`);$('#help-score').onclick=showScoreInfo;}
 function renderInspector(id){
   const p=positions.get(id);if(!p){inspected=null;$('#inspector').hidden=true;return;}inspected=id;const e=enemies.get(p.id),score=pointScore(p),abilities=enemyAbilities(data.abilities,p.id);
   $('#inspector').innerHTML=`<button class="close-inspector" aria-label="Close enemy details">×</button><div class="enemy-profile">${availableImage(e)?'<img src="'+availableImage(e)+'" alt="">':''}<div><h2>${esc(placementName(p,e))}</h2><small>${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)} · ${e.isBoss?'Boss':e.canBeControlled?'Can be crowd-controlled':'Immune to crowd control'}</small></div></div><div class="enemy-facts"><div><span>Score ${route.shadow?'· archived SL':''}</span>${fmt(score)} / ${pct(score/dungeon.requiredScore*100)}</div><div><span>Base health</span>${e.baseHealth?fmt(Math.round(e.baseHealth*(!e.isBoss&&route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?2:1))):'—'}</div></div>${route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?'<small class="empowered-label">Empowered</small>':''}<h3>ABILITIES · ${abilities.length}</h3>${abilities.length?abilities.map(a=>`<div class="ability"><strong>${esc(a.name)}</strong>${a.description?.replace(/<[^>]*>/g,'').trim()?'<p>'+esc(a.description.replace(/<[^>]*>/g,''))+'</p>':''}<small>${a.castInterruptibility==='always'?'Interruptible':a.castInterruptibility==='sometimes'?'Interruptibility depends on phase':a.castInterruptibility==='never'?'Not interruptible':''}${a.baseCooldownSeconds?' · CD '+fmt(a.baseCooldownSeconds)+' s':''}</small></div>`).join(''):'<p class="muted">No descriptions are available in the dataset.</p>'}`;
@@ -861,7 +895,8 @@ function bind(){
     const pan=e.button===2||tool==='select';
     drag={start:point(e),client:[e.clientX,e.clientY],view:{...view},pan,moved:false,box:tool==='box'&&e.button===0,target:e.target.closest('[data-placement]')?.dataset.placement,drawing:e.target.closest('[data-drawing]')?.dataset.drawing};
     const endpoint=e.target.closest('[data-endpoint]'),drawing=annotation(drag.drawing);drag.vertex=endpoint?Number(endpoint.dataset.endpoint):undefined;
-    if(canEdit()&&e.button===0&&endpoint&&drawing){
+    drag.split=tool==='split'&&e.button===0&&canEdit();
+    if(canEdit()&&tool!=='split'&&e.button===0&&endpoint&&drawing){
       drag.edit=structuredClone(drawing);drag.endpoint=Number(endpoint.dataset.endpoint);drag.pan=false;drag.box=false;
       drag.offset=drawingOnMap(drawing,mapLayer,dungeon).points[drag.endpoint].map((v,i)=>v-drag.start[i]);
     }
@@ -870,13 +905,15 @@ function bind(){
   map.addEventListener('pointermove',e=>{
     if(drag){
       if(Math.hypot(e.clientX-drag.client[0],e.clientY-drag.client[1])>4)drag.moved=true;
-      if(drag.edit&&drag.moved){const pos=draggedDrawingPoint(e,drag);if(pos){drag.edit.points[drag.endpoint]=pos;renderMap();}}
+      if(drag.split&&drag.moved){drag.end=point(e);renderSplitDraft([drag.start,drag.end]);}
+      else if(drag.edit&&drag.moved){const pos=draggedDrawingPoint(e,drag);if(pos){drag.edit.points[drag.endpoint]=pos;renderMap();}}
       else if(drag.pan&&drag.moved){const now=point(e);view.x+=drag.start[0]-now[0];view.y+=drag.start[1]-now[1];renderMap();$('#tooltip').hidden=true;}
       else if(drag.box&&drag.moved){const now=point(e);$('#draft').replaceChildren(svg('rect',{x:Math.min(drag.start[0],now[0]),y:Math.min(drag.start[1],now[1]),width:Math.abs(now[0]-drag.start[0]),height:Math.abs(now[1]-drag.start[1]),fill:'#e4b76b22',stroke:'#e4b76b','stroke-width':1,'vector-effect':'non-scaling-stroke'}));}
       return;
     }
     if(!$('#enemy-menu').hidden)return;
-    if(draft.length===1&&['line','portal','invis'].includes(tool))renderDraft(point(e));
+    if(draft.length===1&&['line','portal','invis','split'].includes(tool))renderDraft(point(e));
+    if(tool==='split')return;
     const candidate=annotation(e.target.closest('[data-drawing]')?.dataset.drawing),note=['note','marker'].includes(candidate?.kind)?candidate:null;
     if(note){hideHover();if(!note.text?.trim())return;const tip=$('#tooltip');tip.dataset.placement='';tip.innerHTML=`<div class="note-tooltip-text">${esc(note.text)}</div>`;positionPopover(tip,e);return;}
     const id=e.target.closest('[data-placement]')?.dataset.placement;if(!id){hideHover();return;}
@@ -892,6 +929,7 @@ function bind(){
   });
   map.addEventListener('pointerup',e=>{
     if(!drag)return;const state=drag;drag=null;map.classList.remove('dragging');map.releasePointerCapture(e.pointerId);suppressClick=state.moved;
+    if(state.split&&state.moved){commitSplit([state.start,point(e)]);return;}
     if(state.edit){
       suppressClick=true;
       if(state.moved){const pos=draggedDrawingPoint(e,state);if(pos)state.edit.points[state.endpoint]=pos;commitDrag(state);}
@@ -902,7 +940,7 @@ function bind(){
     if(e.button===0&&!state.moved&&tool==='select'&&state.target){chooseEnemy(state.target);suppressClick=true;}
     if(e.button===2&&!state.moved){if(state.drawing)showDrawingMenu(state.drawing,e,state.vertex);else if(state.target)showEnemyMenu(state.target,e);}
   });
-  map.addEventListener('pointercancel',()=>{const state=drag;drag=null;if(state?.edit&&state.moved)commitDrag(state);suppressClick=true;map.classList.remove('dragging');renderMap();});
+  map.addEventListener('pointercancel',()=>{const state=drag;drag=null;if(state?.split)draft=[];if(state?.edit&&state.moved)commitDrag(state);suppressClick=true;map.classList.remove('dragging');renderMap();});
   map.addEventListener('contextmenu',e=>e.preventDefault());
   map.addEventListener('pointerleave',e=>{if(!$('#tooltip').contains(e.relatedTarget))hideHover();});
   $('#tooltip').addEventListener('pointerleave',hideHover);
@@ -920,6 +958,7 @@ function bind(){
     const pos=point(e);
     if(!canEdit())return;
     if(tool==='marker'){editMarker(null,pos);return;}
+    if(tool==='split'){draft.push(pos);if(draft.length===2)commitSplit(draft);else renderDraft();return;}
     draft.push(pos);if(['line','portal','invis'].includes(tool)&&draft.length===2){if(Math.hypot(pos[0]-draft[0][0],pos[1]-draft[0][1])<4*scale()){draft.pop();return;}commitDrawing();setTool('select');}else renderDraft();
   });
   map.addEventListener('keydown',e=>{const id=e.target.closest('[data-placement]')?.dataset.placement,drawing=e.target.closest('[data-drawing]')?.dataset.drawing;if(!id&&!drawing)return;if(e.key==='ContextMenu'||(e.shiftKey&&e.key==='F10')){e.preventDefault();const rect=e.target.getBoundingClientRect();(drawing?showDrawingMenu:showEnemyMenu)(drawing||id,{clientX:rect.right,clientY:rect.top});}else if(id&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(tool==='select')chooseEnemy(id);}});
@@ -929,11 +968,11 @@ function bind(){
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();return;}
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();$('#search').focus();return;}
     if(e.ctrlKey||e.metaKey||e.altKey)return;
-    const key=e.key.toLowerCase();if(key==='n')addPull();if(key==='f')fitMap();if(key==='b')setTool('box');if(key==='v')setTool('select');if(key==='d')setTool('line');if(key==='escape'){drag=null;map.classList.remove('dragging');closeArrowOptions();setTool('select',{cancel:true});$('#inspector').hidden=true;inspected=null;$('#layers-panel').hidden=true;$('#search-results').hidden=true;}
+    const key=e.key.toLowerCase();if(key==='n')addPull();if(key==='f')fitMap();if(key==='b')setTool('box');if(key==='v')setTool('select');if(key==='d')setTool('line');if(key==='s'&&canEdit())setTool('split');if(key==='escape'){if(drag?.split)suppressClick=true;drag=null;map.classList.remove('dragging');closeArrowOptions();setTool('select',{cancel:true});$('#inspector').hidden=true;inspected=null;$('#layers-panel').hidden=true;$('#search-results').hidden=true;}
   });
   new ResizeObserver(()=>{if(route)renderMap();}).observe($('#map-stage'));
   $('#storage-status').onclick=run(persist);
-  window.addEventListener('blur',()=>{const state=drag;drag=null;if(state?.edit&&state.moved)commitDrag(state);map.classList.remove('dragging');});
+  window.addEventListener('blur',()=>{const state=drag;drag=null;if(state?.split){draft=[];suppressClick=true;renderMap();}if(state?.edit&&state.moved)commitDrag(state);map.classList.remove('dragging');});
   window.addEventListener('beforeunload',e=>{if(routeBinding?.pending){e.preventDefault();e.returnValue='';}});
 }
 async function init(){

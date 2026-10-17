@@ -38,6 +38,24 @@ function assertUnchanged(doc, fn, pattern) {
   assert.equal(doc.canonical(), before); assert.deepEqual(doc.version(), version);
 }
 
+test('Split pull insertion and reassignment sync and undo as one action',t=>{
+  const original=seed(t);
+  original.execute({type:'assign-mobs',pullId:'pull-1',mobIds:mobs,toggle:false});
+  original.execute({type:'update-pull',pullId:'pull-1',patch:{name:'Named encounter'}});
+  original.execute({type:'set-text',group:'pulls',id:'pull-1',text:'Keep this note'});
+  const a=peer(t,original),b=peer(t,original),before=a.canonical(),colors=a.snapshot().pulls.map(p=>p.color);
+  a.executeBatch([{type:'add-pull',id:'split-result'},{type:'move-pull',pullId:'split-result',afterId:'pull-1'},{type:'assign-mobs',pullId:'split-result',mobIds:mobs.slice(4),toggle:false}]);
+  sync(a,b);
+  const pulls=a.snapshot().pulls;
+  assert.deepEqual(pulls.map(p=>p.id),['pull-0','pull-1','split-result','pull-2']);
+  assert.deepEqual(pulls[1].enemies,[...mobs.slice(0,4)].sort());assert.deepEqual(pulls[2].enemies,[...mobs.slice(4)].sort());
+  assert.equal(pulls[1].name,'Named encounter');assert.equal(pulls[1].note,'Keep this note');
+  assert.deepEqual(pulls.slice(0,3).map(p=>p.color),colors);
+  assert.ok(!colors.includes(pulls[3].color));
+  const after=a.canonical();a.undo();sync(a,b);assert.equal(a.canonical(),before);
+  a.redo();sync(a,b);assert.equal(a.canonical(),after);
+});
+
 test('Unified notes keep identity while concurrent symbols, text and position merge and export', async t => {
   const a=seed(t);addDrawing(a,'note','legacy-note');
   a.execute({type:'add-marker',id:'number-note',mapId,position:[20,30],icon:'number',label:'Second'});
