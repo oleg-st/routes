@@ -33,7 +33,8 @@ try{
     sessionStorage.setItem('fellowship-log-probe-pkce',JSON.stringify({state:'test-state',verifier:'a'.repeat(43),createdAt:Date.now(),redirectURI:'https://oleg-st.github.io/routes/'}));
     sessionStorage.setItem('fellowship-route-import-pending',JSON.stringify({url:`https://www.fellowshiplogs.com/reports/${code}?fight=5`,dungeonData:'custom'}));
   },{code});
-  let hold=false,release;
+  let hold=true,release,notifyHeld;
+  const firstEventsHeld=new Promise(resolve=>notifyHeld=resolve);
   await page.route('https://www.fellowshiplogs.com/**',async route=>{
     if(route.request().url().endsWith('/oauth/token')){
       const body=new URLSearchParams(route.request().postData());assert.equal(body.get('code_verifier'),'a'.repeat(43));assert.equal(body.get('redirect_uri'),'https://oleg-st.github.io/routes/');
@@ -44,17 +45,26 @@ try{
     const id=body.variables.fights[0];assert.ok([5,6].includes(id));
     if(body.query.includes('RouteImportMetadata'))return route.fulfill({json:{data:{reportData:{report:{fights:[{...fight,id}],masterData:{actors}}}}}});
     assert.ok(body.variables.filter.includes('applydebuff'));assert.ok(body.variables.filter.includes('1002176'));
-    if(hold)await new Promise(resolve=>release=resolve);
+    if(hold){notifyHeld();await new Promise(resolve=>release=resolve);}
     await route.fulfill({json:{data:{reportData:{report:{events:{data:events.map(e=>({...e,fight:id})),nextPageTimestamp:null}}}}}}).catch(()=>{});
   });
   await page.goto(origin+prefix+'?code=mock-code&state=test-state');
+  await firstEventsHeld;
+  assert.equal(await page.locator('#log-fight').inputValue(),'5','direct links keep the requested fight, even when a newer one exists');
+  assert.equal(await page.locator('#log-fight option:checked').textContent(),'Empyrean Sands · #5 · Eternal 55 · 10:31');
+  assert.equal(await page.locator('#log-fight').isVisible(),true);
+  assert.equal(await page.locator('#log-fight').isDisabled(),true);
+  assert.equal(await page.locator('#log-another').isVisible(),true);
+  assert.equal(await page.locator('#log-another').isDisabled(),true);
+  await page.screenshot({path:'tmp/log-import-direct-fight.png'});
+  hold=false;release();
   await page.waitForFunction(()=>document.querySelector('#route-name')?.value==='Empyrean Sands · #5'&&!document.querySelector('#route-name').disabled);
   assert.equal(page.url(),origin+prefix);assert.equal(await page.locator('#dialog').evaluate(d=>d.open),false);
-  assert.equal(await page.locator('#pull-count').textContent(),'1');assert.equal(requests.length,2);
+  assert.equal(await page.locator('#pull-count').textContent(),'1');assert.equal(requests.length,3);
   assert.equal(await page.evaluate(()=>JSON.stringify([Object.entries(localStorage),Object.entries(sessionStorage)]).includes('mock-memory-token')),false);
   await page.locator('#import-log-button').click();await page.locator('#log-fight').waitFor();
   assert.equal(await page.locator('#log-fight').inputValue(),'5');
-  assert.equal(requests.length,3,'reopening a direct import loads only the missing fight list');
+  assert.equal(requests.length,3,'reopening a direct import reuses the fight list');
   const successDownload=page.waitForEvent('download');await page.getByRole('button',{name:'Download import diagnostics'}).click();
   const successPayload=JSON.parse(fs.readFileSync(await (await successDownload).path(),'utf8'));
   assert.equal(successPayload.log.fight.id,5);assert.equal(successPayload.error,undefined);

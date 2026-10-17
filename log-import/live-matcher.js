@@ -14,7 +14,7 @@ import {firstEngagements} from './intended-pulls.js';
 import {matchingConfig} from './matching-config.js';
 import {createPathProximity,combineProximity} from './path-proximity.js';
 import {createGapApproach} from './gap-approach.js';
-import {mapViews,mapCoordinates} from '../map-views.js';
+import {mapViews,worldMapCoordinates} from '../map-views.js';
 import {encounterIdentity} from './boss-encounters.js';
 
 const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
@@ -254,7 +254,9 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     points:[u.start,u.end].map(b=>{
       const change=events.filter(e=>e.type==='mapchange'&&e.timestamp<=b.time).at(-1);
       const map=dungeon.mapImages.find(m=>m.name===(change?.mapName??'Start'))??dungeon.mapImages[0];
-      return mapCoordinates({worldPosition:{x:b.position.y,y:b.position.x},mapImageId:map.id,mapPosition:{x:0,y:0}},view);
+      const point=worldMapCoordinates({x:b.position.y,y:b.position.x},map.id,view,dungeon);
+      if(!point?.every(Number.isFinite))throw new Error('Could not project a relic position onto this dungeon map. Download import diagnostics to investigate.');
+      return point;
     }),afterTime:(u.end.time-fight.startTime)/1000}));
   return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
     duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,

@@ -8,6 +8,7 @@ import {captureLogCallback,createLiveImport} from '../log-import/live-import.js'
 import {matchLiveLog} from '../log-import/live-matcher.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 import {createReviewSession} from '../log-import/review-session.js';
+import {mapViews,mapCoordinates} from '../map-views.js';
 const url='https://www.fellowshiplogs.com/reports/c4nFLaThdAxtVpYv?fight=5';
 const fight={id:5,name:'Example',startTime:100,endTime:200,dungeonPulls:[{id:1,startTime:100,endTime:200}]};
 const actors=[{id:1,type:'Player'},{id:2,type:'NPC',gameID:123}];
@@ -15,6 +16,27 @@ const event={type:'damage',timestamp:120,fight:5,sourceID:1,targetID:2,targetIns
 const response=report=>({ok:true,json:async()=>({data:{reportData:{report}}})});
 const metadata=()=>({fights:[fight],masterData:{actors:[...actors,{id:99,type:'Player'}]}});
 const storage=()=>{const values=new Map();return {getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};};
+
+test('Single-layer imports draw invisibility between the recorded positions instead of the map origin',async()=>{
+ const catalog=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
+ const dungeons=JSON.parse(fs.readFileSync('data/dungeons.json')).filter(d=>d.mapImages.length===1).map(d=>correctDungeon(d,'custom'));
+ for(const dungeon of dungeons){
+   const boss=dungeon.enemies.find(p=>catalog.get(p.id).isBoss),start=dungeon.enemies.find(p=>p.packId!==boss.packId);
+   const resources=p=>({x:p.worldPosition.y,y:p.worldPosition.x,hitPoints:100,maxHitPoints:100});
+   const input={complete:true,reportCode:'example',fight:{...fight,name:dungeon.name,startTime:0,endTime:10000,dungeonPulls:[{id:1,startTime:4000,endTime:9000}]},
+     actors:[{id:1,type:'Player'},{id:2,type:'NPC',subType:'Boss',gameID:catalog.get(boss.id).gameId}],events:[
+       {fight:5,timestamp:1000,type:'cast',sourceID:1,abilityGameID:1486,sourceResources:resources(start)},
+       {fight:5,timestamp:1000,type:'applybuff',sourceID:1,targetID:1,abilityGameID:1002146,targetResources:resources(start)},
+       {fight:5,timestamp:2000,type:'removebuff',sourceID:1,targetID:1,abilityGameID:1002146,targetResources:resources(boss)},
+       {...event,timestamp:4000,targetResources:resources(boss),sourceResources:resources(boss)},
+     ]};
+   const result=await matchLiveLog(input,{dungeon,catalog,presets:{},dungeonData:'custom'}),view=mapViews(dungeon)[0];
+   assert.equal(result.drawings.length,1,dungeon.name);
+   const drawing=result.drawings[0];assert.equal(drawing.kind,'invis');assert.equal(drawing.mapId,view.id);assert.equal(drawing.afterTime,2);
+   for(const [i,p]of [start,boss].entries())assert.ok(drawing.points[i].every((v,j)=>Math.abs(v-mapCoordinates(p,view)[j])<1e-6),dungeon.name);
+   assert.ok(Math.hypot(...drawing.points[0].map((v,i)=>v-drawing.points[1][i]))>1);
+ }
+});
 test('Live import selects one fight and one filtered stream; pages keep equal-time events and compact payloads',async()=>{
   const calls=[];
   const result=await loadLog(url,{token:'memory-only',fetcher:async(endpoint,options)=>{

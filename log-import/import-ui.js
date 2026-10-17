@@ -88,6 +88,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
       async function loadFights(selectedID){
         status.textContent='Loading fights…';
         const list=await live.fights(input.value.trim(),{signal:controller.signal});controller.signal.throwIfAborted();
+        if(selectedID&&!list.fights.some(f=>f.id===selectedID))throw new Error('The selected fight is not available in this report. Check the link.');
         showFights(list,selectedID);select.focus();
       }
       async function importLog(recover=false){
@@ -100,6 +101,9 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
           if(!selection.fightID){
             await loadFights();return;
           }
+          // Direct links use the same selected-fight view while events load.
+          // Continue automatically after fetching the small report summary.
+          if(!report&&!recover&&live.fights)await loadFights(selection.fightID);
           remember();lastFightID=selection.fightID;
           const options={signal:controller.signal,onProgress:text=>status.textContent=text};
           const result=await (recover?live.continueImport(selectedURL(),options):live.load(selectedURL(),options));
@@ -115,8 +119,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
       proceed.onclick=()=>importLog(true);
       if(report)showFights(report,lastFightID);
       controls();(report?select:input).focus();
-      // Direct fight links skip the list on first import. Fetch that small list
-      // only when reopening, then reuse it for subsequent visits to this dialog.
+      // Reuse the report summary on reopening; older sessions may lack it.
       if(restoring&&!report&&lastFightID&&live.connected()&&live.fights){
         busy=true;controller=new AbortController();controls();
         loadFights(lastFightID).catch(e=>{

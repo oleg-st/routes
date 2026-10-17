@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {mapViews,mapCoordinates,onMap,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from '../map-views.js';
+import {mapViews,mapCoordinates,worldMapCoordinates,onMap,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from '../map-views.js';
 import {campfires,campfireBuildId} from '../data/map-campfires.js';
 import {mapStarts,mapStartBuildId} from '../data/map-starts.js';
 import {legacyCombinedMap} from '../data/combined-maps.js';
@@ -10,6 +10,33 @@ import {newRoute,newPull,validateRoute,scoreRoute,effectivePositions,applyModifi
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url)));
 const raw=read('dungeons'),dungeons=raw.map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
 const reference=read('shadow-reference'),presets=read('modifier-placements');
+
+test('World-only relic positions agree with known map positions on every single-layer dungeon',()=>{
+ const single=dungeons.filter(d=>d.mapImages.length===1);assert.equal(single.length,6);
+ for(const d of single){
+   const view=mapViews(d)[0];
+   for(const p of d.enemies.filter(p=>p.mapPosition)){
+     const actual=worldMapCoordinates(p.worldPosition,p.mapImageId,view,d),expected=mapCoordinates(p,view);
+     assert.ok(actual?.every((v,i)=>Math.abs(v-expected[i])<1e-6),`${d.name}: ${p.placementId}`);
+   }
+   const [a,b]=d.enemies,mid=Object.fromEntries(['x','y'].map(k=>[k,(a.worldPosition[k]+b.worldPosition[k])/2]));
+   const expected=[0,1].map(i=>(mapCoordinates(a,view)[i]+mapCoordinates(b,view)[i])/2);
+   assert.ok(worldMapCoordinates(mid,view.id,view,d).every((v,i)=>Math.abs(v-expected[i])<1e-6));
+ }
+});
+
+test('World-only overview coordinates stay unchanged and invalid layer calibration fails explicitly',()=>{
+ for(const d of dungeons.filter(d=>d.mapImages.length>1))for(const p of d.enemies.filter(p=>p.mapPosition)){
+   const view=mapViews(d)[0];
+   assert.deepEqual(worldMapCoordinates(p.worldPosition,p.mapImageId,view,d),mapCoordinates({...p,placementId:undefined},view));
+ }
+ const d=dungeons.find(d=>d.name==="Cithrel's Fall"),view=mapViews(d)[0],p=d.enemies[0];
+ assert.equal(worldMapCoordinates(p.worldPosition,'unknown',view,d),null);
+ assert.equal(worldMapCoordinates({x:NaN,y:0},view.id,view,d),null);
+ assert.equal(worldMapCoordinates(p.worldPosition,view.id,view,{...d,enemies:[p]}),null);
+ const bad=structuredClone(d);bad.enemies[0].mapPosition.x+=0.1;
+ assert.equal(worldMapCoordinates(p.worldPosition,view.id,view,bad),null);
+});
 
 test('Dragging an arrow on any overview maps back to its original layer',()=>{
   let checked=0;

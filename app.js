@@ -250,7 +250,8 @@ function render(){
   $('#pulls').innerHTML=route.pulls.map((p,i)=>{
     const score=scorePull(p,dungeon,enemies,route,data.shadow);
     const members=p.enemies.map(id=>positions.get(id)).filter(Boolean);
-    return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}</div>${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary':''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button><button data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>`:''}</article>`;
+    const pending=logPreview?.pendingPullID===p.id;
+    return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}</div>${pending?'<div class="pull-import-status" title="Choose a pack above to finish this pull.">Pending import</div>':''}${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary':''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button><button data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>`:''}</article>`;
   }).join('');
   if(!canEdit())for(const button of $$('#pulls [data-action]:not([data-action=focus])'))button.disabled=true;
   updateRoomControls();updateSaveButton();renderMap();if(inspected)renderInspector(inspected);
@@ -672,9 +673,10 @@ async function previewLogRoute(fixture,state){
     logPreview={id,document:routeDocument,binding:routeBinding,store:structuredClone(store),snapshot:routeDocument.snapshot()};
     drag=null;draft=[];setTool('select',{cancel:true});
   }else{stopRoute?.();routeDocument.dispose();}
+  logPreview.pendingPullID=state.complete?null:next.pulls.at(-1)?.id;
   stopRoute?.();
   displayRouteDocument(document,null);
-  activePull=route.pulls[state.pullIndex]?.id;render();
+  activePull=route.pulls.at(-1)?.id;render();
   $('#storage-status').textContent='Import preview · not saved yet';
 }
 async function cancelLogImport(){

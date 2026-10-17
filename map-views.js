@@ -44,6 +44,28 @@ export function mapCoordinates(position,view){
   // Leaflet reference coordinates increase upwards; SVG increases downwards.
   return [(w.y-t.left)*t.factor+t.x,view.height-((w.x-t.bottom)*t.factor+t.y)];
 }
+// Log events have world coordinates but no normalized map position. Overviews
+// already contain world transforms; original layers need their own calibration.
+export function worldMapCoordinates(worldPosition,mapImageId,view,dungeon){
+  if(!Number.isFinite(worldPosition?.x)||!Number.isFinite(worldPosition?.y))return null;
+  if(view.sources?.[mapImageId])return mapCoordinates({worldPosition,mapImageId},view);
+  if(view.id!==mapImageId)return null;
+  const samples=dungeon.enemies.filter(p=>p.mapImageId===mapImageId&&
+    [p.worldPosition?.x,p.worldPosition?.y,p.mapPosition?.x,p.mapPosition?.y].every(Number.isFinite));
+  const fit=(worldAxis,mapAxis)=>{
+    if(samples.length<2)return null;
+    const lo=samples.reduce((a,b)=>a.worldPosition[worldAxis]<b.worldPosition[worldAxis]?a:b);
+    const hi=samples.reduce((a,b)=>a.worldPosition[worldAxis]>b.worldPosition[worldAxis]?a:b);
+    const span=hi.worldPosition[worldAxis]-lo.worldPosition[worldAxis];
+    if(span<1)return null;
+    const scale=(hi.mapPosition[mapAxis]-lo.mapPosition[mapAxis])/span;
+    const offset=lo.mapPosition[mapAxis]-lo.worldPosition[worldAxis]*scale;
+    if(!scale||samples.some(p=>Math.abs(p.worldPosition[worldAxis]*scale+offset-p.mapPosition[mapAxis])>1e-6))return null;
+    return worldPosition[worldAxis]*scale+offset;
+  };
+  const x=fit('y','x'),y=fit('x','y');
+  return x===null||y===null?null:[x*view.width,y*view.height];
+}
 // Referenced coordinates remain valid for saved objects in published builds,
 // even though that view and its private background are no longer offered.
 export function drawingMap(dungeon,id){
