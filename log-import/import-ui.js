@@ -113,7 +113,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
       async function loadFights(selectedID){
         status.textContent='Loading fights…';
         const list=await live.fights(input.value.trim(),{signal:controller.signal});controller.signal.throwIfAborted();
-        if(selectedID&&!list.fights.some(f=>f.id===selectedID))throw new Error('The selected fight is not available in this report. Check the link.');
+        if(typeof selectedID==='number'&&!list.fights.some(f=>f.id===selectedID))throw new Error('The selected fight is not available in this report. Check the link.');
         showFights(list,selectedID);select.focus();
       }
       async function importLog(mode='normal'){
@@ -129,7 +129,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
           // Direct links use the same selected-fight view while events load.
           // Continue automatically after fetching the small report summary.
           if(!report&&mode==='normal'&&live.fights)await loadFights(selection.fightID);
-          remember();lastFightID=selection.fightID;
+          remember();lastFightID=report?Number(select.value):selection.fightID;
           const options={signal:controller.signal,onProgress:text=>status.textContent=text};
           const result=await (mode==='expand'?live.expandSearch(selectedURL(),options):mode==='recover'?live.continueImport(selectedURL(),options):live.load(selectedURL(),options));
           if(!result){status.textContent='Additional search finished. The mobs below still could not be matched.';showFailure('Could not match complete packs. You can import the matched mobs.');return;}

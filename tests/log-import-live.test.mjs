@@ -71,6 +71,7 @@ test('Fight listing loads only summary fields, sorts newest first and defaults t
   const result=await loadReportFights(url.split('?')[0],{token:'x',fetcher});
   assert.deepEqual(result.fights.map(f=>f.id),[8,6,5]);assert.equal(result.selectedFightID,8);assert.equal(calls,1);
   assert.equal((await loadReportFights(url,{token:'x',fetcher})).selectedFightID,5);
+  assert.equal((await loadReportFights(url.replace('fight=5','fight=last'),{token:'x',fetcher})).selectedFightID,8);
   await assert.rejects(loadReportFights(url,{token:'x',fetcher:async()=>response({fights:[]})}),/no fights/);
 });
 test('Fight labels include number, outcome, dungeon, displayed league level and run duration',()=>{

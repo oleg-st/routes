@@ -52,10 +52,12 @@ export async function loadReportFights(url,options){
   const fights=report.fights.filter(f=>Number.isSafeInteger(f.id)&&f.id>0&&Number.isFinite(f.startTime)&&Number.isFinite(f.endTime))
     .sort((a,b)=>b.startTime-a.startTime||b.id-a.id);
   if(!fights.length)throw new Error('This report has no fights available to import.');
-  return {...selection,fights,selectedFightID:selection.fightID??fights[0].id};
+  return {...selection,fights,selectedFightID:selection.fightID==='last'?fights[0].id:selection.fightID??fights[0].id};
 }
 export async function loadLog(url,{token,signal,onProgress=()=>{},fetcher=fetch,validateFight=()=>{}}){
-  const selection=parseReportURL(url),variables={code:selection.reportCode,fights:[selection.fightID]};
+  const selection=parseReportURL(url);
+  if(selection.fightID==='last')selection.fightID=(await loadReportFights(url,{token,signal,fetcher})).selectedFightID;
+  const variables={code:selection.reportCode,fights:[selection.fightID]};
   const query=reportQuery({token,signal,fetcher});
   onProgress('Reading the selected run…');
   const report=await query(metadataQuery,variables),fight=report.fights?.find(f=>f.id===selection.fightID);

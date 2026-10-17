@@ -7,6 +7,7 @@ export function parseReportURL(value,{requireFight=true}={}){
   if(query&&fragment&&query!==fragment)throw new Error('The URL contains conflicting fight IDs.');
   const fight=query??fragment;
   if(fight===null&&!requireFight)return {reportCode:match[1],fightID:null};
-  if(!/^[1-9]\d*$/.test(fight??'')||!Number.isSafeInteger(Number(fight)))throw new Error('Select a specific numbered fight in the URL.');
+  if(fight==='last')return {reportCode:match[1],fightID:'last'};
+  if(!/^[1-9]\d*$/.test(fight??'')||!Number.isSafeInteger(Number(fight)))throw new Error('Select a numbered fight or fight=last in the URL.');
   return {reportCode:match[1],fightID:Number(fight)};
 }

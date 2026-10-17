@@ -78,6 +78,16 @@ try{
   assert.equal(await page.locator('#route-name').inputValue(),'Empyrean Sands · #5');assert.equal(await page.locator('#log-live-error').isHidden(),true);
   hold=false;
   await page.locator('#log-url').fill(`https://www.fellowshiplogs.com/reports/${code}`);
+  for(const selector of ['?fight=last','#fight=last']){
+    await page.locator('#log-url').fill(`https://www.fellowshiplogs.com/reports/${code}${selector}`);
+    const beforeLast=requests.length;await page.locator('#log-load').click();
+    await page.waitForFunction(()=>!document.querySelector('#dialog').open);
+    assert.equal(requests.length,beforeLast+3,'last-fight links load the list and import automatically');
+    assert.deepEqual(requests.at(-1).variables.fights,[6]);
+    await page.locator('#import-log-button').click();
+    assert.equal(await page.locator('#log-fight').inputValue(),'6','reopening preserves the resolved fight');
+  }
+  await page.locator('#log-url').fill(`https://www.fellowshiplogs.com/reports/${code}`);
   const beforeList=requests.length;await page.locator('#log-load').click();await page.locator('#log-fight').waitFor();
   assert.equal(requests.length,beforeList+1,'listing must not fetch actors or events');
   assert.equal(await page.locator('#log-fight').inputValue(),'6');
