@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {pkceChallenge,beginAuthorization,consumeCallback,exchangeCode,CLIENT_ID,REDIRECT_URI} from '../log-import/oauth.js';
+import {pkceChallenge,beginAuthorization,consumeCallback,exchangeCode,CLIENT_ID,REDIRECT_URI,PUBLISHED_REDIRECT_URI} from '../log-import/oauth.js';
 const storage=()=>{const map=new Map();return {getItem:key=>map.get(key)??null,setItem:(key,value)=>map.set(key,value),removeItem:key=>map.delete(key)};};
 test('PKCE matches the RFC 7636 S256 test vector',async()=>{
   assert.equal(await pkceChallenge('dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk'),'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM');
@@ -22,6 +22,24 @@ test('Rejects mismatched, expired, duplicated and cancelled callbacks',async()=>
     if(mode==='cancel')params.set('error','access_denied');
     assert.throws(()=>consumeCallback(params.toString(),store,mode==='expired'?601001:2000));
   }
+});
+test('Custom domain callback keeps the exact redirect through authorization and token exchange',async()=>{
+  const store=storage(),url=new URL(await beginAuthorization(store,1000,PUBLISHED_REDIRECT_URI));
+  assert.equal(url.searchParams.get('redirect_uri'),'https://olegfellow.dev/');
+  const callback=consumeCallback(new URLSearchParams({code:'code',state:url.searchParams.get('state')}).toString(),store,2000);
+  assert.equal(callback.redirectURI,'https://olegfellow.dev/');
+  await exchangeCode(callback,async(url,options)=>{
+    assert.equal(options.body.get('redirect_uri'),'https://olegfellow.dev/');
+    assert.equal(options.body.get('code_verifier'),callback.verifier);
+    return {ok:true,json:async()=>({access_token:'test-token',token_type:'Bearer'})};
+  });
+});
+test('Authorization only accepts exact registered redirect URLs',async()=>{
+  for(const redirect of ['https://olegfellow.dev','http://olegfellow.dev/','https://olegfellow.dev.evil.example/','https://olegfellow.dev/routes/']){
+    await assert.rejects(()=>beginAuthorization(storage(),1000,redirect),/Open https:\/\/olegfellow\.dev\//);
+  }
+  const legacy=new URL(await beginAuthorization(storage(),1000,'https://oleg-st.github.io/routes/'));
+  assert.equal(legacy.searchParams.get('redirect_uri'),'https://oleg-st.github.io/routes/');
 });
 test('Token exchange uses PKCE without client secret and discards refresh token',async()=>{
   const token=await exchangeCode({code:'code',verifier:'verifier'},async(url,options)=>{

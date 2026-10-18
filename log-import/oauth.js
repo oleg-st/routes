@@ -1,6 +1,7 @@
 // Public client identifier; no client secret is used by the browser.
 export const CLIENT_ID='01a143aa-9e56-72b2-842e-07efccacef9c';
 export const REDIRECT_URI='http://localhost:4173/';
+export const PUBLISHED_REDIRECT_URI='https://olegfellow.dev/';
 const origin='https://www.fellowshiplogs.com';
 const transactionKey='fellowship-log-probe-pkce';
 const maxAge=10*60*1000;
@@ -9,7 +10,7 @@ export async function pkceChallenge(verifier){
   return base64url(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier))));
 }
 export async function beginAuthorization(storage,now=Date.now(),redirectURI=REDIRECT_URI){
-  if(![REDIRECT_URI,'https://oleg-st.github.io/routes/'].includes(redirectURI))throw new Error('Open the published Routes site or http://localhost:4173/ to connect Fellowship Logs.');
+  if(![REDIRECT_URI,PUBLISHED_REDIRECT_URI,'https://oleg-st.github.io/routes/'].includes(redirectURI))throw new Error('Open https://olegfellow.dev/ or http://localhost:4173/ to connect Fellowship Logs.');
   const verifier=base64url(crypto.getRandomValues(new Uint8Array(32)));
   const state=base64url(crypto.getRandomValues(new Uint8Array(32)));
   const challenge=await pkceChallenge(verifier);
