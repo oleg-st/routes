@@ -27,7 +27,8 @@ export function planPullSplit({pulls,points,padding,start=null,bosses=[]},line){
   const mapped=pull=>pull?.enemies.filter(id=>points.has(id))||[];
   let target=null,best=1e-7;
   for(const [index,pull] of pulls.entries()){
-    const ids=mapped(pull),outline=pullOutline(ids.map(id=>points.get(id)),padding);
+    const ids=mapped(pull);if(!ids.length)continue;
+    const outline=pullOutline(ids.map(id=>points.get(id)),typeof padding==='function'?padding(ids):padding);
     const overlap=outlineIntersection(a,b,outline);
     if(overlap>best){best=overlap;target={pull,index,ids};}
   }

@@ -7,6 +7,12 @@ const pull=(id,enemies)=>({id,enemies});
 const context=(pulls,points,extra={})=>({pulls,points:new Map(Object.entries(points)),padding:1,...extra});
 const cut=[[5,-20],[5,20]];
 
+test('split targeting uses the displayed padding of each pull and skips unmapped pulls',()=>{
+  const ctx=context([pull('hidden',['unmapped']),pull('bosses',['a','b'])],{a:[0,0],b:[10,0]},{padding:ids=>{assert.deepEqual(ids,['a','b']);return 10;}});
+  assert.equal(planPullSplit(ctx,[[5,5],[5,8]]).pullId,'bosses');
+  assert.equal(planPullSplit({...ctx,padding:1},[[5,5],[5,8]]),null);
+});
+
 test('finite segment intersection measures only the part inside a convex outline',()=>{
   assert.equal(outlineIntersection([-5,5],[15,5],square),10);
   assert.equal(outlineIntersection([2,5],[8,5],square),6);

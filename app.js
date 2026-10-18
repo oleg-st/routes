@@ -1,10 +1,11 @@
 import {uid,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute} from './route-model.js';
-import {pullOutline} from './map-geometry.js';
+import {pullOutline,separateMarkerCenters} from './map-geometry.js';
 import {planPullSplit} from './pull-split.js';
 import {markerSymbols,markerColors,markerIcon,numberedAnnotations,markerSymbol,legacyMarkerGlyph} from './marker-symbols.js';
 import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
 import {correctDungeon,placementName} from './data/placement-corrections.js';
 import {enemyAbilities} from './data/ability-corrections.js';
+import {enemyMarkerScale,enemyMarkerRadius} from './data/enemy-marker-sizes.js';
 import {fullMapBuildId} from './data/full-maps.js';
 import {combinedBuildId} from './data/combined-layouts.js';
 import {loadData} from './data/runtime-loader.js';
@@ -35,6 +36,8 @@ let drag=null,toastTimer,suppressClick=false;
 let routeDocument,routeBinding,routeStorage,stopRoute,routeBusy=false,selectionQueue=Promise.resolve();
 let roomSession=null,roomUI,cursorUI,roomTransition=false,roomResume=null;
 let hoveredPack=null;
+let enemyMarkerCenters=new Map();
+let enemyMarkerLayoutKey='';
 let logImportUI,logPreview=null,logHighlights=new Set();
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
 const enemyFocusDuration=1000;
@@ -77,6 +80,7 @@ function positionsPercent(members){
 }
 function isEmpowered(p){return route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(p.placementId)&&!enemies.get(p.id)?.isBoss;}
 function coordinates(e){return mapCoordinates(e,mapLayer);}
+function markerCoordinates(e){return enemyMarkerCenters.get(e.placementId)||coordinates(e);}
 function availableImage(e){return e?.images?.find(i=>i.size==='200')?.path||e?.images?.[0]?.path;}
 function floorName(m,i){
   if(!m.sources)i=mapViews(dungeon).filter(view=>!view.sources).findIndex(view=>view.id===m.id);
@@ -227,6 +231,7 @@ function fitMap(){
   baseView={x:0,y:0,w:mapLayer.width,h:mapLayer.height};view={...baseView};renderMap();
 }
 function scale(){const r=$('#map').getBoundingClientRect();return Math.max(view.w/Math.max(r.width,1),view.h/Math.max(r.height,1));}
+function mapMarkerRadius(unit){return enemyMarkerRadius(Number($('#marker-size').value),baseView.w/view.w,$('#show-mob-icons').checked)*unit;}
 function render(){
   hideChickenTooltip();
   hidePullTooltip();
@@ -404,8 +409,17 @@ function renderMap(){
   $('#enemy-menu').hidden=true;$('#tooltip').hidden=true;
   $('#map').setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);
   const showIcons=$('#show-mob-icons').checked;
-  const iconPadding=showIcons?(baseView.w/view.w>=1.5?5:3):0;
-  const unit=scale(),radius=(Number($('#marker-size').value)+iconPadding)*.75*unit,owners=assigned();
+  const unit=scale(),radius=mapMarkerRadius(unit),owners=assigned();
+  // Lay out every placement, even when filtered, so selection and search do not
+  // make neighbors jump. Recompute from source points at the current zoom.
+  const layoutMarkers=currentPositions().map(p=>{
+    const r=radius*enemyMarkerScale(enemies.get(p.id));
+    return {id:p.placementId,point:coordinates(p),radius:r,maxDisplacement:Math.max(40*unit,r*2)};
+  });
+  const layoutKey=JSON.stringify([unit,layoutMarkers]);
+  if(layoutKey!==enemyMarkerLayoutKey){
+    enemyMarkerCenters=separateMarkerCenters(layoutMarkers,0,.25);enemyMarkerLayoutKey=layoutKey;
+  }
   renderMapStart(unit);
   renderCampfires();
   const markerRoot=$('#markers');markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#pack-labels').replaceChildren();$('#pack-efficiency').replaceChildren();$('#status-badges').replaceChildren();
@@ -413,7 +427,7 @@ function renderMap(){
   $('#pull-outlines').replaceChildren();$('#pull-labels').replaceChildren();
   for(const [i,pull] of route.pulls.entries()){
     const members=visible.filter(p=>owners.get(p.placementId)?.pull.id===pull.id);if(!members.length)continue;
-    const points=members.map(coordinates),padding=radius*1.6+9*unit,hull=pullOutline(points,padding),selected=pull.id===activePull;
+    const points=members.map(markerCoordinates),padding=radius*Math.max(...members.map(p=>enemyMarkerScale(enemies.get(p.id))))+9*unit,hull=pullOutline(points,padding),selected=pull.id===activePull;
     const g=svg('g',{'data-pull-outline':pull.id,'pointer-events':'none'});
     g.append(svg('polygon',{points:hull.map(p=>p.join(',')).join(' '),fill:pull.color,'fill-opacity':selected?.28:.2,stroke:pull.color,'stroke-width':selected?3.5:2.5,'stroke-linejoin':'round','vector-effect':'non-scaling-stroke'}));
     $('#pull-outlines').append(g);
@@ -427,10 +441,10 @@ function renderMap(){
   }
   const patrolPaths=new Set();
   for(const p of sorted){
-    const enemy=enemies.get(p.id),own=owners.get(p.placementId),chicken=!enemy?.isBoss&&route.excluded.includes(p.placementId),[x,y]=coordinates(p),r=enemy?.isBoss?radius*1.6:radius;
+    const enemy=enemies.get(p.id),own=owners.get(p.placementId),chicken=!enemy?.isBoss&&route.excluded.includes(p.placementId),[x,y]=markerCoordinates(p),r=radius*enemyMarkerScale(enemy);
     const portrait=chicken?chickenIcon:showIcons&&availableImage(enemy),hasPortrait=portrait&&!failedMobImages.has(portrait);
     const empowered=isEmpowered(p);
-    const color=own?.pull.color||(enemy?.isBoss?'#df858c':'#a6bfcc');
+    const color=own?.pull.color||(enemy?.isBoss?'#df858c':'#879eab');
     const group=svg('g',{'data-placement':p.placementId,role:'button',tabindex:0,'aria-label':`${placementName(p,enemy)}, ${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)}, ${fmt(pointScore(p))} points`,opacity:matchesSearch(p)?1:.14});
     if(empowered){
       group.setAttribute('aria-label',group.getAttribute('aria-label')+', Empowered');
@@ -443,7 +457,7 @@ function renderMap(){
       badge.append(svg('title',{},`${enemy.name} · ${status.name}`),svg('circle',{cx:bx,cy:by,r:br+2*unit,fill:'#1a1005',stroke:'#ffbb25','stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('image',{href:status.icon,x:bx-br,y:by-br,width:br*2,height:br*2,'clip-path':'url(#mob-portrait-clip)',preserveAspectRatio:'xMidYMid slice','pointer-events':'none'}));
       $('#status-badges').append(badge);
     }
-    group.append(svg('circle',{cx:x,cy:y,r:r+unit*2,fill:'#10161bcc'}));
+    group.append(svg('circle',{cx:x,cy:y,r:r+unit*(enemy?.isBoss?2:.75),fill:enemy?.isBoss?'#10161bcc':'#10161b99'}));
     group.append(svg('circle',{cx:x,cy:y,r,fill:own?color:'#263640'}));
     if(hasPortrait){
       const image=svg('image',{href:portrait,x:x-r,y:y-r,width:r*2,height:r*2,preserveAspectRatio:'xMidYMid slice','clip-path':'url(#mob-portrait-clip)','pointer-events':'none'});
@@ -451,7 +465,7 @@ function renderMap(){
       group.append(image);
       if(own)group.append(svg('circle',{cx:x,cy:y,r,fill:color,'fill-opacity':.3,'pointer-events':'none',class:'mob-pull-tint'}));
     }
-    group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(chicken?' chicken-ring':'')}));
+    group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(enemy?.isBoss?' boss-ring':'')+(own?' assigned-ring':'')+(chicken?' chicken-ring':'')}));
     if(enemy?.isBoss||p.modifier){
       const label=p.modifier?p.modifier[0].toUpperCase():'◆';
       const labelX=hasPortrait?x+r*.75:x,labelY=hasPortrait?y+r*.75:y;
@@ -484,8 +498,8 @@ function renderMap(){
       // Search and floor visibility affect placement, never the pack's value.
       const value=efficiency.values.get(id);
       if(value==null)continue;
-      const points=ps.map(coordinates),x=points.reduce((sum,p)=>sum+p[0],0)/points.length;
-      const y=Math.max(...points.map((p,i)=>p[1]+radius*(enemies.get(ps[i].id)?.isBoss?1.6:1)))+11*unit;
+      const points=ps.map(markerCoordinates),x=points.reduce((sum,p)=>sum+p[0],0)/points.length;
+      const y=Math.max(...points.map((p,i)=>p[1]+radius*enemyMarkerScale(enemies.get(ps[i].id))))+11*unit;
       const label=value.toFixed(2),width=(label.length*6.2+6)*unit;
       const badge=svg('g',{'data-pack-efficiency':id,'aria-label':`Pack efficiency ${label}`});
       badge.append(svg('rect',{x:x-width/2,y:y-8*unit,width,height:16*unit,rx:2*unit,fill:packEfficiencyColor(value,efficiency.range)}),svg('text',{x,y,'text-anchor':'middle','dominant-baseline':'central','font-size':11*unit,'font-family':'Segoe UI,sans-serif','font-weight':700,fill:'#fff'},label));
@@ -498,7 +512,7 @@ function renderMap(){
     const orderedPacks=[...packs].sort((a,b)=>Number(b[1].some(p=>owners.get(p.placementId)?.pull.id===activePull))-Number(a[1].some(p=>owners.get(p.placementId)?.pull.id===activePull)));
     for(const [id,ps]of orderedPacks){
       // Keep room for status badges without moving the label when a status changes.
-      const points=ps.map(coordinates),x=points.reduce((s,p)=>s+p[0],0)/ps.length,y=Math.min(...points.map(p=>p[1]))-radius-30*unit;
+      const points=ps.map(markerCoordinates),x=points.reduce((s,p)=>s+p[0],0)/ps.length,y=Math.min(...points.map((p,i)=>p[1]-radius*enemyMarkerScale(enemies.get(ps[i].id))))-30*unit;
       const score=ps.reduce((s,p)=>s+(pointScore(p)||0),0);
       const label=`${ps[0].modifier?enemies.get(ps[0].id).name:'G'+packNumbers.get(id)} · ${pct(score/dungeon.requiredScore*100)}`;
       const width=label.length*5.7*unit,box={x:x-width/2,y:y-11*unit,w:width,h:15*unit};
@@ -536,10 +550,9 @@ function drawAnnotation(d,root,unit){
 }
 function splitColor(){let index=route.pulls.length;while(route.pulls.some(p=>p.color===pullColor(index)))index++;return pullColor(index);}
 function splitPlan(line){
-  const unit=scale(),iconPadding=$('#show-mob-icons').checked?(baseView.w/view.w>=1.5?5:3):0;
-  const radius=(Number($('#marker-size').value)+iconPadding)*.75*unit;
+  const unit=scale(),radius=mapMarkerRadius(unit);
   const visible=currentPositions();
-  return planPullSplit({pulls:route.pulls,points:new Map(visible.map(p=>[p.placementId,coordinates(p)])),padding:radius*1.6+9*unit,start:mapStart(dungeon,mapLayer),bosses:visible.filter(p=>enemies.get(p.id)?.isBoss).map(p=>p.placementId)},line);
+  return planPullSplit({pulls:route.pulls,points:new Map(visible.map(p=>[p.placementId,markerCoordinates(p)])),padding:ids=>radius*Math.max(...ids.map(id=>enemyMarkerScale(enemies.get(positions.get(id)?.id))))+9*unit,start:mapStart(dungeon,mapLayer),bosses:visible.filter(p=>enemies.get(p.id)?.isBoss).map(p=>p.placementId)},line);
 }
 function renderSplitDraft(line){
   const root=$('#draft');root.replaceChildren();
@@ -549,7 +562,7 @@ function renderSplitDraft(line){
     const moved=new Set(plan.move),kept=new Set(plan.keep),color=route.pulls[plan.index].color,nextColor=route.pulls[plan.index+1]?.color||splitColor();
     const rings=new Map($$('#markers .mob-ring').map(el=>[el.parentElement.dataset.placement,Number(el.getAttribute('r'))]));
     for(const p of currentPositions())if(moved.has(p.placementId)||kept.has(p.placementId)){
-      const [cx,cy]=coordinates(p);
+      const [cx,cy]=markerCoordinates(p);
       root.append(svg('circle',{cx,cy,r:(rings.get(p.placementId)||10*unit)+4*unit,fill:'none',stroke:moved.has(p.placementId)?nextColor:color,'stroke-width':2,'vector-effect':'non-scaling-stroke'}));
     }
     root.append(svg('text',{x:line[1][0]+12*unit,y:line[1][1]-12*unit,fill:'#fff',stroke:'#111820','stroke-width':3*unit,'paint-order':'stroke','font-size':12*unit},`${plan.keep.length} / ${plan.move.length} mobs`));
@@ -571,7 +584,7 @@ function renderDraft(preview){const root=$('#draft');root.replaceChildren();if(t
 function point(event){const p=$('#map').createSVGPoint();p.x=event.clientX;p.y=event.clientY;const v=p.matrixTransform($('#map').getScreenCTM().inverse());return[v.x,v.y];}
 function commitDrag(state){if(!state.edit||!state.moved)return;change(state.edit.kind==='marker'?{type:'update-marker',markerId:state.edit.id,patch:{position:state.edit.points[0]}}:{type:'move-point',drawingId:state.edit.id,pointId:state.edit.pointIds[state.endpoint],position:state.edit.points[state.endpoint]});}
 function draggedDrawingPoint(event,state){const pos=point(event).map((v,i)=>v+state.offset[i]);return drawingPointFromMap(pos,state.edit,mapLayer,dungeon);}
-function zoom(factor,at){const anchor=at||[view.x+view.w/2,view.y+view.h/2];if(view.w*factor<baseView.w/12||view.w*factor>baseView.w*2.5)return;view={x:anchor[0]+(view.x-anchor[0])*factor,y:anchor[1]+(view.y-anchor[1])*factor,w:view.w*factor,h:view.h*factor};renderMap();}
+function zoom(factor,at){const anchor=at||[view.x+view.w/2,view.y+view.h/2];factor=Math.max(baseView.w/24,Math.min(baseView.w*2.5,view.w*factor))/view.w;if(factor===1)return;view={x:anchor[0]+(view.x-anchor[0])*factor,y:anchor[1]+(view.y-anchor[1])*factor,w:view.w*factor,h:view.h*factor};renderMap();}
 function setTool(value,{cancel=false}={}){
   if(value!=='line')closeArrowOptions();
   if(value!==tool||cancel){
@@ -936,7 +949,7 @@ function bind(){
       else renderMap();
       return;
     }
-    if(state.box&&state.moved){const end=point(e),minX=Math.min(state.start[0],end[0]),maxX=Math.max(state.start[0],end[0]),minY=Math.min(state.start[1],end[1]),maxY=Math.max(state.start[1],end[1]);const ids=visiblePositions().filter(p=>{const[x,y]=coordinates(p);return matchesSearch(p)&&x>=minX&&x<=maxX&&y>=minY&&y<=maxY;}).map(p=>p.placementId);choosePacks(ids,{toggle:false});$('#draft').replaceChildren();}
+    if(state.box&&state.moved){const end=point(e),minX=Math.min(state.start[0],end[0]),maxX=Math.max(state.start[0],end[0]),minY=Math.min(state.start[1],end[1]),maxY=Math.max(state.start[1],end[1]);const ids=visiblePositions().filter(p=>{const[x,y]=markerCoordinates(p);return matchesSearch(p)&&x>=minX&&x<=maxX&&y>=minY&&y<=maxY;}).map(p=>p.placementId);choosePacks(ids,{toggle:false});$('#draft').replaceChildren();}
     if(e.button===0&&!state.moved&&tool==='select'&&state.target){chooseEnemy(state.target);suppressClick=true;}
     if(e.button===2&&!state.moved){if(state.drawing)showDrawingMenu(state.drawing,e,state.vertex);else if(state.target)showEnemyMenu(state.target,e);}
   });

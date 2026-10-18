@@ -1,0 +1,88 @@
+// Visual size tiers from the Small/Medium/Large polymorph variants in the public
+// Onlyfellows app.json snapshot of 2026-10-18 (matched by game enemy ID).
+// Keep this separate from combat stats: health and score do not define icon size.
+const sizes={
+  'cm-earthelemental':'large',
+  'cm-elf-arcanewarden':'medium',
+  'cm-elf-enforcer':'large',
+  'cm-elf-taskmaster':'medium',
+  'dd-arbalist':'medium',
+  'dd-desertbrute':'large',
+  'dd-desertnomad':'medium',
+  'dd-desertwarrior':'medium',
+  'dd-nightboundmagi':'large',
+  'dd-witheringmagi':'medium',
+  'dr-bloodfangmauler':'medium',
+  'dr-cultistcaster':'medium',
+  'dr-cultistmajorcaster':'medium',
+  'dr-dangerousbrute':'large',
+  'dr-horneddemon':'large',
+  'dr-mancatcher':'medium',
+  'fk-elf-cleric':'large',
+  'fk-elf-duelist':'medium',
+  'fk-elf-guard':'large',
+  'fk-elf-illusionist':'large',
+  'fk-elf-ranger':'medium',
+  'fk-icegolem':'large',
+  'ic-assassin':'medium',
+  'ic-greatericeelemental':'large',
+  'ic-healer':'large',
+  'mc-bloodcaster':'large',
+  'mc-bloodguard':'medium',
+  'mc-bloodsummoner':'large',
+  'mc-wanderingghostguard':'medium',
+  'mc-wanderingghostpriest':'medium',
+  'mc-wanderingghostwarrior':'medium',
+  'mf-dawnstoneguardian':'large',
+  'mf-foultotemic':'medium',
+  'np-bullybasher':'medium',
+  'np-stormscreamer':'medium',
+  'pr-barbarouslasher':'large',
+  'pr-bilgerat':'medium',
+  'pr-blunderbusspirate':'medium',
+  'pr-cannonpirate':'medium',
+  'pr-goldenconstructvolatile':'medium',
+  'pr-pirategrunt':'medium',
+  'pr-possessedarmor':'large',
+  'pr-swashbuckler':'medium',
+  'pr-tigercat':'medium',
+  'pr-watercaster':'medium',
+  'sg-drownedsailor':'medium',
+  'sg-echoingspirit':'medium',
+  'sg-ghosteruptor':'large',
+  'sg-ghostferventsoldier':'medium',
+  'sg-ghostorc':'medium',
+  'sg-waterelemental':'large',
+  'sh-carrionhorror':'large',
+  'sh-gravesnarekidnapper':'medium',
+  'sh-rotheartrecluse':'medium',
+  'sh-venomdrinker':'medium',
+  'sp-frostwolf':'medium',
+  'sp-polarbear':'large',
+  'st-bigbloodelemental':'large',
+  'st-sanguinecrusher':'large',
+  'um-desecrater':'medium',
+  'um-gorestainedbutcher':'large',
+  'um-hornedseer':'medium',
+  'um-urrakslaver':'medium',
+  'um-urrakwitch':'medium',
+  'vv-blackburnmystic':'medium',
+  'vv-blackburnslaver':'medium',
+  'vv-blackmistshadow':'large',
+  'vv-blackmistwhisperer':'medium',
+  'vv-coldbrinefiend':'medium',
+  'vv-icebitepillager':'medium',
+  'vv-icebitereaver':'large',
+  'vv-sootstainedarsonist':'medium',
+};
+const factors={small:1,medium:1.3,large:1.65,boss:3};
+export function enemyMarkerScale(enemy){
+  return enemy?.isBoss?factors.boss:.75*factors[sizes[enemy?.id]||'small'];
+}
+
+// Screen-space base radius: preserve the overview size at zoom=1 and keep
+// growing at close range, more slowly than the map, without a size ceiling.
+export function enemyMarkerRadius(size,zoom,portraits=true){
+  const zoomScale=Math.sqrt(zoom);
+  return (size+(portraits?3:0))*zoomScale;
+}
