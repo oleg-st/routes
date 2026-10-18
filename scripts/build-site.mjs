@@ -14,7 +14,7 @@ if (check.status !== 0) throw new Error('Image/data verification failed.');
 const files = ['index.html', 'app.js', 'route-model.js', 'game-scoring.js', 'map-geometry.js', 'pull-split.js', 'map-views.js', 'marker-symbols.js', 'styles.css',
   ...['import-ui','review-session','fight-label','live-import','live-api','live-analysis','live-matcher','matcher-client','matcher-worker','oauth','report-url',
     'pack-corrections','placement-geometry','assignment','pack-solver','approach-filter','reverse-approach','summon-evidence','summon-patterns','game-summons','boss-encounters',
-    'modifier-evidence','invisibility','portals','route-relics','intended-pulls','death-skips','matching-config','activation','path-proximity','gap-approach','neighbor-approach'].map(name=>`log-import/${name}.js`),
+    'modifier-evidence','invisibility','portals','route-relics','intended-pulls','death-skips','matching-config','activation','path-proximity','gap-approach','neighbor-approach','movement-trail','aggro-evidence'].map(name=>`log-import/${name}.js`),
   ...fs.readdirSync('collaboration').filter(file=>file.endsWith('.js')).map(file=>'collaboration/'+file),
   ...dataNames.map(name=>`data/${name}.json`),
   ...['full-maps','map-starts','map-campfires','combined-layouts','combined-legacy-layouts','combined-maps',

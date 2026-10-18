@@ -1,3 +1,4 @@
+import {movementPlayerColor} from './movement-trail.js';
 import {createReviewSession} from './review-session.js';
 import {parseReportURL} from './report-url.js';
 import {fightLabel} from './fight-label.js';
@@ -9,16 +10,21 @@ const proximityLabel=o=>{
   if(p.basis==='neighbor')return `Possible neighbor · Pack distance: ≈${low===high?low:`${low}–${high}`} · from ${p.sources.join(' / ')}`;
   return `${o.closestToPath?'Closest to path · ':''}${p.estimated?'Estimated across log gap · ':''}Path distance: ≈${low===high?low:`${low}–${high}`} · ${p.sources.join(' / ')}${p.patrol?' · patrol path':''}`;
 };
-export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,cancel,highlight,focus,describe,onError,live}){
+export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,cancel,highlight,focus,frame,describe,onError,live,movement,heroes=[]}){
   let fixture,session,busy=false,lastURL='',lastReport=null,lastFightID=null;
-  const invoke=fn=>async()=>{
+  let movementVisible=true;
+  const invoke=fn=>async(...args)=>{
     if(busy)return;busy=true;
-    try{await fn();}catch(error){onError(error.message);}finally{busy=false;}
+    try{await fn(...args);}catch(error){onError(error.message);}finally{busy=false;}
   };
   const ids=groups=>groups.flatMap(id=>fixture.groups[id].enemies);
+  async function chooseOption(id){
+    session.choose(id);highlight([]);await advance();
+  }
   function hide(){highlight([]);panel.hidden=true;panel.replaceChildren();session=null;}
   async function advance(){
     await preview(fixture,session.state());
+    movement?.(movementVisible);
     closeDialog();
     if(!session.state().complete){draw();return;}
     try{await commit();hide();if(fixture.partial)onError(fixture.assumption);}catch(error){draw();throw error;}
@@ -34,22 +40,43 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
       return `<small>${esc(label)}: ${esc(members.length?describe(members):'None')}</small>`;
     }).join(''):'';
     panel.innerHTML=`<div class="log-review-heading"><span class="eyebrow">IMPORT FROM LOG</span><div class="log-review-actions">${s.canBack?'<button data-log-back>← Back</button>':''}<button data-log-cancel>Cancel import</button></div></div>
-      <div class="log-review-prompt" role="status" aria-live="polite"><span class="log-review-step">Pull ${s.pullIndex+1}</span><div><strong>${s.complete?'Could not save the imported route':'Choose a pack to add'}</strong><span>${s.complete?'Retry saving or cancel the import.':`${s.remaining} compatible routes remain · Select an option below to continue`}</span></div></div>
+      <div class="log-review-prompt" role="status" aria-live="polite"><span class="log-review-step">Pull ${s.pullIndex+1}</span><div><strong>${s.complete?'Could not save the imported route':'Choose a pack to add'}</strong><span>${s.complete?'Retry saving or cancel the import.':`${s.remaining} compatible routes remain · Select an option below or click its enemy on the map`}</span></div></div>
       ${fixture.assumption?`<p class="muted">${esc(fixture.assumption)}</p>`:''}
-      <div class="log-options">${s.options.map((o,i)=>`<div class="log-option"><button data-log-choice="${esc(o.id)}"><span class="log-option-number">${i+1}</span><span><strong>${esc(o.label)}</strong><small>${esc(o.groups.length?describe(ids(o.groups)):'Continue with the enemies already selected')}</small>${modifierDetails(o)}${o.proximity?`<small class="log-proximity" title="Closest approach before engagement, in world units. Estimates across log gaps and patrol paths are possible positions, not observed contact or a probability.">${esc(proximityLabel(o))}</small>`:''}</span><span class="log-option-add" aria-hidden="true">＋</span></button>${o.groups.length?`<button class="log-locate" data-log-focus="${esc(o.id)}" title="Show on map" aria-label="Show ${esc(o.label)} on map">⌖</button>`:''}</div>`).join('')}</div>
+      ${fixture.movementTrail?.players.length?`<div class="log-review-actions"><label title="Approximate recorded movement for the approach and this pull. Dotted lines connect sparse samples; long gaps and teleports are omitted."><input type="checkbox" data-log-movement ${movementVisible?'checked':''}> Party movement · approximate</label><span class="log-movement-legend">${fixture.movementTrail.players.map(p=>`<span><i style="background:${movementPlayerColor(p,heroes)}"></i>${esc(p.name)}</span>`).join('')}</span></div>`:''}
+      <div class="log-options">${s.options.map((o,i)=>`<div class="log-option${o.aggro?' log-option-likely':''}"><button data-log-choice="${esc(o.id)}"><span class="log-option-number">${i+1}</span><span><span class="log-option-heading"><strong>${esc(o.label)}</strong>${o.aggro?`<span class="log-aggro-badge" title="Recorded ${esc(o.aggro.sources.join(' / '))} approach before engagement: ≈${Math.round(o.aggro.distance)} / ${o.aggro.range} world units. Supported in every remaining assignment for this option. Model evidence, not a measured probability; height and line of sight are unknown.">within aggro</span>`:''}</span><small>${esc(o.groups.length?describe(ids(o.groups)):'Continue with the enemies already selected')}</small>${modifierDetails(o)}${o.proximity?`<small class="log-proximity" title="Closest approach before engagement, in world units. Estimates across log gaps and patrol paths are possible positions, not observed contact or a probability.">${esc(proximityLabel(o))}</small>`:''}</span><span class="log-option-add" aria-hidden="true">＋</span></button>${o.groups.length?`<button class="log-locate" data-log-focus="${esc(o.id)}" title="Show on map" aria-label="Show ${esc(o.label)} on map">⌖</button>`:''}</div>`).join('')}</div>
       ${s.complete?'<button class="primary" data-log-retry>Retry saving</button>':''}`;
     for(const b of panel.querySelectorAll('[data-log-choice]')){
       const option=s.options.find(o=>o.id===b.dataset.logChoice);
-      b.onpointerenter=b.onfocus=()=>highlight(ids(option.groups));
+      b.onpointerenter=b.onfocus=()=>highlight(ids(option.groups),{excluded:option.groups.flatMap(id=>fixture.groups[id].excluded??[])});
       b.onpointerleave=b.onblur=()=>highlight([]);
-      b.onclick=invoke(async()=>{session.choose(option.id);highlight([]);await advance();panel.querySelector('[data-log-choice], [data-log-retry]')?.focus();});
+      b.onclick=invoke(()=>chooseOption(option.id));
     }
-    for(const b of panel.querySelectorAll('[data-log-focus]'))b.onclick=()=>focus(ids(s.options.find(o=>o.id===b.dataset.logFocus).groups));
+    for(const b of panel.querySelectorAll('[data-log-focus]')){
+      const option=s.options.find(o=>o.id===b.dataset.logFocus),modifiers={excluded:option.groups.flatMap(id=>fixture.groups[id].excluded??[])};
+      b.onpointerenter=b.onfocus=()=>highlight(ids(option.groups),modifiers);
+      b.onpointerleave=b.onblur=()=>highlight([]);
+      b.onclick=()=>focus(ids(option.groups),modifiers);
+    }
+    const trail=panel.querySelector('[data-log-movement]');
+    if(trail)trail.onchange=()=>{movementVisible=trail.checked;movement?.(movementVisible);};
     const back=panel.querySelector('[data-log-back]');if(back)back.onclick=invoke(async()=>{session.back();highlight([]);await preview(fixture,session.state());draw();});
     panel.querySelector('[data-log-cancel]').onclick=invoke(async()=>{await cancel();hide();});
     const retry=panel.querySelector('[data-log-retry]');if(retry)retry.onclick=invoke(async()=>{await commit();hide();});
+    // The panel must be laid out first: it changes the map's visible height.
+    if(!s.complete&&s.options.length)frame?.([...new Set(ids([...s.pulls.at(-1).groups,...s.options.flatMap(o=>o.groups)]))]);
   }
-  const api={open(url){
+  const api={choosePlacement:invoke(async placementID=>{
+    if(!session)return;
+    const options=session.state().options.filter(o=>ids(o.groups).includes(placementID));
+    if(options.length===1){await chooseOption(options[0].id);return;}
+    if(!options.length)return;
+    highlight([]);
+    showDialog('Choose pack variant',`<div class="log-options">${options.map(o=>`<div class="log-option"><button data-log-map-choice="${esc(o.id)}"><span><strong>${esc(o.label)}</strong>${[['excluded','Chicken'],['empowered','Empowered']].map(([key,label])=>{
+      const members=o.groups.flatMap(id=>fixture.groups[id][key]??[]);
+      return `<small>${label}: ${esc(members.length?describe(members):'None')}</small>`;
+    }).join('')}</span></button></div>`).join('')}</div>`);
+    for(const b of document.querySelectorAll('[data-log-map-choice]'))b.onclick=invoke(()=>chooseOption(b.dataset.logMapChoice));
+  }),open(url){
     const restoring=url===undefined;
     url??=lastURL;
     showDialog('Import from log',`<form id="log-live-form"><label for="log-url">Fellowship Logs report link</label><input id="log-url" type="url" required placeholder="https://www.fellowshiplogs.com/reports/…" value="${esc(url)}"><div id="log-fight-field" hidden><label for="log-fight">Fight</label><select id="log-fight"></select></div><div class="log-review-actions"><button class="primary" id="log-load" type="submit"></button><button id="log-stop" type="button" hidden>Cancel</button>${live.connected()?'<button id="log-disconnect" type="button">Disconnect</button>':''}</div><p id="log-live-status" role="status" aria-live="polite"></p><p id="log-live-error" role="alert" hidden></p></form>`);
@@ -141,7 +168,8 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
           const options={signal:controller.signal,onProgress:text=>status.textContent=text};
           const result=await (mode==='expand'?live.expandSearch(selectedURL(),options):mode==='recover'?live.continueImport(selectedURL(),options):live.load(selectedURL(),options));
           if(!result){status.textContent='Additional search finished. The mobs below still could not be matched.';showFailure('Could not match complete packs. You can import the matched mobs.');return;}
-          controller.signal.throwIfAborted();fixture=result;session=createReviewSession(fixture);await advance();
+          controller.signal.throwIfAborted();fixture=result;
+          session=createReviewSession(fixture);await advance();
         }catch(e){
           status.textContent=controller.signal.aborted?'Import cancelled.':'';
           if(!controller.signal.aborted){showFailure(e.message);download.hidden=!live.diagnostics?.();}

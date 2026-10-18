@@ -38,8 +38,8 @@ test('Single-layer imports draw invisibility between the recorded positions inst
  }
 });
 test('Live import selects one fight and one filtered stream; pages keep equal-time events and compact payloads',async()=>{
-  const calls=[];
-  const result=await loadLog(url,{token:'memory-only',fetcher:async(endpoint,options)=>{
+  const calls=[],progress=[];
+  const result=await loadLog(url,{token:'memory-only',onProgress:text=>progress.push(text),fetcher:async(endpoint,options)=>{
     assert.equal(endpoint,'https://www.fellowshiplogs.com/api/v2/user');assert.equal(options.credentials,'omit');
     const body=JSON.parse(options.body);calls.push(body);assert.deepEqual(body.variables.fights,[5]);
     assert.equal(options.headers.Authorization,'Bearer memory-only');
@@ -50,6 +50,7 @@ test('Live import selects one fight and one filtered stream; pages keep equal-ti
     assert.equal(body.variables.start,120);return response({events:{data:[{...event,amount:10},{...event,fight:99}],nextPageTimestamp:null}});
   }});
   assert.equal(calls.length,3);assert.equal(result.events.length,2);assert.equal(result.complete,true);
+  assert.match(progress[1],/page 1 \(20%\)$/);assert.match(progress[2],/page 2 \(100%\)$/);
   assert.deepEqual(result.actors,actors);assert.equal(result.events[0].amount,undefined);assert.equal(result.events[0].sourceResources.mana,undefined);
 });
 test('Live loader rejects partial/invalid pagination, API errors, missing actors and expired login',async()=>{

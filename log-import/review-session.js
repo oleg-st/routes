@@ -1,5 +1,6 @@
 // Choices always filter whole-run candidates, never independent per-pull guesses.
 import {combineProximity} from './path-proximity.js';
+import {combineAggroEvidence} from './aggro-evidence.js';
 export function createReviewSession(fixture){
   if(!fixture.variants?.length)throw new Error('No complete route candidates.');
   let candidates=[...fixture.variants],history=[];
@@ -12,10 +13,11 @@ export function createReviewSession(fixture){
       const alternatives=[...new Set(candidates.flatMap(v=>v.pulls[index].groups))].filter(id=>!common.includes(id));
       if(alternatives.length){
         const options=alternatives.map(id=>({id,groups:[id],label:fixture.groups[id].label,
+          aggro:combineAggroEvidence(candidates.filter(v=>v.pulls[index].groups.includes(id)).map(v=>v.aggro?.[id])),
           proximity:combineProximity(candidates.filter(v=>v.pulls[index].groups.includes(id)).map(v=>v.proximity?.[id]))}));
         // Rank conservatively if the same pack has different engagement times
         // across compatible routes. Never remove a candidate on this soft score.
-        const evidenceTier=o=>!o.proximity?2:o.proximity.estimated?1:0;
+        const evidenceTier=o=>o.aggro?-1:!o.proximity?2:o.proximity.estimated?1:0;
         options.sort((a,b)=>evidenceTier(a)-evidenceTier(b)||(a.proximity?.maxDistance??Infinity)-(b.proximity?.maxDistance??Infinity));
         if(options[0]?.proximity&&options.slice(1).every(o=>o.proximity&&o.proximity.minDistance>options[0].proximity.maxDistance))options[0].closestToPath=true;
         if(candidates.some(v=>v.pulls[index].groups.length===common.length))options.push({id:'finish-pull',groups:[],label:'No more packs in this pull'});

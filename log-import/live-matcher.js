@@ -10,9 +10,11 @@ import {modifierEvidence,createEmpoweredConstraint} from './modifier-evidence.js
 import {extractInvisibility,createVisibilityIndex} from './invisibility.js';
 import {extractPortals} from './portals.js';
 import {bossIntervals,outsideBossCombat,deduplicateRelicUsages} from './route-relics.js';
-import {firstEngagements} from './intended-pulls.js';
+import {firstEngagements,engagementSegmentIndex} from './intended-pulls.js';
 import {matchingConfig} from './matching-config.js';
 import {createPathProximity,combineProximity} from './path-proximity.js';
+import {buildMovementTrail} from './movement-trail.js';
+import {createAggroEvidence,combineAggroEvidence} from './aggro-evidence.js';
 import {createGapApproach} from './gap-approach.js';
 import {mapViews,worldMapCoordinates,mapCampfires} from '../map-views.js';
 import {encounterIdentity} from './boss-encounters.js';
@@ -156,12 +158,12 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
         if(p&&allowed(r,p)){
           const neighbor=pair.get(`${r.key}|${p.placementId}`).neighbor;
           assignments.push({key:r.key,placementId:p.placementId,firstTime:r.firstTime,...(neighbor?{neighbor}:{})});
-        }else skipped.push({key:r.key,name:r.name,gameID:r.gameID,pull:Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=r.firstTime))+1,reason:'No unused compatible map position'});
+        }else skipped.push({key:r.key,name:r.name,gameID:r.gameID,pull:engagementSegmentIndex(pullSegments,r.firstTime)+1,reason:'No unused compatible map position'});
       });
     }
     for(const c of unknownChickens){
       const key=`${c.targetID}:${c.targetInstance??1}`;
-      if(!skipped.some(r=>r.key===key))skipped.push({key,name:'Unknown Chicken target',pull:Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=c.timestamp))+1,reason:'Original map enemy could not be identified'});
+      if(!skipped.some(r=>r.key===key))skipped.push({key,name:'Unknown Chicken target',pull:engagementSegmentIndex(pullSegments,c.timestamp)+1,reason:'Original map enemy could not be identified'});
     }
     if(!assignments.length)throw new Error('No enemies could be matched. Download import diagnostics to investigate.');
     partial={matched:assignments.filter(a=>!skippedKeys.has(a.key)).length,skipped};
@@ -236,19 +238,22 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     movementHypotheses.length?`Possible approach to ${[...new Set(movementHypotheses.map(h=>h.pack))].join(', ')} is estimated across gaps in the log. The actual path is unknown; review this movement hypothesis before accepting.`:null].filter(Boolean).join(' ')||null;
   const groups={},variants=[],groupByIdentity=new Map(),variantByPulls=new Map(),first=firstEngagements(events,{fightID:fight.id,actors,key:encounters.key});
   const pathProximity=createPathProximity(packs,observations);
+  const aggroEvidence=createAggroEvidence(packs,observations.map(p=>({...p,
+    confirmedSource:rows.some(r=>r.key===p.key&&anchor(r)&&!skippedKeys.has(r.key))})),{buriedRadius:config.buriedRadius});
   const empoweredKeys=new Set([...affixes.empowered.confirmedInstances.map(r=>r.key),...health.filter(r=>r.empoweredCandidate).map(r=>r.key)]);
   for(const [index,candidate] of candidates.entries()){
     if(index%100===0){await yieldUI();signal?.throwIfAborted();}
-    const proximity={};
+    const proximity={},aggro={};
     const pulls=pullSegments.map(p=>({id:`segment-${p.id}`,start:(p.startTime-fight.startTime)/1000,end:(p.endTime-fight.startTime)/1000,groups:[]}));
     for(const [pack,as]of Map.groupBy(candidate.routeAssignments,a=>packByPlacement.get(a.placementId))){
       const members=as.map(a=>a.placementId).sort(),excluded=as.filter(a=>chickenKeys.has(a.key)).map(a=>a.placementId).sort(),empowered=as.filter(a=>empoweredKeys.has(a.key)).map(a=>a.placementId).sort();
       const time=Math.min(...as.map(a=>first.get(a.key)??a.firstTime));
-      const segment=Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=time));
+      const segment=engagementSegmentIndex(pullSegments,time);
       const identity=JSON.stringify([members,excluded,empowered]);
       let id=groupByIdentity.get(identity);
       if(!id){id=`group-${groupByIdentity.size}`;groupByIdentity.set(identity,id);groups[id]={id,label:pack.number,enemies:members,excluded,empowered};}
       proximity[id]=pathProximity(pack.id,time);
+      aggro[id]=aggroEvidence(pack.id,Math.max(pullSegments[segment-1]?.endTime??fight.startTime,time-10000),time,as.map(a=>a.key));
       const gap=as.filter(a=>a.gap).sort((a,b)=>a.gap.distance-b.gap.distance)[0]?.gap;
       if(gap)proximity[id]={minDistance:gap.distance,maxDistance:gap.distance,sources:[gap.source],patrol:gap.patrol,estimated:true};
       const neighbor=as.filter(a=>a.neighbor).sort((a,b)=>a.neighbor.distance-b.neighbor.distance)[0]?.neighbor;
@@ -257,13 +262,16 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     }
     for(const kind of ['ghorn','witch'])if(affixes[kind].active){
       const npc=npcRows.find(r=>r.gameID===affixes[kind].gameID),id=`modifier:${kind}`;
-      const segment=Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=npc.firstTime));
+      const segment=engagementSegmentIndex(pullSegments,npc.firstTime);
       groups[id]={id,label:kind==='ghorn'?'Ghorn':'Witch',enemies:[id],excluded:[],empowered:[]};pulls[segment].groups.push(id);
     }
     pulls.forEach(p=>p.groups.sort());
     const routeKey=JSON.stringify(pulls),duplicate=variantByPulls.get(routeKey);
-    if(duplicate){for(const id of Object.keys(proximity))duplicate.proximity[id]=combineProximity([duplicate.proximity[id],proximity[id]]);}
-    else{const variant={pulls,proximity};variants.push(variant);variantByPulls.set(routeKey,variant);}
+    if(duplicate){for(const id of Object.keys(proximity)){
+      duplicate.proximity[id]=combineProximity([duplicate.proximity[id],proximity[id]]);
+      duplicate.aggro[id]=combineAggroEvidence([duplicate.aggro[id],aggro[id]]);
+    }}
+    else{const variant={pulls,proximity,aggro};variants.push(variant);variantByPulls.set(routeKey,variant);}
   }
   const kept=variants[0].pulls.map((_,i)=>i).filter(i=>variants.some(v=>v.pulls[i].groups.length));
   for(const v of variants)v.pulls=kept.map((i,n)=>({...v.pulls[i],label:`Pull ${n+1}`}));
@@ -287,7 +295,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   }
   drawings.sort((a,b)=>a.afterTime-b.afterTime);
   return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,...(neighborRadius?{neighborHypotheses}:{}),dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
-    duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,deathSkips,deathSkipEncounters,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
+    duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,movementTrail:buildMovementTrail(log,trajectories,dungeon),deathSkips,deathSkipEncounters,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
     replacement:Object.fromEntries(['ghorn','witch'].map(k=>[k,{active:affixes[k].active===true}])),
     note:'Matched from the selected log using current dungeon data. Whole packs stay in their first pull; repeated attempts are omitted.'};
   }

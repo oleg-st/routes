@@ -19,6 +19,15 @@ export function firstEngagements(events,{fightID,actors,aliases=new Map(),key=(e
   return first;
 }
 
+// Opening casts/debuffs may precede the API pull's start. Once the previous
+// pull has ended, a new engagement belongs to the next pull, not the old one.
+// At shared/overlapping boundaries prefer the most recently started pull.
+export function engagementSegmentIndex(segments,time){
+  const index=segments.findLastIndex(p=>p.startTime<=time);
+  if(index<0)return 0;
+  return time<=segments[index].endTime||index===segments.length-1?index:index+1;
+}
+
 export function intendedPulls(segments,engagements){
   const seen=new Set(),result=[],ordered=engagements.toSorted((a,b)=>a.time-b.time);
   for(const segment of segments.toSorted((a,b)=>a.startTime-b.startTime)){

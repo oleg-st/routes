@@ -71,9 +71,11 @@ export async function loadLog(url,{token,signal,onProgress=()=>{},fetcher=fetch,
     const stream=result.events;
     if(!Array.isArray(stream?.data)||!Object.hasOwn(stream,'nextPageTimestamp'))throw new Error('Incomplete event response; the route was not imported.');
     for(const event of stream.data)if(event.fight===fight.id&&isRouteEvent(event))events.push(compactRouteEvent(event));
-    onProgress(`Reading movement and encounters… ${events.length.toLocaleString('en-US')} events · page ${page+1}`);
+    const next=stream.nextPageTimestamp;
+    if(next!==null&&(!Number.isFinite(next)||next<=cursor||next>fight.endTime))throw new Error('Invalid event cursor; the route was not imported.');
+    const percent=next===null?100:Math.min(99,Math.floor((next-fight.startTime)/(fight.endTime-fight.startTime)*100));
+    onProgress(`Reading movement and encounters… ${events.length.toLocaleString('en-US')} events · page ${page+1} (${percent}%)`);
     if(stream.nextPageTimestamp===null){complete=true;break;}
-    if(!Number.isFinite(stream.nextPageTimestamp)||stream.nextPageTimestamp<=cursor||stream.nextPageTimestamp>fight.endTime)throw new Error('Invalid event cursor; the route was not imported.');
     cursor=stream.nextPageTimestamp;
   }
   if(!complete)throw new Error('Event limit reached. The log is incomplete and was not imported.');

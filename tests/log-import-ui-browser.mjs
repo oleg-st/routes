@@ -16,7 +16,10 @@ const bundle=await build({stdin:{contents:`
       expandSearch:async()=>{window.failure.searched=true;window.failure.skipped=window.failure.skipped.filter(r=>r.pull===2);return null;},
       continueImport:async()=>{window.failure.done=true;return window.extraFixture;}},
     preview:async(fixture,state)=>{window.result.preview=state;},commit:async()=>{window.result.saved=true;},cancel:async()=>{window.result.cancelled=true;},
-    highlight:ids=>{window.result.highlight=ids;},focus:ids=>{window.result.focus=ids;},describe:ids=>ids.length+' enemies',onError:error=>{throw new Error(error);}});
+    movement:visible=>{window.result.movement=visible;},
+    frame:ids=>{window.result.frame=ids;},
+    heroes:[{name:'Xavian',classColor:'#077365'}],
+    highlight:(ids,{excluded=[]}={})=>{window.result.highlight=ids;window.result.chickens=excluded;},focus:(ids,{excluded=[]}={})=>{window.result.focus=ids;window.result.chickens=excluded;},describe:ids=>ids.length+' enemies',onError:error=>{throw new Error(error);}});
   window.ui.open();`,resolveDir:process.cwd(),loader:'js'},bundle:true,format:'iife',write:false});
 const html=`<!doctype html><html><body><dialog></dialog><section id="panel" hidden></section><script>${bundle.outputFiles[0].text}</script></body></html>`;
 const server=http.createServer((req,res)=>{res.writeHead(200,{'Content-Type':'text/html'});res.end(html);});
@@ -26,9 +29,11 @@ try{
   await page.goto(`http://127.0.0.1:${server.address().port}`);
   const submit=async()=>{await page.locator('#log-url').fill('https://www.fellowshiplogs.com/reports/JLhT1y4Fa3n9Xjx8?fight=6');await page.locator('#log-load').click();};
   await submit();await page.locator('[data-log-choice]').first().waitFor();
+  assert.deepEqual((await page.evaluate(()=>window.result.frame)).sort(),['b','c'],'frame includes every choice, not earlier pulls');
   const before=await page.evaluate(()=>window.result.preview);await page.locator('[data-log-choice]').first().hover();assert.ok((await page.evaluate(()=>window.result.highlight)).length);
   await page.locator('[data-log-focus]').first().click();assert.ok((await page.evaluate(()=>window.result.focus)).length);
-  await page.locator('[data-log-choice]').first().click();await page.locator('[data-log-back]').click();assert.deepEqual(await page.evaluate(()=>window.result.preview),before);
+  await page.evaluate(()=>window.ui.choosePlacement('not-an-option'));assert.deepEqual(await page.evaluate(()=>window.result.preview),before);
+  await page.evaluate(()=>window.ui.choosePlacement('b'));await page.locator('[data-log-back]').click();assert.deepEqual(await page.evaluate(()=>window.result.preview),before);
   await page.locator('[data-log-cancel]').click();assert.equal(await page.evaluate(()=>window.result.cancelled),true);
   await page.evaluate(()=>{window.example='c4nFLaThdAxtVpYv-5';window.ui.open();});await submit();
   assert.equal(await page.evaluate(()=>window.result.saved),true);assert.equal(await page.locator('#panel').isHidden(),true);
@@ -38,6 +43,7 @@ try{
   await page.evaluate(()=>{
     const score=d=>({minDistance:d,maxDistance:d,sources:['player'],patrol:false});
     window.extraFixture={title:'Path ranking',fightID:1,reportCode:'example',duration:10,
+      movementTrail:{players:[{id:'1:1',name:'Tank',className:'Xavian'}]},
       groups:{a:{label:'G1',enemies:['a']},b:{label:'G2',enemies:['b']}},
       variants:[{pulls:[{groups:['a']}],proximity:{a:score(900)}},{pulls:[{groups:['b']}],proximity:{b:score(200)}}]};
     window.ui.open();
@@ -46,7 +52,22 @@ try{
   assert.match(await page.locator('[data-log-choice]').first().textContent(),/Closest to path.*200.*player/);
   assert.match(await page.locator('[data-log-choice]').last().textContent(),/900/);
   assert.equal(await page.locator('[data-log-choice]').count(),2);assert.deepEqual(errors,[]);
+  assert.equal(await page.locator('[data-log-player]').count(),0);
+  assert.equal(await page.locator('.log-movement-legend').textContent(),'Tank');
+  assert.equal(await page.locator('.log-movement-legend i').getAttribute('style'),'background:#077365');
+  await page.locator('[data-log-movement]').uncheck();
+  assert.equal(await page.evaluate(()=>window.result.movement),false);
   await page.locator('[data-log-cancel]').click();
+  await page.evaluate(()=>{
+    window.extraFixture.variants[0].aggro={a:{distance:900,range:1100,sources:['player']}};
+    window.ui.open();
+  });await submit();
+  assert.equal(await page.locator('[data-log-choice]').first().getAttribute('data-log-choice'),'a');
+  assert.equal(await page.locator('.log-option-likely').count(),1);
+  assert.equal(await page.locator('.log-aggro-badge').textContent(),'within aggro');
+  assert.equal(await page.locator('[data-log-choice]').count(),2);
+  await page.locator('[data-log-cancel]').click();
+  await page.evaluate(()=>{delete window.extraFixture.variants[0].aggro;});
   await page.evaluate(()=>{
     window.result.saved=false;
     window.extraFixture.variants[1].proximity.b.estimated=true;
@@ -113,13 +134,22 @@ try{
   });await submit();
   const chicken=page.locator('[data-log-choice="chicken"]'),normal=page.locator('[data-log-choice="normal"]');
   assert.equal(await page.locator('[data-log-choice]').count(),3);
+  assert.deepEqual((await page.evaluate(()=>window.result.frame)).sort(),['chopper-1','chopper-2','chopper-3','wolf-1','wolf-2','wolf-3']);
   assert.match(await chicken.textContent(),/G24.*5 enemies.*Chickenized: 1 enemies.*Empowered: 1 enemies.*797/);
   assert.match(await normal.textContent(),/G24.*5 enemies.*Chickenized: None.*Empowered: 1 enemies.*797/);
   assert.match(await page.locator('[data-log-choice="other"]').textContent(),/Chickenized: 1 enemies.*Empowered: None/);
-  await chicken.click();
+  await chicken.hover();assert.deepEqual(await page.evaluate(()=>window.result.chickens),['wolf-2']);
+  await normal.hover();assert.deepEqual(await page.evaluate(()=>window.result.chickens),[]);
+  await chicken.focus();assert.deepEqual(await page.evaluate(()=>window.result.chickens),['wolf-2']);
+  await page.locator('[data-log-focus="chicken"]').click();assert.deepEqual(await page.evaluate(()=>window.result.chickens),['wolf-2']);
+  await page.locator('body').click({position:{x:0,y:0}});assert.deepEqual(await page.evaluate(()=>window.result.chickens),[]);
+  await page.evaluate(()=>window.ui.choosePlacement('wolf-2'));
+  assert.equal(await page.locator('[data-log-map-choice]').count(),2);
+  assert.equal((await page.evaluate(()=>window.result.preview)).remaining,3,'ambiguous map clicks must not choose a modifier assignment');
+  await page.locator('[data-log-map-choice="chicken"]').click();
   assert.equal((await page.evaluate(()=>window.result.preview)).remaining,2,'both compatible downstream routes survive');
   assert.equal(await page.locator('[data-log-choice]').count(),2);
-  assert.doesNotMatch(await page.locator('.log-options').textContent(),/Chickenized|Empowered/,'unmodified choices stay concise');
+  assert.doesNotMatch(await page.locator('#panel .log-options').textContent(),/Chickenized|Empowered/,'unmodified choices stay concise');
   await page.locator('[data-log-back]').click();
   assert.match(await chicken.textContent(),/Chickenized: 1 enemies/);
   await normal.click();

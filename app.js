@@ -23,6 +23,7 @@ import {createRouteDocument,restoreRouteDocument} from './collaboration/route-do
 import {openRouteStorage} from './collaboration/route-storage.js';
 import {migrateLegacyLibrary} from './collaboration/route-library.js';
 import {createLogImportUI} from './log-import/import-ui.js';
+import {movementTrailLines} from './log-import/movement-trail.js';
 import {captureLogCallback,createLiveImport} from './log-import/live-import.js';
 let logCallback;
 try{logCallback=captureLogCallback(location,history,sessionStorage);}catch(error){logCallback={error};}
@@ -44,7 +45,7 @@ let roomSession=null,roomUI,cursorUI,roomTransition=false,roomResume=null;
 let hoveredPack=null;
 let enemyMarkerCenters=new Map();
 let enemyMarkerLayoutKey='';
-let logImportUI,logPreview=null,logHighlights=new Set();
+let logImportUI,logPreview=null,logHighlights=new Set(),logChickenPreview=new Set();
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
 let modifierHighlightKey='';
 const enemyFocusDuration=1000;
@@ -103,7 +104,8 @@ async function loadDungeon(id,imported){
     displayRouteDocument(next,binding);
   }finally{routeBusy=false;}
 }
-function displayRouteDocument(next,binding){
+function displayRouteDocument(next,binding,{preserveMap=false}={}){
+    const camera=preserveMap&&dungeon?.id===next.identity.dungeonId&&mapLayer?{id:mapLayer.id,path:mapLayer.path,view:{...view}}:null;
     routeDocument=next;routeBinding=binding;route=next.snapshot();dungeon=data.dungeons.find(d=>d.id===next.identity.dungeonId);
     store.drafts[dungeon.id]=route.id;store.lastDungeon=dungeon.id;
     stopRoute=next.subscribe(event=>{if(event.origin==='import')queueMicrotask(()=>{if(routeDocument===next)refreshRoute();});});
@@ -116,7 +118,10 @@ function displayRouteDocument(next,binding){
     updateFloorPanel();
     const start=views.findIndex(m=>m.name?.startsWith('Start'));
     const global=views.findIndex(m=>m.name==='Global');
-    chooseFloor(views[0].sources?0:start>=0?start:global>=0?global:0);render();$('#pulls').scrollTop=0;
+    const previousFloor=camera?views.findIndex(m=>m.id===camera.id&&m.path===camera.path):-1;
+    chooseFloor(previousFloor>=0?previousFloor:views[0].sources?0:start>=0?start:global>=0?global:0);
+    if(previousFloor>=0)view=camera.view;
+    render();$('#pulls').scrollTop=0;
   if(roomSession)roomUI.update(roomSession.state());
 }
 async function startRoom({code,name,classId='',role='player',config={},create=false}){
@@ -427,6 +432,17 @@ function renderMap(){
   }
   renderMapStart(unit);
   renderCampfires();
+  let trailRoot=$('#log-movement');
+  if(!trailRoot){trailRoot=svg('g',{id:'log-movement','pointer-events':'none','aria-label':'Approximate party movement'});$('#markers').before(trailRoot);}
+  trailRoot.replaceChildren();
+  if(logPreview?.movementVisible){
+    for(const line of movementTrailLines(logPreview.movementTrail,logPreview.reviewState,mapLayer,dungeon,data.heroes)){
+      const attrs={points:line.points.map(p=>p.join(',')).join(' '),fill:'none',opacity:line.inCombat?.65:1,
+        'stroke-dasharray':line.estimated?'2 8':'8 5','stroke-linecap':'round','stroke-linejoin':'round','vector-effect':'non-scaling-stroke'};
+      trailRoot.append(svg('polyline',{...attrs,stroke:'#10171b','stroke-width':line.inCombat?4:5}),svg('polyline',{...attrs,stroke:line.color,'stroke-width':line.inCombat?2:3}));
+
+    }
+  }
   const markerRoot=$('#markers');markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#pack-labels').replaceChildren();$('#pack-efficiency').replaceChildren();$('#status-badges').replaceChildren();
   const visible=visiblePositions();const sorted=[...visible].sort((a,b)=>Number(enemies.get(a.id)?.isBoss)-Number(enemies.get(b.id)?.isBoss));
   $('#pull-outlines').replaceChildren();$('#pull-labels').replaceChildren();
@@ -446,7 +462,7 @@ function renderMap(){
   }
   const patrolPaths=new Set();
   for(const p of sorted){
-    const enemy=enemies.get(p.id),own=owners.get(p.placementId),chicken=!enemy?.isBoss&&route.excluded.includes(p.placementId),[x,y]=markerCoordinates(p),r=radius*enemyMarkerScale(enemy);
+    const enemy=enemies.get(p.id),own=owners.get(p.placementId),chicken=!enemy?.isBoss&&(route.excluded.includes(p.placementId)||logPreview&&logChickenPreview.has(p.placementId)),[x,y]=markerCoordinates(p),r=radius*enemyMarkerScale(enemy);
     const portrait=chicken?chickenIcon:showIcons&&availableImage(enemy),hasPortrait=portrait&&!failedMobImages.has(portrait);
     const empowered=isEmpowered(p);
     const color=own?.pull.color||(enemy?.isBoss?'#df858c':'#879eab');
@@ -598,7 +614,7 @@ function choosePacks(ids,options){
   const members=available.filter(p=>packs.has(p.packId)).map(p=>p.placementId);
   if(members.length){const commands=[];if(!active()){activePull=uid();commands.push({type:'add-pull',id:activePull});}commands.push({type:'assign-mobs',pullId:activePull,mobIds:members,toggle:options?.toggle??true});change(commands);}
 }
-function chooseEnemy(id){choosePacks([id]);}
+function chooseEnemy(id){if(logPreview){logImportUI.choosePlacement(id);return;}choosePacks([id]);}
 function commitDrawing(){if(draft.length!==2)return;const drawing={id:uid(),mapId:mapLayer.id,kind:tool,color:relicColors[tool]||arrowColor,...(tool==='line'?{width:arrowWidth}:{}),points:draft.map(p=>[...p])};draft=[];change({type:'add-drawing',...drawing});}
 function showDialog(title,html){cursorUI?.pause();$('#dialog-title').textContent=title;$('#dialog-content').innerHTML=html;if(!$('#dialog').open)$('#dialog').showModal();}
 function showScoreInfo(){
@@ -646,11 +662,11 @@ function enemiesInViewport(ps){
     return rect.left>=bounds.left+margin&&rect.right<=bounds.right-margin&&rect.top>=bounds.top+margin&&rect.bottom<=bounds.bottom-margin;
   });
 }
-function focusEnemies(ids,{preserveZoom=false}={}){
+function focusEnemies(ids,{preserveZoom=false,fit=false,highlight=true}={}){
   const ps=ids.map(id=>positions.get(id)).filter(Boolean),first=ps.find(p=>p.mapPosition);
   if(!first){toast('No map coordinates are available for these enemies.');return;}
   renderMap();
-  if(enemiesInViewport(ps.filter(p=>p.mapPosition))){highlightEnemies(ids);return;}
+  if(!fit&&enemiesInViewport(ps.filter(p=>p.mapPosition))){if(highlight)highlightEnemies(ids);return;}
   const zoomRatio={w:view.w/baseView.w,h:view.h/baseView.h};
   const views=mapViews(dungeon),useFull=views[0].sources&&(mapLayer.sources||new Set(ps.filter(p=>p.mapPosition).map(p=>p.mapImageId)).size>1);
   const fullIndex=mapLayer.sources?views.findIndex(m=>m.id===mapLayer.id&&m.path===mapLayer.path):0;
@@ -659,7 +675,7 @@ function focusEnemies(ids,{preserveZoom=false}={}){
   const cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2;
   const w=preserveZoom?baseView.w*zoomRatio.w:Math.max(mapLayer.width*.12,Math.max(...xs)-Math.min(...xs)+mapLayer.width*.05),h=preserveZoom?baseView.h*zoomRatio.h:Math.max(mapLayer.height*.16,Math.max(...ys)-Math.min(...ys)+mapLayer.height*.05);
   view={x:cx-w/2,y:cy-h/2,w,h};renderMap();
-  highlightEnemies(ids);
+  if(highlight)highlightEnemies(ids);
 }
 function updateSaveButton(){
   let saved=store.saved.find(r=>r.id===route.id);
@@ -740,8 +756,10 @@ async function previewLogRoute(fixture,state){
     drag=null;draft=[];setTool('select',{cancel:true});
   }else{stopRoute?.();routeDocument.dispose();}
   logPreview.pendingPullID=state.complete?null:next.pulls.at(-1)?.id;
+  logPreview.movementTrail=fixture.movementTrail;logPreview.reviewState=state;
+  logPreview.movementVisible??=true;
   stopRoute?.();
-  displayRouteDocument(document,null);
+  displayRouteDocument(document,null,{preserveMap:true});
   activePull=route.pulls.at(-1)?.id;render();
   $('#storage-status').textContent='Import preview · not saved yet';
 }
@@ -763,14 +781,18 @@ async function commitLogImport(){
     }
     await routeStorage.setDraft(dungeon.id,route.id);
   }catch(error){await binding.dispose().catch(()=>{});throw error;}
-  await previous.binding?.dispose();previous.document.dispose();routeBinding=binding;logPreview=null;render();
+  await previous.binding?.dispose();previous.document.dispose();routeBinding=binding;logPreview=null;
+  logHighlights.clear();logChickenPreview.clear();chooseFloor(0);render();
 }
 function setupLogImport(){
   logImportUI=createLogImportUI({panel:$('#log-review'),showDialog,closeDialog:()=>$('#dialog').close(),
     live:createLiveImport({data,dungeonData:()=>dungeonDataMode,persist,callback:logCallback}),
     dungeonData:()=>dungeonDataMode,
     preview:previewLogRoute,commit:commitLogImport,cancel:cancelLogImport,
-    highlight:ids=>{logHighlights=new Set(ids);renderMap();},focus:ids=>{focusEnemies(ids);logHighlights=new Set(ids);renderMap();},
+    frame:ids=>{if(ids.length)focusEnemies(ids,{fit:true,highlight:false});},
+    heroes:data.heroes,movement:visible=>{if(logPreview){logPreview.movementVisible=visible;renderMap();}},
+    highlight:(ids,{excluded=[]}={})=>{logHighlights=new Set(ids);logChickenPreview=new Set(excluded);renderMap();},
+    focus:(ids,{excluded=[]}={})=>{logHighlights=new Set(ids);logChickenPreview=new Set(excluded);focusEnemies(ids);renderMap();},
     describe:ids=>[...Map.groupBy(ids,id=>{const p=positions.get(id);return p?placementName(p,enemies.get(p.id)):id;})].map(([name,members])=>`${name} ×${members.length}`).join(', '),
     onError:message=>toast('Log import: '+message)});
 }
