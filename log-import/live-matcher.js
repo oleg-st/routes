@@ -17,6 +17,7 @@ import {createGapApproach} from './gap-approach.js';
 import {mapViews,worldMapCoordinates} from '../map-views.js';
 import {encounterIdentity} from './boss-encounters.js';
 import {createNeighborApproach} from './neighbor-approach.js';
+import {deathSkipRows} from './death-skips.js';
 
 const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
 export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false,allowPartial=false,neighborRadius=0}){
@@ -59,6 +60,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   });
   const summons=new Set(classifySummons({fightID:fight.id,actors,rows:summonRows,events,bossAddRadius:config.bossAddRadius??matchingConfig.bossAddRadius}).map(r=>r.key));
   rows=rows.filter(r=>staticTypes.has(r.gameID)&&!summons.has(r.key));
+  const deathSkips=deathSkipRows(log,rows,encounters),skippedKeys=new Set(deathSkips.map(r=>r.key));
+  rows=rows.filter(r=>!skippedKeys.has(r.key));
   // A known summon can be Chickenized, but has no original map placement.
   // Only unresolved targets need manual analysis.
   const unknownChickens=chickenCasts.filter(c=>!summons.has(`${c.targetID}:${c.targetInstance??1}`)&&!rows.some(r=>r.key===`${c.targetID}:${c.targetInstance??1}`));
@@ -272,7 +275,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       return point;
     }),afterTime:(u.end.time-fight.startTime)/1000}));
   return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,...(neighborRadius?{neighborHypotheses}:{}),dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
-    duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
+    duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,deathSkips,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
     replacement:Object.fromEntries(['ghorn','witch'].map(k=>[k,{active:affixes[k].active===true}])),
     note:'Matched from the selected log using current dungeon data. Whole packs stay in their first pull; repeated attempts are omitted.'};
   }
