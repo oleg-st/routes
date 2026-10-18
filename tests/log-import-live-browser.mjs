@@ -61,6 +61,9 @@ try{
   await page.waitForFunction(()=>document.querySelector('#route-name')?.value==='Empyrean Sands · #5'&&!document.querySelector('#route-name').disabled);
   assert.equal(page.url(),origin+prefix);assert.equal(await page.locator('#dialog').evaluate(d=>d.open),false);
   assert.equal(await page.locator('#pull-count').textContent(),'1');assert.equal(requests.length,3);
+  assert.equal(await page.locator('#difficulty').inputValue(),'75');
+  assert.equal(await page.locator('#difficulty option:checked').textContent(),'E55');
+  assert.ok(await page.locator('#route-health').isVisible());assert.ok(await page.locator('#empowered').isDisabled());
   assert.equal(await page.evaluate(()=>JSON.stringify([Object.entries(localStorage),Object.entries(sessionStorage)]).includes('mock-memory-token')),false);
   await page.locator('#import-log-button').click();await page.locator('#log-fight').waitFor();
   assert.equal(await page.locator('#log-fight').inputValue(),'5');

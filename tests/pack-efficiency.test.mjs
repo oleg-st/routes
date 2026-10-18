@@ -117,16 +117,15 @@ test('Every dungeon computes finite pack ratings from game data, including activ
   const enemies=new Map(read('enemies').map(e=>[e.id,e])),presets=read('modifier-placements');
   for(const dungeon of read('dungeons').map(correctDungeon)){
     const route=newRoute(dungeon,'test');applyModifierPresets(route,dungeon,presets);
-    const baseline=dungeonPackEfficiencies(dungeon,enemies,route).totalHealth;
+    const baseline=dungeonPackEfficiencies(dungeon,enemies,route);
     for(const modified of [false,true]){
       route.shadow=modified;
       for(const [kind,mod] of Object.entries(route.modifiers))mod.active=modified&&(kind==='empowered'||!!mod.packId);
       const result=dungeonPackEfficiencies(dungeon,enemies,route);
-      assert.equal(result.totalHealth,baseline,`${dungeon.name}: stable baseline HP`);
+      assert.equal(result.totalHealth,baseline.totalHealth,`${dungeon.name}: stable baseline HP`);
       assert.ok(result.values.size>0,dungeon.name);
       assert.ok([...result.values.values()].every(Number.isFinite),dungeon.name);
-      assert.equal(result.range.min,Math.min(...result.values.values()));
-      assert.equal(result.range.max,Math.max(...result.values.values()));
+      assert.deepEqual(result.range,baseline.range,`${dungeon.name}: stable color scale`);
     }
   }
 });
@@ -149,6 +148,14 @@ test('Sands ordinary packs keep their ratings when Empowered, replacements or Ch
   const modified=calculate();
   assert.equal(modified.totalHealth,baseline.totalHealth);
   assert.equal(modified.values.get(pack),baseline.values.get(pack));
+  assert.equal(packEfficiencyColor(modified.values.get(pack),modified.range),packEfficiencyColor(baseline.values.get(pack),baseline.range));
+  for(const difficulty of [68,72,90,110]){
+    route.difficulty=difficulty;
+    const scaled=calculate();
+    near(scaled.values.get(pack),baseline.values.get(pack));
+    assert.deepEqual(scaled.range,baseline.range);
+    assert.equal(packEfficiencyColor(scaled.values.get(pack),scaled.range),packEfficiencyColor(baseline.values.get(pack),baseline.range));
+  }
   const boosted=gamePack('pack-50964c76');
   assert.equal(modified.values.get(boosted).toFixed(2),'4.32');
   assert.notEqual(modified.values.get(boosted),baseline.values.get(boosted));

@@ -1,0 +1,15 @@
+{
+  "steamBuild": "25647984",
+  "sources": [
+    {
+      "file": "private/game-data/all-dungeons/dependencies/c48ce7a48162e26b0e57a39d89df15eedd3b248e1f9e30b28cdfec758b425066.json",
+      "sha256": "998b1ae55cf8d00465318ec551cbc7e113dc26bc760181ec12d43116ea58c88c"
+    },
+    {
+      "file": "private/game-data/all-dungeons/dependencies/5a7917ce3e1c57da05cc1d5701c81e93c52bd78e545668ad998226d79976e0d1.json",
+      "sha256": "3411b001f42724357c9cddf32a679182a3f319771d627bf415b082599ef47548"
+    }
+  ],
+  "eternalOffset": 20,
+  "shadowCharacterId": "DungeonModifier_ShadowLord"
+}

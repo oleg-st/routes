@@ -4,6 +4,8 @@ import {placementAliases,correctDungeon} from './data/placement-corrections.js';
 import {routeDictionary,historicPack,replacementMembers,encodeMembers,decodeMembers} from './data/route-dictionary.js';
 import {modifierStats} from './data/game-modifier-stats.js';
 import {modifierPositions} from './data/game-modifier-positions.js';
+import {shadowBaseHealth} from './data/game-difficulty.js';
+import {applyDifficulty,checkDifficulty} from './difficulty.js';
 import {modifierAvailable,restrictRouteModifiers} from './game-scoring.js';
 import {gameKillScore,enemyHealth,orbCount,shadowTarget,shadowOrbsPerLord} from './game-scoring.js';
 export {enemyHealth,orbCount,shadowTarget} from './game-scoring.js';
@@ -62,7 +64,7 @@ export function toggleModifier(route,kind){
 export function clearRoute(route){route.pulls=[];route.drawings=[];route.excluded=[];route.shadow=false;route.modifiers=defaultModifiers();}
 export function hasRouteChanges(route,saved){
   const content=r=>JSON.stringify({
-    name:r.name,shadow:r.shadow,
+    name:r.name,shadow:r.shadow,difficulty:r.difficulty,
     modifiers:['empowered','ghorn','witch'].map(kind=>{const m=r.modifiers?.[kind];return m?.active?{active:true,enemies:m.enemies,packId:m.packId,replacedEnemies:m.replacedEnemies}:{active:false};}),
     pulls:r.pulls.map(p=>({name:p.name,customName:hasCustomPullName(p),color:p.color,enemies:p.enemies,note:p.note||''})),
     markers:(r.markers||[]).map(({mapId,position,color,icon,label})=>({mapId,position,color,icon,label})),
@@ -100,9 +102,9 @@ export function placementScore(pos,enemy,route){
   return enemyScore(enemy,!enemy?.isBoss&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId));
 }
 const replacementHealth=Object.fromEntries(Object.entries(modifierStats).map(([kind,stats])=>[kind,stats.baseHealth]));
-export function dungeonPackEfficiencies(dungeon,enemies,route,{difficulty=0}={}){
-  const totals=new Map(),values=new Map();
-  let totalHealth=0,complete=true;
+export function dungeonPackEfficiencies(dungeon,enemies,route,{difficulty=route.difficulty??0}={}){
+  const totals=new Map(),values=new Map(),baselinePacks=new Map();
+  let totalHealth=0,totalBaseHealth=0,complete=true;
   // Normalize against the original dungeon, so changing one pack never changes
   // the numeric efficiency of untouched packs. Recalculate from dataset HP.
   for(const pos of correctDungeon(dungeon).enemies){
@@ -111,6 +113,10 @@ export function dungeonPackEfficiencies(dungeon,enemies,route,{difficulty=0}={})
     if(enemy?.dungeonScore===0&&enemy.baseHealth==null)continue;
     if(!Number.isFinite(enemy?.baseHealth)||enemy.baseHealth<=0){complete=false;continue;}
     totalHealth+=enemyHealth(enemy,{difficulty});
+    totalBaseHealth+=enemy.baseHealth;
+    const pack=baselinePacks.get(pos.packId)||{score:0,health:0};
+    pack.score+=enemyScore(enemy);pack.health+=enemy.baseHealth;
+    baselinePacks.set(pos.packId,pack);
   }
   // Include every floor and every pack, independently of pulls or map filters.
   for(const pos of effectivePositions(route,dungeon)){
@@ -135,7 +141,9 @@ export function dungeonPackEfficiencies(dungeon,enemies,route,{difficulty=0}={})
       if(Number.isFinite(value))values.set(id,value);
     }
   }
-  const ratings=[...values.values()];
+  // Fix the color scale to unmodified packs. Difficulty, affixes and Chicken
+  // may change a pack's rating, but must not recolor untouched packs.
+  const ratings=values.size?[...baselinePacks.values()].map(pack=>(pack.score/dungeon.requiredScore)/(pack.health/totalBaseHealth)):[];
   const range=ratings.length?{min:Math.min(...ratings),max:Math.max(...ratings)}:null;
   return {values,range,totalHealth};
 }
@@ -181,6 +189,40 @@ export function scorePull(pull,dungeon,enemies,route){
 export function scoreRoute(route,dungeon,enemies){
   return scorePull({enemies:route.pulls.flatMap(p=>p.enemies)},dungeon,enemies,route);
 }
+export function placementHealth(pos,enemy,route,{includeExcluded=false}={}){
+  if(route.difficulty===undefined)return null;
+  if(!pos)return null;
+  if(!includeExcluded&&!enemy?.isBoss&&route.excluded.includes(pos.placementId))return 0;
+  const stats=enemy??modifierStats[pos.modifier];
+  if(stats?.baseHealth==null&&stats?.dungeonScore===0)return 0;
+  return enemyHealth(stats,{difficulty:route.difficulty??0,empowered:!pos.modifier&&!stats?.isBoss&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId)});
+}
+export function positionsHealth(members,enemies,route){
+  if(route.difficulty===undefined)return null;
+  let health=0;const seen=new Set();
+  for(const pos of members){
+    if(!pos)return null;
+    // Separate map markers for one multi-phase actor represent one health pool.
+    const key=pos.gameGuid??pos.placementId;if(seen.has(key))continue;seen.add(key);
+    const value=placementHealth(pos,enemies.get(pos.id),route);if(value==null)return null;health+=value;
+  }
+  return health;
+}
+export const shadowHealth=route=>route.difficulty===undefined?null:enemyHealth({baseHealth:shadowBaseHealth},{difficulty:route.difficulty});
+export function routeHealth(route,dungeon,enemies){
+  if(route.difficulty===undefined)return {pulls:route.pulls.map(()=>({mobs:null,shadow:null,total:null})),mobs:null,shadow:null,total:null,dps:null};
+  const positions=new Map(effectivePositions(route,dungeon).map(p=>[p.placementId,p]));
+  const inactive=new Set([...replacedIds(route,dungeon),...['ghorn','witch'].filter(k=>!route.modifiers?.[k]?.active).map(modifierId)]);
+  const timeline=route.shadow?shadowTimeline(route,dungeon,enemies):[];
+  const members=ids=>[...new Set(ids)].filter(id=>!inactive.has(id)).map(id=>positions.get(id));
+  const pulls=route.pulls.map((pull,i)=>{
+    const mobs=positionsHealth(members(pull.enemies),enemies,route),shadow=(timeline[i]?.spawns??0)*shadowHealth(route);
+    return {mobs,shadow,total:mobs==null?null:mobs+shadow};
+  });
+  const mobs=positionsHealth(members(route.pulls.flatMap(p=>p.enemies)),enemies,route),shadow=pulls.reduce((sum,p)=>sum+p.shadow,0);
+  const total=mobs==null?null:mobs+shadow;
+  return {pulls,mobs,shadow,total,dps:total!=null&&dungeon.timerSeconds>0?total/dungeon.timerSeconds:null};
+}
 export function assignEnemies(route,pullId,ids,{toggle=true}={}){
   const pull=route.pulls.find(p=>p.id===pullId);if(!pull)return;
   const chosen=new Set(ids), remove=toggle&&ids.length>0&&ids.every(id=>pull.enemies.includes(id));
@@ -191,6 +233,7 @@ export function validateRoute(value,dungeons,enemies){
   if(!value||![1,2,3].includes(value.version))throw new Error('Unsupported format. Use a route JSON file from this planner (version 1, 2 or 3).');
   const dungeon=dungeons.find(d=>d.id===value.dungeonId);
   if(!dungeon)throw new Error('This dungeon is not available in the current dataset.');
+  if(value.difficulty!==undefined)checkDifficulty(dungeon.id,value.difficulty);
   if(!Array.isArray(value.pulls)||value.pulls.length>(value.version===3?10000:500))throw new Error('Invalid pull list.');
   const aliases=placementAliases[dungeon.id]||{},canonical=id=>aliases[id]||id;
   // Keep retired references round-trippable. They remain unknown in scoring,
@@ -260,7 +303,7 @@ export function validateRoute(value,dungeons,enemies){
   if(value.excluded!==undefined&&(!Array.isArray(value.excluded)||!value.excluded.every(id=>known.has(canonical(id)))))throw new Error('Invalid excluded enemies.');
   const bossIds=new Set(dungeon.enemies.filter(p=>enemies?.get(p.id)?.isBoss).map(p=>p.placementId));
   for(const kind of ['ghorn','witch'])if(enemies?.get(modifierId(kind))?.isBoss)bossIds.add(modifierId(kind));
-  return restrictRouteModifiers({version:2,id:text(value.id)||uid(),buildId:text(value.buildId),dungeonId:dungeon.id,name:englishDefaultLabel(text(value.name))||'Imported route',shadow:value.shadow===true,modifiers,pulls,drawings,...(markers.length?{markers}:{}),excluded:[...new Set((value.excluded||[]).map(canonical))].filter(id=>!bossIds.has(id))});
+  return applyDifficulty(restrictRouteModifiers({version:2,id:text(value.id)||uid(),buildId:text(value.buildId),dungeonId:dungeon.id,...(value.difficulty===undefined?{}:{difficulty:value.difficulty}),name:englishDefaultLabel(text(value.name))||'Imported route',shadow:value.shadow===true,modifiers,pulls,drawings,...(markers.length?{markers}:{}),excluded:[...new Set((value.excluded||[]).map(canonical))].filter(id=>!bossIds.has(id))}));
 }
 
 
@@ -314,7 +357,7 @@ function flag(value){if(value!=null&&value!==1)throw invalid();return value===1;
 
 export async function encodeRoute(route,dungeon){
   route=structuredClone(route);
-  const extended=Boolean(route.markers?.length||route.pulls.length>500||route.drawings.length>500||route.pulls.some(p=>p.note?.length>4000)||route.drawings.some(d=>d.icon||d.kind==='line'&&d.points.length>2||d.text?.length>500));
+  const extended=Boolean(route.difficulty!==undefined||route.markers?.length||route.pulls.length>500||route.drawings.length>500||route.pulls.some(p=>p.note?.length>4000)||route.drawings.some(d=>d.icon||d.kind==='line'&&d.points.length>2||d.text?.length>500));
   if(extended)validateRoute({...route,version:3},[dungeon]); // Reject oversized content; never silently truncate a CRDT view.
   const permanent=routeDictionary(dungeon.id);
   const {placements,packs,fingerprint}=await dictionary(dungeon);
@@ -347,13 +390,14 @@ export async function encodeRoute(route,dungeon){
     optionalList(drawings),optionalList(ids(route.excluded)),optionalList(trim(modifiers)),route.shadow?1:null,
   ]);
   if(extended){while(payload.length<9)payload.push(null);payload.push((route.markers||[]).map(m=>[m.mapId,m.position,colorCode(m.color),m.icon,m.label]));}
+  if(route.difficulty!==undefined)payload.push(route.difficulty);
   const bytes=new TextEncoder().encode(JSON.stringify(payload));
   if(bytes.length>LIMIT)throw tooLarge();
   return (permanent?'R3.':extended?'R2.':PREFIX)+base64url(await transform(bytes,CompressionStream));
 }
 
 async function expandRoute(payload,dungeons,extended=false,mapped=false){
-  const [id,buildId,fingerprint,name,pulls,drawings,excluded,mods,shadow,markers]=tuple(payload,extended?10:9);
+  const [id,buildId,fingerprint,name,pulls,drawings,excluded,mods,shadow,markers,difficulty]=tuple(payload,extended?11:9);
   const dungeon=dungeons.find(d=>d.id===`Level.ID.${id}`);
   if(!dungeon)throw new Error('This dungeon is not available in the current dataset.');
   let {placements,packs,fingerprint:expected}=await dictionary(dungeon);
@@ -375,7 +419,7 @@ async function expandRoute(payload,dungeons,extended=false,mapped=false){
     }
   });
   return {
-    version:extended?3:2,dungeonId:dungeon.id,buildId,name,shadow:flag(shadow),modifiers,excluded:ids(excluded),
+    version:extended?3:2,dungeonId:dungeon.id,buildId,name,shadow:flag(shadow),modifiers,excluded:ids(excluded),...(difficulty===undefined?{}:{difficulty}),
     pulls:pulls.map((row,i)=>{
       const [enemies,name,color,note,customName]=tuple(row,5);
       if(!Array.isArray(enemies))throw invalid();

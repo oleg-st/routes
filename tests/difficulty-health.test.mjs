@@ -1,0 +1,95 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {difficultyOptions,applyDifficulty,defaultDifficulty,formatHealth} from '../difficulty.js';
+import {newRoute,applyModifierPresets,encodeRoute,decodeRoute,routeHealth,shadowHealth,positionsHealth,enemyHealth,dungeonPackEfficiencies,hasRouteChanges} from '../route-model.js';
+import {createRouteDocument,restoreRouteDocument} from '../collaboration/route-document.js';
+import {correctDungeon} from '../data/placement-corrections.js';
+const dungeons=JSON.parse(fs.readFileSync('data/dungeons.json')).map(correctDungeon);
+const enemies=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
+const presets=JSON.parse(fs.readFileSync('data/modifier-placements.json'));
+function fixture(id='Level.ID.IceCave',match=()=>true){
+ const dungeon=dungeons.find(d=>d.id===id),route=newRoute(dungeon,'test');
+ route.difficulty=difficultyOptions(id).find(match).value;applyDifficulty(route);applyModifierPresets(route,dungeon,presets);
+ return {dungeon,route};
+}
+test('Each dungeon offers only its game difficulties, at most E90; Pinnacle has three named tiers',()=>{
+ for(const d of dungeons){const options=difficultyOptions(d.id);assert.ok(options.length);assert.equal(new Set(options.map(o=>o.value)).size,options.length);assert.ok(options.every(o=>o.value>20&&o.value<=110));}
+ assert.deepEqual(difficultyOptions('Level.ID.IceCave').slice(0,3).map(c=>c.label),['E2','E6','E9']);
+ assert.deepEqual(difficultyOptions('Level.ID.SandTomb').map(c=>c.label),['Normal','Hard','Nightmare']);
+});
+test('Difficulty synchronizes, restores, undoes, and locks manual affix commands',()=>{
+ const {route,dungeon}=fixture(),a=createRouteDocument(route,{dungeon,enemies});
+ const b=restoreRouteDocument(a.exportSnapshot(),{dungeon,enemies,role:'player'});
+ const selected=difficultyOptions(dungeon.id).find(c=>c.modifiers.includes('empowered'));
+ a.execute({type:'set-difficulty',value:selected.value});b.import(a.exportSnapshot());
+ assert.equal(b.snapshot().difficulty,selected.value);assert.equal(b.snapshot().modifiers.empowered.active,true);
+ assert.throws(()=>a.execute({type:'set-modifier',kind:'empowered',patch:{active:false}}),/determined by difficulty/);
+ assert.throws(()=>a.execute({type:'set-meta',patch:{shadow:true}}),/determined by difficulty/);
+ assert.throws(()=>a.execute({type:'set-difficulty',value:21}),/unavailable/);
+ a.undo();assert.equal(a.snapshot().difficulty,route.difficulty);a.redo();assert.equal(a.snapshot().difficulty,selected.value);
+ a.execute({type:'clear-route'});assert.equal(a.snapshot().difficulty,selected.value);assert.deepEqual(a.snapshot().modifiers.empowered.enemies,route.modifiers.empowered.enemies.sort());
+ a.dispose();b.dispose();
+});
+test('Compact route round trip retains difficulty and dirty state sees difficulty changes',async()=>{
+ const {route,dungeon}=fixture();assert.equal(hasRouteChanges(route),true);
+ const restored=await decodeRoute(await encodeRoute(route,dungeon),dungeons,enemies);
+ assert.equal(restored.difficulty,route.difficulty);assert.deepEqual(restored.modifiers,route.modifiers);
+ const saved=structuredClone(route);route.difficulty=difficultyOptions(dungeon.id)[1].value;applyDifficulty(route);
+ assert.equal(hasRouteChanges(route,saved),true);
+});
+test('Changing replacement difficulty preserves the selected pack and can be undone',()=>{
+ const {route,dungeon}=fixture('Level.ID.IceCave',c=>c.modifiers.includes('ghorn'));
+ route.pulls[0].enemies=['modifier:ghorn'];
+ const doc=createRouteDocument(route,{dungeon,enemies});
+ doc.execute({type:'set-difficulty',value:difficultyOptions(dungeon.id).find(c=>!c.modifiers.includes('ghorn')).value});
+ assert.ok(route.modifiers.ghorn.replacedEnemies.every(id=>doc.snapshot().pulls[0].enemies.includes(id)));
+ assert.equal(doc.snapshot().modifiers.ghorn.active,false);
+ doc.undo();assert.deepEqual(doc.snapshot().pulls[0].enemies,['modifier:ghorn']);assert.equal(doc.snapshot().modifiers.ghorn.active,true);
+ doc.dispose();
+});
+test('Route HP counts selected bosses and replacements, excludes Chicken and replaced actors, deduplicates',()=>{
+ const {route,dungeon}=fixture('Level.ID.IceCave',c=>c.modifiers.includes('ghorn'));
+ const boss=dungeon.enemies.find(p=>enemies.get(p.id)?.isBoss),mob=dungeon.enemies.find(p=>!enemies.get(p.id)?.isBoss&&!route.modifiers.ghorn.replacedEnemies.includes(p.placementId));
+ route.pulls[0].enemies=[boss.placementId,boss.placementId,mob.placementId,...route.modifiers.ghorn.replacedEnemies,'modifier:ghorn'];
+ route.excluded=[mob.placementId];
+ const result=routeHealth(route,dungeon,enemies);
+ const expected=enemyHealth(enemies.get(boss.id),{difficulty:route.difficulty})+enemyHealth({baseHealth:25102.40974},{difficulty:route.difficulty});
+ assert.equal(result.total,expected);assert.equal(result.dps,expected/dungeon.timerSeconds);
+ route.pulls[0].enemies.push('unknown');assert.equal(routeHealth(route,dungeon,enemies).total,null);
+});
+test('Shadow spawn HP is attached to the spawning pull and included once in route totals',()=>{
+ const {route,dungeon}=fixture('Level.ID.IceCave',c=>c.modifiers.includes('shadow'));
+ route.pulls[0].enemies=dungeon.enemies.map(p=>p.placementId);
+ const result=routeHealth(route,dungeon,enemies);
+ assert.equal(result.shadow,2*shadowHealth(route));assert.equal(result.pulls[0].shadow,result.shadow);
+ assert.equal(result.total,result.mobs+result.shadow);
+});
+test('Efficiency and grouped HP use selected difficulty and the empowered cap',()=>{
+ const dungeon={id:'test',requiredScore:10,enemies:[{id:'a',placementId:'a',packId:'a'}]},catalog=new Map([['a',{baseHealth:100,dungeonScore:1}]]),route=newRoute(dungeon,'test');
+ route.difficulty=75;route.modifiers.empowered={active:true,enemies:['a']};
+ const hp=positionsHealth(dungeon.enemies,catalog,route);
+ assert.equal(hp,enemyHealth(catalog.get('a'),{difficulty:75,empowered:true}));
+ assert.ok(hp<2*enemyHealth(catalog.get('a'),{difficulty:75}));
+ assert.deepEqual(dungeonPackEfficiencies(dungeon,catalog,route),dungeonPackEfficiencies(dungeon,catalog,route,{difficulty:75}));
+ assert.equal(positionsHealth([...dungeon.enemies,...dungeon.enemies],catalog,route),hp);
+});
+test('Health formatting uses readable suffixes and does not turn unknown values into zero',()=>{
+ assert.equal(formatHealth(744440),'744.44k');assert.equal(formatHealth(1350000),'1.35m');assert.equal(formatHealth(null),'—');assert.equal(formatHealth(0),'0');assert.equal(formatHealth(999999),'1.00m');
+});
+test('Unselected difficulty preserves manual affixes, skips HP and survives export and undo',async()=>{
+ const {route,dungeon}=fixture('Level.ID.IceCave',c=>c.modifiers.includes('empowered'));
+ const doc=createRouteDocument(route,{dungeon,enemies});
+ doc.execute({type:'set-difficulty',value:null});
+ const manual=doc.snapshot();assert.equal(manual.difficulty,undefined);assert.equal(manual.modifiers.empowered.active,true);
+ doc.execute({type:'set-modifier',kind:'empowered',patch:{active:false}});assert.equal(doc.snapshot().modifiers.empowered.active,false);
+ const noCatalogue={get(){throw Error('Must not read health without difficulty');}};
+ assert.equal(positionsHealth(dungeon.enemies,noCatalogue,manual),null);
+ assert.deepEqual(routeHealth(manual,dungeon,noCatalogue),{pulls:[{mobs:null,shadow:null,total:null}],mobs:null,shadow:null,total:null,dps:null});
+ assert.equal(shadowHealth(manual),null);
+ const restored=await decodeRoute(await encodeRoute(manual,dungeon),dungeons,enemies);assert.equal(restored.difficulty,undefined);assert.equal(restored.modifiers.empowered.active,true);
+ doc.undo();doc.undo();assert.equal(doc.snapshot().difficulty,route.difficulty);
+ doc.redo();assert.equal(doc.snapshot().difficulty,undefined);
+ doc.dispose();
+ const fresh=newRoute(dungeon,'test');assert.equal(fresh.difficulty,undefined);assert.equal(hasRouteChanges(fresh),false);
+});

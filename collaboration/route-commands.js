@@ -1,9 +1,11 @@
 import {pullColor} from '../route-model.js';
+import {difficultyChoice} from '../difficulty.js';
 import {assertPlayer, invariant, record, string, id, boolean, color, position, ids, uuid,
   rows, order, deleted, visibleIds, existing, newId, targetIndex, insertOrdered, moveOrdered,
   pointIds, writePoint, writeMembership, MODIFIERS, isDeleted, markDeleted} from './route-schema.js';
 
 const commandFields = {
+  'set-difficulty':['value'],
   'add-pull': ['id', 'name', 'color', 'note', 'beforeId', 'afterId'],
   'update-pull': ['pullId', 'patch'], 'delete-pull': ['pullId'],
   'move-pull': ['pullId', 'beforeId', 'afterId'], 'assign-mobs': ['pullId', 'mobIds', 'toggle'],
@@ -46,8 +48,40 @@ function prepare(doc, c, context) {
   record(c, ['type', ...fields]);
   const meta = doc.getMap('meta');
   switch (c.type) {
+    case 'set-difficulty': {
+      if(c.value===null){
+        const previous=difficultyChoice(context.dungeonId,meta.get('difficulty'));
+        return ()=>{
+          // Keep the currently displayed affixes when returning to manual mode.
+          if(previous){
+            meta.set('shadow',previous.modifiers.includes('shadow'));
+            for(const kind of MODIFIERS)doc.getMap('modifiers').ensureMergeableMap(kind).set('active',previous.modifiers.includes(kind));
+          }
+          meta.delete('difficulty');
+        };
+      }
+      context.difficulty(c.value);
+      const choice=difficultyChoice(context.dungeonId,c.value);
+      return ()=>{
+        meta.set('difficulty',c.value);
+        const assignments=doc.getMap('assignments'),pulls=visibleIds(doc,'pulls');
+        for(const kind of ['ghorn','witch']){
+          const targets=doc.getMap('modifiers').get(kind)?.get('replacement')?.replacedEnemies??[];
+          const assigned=assignments.get(`modifier:${kind}`);
+          if(!choice.modifiers.includes(kind)){
+            if(pulls.includes(assigned))for(const mob of targets)if(!pulls.includes(assignments.get(mob)))assignments.set(mob,assigned);
+            if(assigned!=null)assignments.set(`modifier:${kind}`,null);
+            continue;
+          }
+          if(pulls.includes(assigned))continue;
+          const pull=pulls.find(key=>targets.some(mob=>assignments.get(mob)===key));
+          if(pull)assignments.set(`modifier:${kind}`,pull);
+        }
+      };
+    }
     case 'set-meta': {
       const patch = record(c.patch, ['name', 'shadow']);
+      if('shadow' in patch)invariant(meta.get('difficulty')===undefined,'Affixes are determined by difficulty.');
       if ('name' in patch) invariant(string(patch.name).trim().length > 0, 'Route name cannot be empty.');
       if ('shadow' in patch) boolean(patch.shadow);
       if (patch.shadow === true) context.modifier('shadow');
@@ -110,6 +144,7 @@ function prepare(doc, c, context) {
       return () => doc.getMap('excluded').set(c.mobId, c.excluded);
     }
     case 'set-modifier': {
+      invariant(meta.get('difficulty')===undefined,'Affixes are determined by difficulty.');
       invariant(MODIFIERS.includes(c.kind), 'Invalid modifier.');
       const empowered = c.kind === 'empowered';
       const patch = record(c.patch, empowered ? ['active', 'enemies'] : ['active', 'packId', 'replacedEnemies']);
@@ -245,7 +280,7 @@ function prepare(doc, c, context) {
       for (const key of doc.getMap('colors').keys()) doc.getMap('colors').delete(key);
       for (const key of doc.getMap('assignments').keys()) doc.getMap('assignments').set(key, null);
       writeMembership(doc.getMap('excluded'), []); meta.set('shadow', false);
-      for (const kind of MODIFIERS) {
+      for (const kind of meta.get('difficulty')===undefined?MODIFIERS:[]) {
         const row = doc.getMap('modifiers').ensureMergeableMap(kind); row.set('active', false);
         if (kind === 'empowered') writeMembership(row.ensureMergeableMap('enemies'), []);
         else row.set('replacement', {packId: null});

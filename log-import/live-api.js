@@ -12,7 +12,7 @@ export const fightsQuery=`query RouteImportFights($code:String!){reportData{repo
   fights(translate:false){id name startTime endTime difficultyLevel completionTime kill inProgress}
 }}}`;
 export const metadataQuery=`query RouteImportMetadata($code:String!,$fights:[Int]!){reportData{report(code:$code){
-  fights(fightIDs:$fights,translate:false){id name startTime endTime inProgress modifiers friendlyPlayers
+  fights(fightIDs:$fights,translate:false){id name startTime endTime difficultyLevel inProgress modifiers friendlyPlayers
     dungeonPulls{id startTime endTime encounterID}}
   masterData(translate:false){actors{id gameID type subType petOwner}}
 }}}`;
@@ -54,7 +54,7 @@ export async function loadReportFights(url,options){
   if(!fights.length)throw new Error('This report has no fights available to import.');
   return {...selection,fights,selectedFightID:selection.fightID==='last'?fights[0].id:selection.fightID??fights[0].id};
 }
-export async function loadLog(url,{token,signal,onProgress=()=>{},fetcher=fetch,validateFight=()=>{}}){
+export async function loadLog(url,{token,signal,onProgress=()=>{},fetcher=fetch,validateFight=()=>{},fightSummary}){
   const selection=parseReportURL(url);
   if(selection.fightID==='last')selection.fightID=(await loadReportFights(url,{token,signal,fetcher})).selectedFightID;
   const variables={code:selection.reportCode,fights:[selection.fightID]};
@@ -62,6 +62,7 @@ export async function loadLog(url,{token,signal,onProgress=()=>{},fetcher=fetch,
   onProgress('Reading the selected run…');
   const report=await query(metadataQuery,variables),fight=report.fights?.find(f=>f.id===selection.fightID);
   if(!fight||!Number.isFinite(fight.startTime)||!Number.isFinite(fight.endTime)||fight.endTime<=fight.startTime)throw new Error('The selected fight is not a supported dungeon run.');
+  if(fight.difficultyLevel==null&&fightSummary?.id===fight.id&&Number.isInteger(fightSummary.difficultyLevel))fight.difficultyLevel=fightSummary.difficultyLevel;
   if(fight.inProgress)throw new Error('This run is still in progress. Import it after the log is complete.');
   if(!fight.dungeonPulls?.length||!Array.isArray(report.masterData?.actors))throw new Error('The log is missing dungeon pulls or actor identities.');
   validateFight(fight);

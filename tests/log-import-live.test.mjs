@@ -62,6 +62,18 @@ test('Live loader rejects partial/invalid pagination, API errors, missing actors
   const controller=new AbortController();controller.abort();let requested=false;
   await assert.rejects(loadLog(url,{signal:controller.signal,fetcher:async()=>{requested=true;}}));assert.equal(requested,false);
 });
+test('Log difficulty comes from exact fight metadata or its selected summary, never another fight',async()=>{
+ for(const [recorded,summary,expected] of [[75,76,75],[undefined,75,75],[undefined,undefined,undefined]]){
+  const result=await loadLog(url,{token:'x',fightSummary:{id:5,difficultyLevel:summary},fetcher:async(_,options)=>{
+   const body=JSON.parse(options.body);
+   if(body.query.includes('RouteImportMetadata')){assert.match(body.query,/difficultyLevel/);return response({...metadata(),fights:[{...fight,difficultyLevel:recorded}]});}
+   return response({events:{data:[event],nextPageTimestamp:null}});
+  }});
+  assert.equal(result.fight.difficultyLevel,expected);
+ }
+ const result=await loadLog(url,{token:'x',fightSummary:{id:6,difficultyLevel:75},fetcher:async(_,options)=>response(JSON.parse(options.body).query.includes('RouteImportMetadata')?metadata():{events:{data:[event],nextPageTimestamp:null}})});
+ assert.equal(result.fight.difficultyLevel,undefined);
+});
 test('Fight listing loads only summary fields, sorts newest first and defaults to the last run',async()=>{
   let calls=0;
   const fetcher=async(_,options)=>{
@@ -106,8 +118,9 @@ test('Live matching imports a uniquely identified boss once across repeated atte
   const dungeon=correctDungeon(read('data/dungeons.json').find(d=>d.name==='Empyrean Sands'),'custom');
   const boss=dungeon.enemies.find(p=>catalog.get(p.id).isBoss),npc={id:2,type:'NPC',subType:'Boss',gameID:catalog.get(boss.id).gameId};
   const bossEvent={...event,targetResources:{x:boss.worldPosition.y,y:boss.worldPosition.x,hitPoints:10,maxHitPoints:100}};
-  const result=await matchLiveLog({complete:true,reportCode:'c4nFLaThdAxtVpYv',fight:{...fight,name:dungeon.name,dungeonPulls:[{id:1,startTime:100,endTime:140},{id:2,startTime:150,endTime:200}]},actors:[actors[0],npc],events:[bossEvent,{...bossEvent,timestamp:180}]},
+  const result=await matchLiveLog({complete:true,reportCode:'c4nFLaThdAxtVpYv',fight:{...fight,difficultyLevel:75,name:dungeon.name,dungeonPulls:[{id:1,startTime:100,endTime:140},{id:2,startTime:150,endTime:200}]},actors:[actors[0],npc],events:[bossEvent,{...bossEvent,timestamp:180}]},
     {dungeon,catalog,presets:{},dungeonData:'custom'});
+  assert.equal(result.difficulty,75);
   assert.equal(result.variants.length,1);assert.equal(result.variants[0].pulls.length,1);
   assert.deepEqual(Object.values(result.groups).flatMap(g=>g.enemies),[boss.placementId]);
   assert.equal(createReviewSession(result).state().complete,true);

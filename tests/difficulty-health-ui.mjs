@@ -1,0 +1,68 @@
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {pathToFileURL} from 'node:url';
+import {chromium} from 'playwright';
+import {difficultyOptions} from '../difficulty.js';
+const server=spawn(process.execPath,['scripts/server.mjs'],{env:{...process.env,PORT:'0'},stdio:['ignore','pipe','pipe']});
+let browser;
+try{
+ const origin=await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{const m=String(d).match(/http:\/\/127\.0\.0\.1:\d+/);if(m)resolve(m[0]);});server.on('error',reject);});
+ browser=await chromium.launch({channel:'msedge',headless:true});
+ for(const url of [origin,pathToFileURL(process.cwd()+'/local.html').href]){
+  const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url);await page.locator('#map-loading').waitFor({state:'hidden'});
+  assert.equal(await page.locator('#difficulty').inputValue(),'');assert.ok(await page.locator('#route-health').isHidden());assert.ok(await page.locator('#show-hp').isDisabled());
+  await page.locator('#dungeon').selectOption('Level.ID.IceCave');await page.waitForFunction(()=>document.querySelector('#difficulty option:nth-child(2)')?.textContent==='E2');
+  assert.ok(await page.locator('#empowered').isEnabled());await page.locator('#empowered').click();assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'true');
+  await page.locator('#clear-route').click();assert.ok(await page.locator('#empowered').isEnabled());assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'false');
+  const options=difficultyOptions('Level.ID.IceCave'),choice=options.find(c=>c.modifiers.includes('empowered')&&c.value>62);
+  await page.locator('#difficulty').selectOption(String(choice.value));
+  for(const kind of ['empowered','ghorn','witch','shadow']){assert.ok(await page.locator('#'+kind).isDisabled());assert.equal(await page.locator('#'+kind).getAttribute('aria-pressed'),String(choice.modifiers.includes(kind)));}
+  await page.locator('[data-placement]').first().dispatchEvent('click');
+  assert.equal(await page.locator('#route-health .health-heart').count(),0);
+  assert.notEqual(await page.locator('#route-health').innerText(),'Total HP 0\nDPS 0');
+  assert.equal(await page.locator('#pack-health text').count(),0);
+  assert.ok(await page.locator('.pull-mob-count .health-value').count()>0);
+  await page.locator('[data-placement]').first().dispatchEvent('pointermove',{clientX:500,clientY:400});
+  assert.equal(await page.locator('#tooltip .tip-score .health-value').count(),1);
+  assert.equal(await page.locator('#tooltip .tip-pack-heading .health-value').count(),1);
+  assert.equal(await page.locator('#tooltip li .health-value').count(),0);
+  await page.locator('.pull-card').first().hover();await page.locator('#pull-tooltip').waitFor({state:'visible'});assert.ok(await page.locator('#pull-tooltip .health-value').count()>0);
+  await page.locator('#layers').click();await page.locator('#show-hp').check();await page.locator('#layers').click();
+  assert.ok(await page.locator('#pack-health text').count()>0);assert.ok(await page.locator('.pull-mob-count .health-value').count()>0);
+  await page.locator('#layers').click();await page.locator('#show-hp').uncheck();await page.locator('#layers').click();
+  assert.equal(await page.locator('#pack-health text').count(),0);assert.ok(await page.locator('.pull-mob-count .health-value').count()>0);
+  await page.locator('.pull-card').first().hover();await page.locator('#pull-tooltip').waitFor({state:'visible'});assert.ok(await page.locator('#pull-tooltip .health-value').count()>0);
+  await page.mouse.move(0,0);await page.locator('[data-placement]').first().press('Shift+F10');await page.getByRole('menuitem',{name:'Info',exact:true}).click();
+  assert.match(await page.locator('#inspector').innerText(),/Health/);assert.doesNotMatch(await page.locator('#inspector').innerText(),/Base health/);
+  assert.equal(await page.locator('#inspector .health-heart').count(),0);
+  await page.locator('#layers').click();await page.locator('#show-hp').check();await page.locator('#layers').click();
+  await page.locator('#difficulty').selectOption('');assert.ok(await page.locator('#route-health').isHidden());assert.ok(await page.locator('#show-hp').isDisabled());
+  assert.equal(await page.locator('#pack-health text').count(),0);assert.equal(await page.locator('#inspector .health-value').count(),0);
+  assert.ok(await page.locator('#empowered').isEnabled());assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'true');
+  await page.locator('#empowered').click();assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'false');
+  await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#difficulty').inputValue(),'');assert.ok(await page.locator('#route-health').isHidden());
+  await page.locator('#difficulty').selectOption(String(choice.value));
+  await page.locator('#dungeon').selectOption('Level.ID.MythicForest');await page.waitForFunction(()=>document.querySelector('#difficulty option:nth-child(2)')?.textContent==='E1');
+  await page.locator('#difficulty').selectOption('31');
+  await page.locator('#dungeon').selectOption('Level.ID.IceCave');await page.waitForFunction(value=>document.querySelector('#difficulty').value===value,String(choice.value));
+  await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#difficulty').inputValue(),String(choice.value));assert.ok(await page.locator('#show-hp').isChecked());
+  await page.locator('#dungeon').selectOption('Level.ID.DesertDunes');
+  await page.locator('#difficulty').selectOption({label:'E48'});
+  await page.locator('#layers').click();await page.locator('#show-pack-efficiency').check();await page.locator('#layers').click();
+  const ratings=()=>page.locator('[data-pack-efficiency]').evaluateAll(nodes=>Object.fromEntries(nodes.map(n=>[n.dataset.packEfficiency,{label:n.querySelector('text').textContent,color:n.querySelector('rect').getAttribute('fill')}])));
+  const before=await ratings();
+  await page.locator('#difficulty').selectOption({label:'E52'});
+  const after=await ratings();let compared=0;
+  for(const [id,rating] of Object.entries(before))if(after[id]?.label===rating.label){assert.equal(after[id].color,rating.color);compared++;}
+  assert.ok(compared>10,'ordinary packs retain their colors between E48 and E52');
+  await page.locator('#dungeon').selectOption('Level.ID.SandTomb');await page.waitForFunction(()=>document.querySelector('#difficulty option:nth-child(2)')?.textContent==='Normal');
+  assert.deepEqual(await page.locator('#difficulty option').allTextContents(),['Not selected','Normal','Hard','Nightmare']);
+  await page.locator('#difficulty').selectOption({label:'Nightmare'});
+  await page.locator('[data-placement]').first().dispatchEvent('click');
+  await page.screenshot({path:'tmp/difficulty-health-desktop.png'});
+  await page.setViewportSize({width:390,height:900});await page.screenshot({path:'tmp/difficulty-health-mobile.png'});
+  assert.ok(await page.locator('#difficulty').isVisible());assert.deepEqual(errors,[]);await context.close();
+ }
+ console.log('Difficulty and HP browser checks passed in server and local modes.');
+}finally{await browser?.close();server.kill();}

@@ -11,6 +11,8 @@ import {modifierStats} from './data/game-modifier-stats.js';
 import {replacementMembers} from './data/route-dictionary.js';
 import {gameServiceRules} from './data/game-service-rules.js';
 import {modifierAvailable} from './game-scoring.js';
+import {difficultyOptions,difficultyChoice,applyDifficulty,formatHealth} from './difficulty.js';
+import {placementHealth,positionsHealth,routeHealth,shadowHealth} from './route-model.js';
 import {markerAnchor} from './data/marker-anchors.js';
 import {fullMapBuildId} from './data/full-maps.js';
 import {combinedBuildId} from './data/combined-layouts.js';
@@ -31,6 +33,9 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
 const pct=n=>n==null?'—':n.toFixed(2)+'%';
+const hp=(value,heart=true)=>`<span class="health-value" title="${value==null?'Health unavailable':fmt(Math.round(value))+' HP'}">${heart?'<span class="health-heart" aria-hidden="true">♥</span> ':''}${formatHealth(value)}</span>`;
+const showHealth=()=>route.difficulty!==undefined;
+const showMapHealth=()=>showHealth()&&$('#show-hp').checked;
 const NS='http://www.w3.org/2000/svg';
 const relicColors={portal:'#70d9ff',invis:'#bb86fc'};
 const empoweredIcon='images/modifiers/empowered-minions.avif';
@@ -250,10 +255,16 @@ function render(){
     const button=$('#'+kind),available=modifierAvailable(dungeon.id,kind);
     const placed=kind==='shadow'||(kind==='empowered'?(route.modifiers.empowered.enemies.length||data['modifier-placements'].dungeons[dungeon.id]?.empowered?.length):route.modifiers[kind].packId);
     button.setAttribute('aria-pressed',String(kind==='shadow'?route.shadow:route.modifiers[kind].active));
-    button.disabled=!canEdit()||!available||!placed;
+    button.disabled=route.difficulty!==undefined||!canEdit()||!available||!placed;
     const detail=!available?'Unavailable in this dungeon':!canEdit()?'Read-only route':!placed?'No recorded placements in this dungeon':kind==='shadow'?'Show estimated Shadow Orbs':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'}`;
-    button.title=button.getAttribute('aria-label')+' · '+detail;
+    button.title=button.getAttribute('aria-label')+' · '+(route.difficulty===undefined?detail:'Determined by '+difficultyChoice(dungeon.id,route.difficulty)?.label);
   }
+  const health=route.difficulty===undefined?null:routeHealth(route,dungeon,enemies),choices=difficultyOptions(dungeon.id);
+  $('#difficulty').innerHTML='<option value="">Not selected</option>'+choices.map(c=>'<option value="'+c.value+'">'+c.label+'</option>').join('');
+  $('#difficulty').value=route.difficulty??'';$('#difficulty').disabled=!canEdit();
+  $('#show-hp').disabled=!showHealth();$('#show-hp').parentElement.title=showHealth()?'Show HP on the map':'Select a difficulty to show HP on the map';
+  $('#route-health').hidden=!health;
+  $('#route-health').innerHTML=health?'<div>Total HP '+hp(health.total,false)+'</div><div title="Total route HP divided by the full dungeon timer; combined group DPS, without travel time.">DPS <strong>'+formatHealth(health.dps)+'</strong></div>':'';
   $('#pull-count').textContent=route.pulls.length;$('#undo').disabled=!canEdit()||!routeDocument.canUndo();$('#redo').disabled=!canEdit()||!routeDocument.canRedo();
   for(const el of $$('#dungeon,#library,#together,#export,#share,#delete-route'))el.disabled=!!logPreview;
   for(const el of $$('#route-name,#add-pull,#clear-route,#new-route,#import,[data-tool]'))el.disabled=!canEdit()&&el.dataset.tool!=='select';
@@ -264,7 +275,7 @@ function render(){
     const score=scorePull(p,dungeon,enemies,route);
     const members=p.enemies.map(id=>positions.get(id)).filter(Boolean);
     const pending=logPreview?.pendingPullID===p.id;
-    return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}</div>${pending?'<div class="pull-import-status" title="Choose a pack above to finish this pull.">Pending import</div>':''}${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary':''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button><button data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>`:''}</article>`;
+    return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}${showHealth()?' · '+hp(health.pulls[i].mobs):''}</div>${pending?'<div class="pull-import-status" title="Choose a pack above to finish this pull.">Pending import</div>':''}${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary'+(timeline[i].spawns>1?' ×'+timeline[i].spawns:'')+(showHealth()?' '+hp(health.pulls[i].shadow):''):''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button><button data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>`:''}</article>`;
   }).join('');
   if(!canEdit())for(const button of $$('#pulls [data-action]:not([data-action=focus])'))button.disabled=true;
   updateRoomControls();updateSaveButton();renderMap();if(inspected)renderInspector(inspected);
@@ -308,11 +319,11 @@ function showPullTooltip(anchor){
     const row={p,count:1,ids:[p.placementId],empowered,chicken};rows.push(row);
     if(!empowered&&!chicken)ordinary.set(p.id,row);
   }
-  const tip=$('#pull-tooltip'),score=scorePull(pull,dungeon,enemies,route);
+  const tip=$('#pull-tooltip'),score=scorePull(pull,dungeon,enemies,route),health=showHealth()?routeHealth(route,dungeon,enemies).pulls[route.pulls.indexOf(pull)]:null;
   tip.dataset.pull=pull.id;
-  tip.innerHTML=`<strong>${esc(pull.name)}</strong><div class="tip-score">${pct(score.percent)} · ${members.length} ${members.length===1?'mob':'mobs'}</div>${rows.length?`<ul class="tip-pack">${rows.map(({p,count,ids,empowered,chicken})=>{
+  tip.innerHTML=`<strong>${esc(pull.name)}</strong><div class="tip-score">${pct(score.percent)} · ${members.length} ${members.length===1?'mob':'mobs'}${showHealth()?' · '+hp(health.mobs):''}</div>${showHealth()&&health.shadow?'<div class="tip-shadow-health">Emissary '+hp(health.shadow)+'</div>':''}${rows.length?`<ul class="tip-pack">${rows.map(({p,count,ids,empowered,chicken})=>{
     const enemy=enemies.get(p.id),icon=availableImage(enemy);
-    return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify(ids))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}${count>1?` ×${count}`:''}</span><span class="tip-pack-status">${empowered?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${chicken?`<img src="${chickenIcon}" alt="Chicken" title="Chicken">`:''}<span class="tip-pack-percent">${pct(positionsPercent(ids.map(id=>positions.get(id))))}</span></span></button></li>`;
+    return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify(ids))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}${count>1?` ×${count}`:''}</span><span class="tip-pack-status">${empowered?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${chicken?`<img src="${chickenIcon}" alt="Chicken" title="Chicken">`:''}<span class="tip-pack-percent">${pct(positionsPercent(ids.map(id=>positions.get(id))))}</span>${showHealth()?hp(positionsHealth(ids.map(id=>positions.get(id)),enemies,route)):''}</span></button></li>`;
   }).join('')}</ul>`:'<div class="muted">No mobs in this pull.</div>'}`;
   positionSidebarTooltip(tip,anchor);
 }
@@ -443,7 +454,7 @@ function renderMap(){
 
     }
   }
-  const markerRoot=$('#markers');markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#pack-labels').replaceChildren();$('#pack-efficiency').replaceChildren();$('#status-badges').replaceChildren();
+  const markerRoot=$('#markers');markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#pack-labels').replaceChildren();$('#pack-efficiency').replaceChildren();$('#pack-health').replaceChildren();$('#status-badges').replaceChildren();
   const visible=visiblePositions();const sorted=[...visible].sort((a,b)=>Number(enemies.get(a.id)?.isBoss)-Number(enemies.get(b.id)?.isBoss));
   $('#pull-outlines').replaceChildren();$('#pull-labels').replaceChildren();
   for(const [i,pull] of route.pulls.entries()){
@@ -516,6 +527,20 @@ function renderMap(){
       const badge=svg('g',{'data-pack-efficiency':id,'aria-label':`Pack efficiency ${label}`});
       badge.append(svg('rect',{x:x-width/2,y:y-8*unit,width,height:16*unit,rx:2*unit,fill:packEfficiencyColor(value,efficiency.range)}),svg('text',{x,y,'text-anchor':'middle','dominant-baseline':'central','font-size':11*unit,'font-family':'Segoe UI,sans-serif','font-weight':700,fill:'#fff'},label));
       $('#pack-efficiency').append(badge);
+    }
+  }
+  if(showMapHealth()){
+    const packs=new Map();
+    for(const p of visible){if(!matchesSearch(p))continue;if(!packs.has(p.packId))packs.set(p.packId,[]);packs.get(p.packId).push(p);}
+    const healthLabels=[],ordered=[...packs].sort((a,b)=>Number(b[1].some(p=>owners.has(p.placementId)))-Number(a[1].some(p=>owners.has(p.placementId))));
+    for(const [id,members] of ordered){
+      const points=members.map(markerCoordinates),x=points.reduce((sum,p)=>sum+p[0],0)/points.length;
+      const y=Math.max(...points.map((p,i)=>p[1]+radius*enemyMarkerScale(enemies.get(members[i].id))))+($('#show-pack-efficiency').checked?29:12)*unit;
+      const allMembers=[...positions.values()].filter(p=>p.packId===id),label='♥ '+formatHealth(positionsHealth(allMembers,enemies,route));
+      const width=(label.length*6+8)*unit,box={x:x-width/2,y:y-11*unit,w:width,h:17*unit};
+      if(healthLabels.some(r=>box.x<r.x+r.w&&box.x+box.w>r.x&&box.y<r.y+r.h&&box.y+box.h>r.y))continue;
+      healthLabels.push(box);
+      $('#pack-health').append(svg('text',{x,y,'data-pack-health':id,'text-anchor':'middle','font-size':10*unit,'font-family':'Segoe UI,sans-serif',fill:'#ffc1cb',stroke:'#0a1119','stroke-width':3*unit,'paint-order':'stroke','stroke-linejoin':'round'},label));
     }
   }
   if($('#show-packs').checked){
@@ -614,12 +639,12 @@ function chooseEnemy(id){if(logPreview){logImportUI.choosePlacement(id);return;}
 function commitDrawing(){if(draft.length!==2)return;const drawing={id:uid(),mapId:mapLayer.id,kind:tool,color:relicColors[tool]||arrowColor,...(tool==='line'?{width:arrowWidth}:{}),points:draft.map(p=>[...p])};draft=[];change({type:'add-drawing',...drawing});}
 function showDialog(title,html){cursorUI?.pause();$('#dialog-title').textContent=title;$('#dialog-content').innerHTML=html;if(!$('#dialog').open)$('#dialog').showModal();}
 function showScoreInfo(){
-  showDialog('Scoring',`<p>Kill score uses the game’s current values, rounded up per enemy after modifiers. Replaced enemies and Chicken targets contribute zero.</p><p>Empowered multiplies kill score by ${gameServiceRules.empoweredScoreMultiplier}. Its extra health scales only up to difficulty ${gameServiceRules.modifierDifficultyCap}; ordinary health continues scaling. The inspector and pack efficiency use base difficulty, where the health multiplier is ${1+gameServiceRules.empoweredHealthBonus}.</p><p>Shadow Lord uses cumulative kill score and the game’s rounded percentage thresholds. Ghorn and Witch contribute; Emissaries do not. Every ${gameServiceRules.shadowOrbsPerLord} collected orbs can summon an Emissary.</p><p class="muted">Orb totals predict the selected deaths. Pickup timing, unselected summons, resets and failed spawns are not simulated. Kill score percentage is shown against the ordinary dungeon requirement; Shadow Lord completion requires defeating the summoned Emissaries.</p>`);
+  showDialog('Scoring',`<p>Kill score uses the game’s current values, rounded up per enemy after modifiers. Replaced enemies and Chicken targets contribute zero.</p><p>Empowered multiplies kill score by ${gameServiceRules.empoweredScoreMultiplier}. Its extra health scales only up to difficulty ${gameServiceRules.modifierDifficultyCap}; ordinary health continues scaling. The inspector, HP totals and pack efficiency use the selected difficulty. The cap corresponds to E${gameServiceRules.modifierDifficultyCap-20}.</p><p>Shadow Lord uses cumulative kill score and the game’s rounded percentage thresholds. Ghorn and Witch contribute; Emissaries do not. Every ${gameServiceRules.shadowOrbsPerLord} collected orbs can summon an Emissary.</p><p class="muted">Orb totals predict the selected deaths. Pickup timing, unselected summons, resets and failed spawns are not simulated. Total route HP includes selected bosses and summoned Emissaries, and excludes Chicken targets. Minimum group DPS is total HP divided by the full dungeon timer, with no allowance for travel. Kill score percentage is shown against the ordinary dungeon requirement; Shadow Lord completion requires defeating the summoned Emissaries.</p>`);
 }
 function showHelp(){showDialog('Start your route with a pull',`<div class="help-grid"><kbd>Click</kbd><span>Add or remove a whole pack in the active pull.</span><kbd>Right-click enemy</kbd><span>Add or remove Chicken, or choose Info for stats and abilities.</span><kbd>B / V</kbd><span>Box selection of whole packs / pack selection.</span><kbd>N</kbd><span>Create and select the next pull.</span><kbd>S</kbd><span>Split a pull: drag a line or click two points. The pull with the longest intersection is split; mobs closer to the previous pull or entrance stay first. The other part is inserted immediately after it. Preview rings show both groups; Esc cancels.</span><kbd>D · Esc</kbd><span>Draw an arrow with two clicks · cancel. Choose color and thickness beside the arrow tool. Hover an arrow and drag either endpoint.</span><kbd>Right-click drawing</kbd><span>Delete an arrow, portal or invisibility path; edit or delete a note. Hover a numbered note to read its text.</span><kbd>Scroll / F</kbd><span>Zoom / fit the map.</span><kbd>Drag</kbd><span>Pan the map. With other tools, drag using the right mouse button.</span><kbd>Ctrl + Z / Y</kbd><span>Undo / redo a change.</span></div><p>Drag pulls to reorder them. Selecting an enemy assigned to another pull moves its whole pack to the active pull without double-counting. Routes are stored in this browser; export a route string to keep a separate copy.</p><p>The counter uses the base kill scores of selected enemies. <button id="help-score" class="text-button">Shadow Lord calculations and limitations ↗</button></p>`);$('#help-score').onclick=showScoreInfo;}
 function renderInspector(id){
   const p=positions.get(id);if(!p){inspected=null;$('#inspector').hidden=true;return;}inspected=id;const e=enemies.get(p.id),score=pointScore(p),abilities=enemyAbilities(data.abilities,p.id);
-  $('#inspector').innerHTML=`<button class="close-inspector" aria-label="Close enemy details">×</button><div class="enemy-profile">${availableImage(e)?'<img src="'+availableImage(e)+'" alt="">':''}<div><h2>${esc(placementName(p,e))}</h2><small>${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)} · ${e.isBoss?'Boss':e.canBeControlled?'Can be crowd-controlled':'Immune to crowd control'}</small></div></div><div class="enemy-facts"><div><span>Kill score</span>${fmt(score)} / ${pct(score/dungeon.requiredScore*100)}</div><div><span>Base health</span>${e.baseHealth?fmt(Math.round(enemyHealth(e,{empowered:!e.isBoss&&route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)}))):'—'}</div></div>${route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?'<small class="empowered-label">Empowered</small>':''}<h3>ABILITIES · ${abilities.length}</h3>${abilities.length?abilities.map(a=>`<div class="ability"><strong>${esc(a.name)}</strong>${a.description?.replace(/<[^>]*>/g,'').trim()?'<p>'+esc(a.description.replace(/<[^>]*>/g,''))+'</p>':''}<small>${a.castInterruptibility==='always'?'Interruptible':a.castInterruptibility==='sometimes'?'Interruptibility depends on phase':a.castInterruptibility==='never'?'Not interruptible':''}${a.baseCooldownSeconds?' · CD '+fmt(a.baseCooldownSeconds)+' s':''}</small></div>`).join(''):'<p class="muted">No descriptions are available in the dataset.</p>'}`;
+  $('#inspector').innerHTML=`<button class="close-inspector" aria-label="Close enemy details">×</button><div class="enemy-profile">${availableImage(e)?'<img src="'+availableImage(e)+'" alt="">':''}<div><h2>${esc(placementName(p,e))}</h2><small>${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)} · ${e.isBoss?'Boss':e.canBeControlled?'Can be crowd-controlled':'Immune to crowd control'}</small></div></div><div class="enemy-facts"><div><span>Kill score</span>${fmt(score)} / ${pct(score/dungeon.requiredScore*100)}</div>${route.difficulty===undefined?'':`<div><span>Health · ${esc(difficultyChoice(dungeon.id,route.difficulty)?.label??'')}</span>${hp(placementHealth(p,e,route,{includeExcluded:true}),false)}</div>`}</div>${route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?'<small class="empowered-label">Empowered</small>':''}<h3>ABILITIES · ${abilities.length}</h3>${abilities.length?abilities.map(a=>`<div class="ability"><strong>${esc(a.name)}</strong>${a.description?.replace(/<[^>]*>/g,'').trim()?'<p>'+esc(a.description.replace(/<[^>]*>/g,''))+'</p>':''}<small>${a.castInterruptibility==='always'?'Interruptible':a.castInterruptibility==='sometimes'?'Interruptibility depends on phase':a.castInterruptibility==='never'?'Not interruptible':''}${a.baseCooldownSeconds?' · CD '+fmt(a.baseCooldownSeconds)+' s':''}</small></div>`).join(''):'<p class="muted">No descriptions are available in the dataset.</p>'}`;
   $('#inspector').hidden=false;$('.close-inspector').onclick=()=>{$('#inspector').hidden=true;inspected=null;};
 }
 function renderModifierHighlight(){
@@ -733,6 +758,9 @@ function logPreviewRoute(fixture,state,id){
   const groups=state.pulls.flatMap(p=>p.groups.map(id=>fixture.groups[id]));
   next.modifiers.empowered={active:fixture.empowered,enemies:[...new Set([...next.modifiers.empowered.enemies,...groups.flatMap(g=>g.empowered)])]};
   for(const kind of ['ghorn','witch'])next.modifiers[kind].active=fixture.replacement[kind].active;
+  // Use the exact level recorded by Fellowship Logs; affixes cannot identify a level.
+  const importedDifficulty=difficultyChoice(target.id,fixture.difficulty);
+  if(importedDifficulty){next.difficulty=importedDifficulty.value;applyDifficulty(next);}
   next.pulls=state.pulls.filter(p=>p.groups.length||!state.complete&&p===state.pulls.at(-1)).map((p,i)=>{
     const members=p.groups.flatMap(id=>fixture.groups[id].enemies),inferred=fixture.inferredPlacements?.filter(id=>members.includes(id))??[];
     return {...newPull(i),id:`log-pull-${i}`,enemies:members,note:`Log ${p.id}.${inferred.length||fixture.partial||fixture.expandedSearch?' '+fixture.assumption:''}`};
@@ -875,6 +903,9 @@ function bind(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hideChickenTooltip();});
   window.addEventListener('resize',hideChickenTooltip);
   $('#dungeon').onchange=run(e=>changeDungeon(e.target.value));if($('#floors'))$('#floors').onclick=e=>{const b=e.target.closest('[data-floor]');if(b)chooseFloor(Number(b.dataset.floor));};
+  $('#difficulty').onchange=e=>{hideHover();hidePullTooltip();hideChickenTooltip();change({type:'set-difficulty',value:e.target.value===''?null:Number(e.target.value)});};
+  try{$('#show-hp').checked=localStorage.getItem('fellowship-show-hp')==='true';}catch{}
+  $('#show-hp').onchange=()=>{try{localStorage.setItem('fellowship-show-hp',String($('#show-hp').checked));}catch{}renderMap();};
   $('#route-name').oninput=updateSaveButton;
   $('#route-name').onchange=e=>change({type:'set-meta',patch:{name:e.target.value.trim()||route.name}});
   $('#shadow').onclick=()=>change({type:'set-meta',patch:{shadow:!route.shadow}});
@@ -889,7 +920,7 @@ function bind(){
   $('#import-log-button').onclick=()=>logImportUI.open();
   window.addEventListener('hashchange',()=>{if(location.hash.startsWith('#room='))openRoomHash();else importRouteHash();});
   $('#delete-route').onclick=run(()=>removeSavedRoute(store.saved.findIndex(r=>r.id===route.id)));
-  $('#clear-route').onclick=()=>{drag=null;draft=[];hideHover();$('#enemy-menu').hidden=true;$('#inspector').hidden=true;inspected=null;$('#map').classList.remove('dragging');closeArrowOptions();const preset=newRoute(dungeon,data.manifest.buildId);applyModifierPresets(preset,dungeon,data['modifier-placements']);change([{type:'clear-route'},...['empowered','ghorn','witch'].map(kind=>({type:'set-modifier',kind,patch:preset.modifiers[kind]}))]);setTool('select',{cancel:true});toast('Route cleared. Undo to restore it.');};
+  $('#clear-route').onclick=()=>{drag=null;draft=[];hideHover();$('#enemy-menu').hidden=true;$('#inspector').hidden=true;inspected=null;$('#map').classList.remove('dragging');closeArrowOptions();const commands=[{type:'clear-route'}];if(route.difficulty===undefined){const preset=newRoute(dungeon,data.manifest.buildId);applyModifierPresets(preset,dungeon,data['modifier-placements']);commands.push(...['empowered','ghorn','witch'].map(kind=>({type:'set-modifier',kind,patch:preset.modifiers[kind]})));}change(commands);setTool('select',{cancel:true});toast('Route cleared. Undo to restore it.');};
   $('#new-route').onclick=run(async()=>{if(!canEdit())return;const changed=!$('#save-route').disabled;if(changed)await saveNamed();await selectDungeon(dungeon.id,await createRoute());toast(changed?'New route created. Your previous route was saved to the library.':'New route created.');});
   $('#layers').onclick=()=>setDisplayOptions($('#layers-panel').hidden);
   if($('#show-floor-panel')){
@@ -974,7 +1005,7 @@ function bind(){
     if(tip.hidden||tip.dataset.placement!==id){
       tip.dataset.placement=id;
       const packPercent=positionsPercent(pack);
-      tip.innerHTML=`<strong>${esc(placementName(p,enemy))}</strong>${isEmpowered(p)?`<div class="tip-empowered"><img src="${empoweredIcon}" alt="">Empowered</div>`:''}<span class="tip-score">${fmt(score)} points · ${pct(positionsPercent([p]))}</span>${!enemy.isBoss&&route.excluded.includes(id)?'<div>Chicken</div>':''}<div class="tip-pack-heading">${p.modifier?esc(enemy.name):'G'+packNumbers.get(p.packId)} · ${pack.length} enemies in pack · ${pct(packPercent)}</div><ul class="tip-pack">${pack.map(member=>{const mob=enemies.get(member.id),icon=availableImage(mob);return `<li class="${member.placementId===id?'current':''}" ${member.placementId===id?'aria-current="true"':''}>${icon?`<img src="${icon}" alt="">`:''}<span>${esc(placementName(member,mob))}</span><span class="tip-pack-status">${isEmpowered(member)?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${route.excluded.includes(member.placementId)?`<img class="tip-chicken" src="${chickenIcon}" alt="Chicken">`:''}<span class="tip-pack-percent">${pct(positionsPercent([member]))}</span></span></li>`;}).join('')}</ul>`;
+      tip.innerHTML=`<strong>${esc(placementName(p,enemy))}</strong>${isEmpowered(p)?`<div class="tip-empowered"><img src="${empoweredIcon}" alt="">Empowered</div>`:''}<span class="tip-score">${fmt(score)} points · ${pct(positionsPercent([p]))}${showHealth()?' · '+hp(placementHealth(p,enemy,route)):''}</span>${!enemy.isBoss&&route.excluded.includes(id)?'<div>Chicken</div>':''}<div class="tip-pack-heading">${p.modifier?esc(enemy.name):'G'+packNumbers.get(p.packId)} · ${pack.length} enemies in pack · ${pct(packPercent)}${showHealth()?' · '+hp(positionsHealth(pack,enemies,route)):''}</div><ul class="tip-pack">${pack.map(member=>{const mob=enemies.get(member.id),icon=availableImage(mob);return `<li class="${member.placementId===id?'current':''}" ${member.placementId===id?'aria-current="true"':''}>${icon?`<img src="${icon}" alt="">`:''}<span>${esc(placementName(member,mob))}</span><span class="tip-pack-status">${isEmpowered(member)?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${route.excluded.includes(member.placementId)?`<img class="tip-chicken" src="${chickenIcon}" alt="Chicken">`:''}<span class="tip-pack-percent">${pct(positionsPercent([member]))}</span></span></li>`;}).join('')}</ul>`;
     }
     positionPopover(tip,e);
   });

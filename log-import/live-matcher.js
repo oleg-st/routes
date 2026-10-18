@@ -295,6 +295,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   }
   drawings.sort((a,b)=>a.afterTime-b.afterTime);
   return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,...(neighborRadius?{neighborHypotheses}:{}),dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
+    difficulty: fight.difficultyLevel,
     duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,movementTrail:buildMovementTrail(log,trajectories,dungeon),deathSkips,deathSkipEncounters,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
     replacement:Object.fromEntries(['ghorn','witch'].map(k=>[k,{active:affixes[k].active===true}])),
     note:'Matched from the selected log using current dungeon data. Whole packs stay in their first pull; repeated attempts are omitted.'};

@@ -1,3 +1,5 @@
+import {difficultyOptions} from '../difficulty.js';
+async function selectAffix(page,kind){const dungeon=await page.locator('#dungeon').inputValue(),current=Number(await page.locator('#difficulty').inputValue()),choice=difficultyOptions(dungeon).find(c=>c.value!==current&&c.modifiers.includes(kind));assert.ok(choice,'Available '+kind+' difficulty');await page.locator('#difficulty').selectOption(String(choice.value));}
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
@@ -31,9 +33,9 @@ try{
     await save.click();await page.waitForFunction(()=>document.querySelector('#save-route').disabled);assert.ok(await save.isDisabled());assert.ok(await remove.isVisible());
     await name.fill('Renamed');assert.ok(await save.isEnabled());
     await name.press('Tab');await page.locator('#undo').click();assert.ok(await save.isDisabled());
-    await page.locator('#shadow').click();
+    await selectAffix(page,'empowered');
     await page.locator('[data-placement]').first().dispatchEvent('click');
-    assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'true');
     assert.ok(await save.isEnabled());await save.click();await page.waitForFunction(()=>document.querySelector('#save-route').disabled);
     await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
     assert.ok(await save.isDisabled(),'Saved state remains clean after reload');
@@ -47,7 +49,7 @@ try{
     await page.locator('.sidebar').screenshot({path:'tmp/route-sidebar.png'});
     await page.locator('#clear-route').click();
     assert.equal(await page.locator('#pull-count').textContent(),'0');assert.equal(await page.locator('#drawings > g').count(),0);
-    assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'false');assert.ok(await save.isEnabled());
+    assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'true');assert.ok(await save.isEnabled());
     await page.locator('#undo').click();assert.equal(await page.locator('#pull-count').textContent(),'3');assert.equal(await page.locator('#drawings > g').count(),1);assert.ok(await save.isDisabled());
     await page.locator('#redo').click();await save.click();await page.waitForFunction(()=>document.querySelector('#save-route').disabled);assert.ok(await save.isDisabled());
     await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#pull-count').textContent(),'0');assert.ok(await save.isDisabled());

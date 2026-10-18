@@ -1,3 +1,5 @@
+import {difficultyOptions} from '../difficulty.js';
+async function selectAffix(page,kind){const dungeon=await page.locator('#dungeon').inputValue(),current=Number(await page.locator('#difficulty').inputValue()),choice=difficultyOptions(dungeon).find(c=>c.value!==current&&c.modifiers.includes(kind));assert.ok(choice,'Available '+kind+' difficulty');await page.locator('#difficulty').selectOption(String(choice.value));}
 // Real IndexedDB transactions, recovery and same-origin tab synchronization.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -61,7 +63,7 @@ try{
   assert.equal(await page.locator('#route-name').inputValue(),'Route 12');
   assert.equal(await page.evaluate(()=>localStorage.getItem('fellowship-atlas-v1')),result.legacy);
   const other=await context.newPage();other.on('pageerror',e=>errors.push(e.message));await other.goto(origin);await other.locator('#map-loading').waitFor({state:'hidden'});
-  await Promise.all([page.locator('#add-pull').click(),other.locator('#shadow').click()]);
+  await Promise.all([page.locator('#add-pull').click(),selectAffix(other,'shadow')]);
   for(const tab of [page,other])await tab.waitForFunction(()=>document.querySelector('#pull-count').textContent==='2'&&document.querySelector('#shadow').getAttribute('aria-pressed')==='true');
   await page.locator('#undo').click();
   for(const tab of [page,other])await tab.waitForFunction(()=>document.querySelector('#pull-count').textContent==='1'&&document.querySelector('#shadow').getAttribute('aria-pressed')==='true');

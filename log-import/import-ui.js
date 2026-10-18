@@ -165,7 +165,8 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
           // Continue automatically after fetching the small report summary.
           if(!report&&mode==='normal'&&live.fights)await loadFights(selection.fightID);
           remember();lastFightID=report?Number(select.value):selection.fightID;
-          const options={signal:controller.signal,onProgress:text=>status.textContent=text};
+          const options={signal:controller.signal,onProgress:text=>status.textContent=text,
+            fightSummary:report?.fights.find(f=>f.id===lastFightID)};
           const result=await (mode==='expand'?live.expandSearch(selectedURL(),options):mode==='recover'?live.continueImport(selectedURL(),options):live.load(selectedURL(),options));
           if(!result){status.textContent='Additional search finished. The mobs below still could not be matched.';showFailure('Could not match complete packs. You can import the matched mobs.');return;}
           controller.signal.throwIfAborted();fixture=result;

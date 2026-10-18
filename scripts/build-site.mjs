@@ -11,7 +11,7 @@ import {dataNames} from '../data/runtime-loader.js';
 const check = spawnSync(process.execPath, ['scripts/verify-data.mjs', '--public'], {stdio: 'inherit'});
 if (check.status !== 0) throw new Error('Image/data verification failed.');
 // Explicit publication allowlist: private originals and build tooling never enter dist.
-const files = ['index.html', 'app.js', 'route-model.js', 'game-scoring.js', 'map-geometry.js', 'pull-split.js', 'map-views.js', 'marker-symbols.js', 'styles.css',
+const files = ['index.html', 'app.js', 'route-model.js', 'game-scoring.js', 'difficulty.js', 'map-geometry.js', 'pull-split.js', 'map-views.js', 'marker-symbols.js', 'styles.css',
   ...['import-ui','review-session','fight-label','live-import','live-api','live-analysis','live-matcher','matcher-client','matcher-worker','oauth','report-url',
     'pack-corrections','placement-geometry','assignment','pack-solver','approach-filter','reverse-approach','summon-evidence','summon-patterns','game-summons','boss-encounters',
     'modifier-evidence','invisibility','portals','route-relics','intended-pulls','death-skips','matching-config','activation','path-proximity','gap-approach','neighbor-approach','movement-trail','aggro-evidence'].map(name=>`log-import/${name}.js`),
@@ -19,7 +19,7 @@ const files = ['index.html', 'app.js', 'route-model.js', 'game-scoring.js', 'map
   ...dataNames.map(name=>`data/${name}.json`),
   ...['full-maps','map-starts','map-campfires','combined-layouts','combined-legacy-layouts','combined-maps',
     'boss-encounters','placement-corrections','route-mapping','route-dictionary','game-modifier-stats',
-    'game-modifier-positions','game-service-rules','game-summon-rules','ability-corrections','enemy-marker-sizes','marker-anchors',
+    'game-modifier-positions','game-service-rules','game-difficulty','game-summon-rules','ability-corrections','enemy-marker-sizes','marker-anchors',
     'compact-data','runtime-loader'].map(name=>`data/${name}.js`),
   'data/LICENSE-fellowship-data.txt',
   ...usedImages()];

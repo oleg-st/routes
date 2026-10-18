@@ -1,3 +1,5 @@
+import {difficultyOptions} from '../difficulty.js';
+async function selectAffix(page,kind){const dungeon=await page.locator('#dungeon').inputValue(),current=Number(await page.locator('#difficulty').inputValue()),choice=difficultyOptions(dungeon).find(c=>c.value!==current&&c.modifiers.includes(kind));assert.ok(choice,'Available '+kind+' difficulty');await page.locator('#difficulty').selectOption(String(choice.value));}
 // Native RTCPeerConnection + Trystero in independent browser profiles.
 // Deterministic mode replaces only the Nostr relay, never the WebRTC transport.
 import assert from 'node:assert/strict';
@@ -55,7 +57,7 @@ try{
   assert.ok(new URL(b.url()).hash.startsWith('#room='),'Accepting an invitation must retain the room URL');
   await b.waitForFunction(()=>!document.querySelector('#workspace').hidden,{},{timeout:realPublic?60000:20000});console.log('WebRTC connected');
   await a.locator('#add-pull').click();await b.waitForFunction(()=>document.querySelector('#pull-count').textContent==='2');
-  await b.locator('#shadow').click();await a.waitForFunction(()=>document.querySelector('#shadow').getAttribute('aria-pressed')==='true');
+  await selectAffix(b,'empowered');await a.waitForFunction(()=>document.querySelector('#empowered').getAttribute('aria-pressed')==='true');
   const map=await b.locator('#map').boundingBox(),click=(x,y)=>b.mouse.click(map.x+x,map.y+y);
   await b.locator('[data-tool=marker]').click();await click(400,380);await b.locator('#marker-label').fill('Team marker');await b.locator('#place-marker').click();
   await b.locator('[data-tool=note]').click();await click(500,420);await b.getByRole('textbox',{name:'Note text'}).fill('Shared note');await b.locator('#place-note').click();

@@ -1,3 +1,5 @@
+import {difficultyOptions} from '../difficulty.js';
+async function selectAffix(page,kind){const dungeon=await page.locator('#dungeon').inputValue(),current=Number(await page.locator('#difficulty').inputValue()),choice=difficultyOptions(dungeon).find(c=>c.value!==current&&c.modifiers.includes(kind));assert.ok(choice,'Available '+kind+' difficulty');await page.locator('#difficulty').selectOption(String(choice.value));}
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {spawn} from 'node:child_process';
@@ -31,15 +33,15 @@ try{
   }
   for(const kind of ['shadow','empowered','ghorn','witch']){
    const row=presets.dungeons[d.id],placed=kind==='shadow'||(kind==='empowered'?row.empowered.length:row[kind]);
-   assert.equal(await page.locator('#'+kind).isEnabled(),modifierAvailable(d.id,kind)&&!!placed,d.name+' '+kind+' availability');
+   assert.equal(await page.locator('#'+kind).isEnabled(),modifierAvailable(d.id,kind)&&!!placed,d.name+' '+kind+' manual availability');
    if(!modifierAvailable(d.id,kind))assert.match(await page.locator('#'+kind).getAttribute('title'),/Unavailable in this dungeon/);
   }
   if(modifierAvailable(d.id,'shadow')){
-   await page.locator('#shadow').click();assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');
+   await selectAffix(page,'shadow');assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');
    await page.locator('#undo').click();
   }
   for(const kind of ['ghorn','witch'])if(presets.dungeons[d.id][kind]&&modifierAvailable(d.id,kind)){
-   await page.locator('#'+kind).click();
+   await selectAffix(page,kind);
    assert.equal(await page.locator(`[data-placement="modifier:${kind}"]`).count(),1,d.name+' '+kind);
    const portrait=page.locator(`[data-placement="modifier:${kind}"] image`);
    assert.equal(await portrait.count(),1,d.name+' '+kind+' game portrait');

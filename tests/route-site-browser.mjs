@@ -1,3 +1,5 @@
+import {difficultyOptions} from '../difficulty.js';
+async function selectAffix(page,kind){const dungeon=await page.locator('#dungeon').inputValue(),current=Number(await page.locator('#difficulty').inputValue()),choice=difficultyOptions(dungeon).find(c=>c.value!==current&&c.modifiers.includes(kind));assert.ok(choice,'Available '+kind+' difficulty');await page.locator('#difficulty').selectOption(String(choice.value));}
 // Exercise the published bundle beneath a GitHub Pages-style prefix, without external requests.
 import assert from 'node:assert/strict';
 import http from 'node:http';
@@ -18,14 +20,14 @@ try{
   await page.goto(origin+prefix);await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#floor-panel').count(),0);
   for(const kind of ['ghorn','witch']){
     assert.ok(await page.locator('#'+kind+' img').evaluate(async i=>{await i.decode();return i.naturalWidth>0;}));
-    await page.locator('#'+kind).click();
+    await selectAffix(page,kind);
     const portrait=page.locator(`[data-placement="modifier:${kind}"] image`);
     assert.equal(await portrait.count(),1);
     assert.ok(await portrait.evaluate(async e=>{const i=new Image();i.src=e.getAttribute('href');await i.decode();return i.naturalWidth>0;}));
     await page.locator('#undo').click();
   }
-  await page.locator('#add-pull').click();await page.locator('#shadow').click();await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
-  await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#pull-count').textContent(),'2');assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');
+  await page.locator('#add-pull').click();await selectAffix(page,'empowered');await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
+  await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#pull-count').textContent(),'2');assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'true');
   await page.locator('#import-log-button').click();await page.locator('#log-url').waitFor();
   assert.equal(await page.getByText('Saved examples',{exact:true}).count(),0);assert.equal(await page.locator('[data-log-fixture]').count(),0);
   await page.locator('#log-url').press('Escape');assert.equal(await page.locator('#pull-count').textContent(),'2');
