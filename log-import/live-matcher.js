@@ -14,10 +14,10 @@ import {firstEngagements} from './intended-pulls.js';
 import {matchingConfig} from './matching-config.js';
 import {createPathProximity,combineProximity} from './path-proximity.js';
 import {createGapApproach} from './gap-approach.js';
-import {mapViews,worldMapCoordinates} from '../map-views.js';
+import {mapViews,worldMapCoordinates,mapCampfires} from '../map-views.js';
 import {encounterIdentity} from './boss-encounters.js';
 import {createNeighborApproach} from './neighbor-approach.js';
-import {deathSkipRows} from './death-skips.js';
+import {confirmedDeathSkips} from './death-skips.js';
 
 const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
 export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false,allowPartial=false,neighborRadius=0}){
@@ -60,8 +60,10 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   });
   const summons=new Set(classifySummons({fightID:fight.id,actors,rows:summonRows,events,bossAddRadius:config.bossAddRadius??matchingConfig.bossAddRadius}).map(r=>r.key));
   rows=rows.filter(r=>staticTypes.has(r.gameID)&&!summons.has(r.key));
-  const deathSkips=deathSkipRows(log,rows,encounters),skippedKeys=new Set(deathSkips.map(r=>r.key));
-  rows=rows.filter(r=>!skippedKeys.has(r.key));
+  const deathSkipEncounters=confirmedDeathSkips(log,rows,{...encounters,dungeonID:dungeon.id});
+  const deathSkips=deathSkipEncounters.flatMap(s=>s.enemyKeys.map(key=>({key,pullID:s.pullID,reason:'survived-death-skip'}))),skippedKeys=new Set(deathSkips.map(r=>r.key));
+  // Match skipped mobs too: their observations establish pack identity, even
+  // when only some members were killed. Omit them from the resulting route.
   // A known summon can be Chickenized, but has no original map placement.
   // Only unresolved targets need manual analysis.
   const unknownChickens=chickenCasts.filter(c=>!summons.has(`${c.targetID}:${c.targetInstance??1}`)&&!rows.some(r=>r.key===`${c.targetID}:${c.targetInstance??1}`));
@@ -162,7 +164,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       if(!skipped.some(r=>r.key===key))skipped.push({key,name:'Unknown Chicken target',pull:Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=c.timestamp))+1,reason:'Original map enemy could not be identified'});
     }
     if(!assignments.length)throw new Error('No enemies could be matched. Download import diagnostics to investigate.');
-    partial={matched:assignments.length,skipped};
+    partial={matched:assignments.filter(a=>!skippedKeys.has(a.key)).length,skipped};
     const packIDs=[...new Set(assignments.map(a=>packByPlacement.get(a.placementId).id))];
     candidates.push({packIDs,assignments,reverse:scoreReverseApproach(reverse,packIDs)});
   }
@@ -224,7 +226,9 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   // review step still has only a few packs. Keep every candidate for review.
   const gapCount=c=>new Set(c.assignments.filter(a=>a.gap||a.neighbor).map(a=>packByPlacement.get(a.placementId).id)).size;
   candidates.sort((a,b)=>gapCount(a)-gapCount(b)||compareReverseRank(a,b));
-  const inferredPlacements=[...new Set(candidates.flatMap(c=>c.assignments.filter(a=>a.inferred).map(a=>a.placementId)))];
+  for(const c of candidates)c.routeAssignments=[...Map.groupBy(c.assignments,a=>packByPlacement.get(a.placementId).id).values()]
+    .flatMap(as=>as.some(a=>!a.inferred&&!skippedKeys.has(a.key))?as.filter(a=>!skippedKeys.has(a.key)):[]);
+  const inferredPlacements=[...new Set(candidates.flatMap(c=>c.routeAssignments.filter(a=>a.inferred).map(a=>a.placementId)))];
   const movementHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.gap).map(a=>[`${a.placementId}|${a.gap.key}|${a.gap.start}`,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,...a.gap}]))).values()];
   const neighborHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.neighbor).map(a=>[a.placementId,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,source:a.neighbor}]))).values()];
   const assumption=[partial?`Partial import: ${partial.matched} enemies matched, ${partial.skipped.length} observations skipped. Pack membership and ambiguous positions need manual review.${partial.skipped.length?' Skipped: '+[...Map.groupBy(partial.skipped,r=>r.name)].map(([name,rs])=>`${name} ×${rs.length}`).join(', ')+'.':''}`:null,
@@ -237,7 +241,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     if(index%100===0){await yieldUI();signal?.throwIfAborted();}
     const proximity={};
     const pulls=pullSegments.map(p=>({id:`segment-${p.id}`,start:(p.startTime-fight.startTime)/1000,end:(p.endTime-fight.startTime)/1000,groups:[]}));
-    for(const [pack,as]of Map.groupBy(candidate.assignments,a=>packByPlacement.get(a.placementId))){
+    for(const [pack,as]of Map.groupBy(candidate.routeAssignments,a=>packByPlacement.get(a.placementId))){
       const members=as.map(a=>a.placementId).sort(),excluded=as.filter(a=>chickenKeys.has(a.key)).map(a=>a.placementId).sort(),empowered=as.filter(a=>empoweredKeys.has(a.key)).map(a=>a.placementId).sort();
       const time=Math.min(...as.map(a=>first.get(a.key)??a.firstTime));
       const segment=Math.max(0,pullSegments.findLastIndex(p=>p.startTime<=time));
@@ -274,8 +278,16 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       if(!point?.every(Number.isFinite))throw new Error('Could not project a relic position onto this dungeon map. Download import diagnostics to investigate.');
       return point;
     }),afterTime:(u.end.time-fight.startTime)/1000}));
+  const fires=mapCampfires(dungeon,view);
+  for(const skip of deathSkipEncounters){
+    const fire=fires.find(f=>f.id===skip.campfireID);if(!fire)continue;
+    drawings.push({id:`log-death-skip-${skip.pullID}`,mapId:view.id,kind:'note',icon:'number',color:'#ffffff',
+      text:'Death skip',
+      points:[[fire.point[0]-view.width*34/1400,fire.point[1]]],afterTime:(skip.endTime-fight.startTime)/1000});
+  }
+  drawings.sort((a,b)=>a.afterTime-b.afterTime);
   return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,...(neighborRadius?{neighborHypotheses}:{}),dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
-    duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,deathSkips,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
+    duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,deathSkips,deathSkipEncounters,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
     replacement:Object.fromEntries(['ghorn','witch'].map(k=>[k,{active:affixes[k].active===true}])),
     note:'Matched from the selected log using current dungeon data. Whole packs stay in their first pull; repeated attempts are omitted.'};
   }
