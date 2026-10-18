@@ -1,9 +1,9 @@
 import {matchingConfig} from './matching-config.js';
 import {repeatedSummonPatterns} from './summon-patterns.js';
+import {classifyGameSummons} from './game-summons.js';
 // Direct Fellowship Logs identity and known mechanics take precedence over
 // the generic proximity and repeated-wave fallbacks below.
 export const verifiedSummonRules=Object.freeze([
-  {bossGameID:133,abilityGameID:631,childGameIDs:[134],windowMs:3000,id:'brogg-raiders'},
   // Chilgar's Grasping Pillar (222) releases Frozen Remnants when broken.
   // Confirmed by the user in report c4nFLaThdAxtVpYv/88. Require a nearby
   // recent pillar cast and no first position near a static Remnant spawn.
@@ -36,20 +36,7 @@ export function classifySummons({fightID,actors,rows,events,rules=verifiedSummon
         sourceID:cast.sourceID,time:cast.timestamp,delayMs:row.firstTime-cast.timestamp});break;}
     }
   }
-  // GA_FK_IceGolem_OnDeathSpawnMobs (Shatter): a complete trio appears around
-  // the dying golem. Corroborated across /86, /89 and /90. Require all three,
-  // actual death, fresh parent coordinates and a tight time/position window;
-  // timing alone must not remove ordinary Shardlings pulled nearby.
-  for(const parent of rows.filter(r=>r.gameID===160))for(const death of parent.deaths??[]){
-    const position=parent.positions?.findLast(p=>p.t<=death.timestamp&&death.timestamp-p.t<=1000);
-    if(!position)continue;
-    const children=rows.filter(r=>r.gameID===161&&!result.has(r.key)&&!(r.nearest?.[0]?.distance<2)&&
-      r.firstTime>=death.timestamp&&r.firstTime-death.timestamp<=2000&&r.firstPosition?.t-death.timestamp<=2000&&
-      Math.hypot(r.firstPosition.x-position.x,r.firstPosition.y-position.y)<=400);
-    if(children.length!==3)continue;
-    for(const row of children)result.set(row.key,{key:row.key,classification:'probable-summon',basis:'verified-death-spawn-trio',
-      rule:'golem-shatter',sourceID:parent.actorID,sourceKey:parent.key,time:death.timestamp,delayMs:row.firstTime-death.timestamp});
-  }
+  for(const summon of classifyGameSummons({fightID,actors,rows,events}))if(!result.has(summon.key))result.set(summon.key,summon);
   // Retain earlier confirmed mechanics beyond the conservative generic
   // radius (e.g. Titan's distant Wardstones). New bosses need no entry here.
   const encounterRules=[{boss:168,children:[164,165],id:'noor-ambush'},
