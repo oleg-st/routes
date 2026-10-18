@@ -1,96 +1,21 @@
 [
   {
-    "id": "lisa",
-    "name": "Aeona",
-    "role": "healer",
-    "classColor": "#BC00FF",
-    "images": [
-      {
-        "id": "lisa",
-        "type": "hero",
-        "size": "200",
-        "path": "images/heroes/lisa-hero-200.avif",
-        "sha256": "27af323904d0db784dcdcfdf386a2cd8baf2919b26fd1ad63bc2eee5d2c30d09",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/lisa-hero-200.webp",
-        "sourceSha256": "d7d4b39422713faeec36093e9c0adb6c04a28b6d884b8e3e9b41bd27a5007b4c"
-      }
-    ]
-  },
-  {
-    "id": "ink",
-    "name": "Tariq",
+    "id": "bowguy",
+    "name": "Elarion",
     "role": "dps",
-    "classColor": "#163EB9",
+    "classColor": "#7F49F5",
     "images": [
       {
-        "id": "ink",
+        "id": "bowguy",
         "type": "hero",
         "size": "200",
-        "path": "images/heroes/ink-hero-200.avif",
-        "sha256": "ba4b4376a1714fc98d40c01ea67b3bb9cc57e41bb68234a9d32cc0c8ac81fcb5",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/ink-hero-200.webp",
-        "sourceSha256": "ab6eee16d27ce84a8ef0225a3cd1fa9ad0093d27a54ae1ed2933f5c46314e94f"
-      }
-    ]
-  },
-  {
-    "id": "rime",
-    "name": "Rime",
-    "role": "dps",
-    "classColor": "#1EA3EE",
-    "images": [
-      {
-        "id": "rime",
-        "type": "hero",
-        "size": "200",
-        "path": "images/heroes/rime-hero-200.avif",
-        "sha256": "05b11caa9035328fdb291d272783f414d7cecefaf80b69a22e27319dedf6c2ff",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/rime-hero-200.webp",
-        "sourceSha256": "7b3de6d18f9b680ef4b62093f10c7f844dee10d13d3040c89e1a72ae26fd05aa"
-      }
-    ]
-  },
-  {
-    "id": "warmaster",
-    "name": "Helena",
-    "role": "tank",
-    "classColor": "#B46831",
-    "images": [
-      {
-        "id": "warmaster",
-        "type": "hero",
-        "size": "200",
-        "path": "images/heroes/warmaster-hero-200.avif",
-        "sha256": "d5f57d248efc4af0248b37861c1486cb368babf739842ac0bdfc7dac7e13e1ca",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/warmaster-hero-200.webp",
-        "sourceSha256": "e2c5f6dbd81a20d6008dabc11272db024f742fb72464fa49731d52f012024066"
-      }
-    ]
-  },
-  {
-    "id": "vigor",
-    "name": "Vigour",
-    "role": "healer",
-    "classColor": "#DDDBC5",
-    "images": [
-      {
-        "id": "vigor",
-        "type": "hero",
-        "size": "200",
-        "path": "images/heroes/vigor-hero-200.avif",
-        "sha256": "8f66554f84a690c6492668d5f7b9f8d11ef839e615fa0ab662c5a9e82eaedebc",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/vigor-hero-200.webp",
-        "sourceSha256": "cb56e6948c22e81c15549c2b1033357b6fe5d8a4ba9125a4e94d36b884d4d412"
+        "path": "images/game/1e2d185816e03572a7beefcd.avif",
+        "sourcePath": "private/game-data/planner/images\\ea262f9c6ed7ad2a634885c02fef865e2ee8a6d89acece095aa1207efb4b7564.png",
+        "sourceSha256": "1e2d185816e03572a7beefcd8d361fb1fa79ab9f682a253806826d1a26dc99f2",
+        "width": 1024,
+        "height": 1024,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Bowguy_01",
+        "sha256": "4ebb3894bc02b39a596482370d95f73d559d58cd24063a1f4fbc56c483608616"
       }
     ]
   },
@@ -104,31 +29,73 @@
         "id": "firemage",
         "type": "hero",
         "size": "200",
-        "path": "images/heroes/firemage-hero-200.avif",
-        "sha256": "2231f8edd0e279f89b0a9193b6bb616a9972180dc804b14765191ab0c4439c99",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/firemage-hero-200.webp",
-        "sourceSha256": "d165b9324d8cc8c6e94bb209cb824e0b5d90f6344f01564b68ca5363a4a2c448"
+        "path": "images/game/4f195577ba3f83573a3eb8cb.avif",
+        "sourcePath": "private/game-data/planner/images\\bf35cf4a6529a600c30e83528548b8a3628ea8e36d69e073ba2f7f96a86fcc89.png",
+        "sourceSha256": "4f195577ba3f83573a3eb8cbcd72a5c0bce2ce30fe477f15f00c0804bb59c0e2",
+        "width": 1024,
+        "height": 1024,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Firemage_default",
+        "sha256": "0b4cd30ffb57ca0a085e1fd3fbb420af0f8d8bf1c9f1b8b0dedc3838f9387625"
       }
     ]
   },
   {
-    "id": "sune",
-    "name": "Xavian",
-    "role": "tank",
-    "classColor": "#077365",
+    "id": "ink",
+    "name": "Tariq",
+    "role": "dps",
+    "classColor": "#163EB9",
     "images": [
       {
-        "id": "sune",
+        "id": "ink",
         "type": "hero",
         "size": "200",
-        "path": "images/heroes/sune-hero-200.avif",
-        "sha256": "5e729f4f1905cefa3f297174c2005966c2b339003d595334468c14ed9a2d1312",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/sune-hero-200.webp",
-        "sourceSha256": "9d8710759bcbbcec0f1281484621651765144cc56d0897c102638485c9268440"
+        "path": "images/game/30b2171294f67d6d2858a865.avif",
+        "sourcePath": "private/game-data/planner/images\\be0efa12351f8ec3c3d1b86ba4f2609c2e463a30044108cdea72e4dc5c6a5d92.png",
+        "sourceSha256": "30b2171294f67d6d2858a865efd4f20dcd6351042c8f37c90cd72e9240a8e21b",
+        "width": 1024,
+        "height": 1024,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Ink_01",
+        "sha256": "f8c72f473f32b5a7cfdd639a49d9ac6e0fd89e58722e6a23fa04bae3446eb406"
+      }
+    ]
+  },
+  {
+    "id": "lisa",
+    "name": "Aeona",
+    "role": "healer",
+    "classColor": "#BC00FF",
+    "images": [
+      {
+        "id": "lisa",
+        "type": "hero",
+        "size": "200",
+        "path": "images/game/1de4103e4bb5d25a8a160a3a.avif",
+        "sourcePath": "private/game-data/planner/images\\157d2255cfe6b0faa0dc3fcfc154740174f0541ba0854979f6a90ba8dddfeb15.png",
+        "sourceSha256": "1de4103e4bb5d25a8a160a3ace1eac95668b8d34ccff7944d04fd875058b970e",
+        "width": 2048,
+        "height": 2048,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Lisa_default",
+        "sha256": "25375c627654f77f3e01a38c4ef9b52bcd9600560b372d7fc15262d8b81a0a3c"
+      }
+    ]
+  },
+  {
+    "id": "mara",
+    "name": "Mara",
+    "role": "tank",
+    "classColor": "#6F2EF1",
+    "images": [
+      {
+        "id": "mara",
+        "type": "hero",
+        "size": "200",
+        "path": "images/game/a3fc0285169b891bc2214580.avif",
+        "sourcePath": "private/game-data/planner/images\\78a59d19727e07c3a656470a03834c8a9b6636bba53248b8af90fb74be0d1bb0.png",
+        "sourceSha256": "a3fc0285169b891bc2214580fdefc92768dbcb8dbf829a12ff56dc4ab2a362c9",
+        "width": 1903,
+        "height": 1903,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Mara_01",
+        "sha256": "4058b294db316510eb2d65b908b4bd8573f961b6ca0c4365dfba6a50ea246218"
       }
     ]
   },
@@ -142,88 +109,113 @@
         "id": "meiko",
         "type": "hero",
         "size": "200",
-        "path": "images/heroes/meiko-hero-200.avif",
-        "sha256": "640aed91476f20cc4b5f093e9c72c927b3f2349e245d5bdf6c533dc40331a911",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/meiko-hero-200.webp",
-        "sourceSha256": "3376621d8d0d1e71700f219d6134e95bba3a534126bafbaf2c48591b9113c2fc"
-      }
-    ]
-  },
-  {
-    "id": "mara",
-    "name": "Mara",
-    "role": "dps",
-    "classColor": "#6F2EF1",
-    "images": [
-      {
-        "id": "mara",
-        "type": "hero",
-        "size": "200",
-        "path": "images/heroes/mara-hero-200.avif",
-        "sha256": "8264968b50bddead18f9fac9a858c35820db29da5fb852a142d4b20856369b3a",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/mara-hero-200.webp",
-        "sourceSha256": "caae83b02d7599fb0483a570e02e31000f1fe54546f3f8cc65707d25417dec44"
-      }
-    ]
-  },
-  {
-    "id": "bowguy",
-    "name": "Elarion",
-    "role": "dps",
-    "classColor": "#7F49F5",
-    "images": [
-      {
-        "id": "bowguy",
-        "type": "hero",
-        "size": "200",
-        "path": "images/heroes/bowguy-hero-200.avif",
-        "sha256": "b7c1f40b28cc919ba0a4207efaf985c7ec19c727a46aecee254cb64d07eaeb27",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/bowguy-hero-200.webp",
-        "sourceSha256": "cd68b0ce54a4b34220989bd633c111dd1a0de680ef262904f83af272e0917c19"
+        "path": "images/game/4b0100ab126650fbf41fb863.avif",
+        "sourcePath": "private/game-data/planner/images\\abd0f4e51172bdc9a99491216cc1745b3f2c24fcade3b6f53389d98f9fded68e.png",
+        "sourceSha256": "4b0100ab126650fbf41fb863d702762a7673e1aca3a8dbb14ef6a218518a2fdc",
+        "width": 1024,
+        "height": 1024,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_meiko_default",
+        "sha256": "bea090cbd3da9110f8b2d06e46016ee20eab34eaf60416c67f6cebcc598edaec"
       }
     ]
   },
   {
     "id": "mosse",
     "name": "Sylvie",
-    "role": "healer",
+    "role": "dps",
     "classColor": "#EA4F84",
     "images": [
       {
         "id": "mosse",
         "type": "hero",
         "size": "200",
-        "path": "images/heroes/mosse-hero-200.avif",
-        "sha256": "ca7aa7979d621f7dd20c77cbde0c72e5ee7c13f5a4f6f86ef83aa7d62b51b338",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/mosse-hero-200.webp",
-        "sourceSha256": "a857954bf1783699fc367afd6ed408597398d8eccabd81bfa2f99a8ee36859fc"
+        "path": "images/game/b6d367c751b473c837616630.avif",
+        "sourcePath": "private/game-data/planner/images\\a96e9b5c4615e94903ffc8afb27bd31e3b26f3bfa9a44e63f52e4317c83f2e95.png",
+        "sourceSha256": "b6d367c751b473c837616630d16318a3303fc9934fc81ce13dbab0713c3e17ef",
+        "width": 1024,
+        "height": 1024,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Mosse_01_default",
+        "sha256": "7ea01b8728e0bdade4b7db3960a69fb5fdfe1920bbc6df83ea94d885481965aa"
       }
     ]
   },
   {
-    "id": "gunde",
-    "name": "Gunde",
+    "id": "rime",
+    "name": "Rime",
     "role": "dps",
-    "classColor": "#5A1F20",
+    "classColor": "#1EA3EE",
     "images": [
       {
-        "id": "gunde",
+        "id": "rime",
         "type": "hero",
         "size": "200",
-        "path": "images/heroes/gunde-hero-200.avif",
-        "sha256": "e9c76ffeb64de57d5def32e0b09f1bace7f4c43bb68d1d4767efa353e89525b4",
-        "width": 200,
-        "height": 200,
-        "sourcePath": "images/heroes/gunde-hero-200.webp",
-        "sourceSha256": "baf243e43f06611946944926cfdd227854bb5a8f276c6dd1154cc69014eb9b16"
+        "path": "images/game/105c81fa196ce71a8b99f90f.avif",
+        "sourcePath": "private/game-data/planner/images\\912d2c20ea3db709cd748764919e80807f6385be1b0f6d2384e85f4119560c2e.png",
+        "sourceSha256": "105c81fa196ce71a8b99f90f20a5b8511c1d76315b807a383e2fb784c6ccc9f2",
+        "width": 1024,
+        "height": 1024,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_rime_default",
+        "sha256": "2813be1bba05446e42d2208f017a3175e68fdff836cc71cee65954a0606535f8"
+      }
+    ]
+  },
+  {
+    "id": "sune",
+    "name": "Xavian",
+    "role": "healer",
+    "classColor": "#077365",
+    "images": [
+      {
+        "id": "sune",
+        "type": "hero",
+        "size": "200",
+        "path": "images/game/e0cdeed8e71860bc08957539.avif",
+        "sourcePath": "private/game-data/planner/images\\24651b3cb129f4e84ad06a2505e209e3d44499f55a5a849789676677245b1913.png",
+        "sourceSha256": "e0cdeed8e71860bc08957539ceb36db017687ee0746598cb811e12699a6e0ea5",
+        "width": 2048,
+        "height": 2048,
+        "gameAsset": "/Game/ui/icons/hero_portraits/T_HeroPortrait_Sune",
+        "sha256": "55215a4dc6e28ce47a4a1d3914cf77c8565af6e039ebe21adcdd3646167882a8"
+      }
+    ]
+  },
+  {
+    "id": "vigor",
+    "name": "Vigour",
+    "role": "healer",
+    "classColor": "#DDDBC5",
+    "images": [
+      {
+        "id": "vigor",
+        "type": "hero",
+        "size": "200",
+        "path": "images/game/0182dce81ab694530b55b3aa.avif",
+        "sourcePath": "private/game-data/planner/images\\1d709caaff33b17711f959ab762cc5176b27c6af8afb88cc78cdc4598d31e8ad.png",
+        "sourceSha256": "0182dce81ab694530b55b3aab96df379d12533e74c0b5dd9d4566d5cf773ac6c",
+        "width": 1024,
+        "height": 1024,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_vigor_default",
+        "sha256": "79d64713eedb3f2203777c13c7f8d77f91591aa1c87ea798fc623260664bed12"
+      }
+    ]
+  },
+  {
+    "id": "warmaster",
+    "name": "Helena",
+    "role": "tank",
+    "classColor": "#B46831",
+    "images": [
+      {
+        "id": "warmaster",
+        "type": "hero",
+        "size": "200",
+        "path": "images/game/a598c57c116b6f6d3c8f9a7a.avif",
+        "sourcePath": "private/game-data/planner/images\\4d75e5eed71aa76bad8108e4c35031a8096c10cc569867e4b28f6c98c7a5f09f.png",
+        "sourceSha256": "a598c57c116b6f6d3c8f9a7a4bfd0ddef5936c803bbb10d8e2d50c2916781d14",
+        "width": 1024,
+        "height": 1024,
+        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_warmaster_01",
+        "sha256": "6b55eca90cfba88883b6ae8a4dc072a7748e63eb3ba4c7126ef64a7d35850d50"
       }
     ]
   }

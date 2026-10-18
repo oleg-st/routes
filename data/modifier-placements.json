@@ -1,69 +1,85 @@
 {
   "buildId": "25647984",
-  "source": "https://www.method.gg/fellowship/route-planner/cithrels-fall",
-  "status": "reference-positions-matched-to-current-data",
+  "source": "installed-game",
+  "status": "actor-tags-and-spawner-hit-capsules",
   "dungeons": {
     "Level.ID.DemonicRitual": {
       "empowered": [
-        "placement-61a5bc6a7c3b49c9d904d0dfd028fced0cc7b7db78297e2fba04eb6f9145c390",
         "placement-4b7579c586c4826a4b1550da2da9b3983540e514dd63ff6de408e074c1847af6",
-        "placement-860b6761238d9b530512fdbb5c2d1d22c8f98afed662a4809a4a4b81705f39bf",
-        "placement-7f46c09bd9863fc0633dc16c81841365fc0d1cf4a223a819cf805a957b956eb0",
-        "placement-d9ef53f74e892b9125ad980f8ece01bb648dfaa80195593adea79c5a0bcc5bb9",
+        "placement-61a5bc6a7c3b49c9d904d0dfd028fced0cc7b7db78297e2fba04eb6f9145c390",
         "placement-7ba45c3374a9302e9ac9b43f397df3b57a38693e557ec97e204551abc5660f16",
-        "placement-bcb606aa65f33af0a8718d46f5e7a4bce51152204ea60025c0698838974f233c"
+        "placement-7f46c09bd9863fc0633dc16c81841365fc0d1cf4a223a819cf805a957b956eb0",
+        "placement-860b6761238d9b530512fdbb5c2d1d22c8f98afed662a4809a4a4b81705f39bf",
+        "placement-bcb606aa65f33af0a8718d46f5e7a4bce51152204ea60025c0698838974f233c",
+        "placement-d9ef53f74e892b9125ad980f8ece01bb648dfaa80195593adea79c5a0bcc5bb9"
       ],
       "ghorn": {
-        "packId": "pack-7a9a55bd58ab221577bdc463bd1a75c295782abc676d7d9fe120b21019a77089",
+        "packId": "pack-game-75e9f533ea612281ffff8e02",
         "replacedEnemies": [
           "placement-80237fb27c3b4dfc075aaa2df497fd117997b896a3ebd0e1bc102a335d420158",
+          "placement-8faaffa8b0ecffe9baca6736b93396bcfcca65f5a374aa41a42459898a71b721",
           "placement-9e6762fa87cbb662539f522e182945d1becfc9e4f97c1a606a50cc30635f0a64",
-          "placement-b7605d9b7acda2cd4482a8a9bc0e5bd53ee4d0e442811fdf222c262ea82e2e47",
-          "placement-8faaffa8b0ecffe9baca6736b93396bcfcca65f5a374aa41a42459898a71b721"
+          "placement-b7605d9b7acda2cd4482a8a9bc0e5bd53ee4d0e442811fdf222c262ea82e2e47"
         ],
         "worldPosition": {
           "x": -11591.502,
           "y": -5005.845,
           "z": -2457
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.DemonicRitual:T_Map_Demonicritual_Start",
+        "mapPosition": {
+          "x": 0.36653639285714285,
+          "y": 0.6283834071428572
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/DemonicRitual/DemonicRitual.226"
       },
       "witch": {
-        "packId": "pack-90a4d47487f23590fa8fe1f14ed1ec92637028d4f5a18089240b771c38c16844",
+        "packId": "pack-game-aeaeb8faded63ceda857b8ce",
         "replacedEnemies": [
-          "placement-6cd74a366050974a93af73f68320ed6bce92d8401137b1e0423bbeb46229bad7",
-          "placement-648848bbfc4e3c2cd91d341e86062a3e4272dd573afb51858f8f47d96035ea56",
           "placement-41404a742920db185f7187efc352c5f49716f942808d0488a013589cdc2db60b",
+          "placement-648848bbfc4e3c2cd91d341e86062a3e4272dd573afb51858f8f47d96035ea56",
+          "placement-6cd74a366050974a93af73f68320ed6bce92d8401137b1e0423bbeb46229bad7",
           "placement-6d6971f0c1d2484fb051444eab7af3ec401c43dcb489e7ff9ba9fd439bbdc3b0",
-          "placement-860b6761238d9b530512fdbb5c2d1d22c8f98afed662a4809a4a4b81705f39bf"
+          "placement-860b6761238d9b530512fdbb5c2d1d22c8f98afed662a4809a4a4b81705f39bf",
+          "placement-9a05b7cc11aff776eadd3de0aefeb7f47a68ccf100f00a06f2dbea1530bfb128"
         ],
         "worldPosition": {
           "x": 9693.026,
           "y": -10316.976,
           "z": -899.99976
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.DemonicRitual:T_Map_Demonicritual_UpperFloor",
+        "mapPosition": {
+          "x": 0.3680917375,
+          "y": 0.5844669285714286
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/DemonicRitual/DemonicRitual.228"
       }
     },
     "Level.ID.DesertDunes": {
       "empowered": [
-        "placement-81478eecb7ca47fa14349356378091536d30e45d7e076ceda4a3642bf037e80a",
-        "placement-d91c01f1bcacd2ec903df13fdf19a0a31ede1772956943b42a1f51a127bd56e2",
-        "placement-760edf7ec518cf9b01532b5eac5b0880550bfd415a4c66d2b2fa93413ad2d553",
-        "placement-5955bbe4fa7b7498cb99a8bd6eab54c4a1d27900e43d654728e3ad9715c71a25",
         "placement-1492d01b9dc8c3cefe9aa74c16210f4c759074d7381b9272e5b1dfcc524079a8",
-        "placement-64d4e75dd77b4e17dda87a74fe2d2149079cc35959fbb661b484b69ce5bb6362"
+        "placement-5955bbe4fa7b7498cb99a8bd6eab54c4a1d27900e43d654728e3ad9715c71a25",
+        "placement-64d4e75dd77b4e17dda87a74fe2d2149079cc35959fbb661b484b69ce5bb6362",
+        "placement-760edf7ec518cf9b01532b5eac5b0880550bfd415a4c66d2b2fa93413ad2d553",
+        "placement-81478eecb7ca47fa14349356378091536d30e45d7e076ceda4a3642bf037e80a",
+        "placement-d91c01f1bcacd2ec903df13fdf19a0a31ede1772956943b42a1f51a127bd56e2"
       ],
       "ghorn": {
-        "packId": "pack-c8a18beed4961d5092568c5b7bf5ff9291ecd948ee616de67cd8f2f09aa9f073",
+        "packId": "pack-game-8568122f65387388595c87c4",
         "replacedEnemies": [
-          "placement-908a1271a25bb5d42db35372c7fd8e0d25ec40a16dca18733ea9bbdd2d2031ac",
-          "placement-a2fd9037f092264cfa07878813c704d8f2c5c1924fc7202a624843c0589938ea",
-          "placement-99947001be197d3d22421091c060d50b68f5c11d2ee025cefed07015270d0af0",
           "placement-00cdf61ca67dedef83033719f603665c34b05b815f247f26cca2134cb4083b09",
-          "placement-ab7ad6a806c71559ede9072c19301c9d5fc560f951a680bf42d9ef92902eb61e",
-          "placement-94a087f17dfcde1cbabb664be6fd75d06a15841a3c50e2e96e4a077ffd4b6250",
           "placement-6b175d34e3d798561f231ef41fae321b70b0522256f13acd00117382e337bc1a",
+          "placement-7ae50d47779c68260803384f6f40eb887eb40eba4c9bdf39fa7c49d0fc3cc69a",
+          "placement-908a1271a25bb5d42db35372c7fd8e0d25ec40a16dca18733ea9bbdd2d2031ac",
+          "placement-94a087f17dfcde1cbabb664be6fd75d06a15841a3c50e2e96e4a077ffd4b6250",
+          "placement-99947001be197d3d22421091c060d50b68f5c11d2ee025cefed07015270d0af0",
+          "placement-a2fd9037f092264cfa07878813c704d8f2c5c1924fc7202a624843c0589938ea",
+          "placement-ab7ad6a806c71559ede9072c19301c9d5fc560f951a680bf42d9ef92902eb61e",
           "placement-aff8698d6434ef932a463ef438211c404f2ecda707e42827e67bf1ebcf7d640c"
         ],
         "worldPosition": {
@@ -71,228 +87,432 @@
           "y": -5412.9927,
           "z": 1372.1405
         },
-        "radius": 2500
+        "mapImageId": "Level.ID.DesertDunes:T_Map_DesertDunes_End",
+        "mapPosition": {
+          "x": 0.46548708773584907,
+          "y": 0.4959173018867924
+        },
+        "radius": 2500,
+        "height": 1000,
+        "source": "/Game/dungeons/DesertDunes/DesertDunes.268"
       },
-      "witch": null
+      "witch": {
+        "packId": "pack-game-3f4d30da1e561fa47eeda02e",
+        "replacedEnemies": [
+          "placement-3d09aab86646e0e730a0278b1810e0441391d40e3a0bdc2cb52163603d2a5139",
+          "placement-9e0beb105b4abc109802286ab425f829d31d1485d4589ee0163aa3d4555a9680",
+          "placement-e77b0bfc0b4d57fc4bdc2d103b17965b04d21be632b5dea3bd2d72f98589f5d2",
+          "placement-f9bd4b3f0f3ae693b48db4e6d2d6dcbc15a3a7c79829bc9c3b2053b1edff9430"
+        ],
+        "worldPosition": {
+          "x": -9087.695,
+          "y": -39121.21,
+          "z": 2691.4094
+        },
+        "mapImageId": "Level.ID.DesertDunes:T_Map_DesertDunes_Start",
+        "mapPosition": {
+          "x": 0.4483753333333335,
+          "y": 0.3381942333333333
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/DesertDunes/DesertDunes.267"
+      }
     },
     "Level.ID.ElfMines": {
       "empowered": [
-        "placement-b1073e96e2779670b8fa37e0f65a0d66594b6e43ab6f383ba75ee932076e78ac",
+        "placement-188f0c0bf772baf7df4254f8039320da672da809e89eb9b613eef3f48a9d5a2f",
         "placement-8fa3fe6b731c9ff3746c504eba1090882cb19879fd9d1cd72ed4f6f9083c1547",
-        "placement-dd76c4dddc47cdbbcf1969c39d028ea3ecbad81f4ad844ce878fc6c28b357ea1",
-        "placement-188f0c0bf772baf7df4254f8039320da672da809e89eb9b613eef3f48a9d5a2f"
+        "placement-b1073e96e2779670b8fa37e0f65a0d66594b6e43ab6f383ba75ee932076e78ac",
+        "placement-dd76c4dddc47cdbbcf1969c39d028ea3ecbad81f4ad844ce878fc6c28b357ea1"
       ],
       "ghorn": {
-        "packId": "pack-543f3ddf5e5e642ff851abe16586abb65dbcbffccc0026d2491414f29e0a9d53",
+        "packId": "pack-game-b3b93897f6f84077d23eac62",
         "replacedEnemies": [
-          "placement-ef6fff6d3fbd97aadf69db0d44c922d695bdea5f55f802431993b6bc2c70bd36",
-          "placement-a631bc6e91d9eb13d7c533a65d575b77fc4ee088290bdf52e2acf3825335f3ca",
-          "placement-2d5889ccd257ccd0c47a4a6db8287f3c6e7ab66b0ad4ab86715c4d690851a8d4",
-          "placement-cd1740c9e416f35b52e60c01afc7a839b42ad0eeb9fdcd7d5916e2c1f163ae96",
-          "placement-365dc7480af495eda6e639beba1e0ef358003ede7f20d9b926c6fc0ea3a4002f",
-          "placement-909d95af821c4934eb14f75f4bb6ee331e245ba7880af5f4d068b12a173df7c2",
-          "placement-640ca95d467cf827e2c5be9dc0b6feb4d84d1e181f04706e5f0b8b498793cada",
-          "placement-2fc7226ce77fda20bc36c3c4906ba42bb3c37a2172a3be4874d39a47764de6df",
           "placement-09b06c6b557b77fb3d6019f954a4a133c18bf14267c54577bb1f98b4d84d968c",
-          "placement-d17ee136969db4c929ead9782243393e8883b24be1682e23055bfbfac6e7815a"
+          "placement-2d5889ccd257ccd0c47a4a6db8287f3c6e7ab66b0ad4ab86715c4d690851a8d4",
+          "placement-2fc7226ce77fda20bc36c3c4906ba42bb3c37a2172a3be4874d39a47764de6df",
+          "placement-365dc7480af495eda6e639beba1e0ef358003ede7f20d9b926c6fc0ea3a4002f",
+          "placement-640ca95d467cf827e2c5be9dc0b6feb4d84d1e181f04706e5f0b8b498793cada",
+          "placement-909d95af821c4934eb14f75f4bb6ee331e245ba7880af5f4d068b12a173df7c2",
+          "placement-a631bc6e91d9eb13d7c533a65d575b77fc4ee088290bdf52e2acf3825335f3ca",
+          "placement-cd1740c9e416f35b52e60c01afc7a839b42ad0eeb9fdcd7d5916e2c1f163ae96",
+          "placement-d17ee136969db4c929ead9782243393e8883b24be1682e23055bfbfac6e7815a",
+          "placement-ef6fff6d3fbd97aadf69db0d44c922d695bdea5f55f802431993b6bc2c70bd36"
         ],
         "worldPosition": {
           "x": 66167.64,
           "y": 2668.0593,
           "z": -3141.8645
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.ElfMines:T_Map_EM_Global",
+        "mapPosition": {
+          "x": 0.38330012314814815,
+          "y": 0.6505862962962964
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/ElfMines/ElfMines.609"
       },
-      "witch": null
+      "witch": {
+        "packId": "pack-game-d562a4af61a9a146b960458a",
+        "replacedEnemies": [
+          "placement-28e48e56912b7ea61ea4f3a10cf64b85ba3fda45224b3bf3516c87a7b5e526e2",
+          "placement-31838241cd4e56453d7adbc98e72e0508ba44c984e1b546cdea0572a7c624c15",
+          "placement-4f7301ed1936c88ce426f4bd80bb8402acb302762615b1ce44e21d7dea7a8a5a",
+          "placement-7e995de47d48e3af9d0db6daafe717b0fbacadf75bf5fb1bd040ab0a34f88803"
+        ],
+        "worldPosition": {
+          "x": 62867.94,
+          "y": 9968.66,
+          "z": -1968.4185
+        },
+        "mapImageId": "Level.ID.ElfMines:T_Map_EM_Global",
+        "mapPosition": {
+          "x": 0.45089827777777775,
+          "y": 0.7116918518518519
+        },
+        "radius": 1500,
+        "height": 1000,
+        "source": "/Game/dungeons/ElfMines/ElfMines.608"
+      }
     },
     "Level.ID.FrozenKingdom": {
       "empowered": [],
       "ghorn": {
-        "packId": "pack-7490b1af2bd14d712160242e526f890f2dccaa79aeda83453b1dd5d606364fc7",
+        "packId": "pack-game-b78d47fe6bbe5c431545aed4",
         "replacedEnemies": [
-          "placement-20968530b3dc82b9fd6fa5b81cc5d5b1aea339a5a371589acd801e3edb93c8fc",
-          "placement-913808c4c9c07528979d6041e8223a506c834e7a6b19f60b3eab819d0bf04ab3",
-          "placement-90c7586c5caa12581abe39e21b644c2079e8bf78b2bb0f522be4aad4784fe1f7",
-          "placement-73b1de8d15e6abafca7cbf40d14f0e8f01e11d8af11651287e4b8c7949b3600a",
-          "placement-e0d6902d274ef597ec3b63587203a8bea2106ad43cae48ccf3c097732e682143",
-          "placement-35282ca16b0d4d667cb238c68a64f211ce1eee1db5777f46ea724bdc87af5ef6",
-          "placement-5f103e6b9be092c9caf7e25c1fc888d7d5ccce0eb6bc510b81e9c18ae2b2d844",
           "placement-0b807a127b6edbf78c3ecc44b422ba382c764f391177b25502836cfcc73903b4",
-          "placement-ebb0eda2763ed6830e56d03192ece67d759f30bb5fbda04fa340905615613568",
-          "placement-bb51412412bf43a38a4defb649436f7aca82dfcd124949a00206e8557e55df5d",
+          "placement-20968530b3dc82b9fd6fa5b81cc5d5b1aea339a5a371589acd801e3edb93c8fc",
+          "placement-35282ca16b0d4d667cb238c68a64f211ce1eee1db5777f46ea724bdc87af5ef6",
           "placement-590f4096900b0cb4d2758045a93ea622bfd91c657b62cfccbb9e61d1a53982d2",
           "placement-5e238c5d1b00ea5e3e355b284896cd424078dfd00417daf7cc4bd822c2f19aee",
-          "placement-b7c0537371eb6bd5bcfa3f2d58711b898b848abfcb2f0e7408f59b4ba917442e"
+          "placement-5f103e6b9be092c9caf7e25c1fc888d7d5ccce0eb6bc510b81e9c18ae2b2d844",
+          "placement-73b1de8d15e6abafca7cbf40d14f0e8f01e11d8af11651287e4b8c7949b3600a",
+          "placement-90c7586c5caa12581abe39e21b644c2079e8bf78b2bb0f522be4aad4784fe1f7",
+          "placement-913808c4c9c07528979d6041e8223a506c834e7a6b19f60b3eab819d0bf04ab3",
+          "placement-b7c0537371eb6bd5bcfa3f2d58711b898b848abfcb2f0e7408f59b4ba917442e",
+          "placement-bb51412412bf43a38a4defb649436f7aca82dfcd124949a00206e8557e55df5d",
+          "placement-e0d6902d274ef597ec3b63587203a8bea2106ad43cae48ccf3c097732e682143",
+          "placement-ebb0eda2763ed6830e56d03192ece67d759f30bb5fbda04fa340905615613568"
         ],
         "worldPosition": {
           "x": 6128.2686,
           "y": 10835.183,
           "z": 3133.4722
         },
-        "radius": 2200
+        "mapImageId": "Level.ID.FrozenKingdom:T_Map_FrozenKingdom_01",
+        "mapPosition": {
+          "x": 0.619592453773585,
+          "y": 0.5151156566037736
+        },
+        "radius": 2200,
+        "height": 1000,
+        "source": "/Game/dungeons/FrozenKingdom/FrozenKingdom.237"
       },
       "witch": {
-        "packId": "pack-78628e800101fbddeb76bb9caa526058eb86e6257d190f083773c153578f5dc1",
+        "packId": "pack-game-effcaaa8b4b78a2dfc81454c",
         "replacedEnemies": [
-          "placement-bfe962c73b6dd5e42821f567e4603af5f935cb616df142d728728a366443222c",
           "placement-2536f00e16582603934c9653c0e256a070e7b366318fba88b76da7081fb56a13",
-          "placement-68bae54ebee442a8dde913a31b4b1d209ce1bda152f3eec115a65cab865d1925"
+          "placement-68bae54ebee442a8dde913a31b4b1d209ce1bda152f3eec115a65cab865d1925",
+          "placement-93721b99b31c3d3cdd903efc1b6c41f68f41a71874de736a246db2ddbe713627",
+          "placement-bfe962c73b6dd5e42821f567e4603af5f935cb616df142d728728a366443222c"
         ],
         "worldPosition": {
           "x": 7055.231,
           "y": -8497.186,
           "z": 1642.9072
         },
-        "radius": 4000
+        "mapImageId": "Level.ID.FrozenKingdom:T_Map_FrozenKingdom_01",
+        "mapPosition": {
+          "x": 0.4372116141509434,
+          "y": 0.49762579999999995
+        },
+        "radius": 4000,
+        "height": 1000,
+        "source": "/Game/dungeons/FrozenKingdom/FrozenKingdom.238"
       }
     },
     "Level.ID.IceCave": {
       "empowered": [
-        "placement-9e606213ee85faa03ddea685190e62c735785447ca7cddd2e0774b7221bcff94",
         "placement-6d09a36eb877a054d78fc0dca66a360ca7d4171c34e4643392e1ce2df3de3e59",
-        "placement-74316ca8c26fdfd0347e41f4e2f03ada0ff0b1bb200f9bd6b7aa0686f2fd6818"
+        "placement-74316ca8c26fdfd0347e41f4e2f03ada0ff0b1bb200f9bd6b7aa0686f2fd6818",
+        "placement-9e606213ee85faa03ddea685190e62c735785447ca7cddd2e0774b7221bcff94"
       ],
       "ghorn": {
-        "packId": "pack-b1a4f109f089743d676e0364632067af41158bbcd2f4c218c94eb576f9c855eb",
+        "packId": "pack-game-1ba9cb9d40066597b2c6f363",
         "replacedEnemies": [
+          "placement-28170610c6b0c351033358c872a8a82f2a5dcb40c370dab34331923433793b8b",
           "placement-32a5a3fc9af2ff374bd3938e62a83262e710d18cbcf8ca82c8aeda522909b567",
-          "placement-833d034563dbd085e7d3c3e70a38aca194547226fd11e61b79b2f0583cca20d1",
-          "placement-e0d5c5f7a1508a2b25307d331cc7eefc420d697e3906bfd7b7cb3ef80cbbe06a",
           "placement-685c10d19757f7a5bc24fd032c4d6fa28a79ec629a86c2e917eaf020ab09d2a2",
-          "placement-28170610c6b0c351033358c872a8a82f2a5dcb40c370dab34331923433793b8b"
+          "placement-833d034563dbd085e7d3c3e70a38aca194547226fd11e61b79b2f0583cca20d1",
+          "placement-e0d5c5f7a1508a2b25307d331cc7eefc420d697e3906bfd7b7cb3ef80cbbe06a"
         ],
         "worldPosition": {
           "x": 48464.914,
           "y": 17722.783,
           "z": -7195.415
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.IceCave:T_Map_IceCave_Ending",
+        "mapPosition": {
+          "x": 0.5371053181818182,
+          "y": 0.5393205909090908
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/IceCave/IceCave.146"
       },
-      "witch": null
+      "witch": {
+        "packId": "pack-game-cc24a5b8397250740d1ef22b",
+        "replacedEnemies": [
+          "placement-18f9b0d1f125f03bb6361d220d21fed9e12d68a5872a0c188600abf6e55a0d97",
+          "placement-4836fc9b220f1e5bc87854716cd35942247b9ee16a0d199eb75dd691e5ae8a79",
+          "placement-6549dff5cf08d06e8f54ea943797454af45aeac28c7978b6de1ec82e675780a0",
+          "placement-a69ae34d0f5a687dbca85174ae7232fc6c396939f06a087cf70872d9f2a64ce6"
+        ],
+        "worldPosition": {
+          "x": 41537.895,
+          "y": 5842.7935,
+          "z": -3165.0327
+        },
+        "mapImageId": "Level.ID.IceCave:T_Map_IceCave_Ending",
+        "mapPosition": {
+          "x": 0.4021054375,
+          "y": 0.6967528409090907
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/IceCave/IceCave.147"
+      }
     },
     "Level.ID.MoorCastle": {
       "empowered": [
         "placement-0da3a84d74066d86034c5f8e612c119eb89b13b80e889763a946063c72f85a9d",
-        "placement-cfac8f625d92413bc33078ae249a2adc57af8b621e6b8c7810c1bd9258cebff6",
         "placement-270c25f0f480b7d870bf1d3144c051c2a289cef9c2faad965d459f8806b1cd39",
         "placement-7341cb3066ad58b1d737a1ae303c3c02c87e00812caf4ecb4def09a48b9ab79b",
+        "placement-8f9abbdd105e54f0fa6cf32895c8ad15aa0be8f9967a2431851336617cc0eb5c",
         "placement-a9ee3e39c660c91135a3c2bd139cdfd620e7f03f89fb53d293f1b6f4cce451de",
-        "placement-8f9abbdd105e54f0fa6cf32895c8ad15aa0be8f9967a2431851336617cc0eb5c"
+        "placement-cfac8f625d92413bc33078ae249a2adc57af8b621e6b8c7810c1bd9258cebff6"
       ],
-      "ghorn": null,
-      "witch": {
-        "packId": "pack-f1a36b4b8319cc59823276d62aa6dc8f959a34558de9323cc8fc4cc83a00539e",
+      "ghorn": {
+        "packId": "pack-game-b2081f1f096e2f1a1dc5d159",
         "replacedEnemies": [
-          "placement-b670f09d49695eededfbb326ceeb35a6b19de4db00449908b5d5371b23e6f006",
+          "placement-7341cb3066ad58b1d737a1ae303c3c02c87e00812caf4ecb4def09a48b9ab79b",
+          "placement-9f5b656a61d1c79cf19613535ac66bd4b4ca100ac3ad6792e90308139c5956fc",
+          "placement-c549b2faf093ce527888644a369d0f46f69c8e35b609085305d1f7940a0b3544",
+          "placement-e4c0867181545a0b084889c32cb8f7d240fafb12b11d2dc55b90274e714c40f6",
+          "placement-fa02938b2ab88f51c25f79ea637edd5a81f30bc2000c58e9046867fde61912cb"
+        ],
+        "worldPosition": {
+          "x": -16880,
+          "y": 11110,
+          "z": 10
+        },
+        "mapImageId": "Level.ID.MoorCastle:T_Map_MC_Global_01",
+        "mapPosition": {
+          "x": 0.6099354237037036,
+          "y": 0.6580534074074074
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/MoorCastle/Levels/MoorCastle.51"
+      },
+      "witch": {
+        "packId": "pack-game-186dcf67f232ce6e158336ef",
+        "replacedEnemies": [
           "placement-569c35a78086fe56e88fae0f3fcca6e21a10994b0498768a63200751eb327f74",
           "placement-84f4ef6cb372f857ee9def4ff9ea14aa99f3674791b128ed0e4e6ee4f412efa1",
-          "placement-cf0955905c88843ed45683cfa9164f21759324d85e896f2316803a0c7fcab28f",
-          "placement-a8b8719751f1dcc728eebf0b20fd79f3c0c84f770f624a3067ee171f95a0ab03"
+          "placement-a8b8719751f1dcc728eebf0b20fd79f3c0c84f770f624a3067ee171f95a0ab03",
+          "placement-b670f09d49695eededfbb326ceeb35a6b19de4db00449908b5d5371b23e6f006",
+          "placement-cf0955905c88843ed45683cfa9164f21759324d85e896f2316803a0c7fcab28f"
         ],
         "worldPosition": {
           "x": -18080,
           "y": -10880,
           "z": 749.04785
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.MoorCastle:T_Map_MC_Global_01",
+        "mapPosition": {
+          "x": 0.40632431259259255,
+          "y": 0.6802756296296296
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/MoorCastle/Levels/MoorCastle.50"
       }
     },
     "Level.ID.MythicForest": {
       "empowered": [
-        "placement-46208277f8ec6ea37c9e35d3ed239cb2fb6a3c58b80dc114601d31e814824ec3",
-        "placement-f8e0ee97e8d280951090dcf2e41f307c294dcaccb9964deafbcdde1b6a593ade",
-        "placement-af01830377e1cbfabf0fd69af9b71fd93e6536f66a4c5f8158b7cddd48fd54eb",
         "placement-2d7c09a84172e33cdc10d81e40c1b33c6b9f089517d56509bbe1b903b6e2713a",
+        "placement-46208277f8ec6ea37c9e35d3ed239cb2fb6a3c58b80dc114601d31e814824ec3",
         "placement-972958d2c67f6e95fb55e77e30c03c26481493b1d182c7570fd0a64d3e27fb61",
-        "placement-a5bb4b07bc1eb4fd466b91eec084df6eefaa7639917dba18fc5436c6b53be302"
+        "placement-a5bb4b07bc1eb4fd466b91eec084df6eefaa7639917dba18fc5436c6b53be302",
+        "placement-af01830377e1cbfabf0fd69af9b71fd93e6536f66a4c5f8158b7cddd48fd54eb",
+        "placement-f8e0ee97e8d280951090dcf2e41f307c294dcaccb9964deafbcdde1b6a593ade"
       ],
-      "ghorn": null,
-      "witch": {
-        "packId": "pack-cbb1c5783247daf58c0094b68314d16e20b416f69c22f3721d80214a7a086acf",
+      "ghorn": {
+        "packId": "pack-game-2347a0982cfbb02f6d89fcf1",
         "replacedEnemies": [
+          "placement-20ebedb9b3f32cd0dac030c6877dbcc6cca1f7227db32f986277497535c834e7",
+          "placement-28d66178e5ef1aa8a66013a337021fab6f0cad14cf299fad16cec2405bf9e932",
+          "placement-972958d2c67f6e95fb55e77e30c03c26481493b1d182c7570fd0a64d3e27fb61",
+          "placement-9ba6e58536e1649ca5c263e611b0cd178fd02e46ff4e01dbd580d78fb6d1206a",
+          "placement-b9eac456247a7fa7dadc76a3edf46cbc1125031e7fd0e22ae7f50650f203eb9b",
+          "placement-c841da1a6ec8868e9a248854e36930371b246b1137f3e1103e31a99dc71c2152"
+        ],
+        "worldPosition": {
+          "x": 48.096657,
+          "y": -4348.1304,
+          "z": 156.50253
+        },
+        "mapImageId": "Level.ID.MythicForest:T_Map_MythicForest_Global",
+        "mapPosition": {
+          "x": 0.35016483958333333,
+          "y": 0.39301220714583335
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/MythicForest/MythicForest.138"
+      },
+      "witch": {
+        "packId": "pack-game-66253572d7d2cc6d60328efe",
+        "replacedEnemies": [
+          "placement-354bf26426aeb3708963eae7e77e06eb549e4f4966d6ece4fb7d0d855ccf3e0e",
+          "placement-43bc4a0e9523d18b26c1d0a9f7291c971f6017b95e8f032b0e7a2f07b143f4c0",
+          "placement-4543425569900c7f205e3b7fdd76c2a6f68f516cf674e110e3b2c867b8b5abee",
+          "placement-458b9aa02f236597962a370b73fe80cd7e8b5e1b273a588d9bd2b609a2673736",
+          "placement-77e3dffb1d4f770e4fbb894320866dfc82ae263cbdb8d67333ac1641385b4b27",
           "placement-95f0a5e7da58362a7a840f7189fd8da70c31177fe5e4bfb76eb57e086a6aae87",
           "placement-c6660e3600e68de04670fd04e22546d49da8b7c241509aceafbe4789762699db",
           "placement-d6dfd59bfb61e9347d8c1d394a145fa238610a75494d75cd51408b8bbdbc782c",
-          "placement-43bc4a0e9523d18b26c1d0a9f7291c971f6017b95e8f032b0e7a2f07b143f4c0",
-          "placement-354bf26426aeb3708963eae7e77e06eb549e4f4966d6ece4fb7d0d855ccf3e0e",
-          "placement-de77f3cc84bbe52f639d42d9c49f8b7654d2cf8b62451f934aec3ef410b5fc8b",
-          "placement-77e3dffb1d4f770e4fbb894320866dfc82ae263cbdb8d67333ac1641385b4b27",
-          "placement-458b9aa02f236597962a370b73fe80cd7e8b5e1b273a588d9bd2b609a2673736"
+          "placement-de77f3cc84bbe52f639d42d9c49f8b7654d2cf8b62451f934aec3ef410b5fc8b"
         ],
         "worldPosition": {
           "x": 2232,
           "y": 21490,
           "z": -675.7433
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.MythicForest:T_Map_MythicForest_Global",
+        "mapPosition": {
+          "x": 0.61931203125,
+          "y": 0.34751422083333333
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/MythicForest/MythicForest.137"
       }
     },
     "Level.ID.NightPatrol": {
       "empowered": [
-        "placement-c31155cae12afe0d8daaad9784d142b2e4eb47a81a4b3ed26da393b2b836ac5a",
-        "placement-f8cf227a8b45db4297cf82c6de4c2aaa8b39a03536068e7defb38f034afe1ef8",
         "placement-351b1d6cc3eaa7eb6cf00587bbc6d701403de399c69bdc22c96eec8479315b29",
         "placement-9de2631c5f3fa580705d526315264b131ae0cbed99f6394d1f09cbd528c304d5",
-        "placement-b22aa9c698430a00fc919f2b6088b7e6f3049e9d19d8d55c6ac305bef300a0ad"
+        "placement-b22aa9c698430a00fc919f2b6088b7e6f3049e9d19d8d55c6ac305bef300a0ad",
+        "placement-c31155cae12afe0d8daaad9784d142b2e4eb47a81a4b3ed26da393b2b836ac5a",
+        "placement-f8cf227a8b45db4297cf82c6de4c2aaa8b39a03536068e7defb38f034afe1ef8"
       ],
-      "ghorn": null,
-      "witch": {
-        "packId": "pack-d70cebbaa6930f53c018014e6993344bbb922d925c9ad01afa3f8f097cb4c94a",
+      "ghorn": {
+        "packId": "pack-game-2f1e819beebbf66eb5dcf3f1",
         "replacedEnemies": [
-          "placement-50da887197280f65478a7af8cb3c6b5cf14f2ec57f7390a0d86f78ee3c915836",
-          "placement-b735ba1bf60fe5923b8ffccb1feeeba27f4cbb0e75cc70dce54cf5d53e96ffcb",
+          "placement-00edb171da821977dad18c6f1add9ce7959a58b2e48e85bfcbc165aea6c1509e",
+          "placement-38c96e7dc1c1143c611578d4a10d021927ad1d405f4dfa65ec76ad68a646f8bf",
+          "placement-4ca955266b4bc8843359367a98b8c0fbd8e1827fe690355494aa991368f5c191",
+          "placement-95688cc4b84b59e7e8b069fa3436b4e7fc3515f056be6a7cf77c67a09fdbb18c",
+          "placement-ab8bcc35220394ed34b6defde1fd39736c86e3047567207e9db88c9a27162f76",
+          "placement-d6f7c57d3baf61932cc07bf57964dc3282b5219ba51967bdf8ab6389db8f2464"
+        ],
+        "worldPosition": {
+          "x": -18.440588,
+          "y": 18560.275,
+          "z": 13071.095
+        },
+        "mapImageId": "Level.ID.NightPatrol:T_Map_Nightpatrol_02",
+        "mapPosition": {
+          "x": 0.4302014655172414,
+          "y": 0.6170687616551725
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/NightPatrol/NightPatrol.170"
+      },
+      "witch": {
+        "packId": "pack-game-1df7c814040bb8aa5f7162e3",
+        "replacedEnemies": [
           "placement-0d4da159fa9ba5c73069db2853e39286862615dd05a9f77a9d36040f94c5ca1c",
-          "placement-fb8b2354e7bedd8862c2eae89272e0116ef95597ca62a716846c5e7d61845a30",
-          "placement-e950d7e9dcc60a021c7b948ab022abc96c020ab5fa01e2ced88b10c70875917f",
-          "placement-7647cb702a4b5caf8d7b035fd59f5396f4d4190b3e0e9042dbc0830a91178a80",
-          "placement-fab2e07f5efa7c08379f454623f5f7cb4aa96a3c9a18ee6ffd571382e8da3754",
-          "placement-f12d2021ff7fd557cd82feb6d16fd2d49f298e405ed88b120d40640328af8175",
+          "placement-0f7a3db4fb98568256dc9ebc9d6a6e31e90e34ffcdd58edf762d6ec867ef8e4a",
+          "placement-4f44bcf68cf86815db86f02c9f8f919a09e70a99dfec53fbfc03671f2c88ed19",
+          "placement-50da887197280f65478a7af8cb3c6b5cf14f2ec57f7390a0d86f78ee3c915836",
           "placement-6ebd30ee162f5e4701a4820fca2a76be5c56305cbc78afa890a8d13622ef91a8",
-          "placement-4f44bcf68cf86815db86f02c9f8f919a09e70a99dfec53fbfc03671f2c88ed19"
+          "placement-7647cb702a4b5caf8d7b035fd59f5396f4d4190b3e0e9042dbc0830a91178a80",
+          "placement-b735ba1bf60fe5923b8ffccb1feeeba27f4cbb0e75cc70dce54cf5d53e96ffcb",
+          "placement-e950d7e9dcc60a021c7b948ab022abc96c020ab5fa01e2ced88b10c70875917f",
+          "placement-f12d2021ff7fd557cd82feb6d16fd2d49f298e405ed88b120d40640328af8175",
+          "placement-fab2e07f5efa7c08379f454623f5f7cb4aa96a3c9a18ee6ffd571382e8da3754",
+          "placement-fb8b2354e7bedd8862c2eae89272e0116ef95597ca62a716846c5e7d61845a30"
         ],
         "worldPosition": {
           "x": -13106.882,
           "y": 27603.666,
           "z": 12219.121
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.NightPatrol:T_Map_NightPatrol",
+        "mapPosition": {
+          "x": 0.44580966129032257,
+          "y": 0.26801887096774196
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/NightPatrol/NightPatrol.171"
       }
     },
     "Level.ID.PirateRaid": {
       "empowered": [],
       "ghorn": {
-        "packId": "pack-ed761622ab3f21550c497bf9f0ca7f3073fc7fde0075eb1872f860297851004f",
+        "packId": "pack-game-bec9ccf9ad97a22a536496a4",
         "replacedEnemies": [
           "placement-26348b46449563ed25304f9a8b872c183a9328b433ee811bb82f662dd53d4e22",
-          "placement-a79516cc19221d8f428a931d1ff23cf5a754e3de787cdabb20ef35dff3ed664c",
+          "placement-27bd33a9368640e7107a0912d8ab8cdc4c3e8e8b21daf02c78ac3aefda9295c1",
           "placement-4f47caf01c76ae697aabe6679326bcd57060ad3818e61beb721d12596c3abcdc",
           "placement-51fa1b1807ca7db7ae1859c59c4d9f332e6cd972c339fa26875f47219f7d08d7",
           "placement-5a1db3aafab6103bb2715a3a0514ac46d6790dd3e82a69fe2fbcfb9dc6ce84c4",
           "placement-905585fa38f326955e209065519a82a482ef46412ff6b49cabe1e3167d898906",
-          "placement-c74a90f23a20c7b8e9b73c41a7ab89c0350e734a903d8c360a70f361077bbbd5",
-          "placement-27bd33a9368640e7107a0912d8ab8cdc4c3e8e8b21daf02c78ac3aefda9295c1"
+          "placement-a79516cc19221d8f428a931d1ff23cf5a754e3de787cdabb20ef35dff3ed664c",
+          "placement-c74a90f23a20c7b8e9b73c41a7ab89c0350e734a903d8c360a70f361077bbbd5"
         ],
         "worldPosition": {
           "x": -23176.463,
           "y": -4309.0254,
           "z": 2362.801
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.PirateRaid:T_Map_PirateRaid_JungleArea",
+        "mapPosition": {
+          "x": 0.5420741603448276,
+          "y": 0.4155484137931034
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/PirateRaid/PirateRaid.666"
       },
       "witch": {
-        "packId": "pack-5f1a863ff636f71546cb546888f64cf5b42eed6de17c3a6853f905592ed612a7",
+        "packId": "pack-game-518ff7bc711286a88049aea4",
         "replacedEnemies": [
-          "placement-3d93d3cdfa3812d77eb3c97f22b4b2769e7ec694c82642a62d01347bd6b0613c",
           "placement-0fcd0c2cb307edc97d7494af6a46b0176bb29194de2cfc434903fb7f7e9f306d",
-          "placement-f8b3a416c9e9402cc2b46fc24fbfc303c8f01fc488c0a99dfbdf956ab2be4d1b",
-          "placement-1aab243dd919bf3435b5a68d009351c1bd083a343257f3f59278dfaae520fb76"
+          "placement-1aab243dd919bf3435b5a68d009351c1bd083a343257f3f59278dfaae520fb76",
+          "placement-3d93d3cdfa3812d77eb3c97f22b4b2769e7ec694c82642a62d01347bd6b0613c",
+          "placement-f8b3a416c9e9402cc2b46fc24fbfc303c8f01fc488c0a99dfbdf956ab2be4d1b"
         ],
         "worldPosition": {
           "x": 6134,
           "y": 372.0005,
           "z": 2020.0453
         },
-        "radius": 1000
+        "mapImageId": "Level.ID.PirateRaid:T_Map_PirateRaid_Lower",
+        "mapPosition": {
+          "x": 0.3563570705128205,
+          "y": 0.3541869146153846
+        },
+        "radius": 1000,
+        "height": 1000,
+        "source": "/Game/dungeons/PirateRaid/PirateRaid.668"
       }
     },
     "Level.ID.SandTomb": {
@@ -303,157 +523,288 @@
     "Level.ID.ShipGraveyard": {
       "empowered": [
         "placement-3c16afcfebfbef08ac16fa6e5b418a649de89bbfcaf4201580f830904cf43cc5",
-        "placement-4ca4e53f6a27e3666727eaacf9cba3741dd670ad2584f1f09448bd45e8f50984",
-        "placement-e085d9e6b9681dd0447e8276d59bf0229b89a2023d3c1e964175f4bdda07cb9d",
-        "placement-5f8a315ee5f8c9cd16f5e84f8f92375d9e1ee7384f5c5118a751a3f33de8b14f",
-        "placement-58bcabf484e010b3eaf79cde51e5156fc47790b1481746ac22efa52b9c4d1f93",
         "placement-46d9e85c691611d17e08000a03c8a29b749eea9daac0e6b89d42706d955c032a",
-        "placement-ce079e2141f3956e100573d46856ac43a9d8ca8db539d64b092ededffb5d2914"
+        "placement-4ca4e53f6a27e3666727eaacf9cba3741dd670ad2584f1f09448bd45e8f50984",
+        "placement-58bcabf484e010b3eaf79cde51e5156fc47790b1481746ac22efa52b9c4d1f93",
+        "placement-5f8a315ee5f8c9cd16f5e84f8f92375d9e1ee7384f5c5118a751a3f33de8b14f",
+        "placement-ce079e2141f3956e100573d46856ac43a9d8ca8db539d64b092ededffb5d2914",
+        "placement-e085d9e6b9681dd0447e8276d59bf0229b89a2023d3c1e964175f4bdda07cb9d"
       ],
-      "ghorn": null,
-      "witch": {
-        "packId": "pack-ba91e6ebf95b5a0414fb8472565991e1a7e64ae75debbde90cb6a5fe34f4cfa0",
+      "ghorn": {
+        "packId": "pack-game-82c78bc895a6a62e333b3814",
         "replacedEnemies": [
-          "placement-52bf1d7c81d3ebda640a18245ed7ebc817e2dcfa0b9064dd41d81b9e75bbc203",
+          "placement-3dd408668a98261bf728a93f0874c831bf56ac47b4e7d99c382e7f7dfc8fc3c3",
+          "placement-4ca4e53f6a27e3666727eaacf9cba3741dd670ad2584f1f09448bd45e8f50984",
+          "placement-b017240a394cd7ff3a46402c204047e3e7dbcec25dcacca621059fa7b177ffc8",
+          "placement-cd98eacdd883a4c965a7b21fa8d1a4507eadbfbd75d1c2e320d246f33c072dcd"
+        ],
+        "worldPosition": {
+          "x": 1011,
+          "y": -6022,
+          "z": -830.6441
+        },
+        "mapImageId": "Level.ID.ShipGraveyard:T_Map_ShipGraveyard_01",
+        "mapPosition": {
+          "x": 0.36245947875,
+          "y": 0.399002215
+        },
+        "radius": 1000,
+        "height": 1000,
+        "source": "/Game/dungeons/ShipGraveyard/ShipGraveyard.505"
+      },
+      "witch": {
+        "packId": "pack-game-57d6cbb4f83ebfbae49b45bc",
+        "replacedEnemies": [
           "placement-171e7b10c6a5518be56ab41086b8624cf914c6db8d7ca11036d6d27a1920d0ab",
-          "placement-aa55fb9251a2fa034e83771be4ca00281f8c0c17f43e12859405e2ca99ed77e6",
           "placement-51fceb880dbe9d2845bc49346604cace61a248adb8a3304c1588b1d4ed040177",
-          "placement-f0b5ff9ded33b9968bc095f4664d122b9fa5f546ae108f6173855301656ef8ee",
-          "placement-64e192404e343e7ce2f54f693c4eef0d95aa83c353671ebfd9c5e23f17ab725e"
+          "placement-52bf1d7c81d3ebda640a18245ed7ebc817e2dcfa0b9064dd41d81b9e75bbc203",
+          "placement-64e192404e343e7ce2f54f693c4eef0d95aa83c353671ebfd9c5e23f17ab725e",
+          "placement-aa55fb9251a2fa034e83771be4ca00281f8c0c17f43e12859405e2ca99ed77e6",
+          "placement-f0b5ff9ded33b9968bc095f4664d122b9fa5f546ae108f6173855301656ef8ee"
         ],
         "worldPosition": {
           "x": -1190,
           "y": 17031,
           "z": -1745.0935
         },
-        "radius": 1000
+        "mapImageId": "Level.ID.ShipGraveyard:T_Map_ShipGraveyard_01",
+        "mapPosition": {
+          "x": 0.65062197875,
+          "y": 0.454027215
+        },
+        "radius": 1000,
+        "height": 1000,
+        "source": "/Game/dungeons/ShipGraveyard/ShipGraveyard.503"
       }
     },
     "Level.ID.SnowPeak": {
       "empowered": [
-        "placement-ec3cff2215be1679ee314a1f91afe8cf33b732755bd23be7c3dddbc6a41680dd",
-        "placement-945835964414df4b1afd04a40c9bd4a774053aee0ee41054ef694659c42f8d17",
         "placement-55899a48251b4e765c22858ae4ef5897e6d36904a66586aab279d778a38983a5",
+        "placement-640bdc18daccf2b035d872825c5f7ebe72d75f8fd3f3404207fa2f92427ce38f",
+        "placement-945835964414df4b1afd04a40c9bd4a774053aee0ee41054ef694659c42f8d17",
         "placement-df61ddc03f13611baa136c5a06ce51f6b550607116f152791e089dbbd7893b63",
-        "placement-640bdc18daccf2b035d872825c5f7ebe72d75f8fd3f3404207fa2f92427ce38f"
+        "placement-ec3cff2215be1679ee314a1f91afe8cf33b732755bd23be7c3dddbc6a41680dd"
       ],
       "ghorn": {
-        "packId": "pack-618e7baee116be41dc2382cc3be02c9d77b660cab04f1bf496343f4ebdc6d41c",
+        "packId": "pack-game-a43612c8265cbfe3064b793e",
         "replacedEnemies": [
           "placement-4547b4467bcfcd5f95fa4efe097bd4128c7cafaed53b278ca1f316fd54f03cdd",
-          "placement-d0df3b13645c7c63a1148ba23a55eaca7800346cb908b9f7ed20cede7932d2f7",
           "placement-7acc214ead1eaf697c156b288ae61aadb4c3b8bfe707e961192541ff81e9877b",
-          "placement-7d34f84c4e8d54a4d4aa642ec99a45e1289d2617a68307130310e846ff39d29e"
+          "placement-7d34f84c4e8d54a4d4aa642ec99a45e1289d2617a68307130310e846ff39d29e",
+          "placement-d0df3b13645c7c63a1148ba23a55eaca7800346cb908b9f7ed20cede7932d2f7"
         ],
         "worldPosition": {
           "x": 4830,
           "y": -22710,
           "z": 6800
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.SnowPeak:T_SP_Map_global_01",
+        "mapPosition": {
+          "x": 0.4576464888888889,
+          "y": 0.3010627288888889
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/SnowPeak/Levels/SnowPeak.16"
       },
-      "witch": null
+      "witch": {
+        "packId": "pack-game-847af544b90b37daeee7b2fa",
+        "replacedEnemies": [
+          "placement-51d82c111bca7907b844860036de5d2834d5343c06d8a5c3db8e1f57cbddf641",
+          "placement-69bbb3ce2b08d87b1ab27a08852b0c02ff42ac186bd64c845e9d8439cc362417",
+          "placement-9cf8ad162e5de44a75e13e0f0df5b10776ce35c6b588ad9545224b07bed87ec1",
+          "placement-ba1a86f374860badecb3c7afb948d8106ff15ba20cef429169097b58a60ca55b",
+          "placement-c15d66c97aaff275ca9851ff162fe699cebdf7309c5b48543dfb880dea9f1df8",
+          "placement-c1f2d5a4383c9ce59fc2af3f841f0550c32254a305d29cf2c279be3d8c4b0b53",
+          "placement-d64edd71c565c47d5206a27cb1bbc41e5663c7ea1da339fba25e70d3d4e91c0a"
+        ],
+        "worldPosition": {
+          "x": -8690,
+          "y": 4750,
+          "z": 7850
+        },
+        "mapImageId": "Level.ID.SnowPeak:T_SP_Map_global_01",
+        "mapPosition": {
+          "x": 0.7627576000000001,
+          "y": 0.6015071733333334
+        },
+        "radius": 2243.842027,
+        "height": 1000,
+        "source": "/SnowPeak/Levels/SnowPeak.15"
+      }
     },
     "Level.ID.SpiderForest": {
       "empowered": [
-        "placement-95b54ddf7e49ede20cc05b5b91d83539f3f2cf9ba9f011dea912a3eec709a681",
         "placement-176e9f9b1685a96a2edce5a7b9660cd2709df0f7ecb91904bda37ce6dad91292",
         "placement-1d4e7ac19b16d48d28d5c3417c2b0971703408097f972c43efc18549f9d8f4f2",
-        "placement-73a10558d25c7f8de94b00076f359987096ed583122edc5b93000b075a1371ca"
+        "placement-73a10558d25c7f8de94b00076f359987096ed583122edc5b93000b075a1371ca",
+        "placement-95b54ddf7e49ede20cc05b5b91d83539f3f2cf9ba9f011dea912a3eec709a681"
       ],
-      "ghorn": null,
-      "witch": {
-        "packId": "pack-cccff21ae16f425e4fc367af756d8158556b7e813835d2a53d92f0c901590cec",
+      "ghorn": {
+        "packId": "pack-game-9f1a0f6edec6f3d0a5e9f797",
         "replacedEnemies": [
-          "placement-734716b8cf085e14799d4c62e6715ab5d6f42fb5db3c0b6153bcdec2fef87eb1",
-          "placement-c1ba89ce5cb36f70b65bc21fc1c561ac3c8dd7c8ce2d87f09fc7652314810660",
-          "placement-724347f62d7a617494e11a7550c0cd236af35d1536fe7916bc75c40b3821e428",
-          "placement-df8051b3e86420507482c7ea77818e639c0d13b39d3bd0b727d736d563a4cc32",
-          "placement-73a10558d25c7f8de94b00076f359987096ed583122edc5b93000b075a1371ca",
+          "placement-1a0d29463dfef557f75e4f314cf7b8e382ce8b42770abb96f393eed492ca78a3",
+          "placement-7b56f905ca0c57f473b7bb6f96c7fae6ff0e8cfc74f93fbf323d21ad2c195a92",
+          "placement-e510e66e96fd80ded9d55a60b33ef29f05627e95deb89fa7891c9140e16a170c"
+        ],
+        "worldPosition": {
+          "x": 21314,
+          "y": -8119,
+          "z": -4035.588
+        },
+        "mapImageId": "Level.ID.SpiderForest:T_Map_SF_01",
+        "mapPosition": {
+          "x": 0.4921870289473684,
+          "y": 0.35185342982456136
+        },
+        "radius": 1000,
+        "height": 1000,
+        "source": "/Game/dungeons/SpiderForest/SpiderForest.182"
+      },
+      "witch": {
+        "packId": "pack-game-62f79aeeef8d8f7656fd61f3",
+        "replacedEnemies": [
           "placement-18d7675c4619f3850ba3a51f77aee264b3c6f7d501e22debe447f0c136f53197",
-          "placement-4d64daddafc1160427973d6c1a3aef85cc74861500180b4205fde1d94cd7b826"
+          "placement-4d64daddafc1160427973d6c1a3aef85cc74861500180b4205fde1d94cd7b826",
+          "placement-724347f62d7a617494e11a7550c0cd236af35d1536fe7916bc75c40b3821e428",
+          "placement-734716b8cf085e14799d4c62e6715ab5d6f42fb5db3c0b6153bcdec2fef87eb1",
+          "placement-73a10558d25c7f8de94b00076f359987096ed583122edc5b93000b075a1371ca",
+          "placement-c1ba89ce5cb36f70b65bc21fc1c561ac3c8dd7c8ce2d87f09fc7652314810660",
+          "placement-df8051b3e86420507482c7ea77818e639c0d13b39d3bd0b727d736d563a4cc32"
         ],
         "worldPosition": {
           "x": 9651,
           "y": 133,
           "z": -2402.0508
         },
-        "radius": 1500
+        "mapImageId": "Level.ID.SpiderForest:T_Map_SF_01",
+        "mapPosition": {
+          "x": 0.5645729938596491,
+          "y": 0.5564674649122807
+        },
+        "radius": 1500,
+        "height": 1000,
+        "source": "/Game/dungeons/SpiderForest/SpiderForest.180"
       }
     },
     "Level.ID.UrrakMarkets": {
       "empowered": [
-        "placement-5d22fe8365f22dc3643c1c40cb14a575cc0d4ba74f246188bad5a99abd4253f4",
-        "placement-62dafb5af02840827e16adf3463a27a8a64bf1d738eab54877b76e0a2c6d7967",
         "placement-0d705fcabc31127106d43a6ea756a9d1c47364a538ecaeeefccb63b999415c2f",
-        "placement-64531a929b200f75e02fec5b04af518c2e88e1f6e2711bf0cba6848ec57320c9",
+        "placement-5d22fe8365f22dc3643c1c40cb14a575cc0d4ba74f246188bad5a99abd4253f4",
         "placement-5f9f62cd5e4f2962515d1a13ae4a754d066bef02c5d150e4d15bb981b8d04297",
+        "placement-62dafb5af02840827e16adf3463a27a8a64bf1d738eab54877b76e0a2c6d7967",
+        "placement-64531a929b200f75e02fec5b04af518c2e88e1f6e2711bf0cba6848ec57320c9",
         "placement-f60dbb00b07630dba24dfccc32e4c40c29c1af5a232cb66b15560a300d2b81c1"
       ],
       "ghorn": {
-        "packId": "pack-2260a2465df748acc316c2da1037058b3ec7dd784133fee99401f6050a397d97",
+        "packId": "pack-game-26ad4461d5c19675877ae6e3",
         "replacedEnemies": [
-          "placement-1a3e3f073affcf5acb8bfdd0d6d2fc6e3ca0fe250bb6e74a54e6f1415ab3f0f9",
-          "placement-ee721b0bc7d6651e7e1803105aa49bd4014220b1dd4551ebebdd2b85a6918c7e",
-          "placement-bb53501fbd108ffe9cda888c1e62a2838b69d08770e70f4a5874291d1f39c6b8",
           "placement-0aa5c54f7ee43fb2ad4613c9741b3754ee57de0dc0f101ba599faa64d0841ad4",
+          "placement-1a3e3f073affcf5acb8bfdd0d6d2fc6e3ca0fe250bb6e74a54e6f1415ab3f0f9",
+          "placement-2ae2e1b44d34afc1cd2844ea942d87c326ed8c666124752e6b2c328b95f2d691",
           "placement-538a216d65afc4a7cf682c45848c26b2d1580352f30ed7fd3cc0b1de8dd38489",
           "placement-8c12756ef9a40517b770e87b07d4718f3b5b31ad3cde69e483b606ddb94c3ff3",
-          "placement-2ae2e1b44d34afc1cd2844ea942d87c326ed8c666124752e6b2c328b95f2d691"
+          "placement-bb53501fbd108ffe9cda888c1e62a2838b69d08770e70f4a5874291d1f39c6b8",
+          "placement-ee721b0bc7d6651e7e1803105aa49bd4014220b1dd4551ebebdd2b85a6918c7e"
         ],
         "worldPosition": {
           "x": -5180,
           "y": -4774,
           "z": 406.82574
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.UrrakMarkets:T_Map_UrrakMarkets_Global",
+        "mapPosition": {
+          "x": 0.43766463818181817,
+          "y": 0.68405865
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/UrrakMarkets/UrrakMarkets.1332"
       },
-      "witch": null
+      "witch": {
+        "packId": "pack-game-f7145962343527c1682bbe15",
+        "replacedEnemies": [
+          "placement-1c9411ce4fccb634720c7d61813809fc96acbc74c3a85b54772ea3a2f7150524",
+          "placement-3faf11808cdbfa5d781effaab1d4da2c58e36fa31bde7f6d4cb8826580996ff4",
+          "placement-4334bf03a70491fd44450cb94bc8b086f6f36a61988269c9215bb54255e518ab",
+          "placement-535d4cb80b203c9642d075542a36c768ec1cce6206d33185657fff6ac03049f0",
+          "placement-6fc57d132e55f1e32664b763074e1e7230bce18930dcb815ceeb234f6b4fa30b",
+          "placement-c3a91b9803e1cff55e2c4caa2ba804a7db426bde80ce7cc1d98d2dcd3fed6fa6",
+          "placement-e22ef7b5d4b7e6045824c6f45d584679481306d52b919126e565e9101940b79b"
+        ],
+        "worldPosition": {
+          "x": 16175,
+          "y": -9291,
+          "z": 342.47833
+        },
+        "mapImageId": "Level.ID.UrrakMarkets:T_Map_UrrakMarkets_Global",
+        "mapPosition": {
+          "x": 0.38633509272727273,
+          "y": 0.19871774090909095
+        },
+        "radius": 1000,
+        "height": 1000,
+        "source": "/Game/dungeons/UrrakMarkets/UrrakMarkets.1333"
+      }
     },
     "Level.ID.VikingVillageAttack": {
       "empowered": [
         "placement-1a232a30db5ffbf5cce03c2fa06a6f9467eeb76579adeb78c33dd3ea08961a92",
-        "placement-f00c6b96832ed47279cc1af8fcb949ff74603da4e04c2b633d8ed159a934d725",
-        "placement-e224631daf4aa3adfb4210e263f02a5e9e093baf99902409174f9485890efd58",
+        "placement-692eda3560a0f6c7e1e293ccaf297d59cb359d1dbe8b2b03713cb187a87671ec",
         "placement-bedd68b1cb797a6ff15b8769e8a4040ab5e49e89fba53ce55e60fc541bc8bc51",
-        "placement-692eda3560a0f6c7e1e293ccaf297d59cb359d1dbe8b2b03713cb187a87671ec"
+        "placement-e224631daf4aa3adfb4210e263f02a5e9e093baf99902409174f9485890efd58",
+        "placement-f00c6b96832ed47279cc1af8fcb949ff74603da4e04c2b633d8ed159a934d725"
       ],
       "ghorn": {
-        "packId": "pack-85e26f6230aa8ee64b9d6b7491eec2d50be735ee41bbedd2bb9afbe363592430",
+        "packId": "pack-game-6ef11ed083e8ce98a75d3dfc",
         "replacedEnemies": [
-          "placement-2d04c93636a438b189fad5af8ba3ab8b3c9ee098e8c5543b73f1cd58ec7284ea",
-          "placement-686e779632ae2ee1b9952c01d3b171974adc12e80c02086ee9cd18ecd26aaabe",
-          "placement-3a7545e9f7267b341c8eca31b7418060828ef54af763fe9e8c42f3995f17bbbb",
-          "placement-2456882394fd7d914fcf9686e502fe8a0b03c284312e8b77dec916cd55a286c8",
-          "placement-7b19d17d7492c2972f5c9b2d70f24accdb0e4ba71b95140c163b1fadccac2c97",
-          "placement-d4f06f5cfaf0eea2daa7b4f59e36e922ab88e886c8b5116a61243423a5e76800",
-          "placement-51d6113bea52f797d9afec1ca731a835e1febf159f45a09f3d6562a930a55410",
-          "placement-9a474afb899684192e25ec137dd6efdef6555373fb2dd4c8af259f31150b7bf0",
           "placement-2085f3da5a2483f56d15507b6c35837b33d90b668400bc98261b1c9cf30033c7",
-          "placement-bedd68b1cb797a6ff15b8769e8a4040ab5e49e89fba53ce55e60fc541bc8bc51"
+          "placement-2456882394fd7d914fcf9686e502fe8a0b03c284312e8b77dec916cd55a286c8",
+          "placement-2d04c93636a438b189fad5af8ba3ab8b3c9ee098e8c5543b73f1cd58ec7284ea",
+          "placement-3a7545e9f7267b341c8eca31b7418060828ef54af763fe9e8c42f3995f17bbbb",
+          "placement-51d6113bea52f797d9afec1ca731a835e1febf159f45a09f3d6562a930a55410",
+          "placement-686e779632ae2ee1b9952c01d3b171974adc12e80c02086ee9cd18ecd26aaabe",
+          "placement-7b19d17d7492c2972f5c9b2d70f24accdb0e4ba71b95140c163b1fadccac2c97",
+          "placement-9a474afb899684192e25ec137dd6efdef6555373fb2dd4c8af259f31150b7bf0",
+          "placement-bedd68b1cb797a6ff15b8769e8a4040ab5e49e89fba53ce55e60fc541bc8bc51",
+          "placement-d4f06f5cfaf0eea2daa7b4f59e36e922ab88e886c8b5116a61243423a5e76800"
         ],
         "worldPosition": {
           "x": 4757.044,
           "y": 22030.79,
           "z": 1980.2544
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.VikingVillageAttack:T_Map_VV_Market",
+        "mapPosition": {
+          "x": 0.5862699857142858,
+          "y": 0.6575511428571429
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.292"
       },
       "witch": {
-        "packId": "pack-ed55c98d21be67a6c04b5de7ba71a0ce6243877529d094602b68afc043a81a27",
+        "packId": "pack-game-5f49a4e8e98b85f5af3f93c8",
         "replacedEnemies": [
-          "placement-9781738f04340a9e7b0daff169c010edbe672c20b9a7aab76a62739fc03d9df1",
-          "placement-99b0a32e15988aad32b3231f4df875f4204729bc3065d9b54f8537ee5032ba0f",
-          "placement-448fd4aa37053709f7a667f80ad9204c078e7c8fe4a2f06c622b276fdb2d2d32",
           "placement-325056ee13fafc3b696fe8a06a2cfdb29260c720cabae96111d2f6ea650a30ad",
-          "placement-692eda3560a0f6c7e1e293ccaf297d59cb359d1dbe8b2b03713cb187a87671ec"
+          "placement-448fd4aa37053709f7a667f80ad9204c078e7c8fe4a2f06c622b276fdb2d2d32",
+          "placement-692eda3560a0f6c7e1e293ccaf297d59cb359d1dbe8b2b03713cb187a87671ec",
+          "placement-9781738f04340a9e7b0daff169c010edbe672c20b9a7aab76a62739fc03d9df1",
+          "placement-99b0a32e15988aad32b3231f4df875f4204729bc3065d9b54f8537ee5032ba0f"
         ],
         "worldPosition": {
           "x": 9072.814,
           "y": 1906.5856,
           "z": 2203.1094
         },
-        "radius": 2000
+        "mapImageId": "Level.ID.VikingVillageAttack:T_Map_VV_Market",
+        "mapPosition": {
+          "x": 0.29878135142857143,
+          "y": 0.5342434285714287
+        },
+        "radius": 2000,
+        "height": 1000,
+        "source": "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.293"
       }
     }
   }

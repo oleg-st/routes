@@ -139,7 +139,7 @@ test('Legacy colors, manual names, scoring and compact view remain compatible wi
   a.execute({type: 'move-pull', pullId: route.pulls[1].id, beforeId: route.pulls[0].id});
   movePull(route, 1, 0);
   assert.deepEqual(a.snapshot().pulls, route.pulls);
-  assert.deepEqual(scoreRoute(a.snapshot(), dungeon, enemies, read('shadow-reference')), scoreRoute(route, dungeon, enemies, read('shadow-reference')));
+  assert.deepEqual(scoreRoute(a.snapshot(), dungeon, enemies), scoreRoute(route, dungeon, enemies));
   assert.equal(a.snapshot().drawings[0].id, 'saved-note');
   const restored = peer(t, a); assert.equal(restored.canonical(), a.canonical());
   assert.notEqual(restored.peerId, a.peerId);
@@ -388,8 +388,8 @@ test('Migration covers real routes and modifier presets in every dungeon without
     const expected = validateRoute(legacy, dungeons, enemies);
     assert.equal(snapshot.id, legacy.id);
     assert.equal(snapshot.pulls[0].id, legacy.pulls[0].id);
-    assert.deepEqual(scoreRoute(snapshot, dungeon, enemies, read('shadow-reference')),
-      scoreRoute(expected, dungeon, enemies, read('shadow-reference')));
+    assert.deepEqual(scoreRoute(snapshot, dungeon, enemies),
+      scoreRoute(expected, dungeon, enemies));
     const copy = restoreRouteDocument(doc.exportSnapshot(), {dungeon, enemies, role: 'spectator'});
     t.after(() => copy.dispose()); assert.equal(copy.canonical(), doc.canonical());
   }

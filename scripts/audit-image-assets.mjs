@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {usedImages} from './image-assets.mjs';
+import {prunePublicImages} from './avif-assets.mjs';
+const walk=p=>fs.readdirSync(p,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(p+'/'+e.name):e.isFile()?[{path:p+'/'+e.name,bytes:fs.statSync(p+'/'+e.name).size}]:[]);
+const total=files=>({files:files.length,bytes:files.reduce((sum,f)=>sum+f.bytes,0)});
+// Keep original layers too: they are available locally even when dist omits them.
+const required=usedImages({includeLayers:true}),keep=new Set(required),before=walk('images');
+const unused=before.filter(f=>!keep.has(f.path));
+const root=path.resolve('images')+path.sep;
+for(const f of unused)if(!path.resolve(f.path).startsWith(root))throw Error('Deletion outside images: '+f.path);
+const tree=execFileSync('git',['-c','safe.directory='+process.cwd().replaceAll('\\','/'),'ls-tree','-rl','HEAD','--','images'],{encoding:'utf8'});
+const baseline=tree.trim().split('\n').filter(Boolean).map(line=>{const m=line.match(/^\d+ blob \w+\s+(\d+)\t(.+)$/);if(!m)throw Error('Unexpected git tree row');return {path:m[2],bytes:Number(m[1])};});
+const baselineCommit=execFileSync('git',['-c','safe.directory='+process.cwd().replaceAll('\\','/'),'rev-parse','HEAD'],{encoding:'utf8'}).trim();
+const prune=process.argv.includes('--prune');
+if(prune)prunePublicImages(required);
+const after=walk('images'),groups=Object.fromEntries([...new Set(after.map(f=>f.path.split('/').slice(0,2).join('/')))].sort().map(group=>[group,total(after.filter(f=>f.path.startsWith(group+'/')))]));
+const report={baselineCommit,baseline:total(baseline),before:total(before),unused:total(unused),pruned:prune,after:total(after),changeFromHEAD:total(after).bytes-total(baseline).bytes,groups,largest:[...after].sort((a,b)=>b.bytes-a.bytes).slice(0,20),assets:after,unusedFiles:unused};
+fs.mkdirSync('tmp/image-audit',{recursive:true});fs.writeFileSync('tmp/image-audit/'+(prune?'cleanup':'audit')+'.json',JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({...report,unusedFiles:undefined,largest:undefined,assets:undefined},null,2));

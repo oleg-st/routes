@@ -1,0 +1,15 @@
+{
+  "model": "hit-capsule-cylinder-v1",
+  "removalCylinderHeight": 1000,
+  "nativeSourceSha256": "f92d63e638784efb677862a66ce80558ca10b998c94566290647752003c7a8f8",
+  "scripts": {
+    "/Game/Modifiers/DungeonModifiers/EmpoweredMinions/BP_DungeonModifiers_EmpoweredMinions": "ec4d6d074343d1c4adc1e2c432b0aa9a7cb30bffefa38f6c703515628a45fd21",
+    "/Game/Modifiers/DungeonModifiers/EmpoweredMinions/GE_DungeonModifiers_EmpoweredMinions_EmpoweredEnemyBuff": "7277bdbda48aad3b4103599c7768ba5f595fb52108773b275eb78200423d4ce1",
+    "/Game/Modifiers/DungeonModifiers/Shared/BP_DM_MiniBossSpawner": "8711a4756a3942f04bed33c7a9b55a97ae78b4984642cf4a73abed8f49b060f7",
+    "/Game/Modifiers/DungeonModifiers/WinterGiant/BP_DungeonModifier_WinterGiant": "1ce3c5e866010f9c921bf863ecda516a2c4cf2b0e7a50cf183cea857ca8a8a0f",
+    "/Game/Modifiers/DungeonModifiers/WinterWitch/BP_DungeonModifier_WinterWitch": "3ce89ad5ab1914d92acac5fcf79e10f713f2ae0b198765818c3ae2992b105163",
+    "/Game/Modifiers/DungeonModifiers/ShadowLord/GA_DungeonModifiers_ShadowLord_OrbSpawner": "6f914cf42326e4a885d2e8e5cf6a281de9adfeca95c06cb4af70d227f31a1d56",
+    "/Game/Modifiers/DungeonModifiers/Shared/GEC_DM_CappedMaxHealth_Target": "b28297e184fa88ab32af33acfa19473e641a059b533822a8c1f3ecf95fc634c6",
+    "/Game/Abilities/RelicPowers/PolymorphTargetWithSharedCharges/GA_RelicPower_PolymorphTargetWithSharedCharges": "43e14c670b099dba00eaeb1d1567041a68442d6906e42ee367009fda6a81f77b"
+  }
+}

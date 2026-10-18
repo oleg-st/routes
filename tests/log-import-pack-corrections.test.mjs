@@ -8,28 +8,12 @@ import {reverseApproachEvidence} from '../log-import/reverse-approach.js';
 const dungeonID='Level.ID.UrrakMarkets';
 const dungeon=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id===dungeonID);
 const catalog=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
-const packs=[...Map.groupBy(dungeon.enemies,p=>p.packId)].map(([id,placements],i)=>({id,number:`G${i+1}`,placements}));
-const corrected=correctImportPacks(packs,{dungeonID,catalog});
-
-test('Only known groups split; every placement is preserved once and input stays unchanged',()=>{
-  const before=JSON.stringify(packs),result=correctImportPacks(packs,{dungeonID,catalog});
-  assert.equal(JSON.stringify(packs),before);
-  assert.deepEqual(result.flatMap(p=>p.placements.map(m=>m.placementId)).sort(),dungeon.enemies.map(m=>m.placementId).sort());
-  for(const [number,sizes] of [['G21',[3,3]],['G48',[1,1,1,2]]]){
-    const parts=result.filter(p=>p.sourcePackId===packs.find(p=>p.number===number).id);
-    assert.deepEqual(parts.map(p=>p.placements.length).sort(),sizes);
-    for(const part of parts){
-      assert.equal(Object.values(part.counts).reduce((a,b)=>a+b,0),part.placements.length);
-      assert.ok(part.placements.every(p=>p.packId===part.id));
-    }
-  }
-  assert.equal(result.filter(p=>p.placements.some(m=>m.activation==='player-contact')).length,3);
-  assert.equal(result.find(p=>p.number==='G19'),packs.find(p=>p.number==='G19'));
-  assert.equal(correctImportPacks(packs,{dungeonID:'another-dungeon',catalog}),packs);
-});
+const controls=JSON.parse(fs.readFileSync('tests/fixtures/urrak-pack-controls.json'));
+const flowerPlacement=dungeon.enemies.find(p=>p.placementId===controls[3][0]);
+const corrected=correctImportPacks([{id:'flower',number:'G48',placements:[flowerPlacement]}],{catalog});
 
 test('Buried flowers require player contact at 100; targeting or chain aggro cannot uncover them',()=>{
-  const flower=corrected.find(p=>p.number==='G48 (flower 1)'),position=flower.placements[0].worldPosition;
+  const flower=corrected[0],position=flower.placements[0].worldPosition;
   const player={type:'Player',key:'p',visibility:'visible',hp:1,t:1,x:position.x+200,y:position.y};
   const observations=[player,{...player,type:'NPC',key:'npc',activeSince:0}];
   const args={packs:[flower],observations,playerRadius:1000,chainRadius:1000};
@@ -45,17 +29,20 @@ test('Buried flowers require player contact at 100; targeting or chain aggro can
   assert.equal(reverseApproachEvidence({packs:[flower],observations:[contact],radius:1000})[0].closest.range,100);
 });
 
-test('Current custom grouping is respected; buried flags work in any dungeon and split contact-only members',()=>{
-  const members=[{placementId:'a',id:'mob',worldPosition:{x:0,y:0},burried:true},{placementId:'b',id:'mob',worldPosition:{x:0,y:0}}];
-  const result=correctImportPacks([{id:'p',number:'G1',placements:members}],{dungeonID:'another',dungeonData:'custom',catalog:new Map([['mob',{gameId:1}]])});
-  assert.equal(result.length,2);
-  assert.equal(result.find(p=>p.placements[0].placementId==='a').placements[0].activation,'player-contact');
-  const legacy=correctImportPacks(packs,{dungeonID,catalog,dungeonData:'custom'});
-  assert.equal(legacy,packs,'no legacy grouping overrides applied to current custom groups');
+test('Dormant splitting preserves each member once, counts, and the input',()=>{
+  const members=[{placementId:'a',id:'mob',gameGuid:'a',dormant:true},{placementId:'b',id:'mob',gameGuid:'b'}];
+  const packs=[{id:'p',number:'G1',placements:members}],before=JSON.stringify(packs);
+  const result=correctImportPacks(packs,{catalog:new Map([['mob',{gameId:1}]])});
+  assert.equal(result.length,2);assert.equal(JSON.stringify(packs),before);
+  assert.deepEqual(result.flatMap(p=>p.placements.map(m=>m.placementId)).sort(),['a','b']);
+  assert.equal(result[0].placements[0].activation,'player-contact');
+  for(const part of result){assert.equal(part.counts[1],1);assert.ok(part.placements.every(p=>p.packId===part.id));}
+  const awake=[{id:'awake',placements:[members[1]]}];
+  assert.equal(correctImportPacks(awake,{catalog:new Map()}),awake);
 });
 
 test('Attack on an established patrol member does not activate stationary G21 members',()=>{
-  const parts=corrected.filter(p=>p.number.startsWith('G21 ('));
+  const parts=controls.slice(0,2).map((ids,i)=>({id:String(i),number:i?'G21 (static)':'G21 (patrol)',placements:ids.map(id=>dungeon.enemies.find(p=>p.placementId===id))}));
   const patrol=parts.find(p=>p.number.endsWith('(patrol)')),stationary=parts.find(p=>p.number.endsWith('(static)'));
   const p=patrol.placements[0].worldPosition;
   const filter=createApproachFilter({packs:parts.map(pack=>({...pack,memberKeys:pack.id===patrol.id?['looter']:[]})),

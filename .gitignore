@@ -17,11 +17,18 @@ images-archive/
 /fellowship-route-probe.json
 /fellowship-route-events-probe*.json
 /route-import-*.json
-/docs/*-preview.png
-/docs/*-preview.jpg
-/docs/preview.jpg
-/docs/full-map-sands.png
-/docs/mob-portraits.jpg
+/data/game-catalog-evidence.json
+
+# Raw game extraction and native analysis belong in private/ only
+*.pak
+*.utoc
+*.ucas
+*.uasset
+*.umap
+*.usmap
+*.exe
+*.dll
+*.pdb
 
 # Test reports and logs
 /coverage/

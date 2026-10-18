@@ -1,5 +1,5 @@
 import {expandDungeons} from './compact-data.js';
-export const dataNames=['heroes','dungeons','enemies','abilities','manifest','shadow-reference','modifier-placements'];
+export const dataNames=['heroes','dungeons','enemies','abilities','manifest','modifier-placements'];
 
 export async function loadData(){
   const urls=typeof __SITE_DATA_URLS__==='undefined'?{}:__SITE_DATA_URLS__;

@@ -12,6 +12,11 @@ test('Published site omits layer controls and private images while preserving sa
   const build = spawnSync(process.execPath, ['scripts/build-site.mjs'], {encoding:'utf8'});
   assert.equal(build.status, 0, build.stdout + build.stderr);
   assert.ok(!fs.existsSync('dist/private'));
+  assert.ok(!fs.existsSync('dist/data/game-dungeons.js'),'Runtime uses one dungeon dataset without a second geometry copy');
+  for(const name of ['custom-dungeons.js','buried-placements.js','patrol-corrections.js','game-image-sources.json','game-catalog-evidence.json','game-map-frames.json'])
+    assert.ok(!fs.existsSync(`dist/data/${name}`),`Authoring or retired data must not be published: ${name}`);
+  assert.equal(fs.readFileSync('dist/local-map-views.js','utf8'),"export {mapViews} from './map-views.js';\n");
+  assert.doesNotMatch(fs.readFileSync('dist/app.js','utf8'),/background-user\.(?:png|avif)|Retouched/);
   assert.ok(!fs.existsSync('dist/images/dungeons/full'));
   assert.equal(fs.readdirSync('dist/images/dungeons/maps').length,6);
   assert.doesNotMatch(fs.readFileSync('dist/index.html','utf8'), /id="(?:floor-panel|floors|floor-panel-option|show-floor-panel)"/);
@@ -22,7 +27,8 @@ test('Published site omits layer controls and private images while preserving sa
   const published = await import('../dist/map-views.js');
   const publishedRoutes = await import('../dist/route-model.js');
   const dungeons = JSON.parse(fs.readFileSync('data/dungeons.json')).map(correctDungeon);
-  const publicDungeons=expandDungeons(JSON.parse(fs.readFileSync('dist/data/dungeons.json'))).map(correctDungeon);
+  const publicCorrect=(await import('../dist/data/placement-corrections.js')).correctDungeon;
+  const publicDungeons=expandDungeons(JSON.parse(fs.readFileSync('dist/data/dungeons.json'))).map(publicCorrect);
   const sourceAbilities=JSON.parse(fs.readFileSync('data/abilities.json'));
   const publicAbilities=JSON.parse(fs.readFileSync('dist/data/abilities.json'));
   const publicEnemies=new Map(JSON.parse(fs.readFileSync('dist/data/enemies.json')).map(enemy=>[enemy.id,enemy]));

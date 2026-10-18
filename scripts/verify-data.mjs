@@ -5,6 +5,8 @@ import {combinedLayouts,combinedBuildId} from '../data/combined-layouts.js';
 import {campfireBuildId} from '../data/map-campfires.js';
 import {recipes} from './combined-maps/index.mjs';
 import {usedImages} from './image-assets.mjs';
+import {gameDungeons} from '../data/game-dungeons.js';
+import {customDungeons} from '../data/custom-dungeons.js';
 const read=n=>JSON.parse(fs.readFileSync(`data/${n}.json`,'utf8'));
 const dungeons=read('dungeons'),enemies=read('enemies'),ids=new Set(enemies.map(e=>e.id));
 const publicOnly=process.argv.includes('--public');
@@ -32,6 +34,17 @@ for(const map of publicOnly?[]:Object.values(fullMaps)){
 }
 let maps=0,placements=0,unmapped=0;
 for(const d of dungeons){
+  const game=gameDungeons[d.id];
+  if(!game)throw new Error('Missing game dataset: '+d.id);
+  const owners=new Map();
+  for(const pack of customDungeons[d.id].packs)for(const id of pack.members){
+    if(owners.has(id))throw new Error('Duplicate game pack member: '+id);owners.set(id,pack.id);
+  }
+  if(owners.size!==game.enemies.length)throw new Error('Game pack coverage differs: '+d.id);
+  for(const p of game.enemies){
+    if(!ids.has(p.id)||owners.get(p.placementId)!==p.packId)throw new Error('Invalid game placement: '+p.placementId);
+    if(!d.mapImages.some(m=>m.id===p.mapImageId)||![...Object.values(p.worldPosition),...Object.values(p.mapPosition)].every(Number.isFinite))throw new Error('Invalid game map projection: '+p.placementId);
+  }
   const mapIds=new Set(d.mapImages.map(m=>m.id)),positionIds=new Set();
   for(const map of d.mapImages){
     if(publicOnly)continue;

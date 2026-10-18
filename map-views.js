@@ -28,7 +28,7 @@ export function mapCoordinates(position,view){
     // original-layer drawings use the recipe's explicit source transform.
     if(position.worldPosition||reference.sources[position.mapImageId]?.calibration||view.placements?.[position.placementId])return mapCoordinates(position,reference);
   }
-  if(view.placements?.[position.placementId])return view.placements[position.placementId];
+  if(!position.gameGuid&&view.placements?.[position.placementId])return view.placements[position.placementId];
   const p=position.mapPosition;let t=view.sources?.[position.mapImageId];
   if(!t)return [p.x*view.width,p.y*view.height];
   if(view.kind==='combined')return [t.x+p.x*t.width,t.y+p.y*t.height];

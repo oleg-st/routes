@@ -110,7 +110,7 @@ test('Every Combined matches Full encounters and patrols without embedding Full 
     assert.deepEqual(map.placementPatrols,full.placementPatrols);
     if(fs.existsSync('private/images-combined')){
       const svg=fs.readFileSync(originalFor(map.path),'utf8');
-      assert.equal((svg.match(/data:image\/webp;base64,/g)||[]).length,d.mapImages.length);
+      assert.equal((svg.match(/<image id="source-\d+"[^>]+data:image\/png;base64,/g)||[]).length,d.mapImages.length);
       assert.ok(!svg.includes('data:image/jpeg')&&!svg.includes(full.path));
     }
     for(const l of r.layers.filter(l=>l.artworkTransform))for(const p of l.landmarks){

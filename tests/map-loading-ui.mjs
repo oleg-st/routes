@@ -9,7 +9,7 @@ try{
   browser=await chromium.launch({channel:'msedge',headless:true});
   const page=await browser.newPage(),errors=[],pending=[];
   page.on('pageerror',error=>errors.push(error.message));
-  await page.route(/\/(?:images\/dungeons|private\/images-referenced)\//,route=>{pending.push(route);});
+  await page.route(/\/(?:images\/dungeons|private\/images-referenced|private\/images-combined)\//,route=>{pending.push(route);});
   const request=async()=>{
     await page.waitForFunction(()=>document.querySelector('#map')?.getAttribute('aria-busy')==='true');
     const deadline=Date.now()+10000;

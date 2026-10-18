@@ -12,6 +12,10 @@ try{
     const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     await page.goto(url);await page.locator('#map-loading').waitFor({state:'hidden'});
+    await page.locator('#help').click();await page.locator('#help-score').click();
+    assert.match(await page.locator('#dialog').innerText(),/difficulty 62/);
+    assert.match(await page.locator('#dialog').innerText(),/Ghorn and Witch contribute/);
+    await page.locator('#close-dialog').click();
     const save=page.locator('#save-route'),remove=page.locator('#delete-route'),name=page.locator('#route-name');
     assert.equal(await name.inputValue(),'Route 1');assert.ok(await save.isDisabled());assert.ok(await remove.isHidden());
     assert.equal(await page.locator('.route-heading').count(),0);

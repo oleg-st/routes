@@ -3,7 +3,6 @@ import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import path from 'node:path';
 import {placementAliases} from '../data/placement-corrections.js';
-import {buriedPlacements} from '../data/buried-placements.js';
 import {customDungeons} from '../data/custom-dungeons.js';
 
 // Append only: never recycle placement or composition indexes, even after rollback.
@@ -14,10 +13,9 @@ const raw=JSON.parse(fs.readFileSync('data/dungeons.json'));
 const signature=members=>[...members].sort((a,b)=>a-b).join(',');
 for(const d of raw){
  const entry=mapping.dungeons[d.id]??={placements:[],packs:[],legacy:[]};
- for(const id of [...new Set([...d.enemies.map(p=>p.placementId),'modifier:ghorn','modifier:witch'])].sort())if(!entry.placements.includes(id))entry.placements.push(id);
+ for(const id of [...new Set([...d.enemies.map(p=>p.placementId),...(customDungeons[d.id]?.packs??[]).flatMap(p=>p.members),'modifier:ghorn','modifier:witch'])].sort())if(!entry.placements.includes(id))entry.placements.push(id);
  const canonical=d.enemies.filter(p=>!placementAliases[d.id]?.[p.placementId]);
- const buried=new Set(buriedPlacements[d.id]??[]);
- const variants=[d.enemies,canonical,canonical.map(p=>buried.has(p.placementId)?{...p,packId:'pack-buried-'+p.placementId}:p)];
+ const variants=[d.enemies,canonical];
  function register(id,ids){
   const members=ids.map(id=>entry.placements.indexOf(id));
   if(members.some(i=>i<0))throw Error('Unknown placement in '+id);

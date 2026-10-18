@@ -1,0 +1,29 @@
+{
+  "id": "Level.ID.PirateRaid",
+  "partitions": [
+    {
+      "id": "pk1155",
+      "members": [
+        "placement-d7d91c5254575ed4d78aa7302e797e7480dc03131e390897500f008b9bc3be17",
+        "placement-f05618acbbce1614f583eca2cb97cf7cced2538bdc18c5215963deee1802f17c",
+        "placement-88aecf1a49f1e0998fbdc1399f911a9dd9fc697d5f7ee3bc4471e9fccf291175"
+      ]
+    },
+    {
+      "id": "pk1154",
+      "members": [
+        "placement-e566bfa409cb1731bc668f432858dd70b17b718c64affe222a93e95b45280368",
+        "placement-8b04ac845c73d1d0db5dcd51ba9c4508a66fbab3b614305a7880122b6ef01133",
+        "placement-7da7241a9bae9dabfc3af071edbc681457b05b51e8f4ba9bd0959c77ac445c72",
+        "placement-318e420348571fef114fb408b5c5b157d284feface31b5c2ebac3db50e8b4960",
+        "placement-1dc9a235384ec5d180dd937d5d456ae3b081d188300d680bff938cfea0f8cdb2"
+      ]
+    },
+    {
+      "id": "pk1156",
+      "members": [
+        "placement-d80f3e09cf6fd74efd9b265c1c27c26a958c12b8fa57b42378e09e0802141515"
+      ]
+    }
+  ]
+}

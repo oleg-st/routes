@@ -1,11 +1,16 @@
-import {uid,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute} from './route-model.js';
+import {uid,enemyHealth,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute} from './route-model.js';
 import {pullOutline,separateMarkerCenters} from './map-geometry.js';
 import {planPullSplit} from './pull-split.js';
 import {markerSymbols,markerColors,markerIcon,numberedAnnotations,markerSymbol,legacyMarkerGlyph} from './marker-symbols.js';
-import {mapViews,onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
+import {onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
+import {mapViews} from './local-map-views.js';
 import {correctDungeon,placementName} from './data/placement-corrections.js';
 import {enemyAbilities} from './data/ability-corrections.js';
 import {enemyMarkerScale,enemyMarkerRadius} from './data/enemy-marker-sizes.js';
+import {modifierStats} from './data/game-modifier-stats.js';
+import {replacementMembers} from './data/route-dictionary.js';
+import {gameServiceRules} from './data/game-service-rules.js';
+import {markerAnchor} from './data/marker-anchors.js';
 import {fullMapBuildId} from './data/full-maps.js';
 import {combinedBuildId} from './data/combined-layouts.js';
 import {loadData} from './data/runtime-loader.js';
@@ -40,12 +45,12 @@ let enemyMarkerCenters=new Map();
 let enemyMarkerLayoutKey='';
 let logImportUI,logPreview=null,logHighlights=new Set();
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
+let modifierHighlightKey='';
 const enemyFocusDuration=1000;
 const enemyHoverDelay=200;
 let arrowColor='#ff0000',arrowWidth=3;
 const storageKey='fellowship-atlas-v1';
-const dungeonDataKey='fellowship-dungeon-data';
-let dungeonDataMode='custom';
+const dungeonDataMode='custom';
 let store={drafts:{},saved:[],lastDungeon:null};
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4500);}
 function canEdit(){return !logPreview&&!routeBusy&&!roomTransition&&(!roomSession||roomSession.document&&!roomSession.state().full&&!roomSession.state().kicked&&!roomSession.state().switching)&&routeDocument?.role==='player';}
@@ -61,19 +66,7 @@ function active(){return route.pulls.find(p=>p.id===activePull)||route.pulls[0];
 function assigned(){return new Map(route.pulls.flatMap((p,i)=>p.enemies.map(id=>[id,{pull:p,index:i}])));}
 function currentPositions(){return effectivePositions(route,dungeon).filter(e=>onMap(e,mapLayer));}
 function refreshPositions(){positions=new Map(effectivePositions(route,dungeon).map(p=>[p.placementId,p]));}
-function changeDungeonData(mode){
-  if(logPreview||routeBusy||roomTransition){$('#dungeon-data').value=dungeonDataMode;throw new Error('Finish the current operation before changing dungeon data.');}
-  if(!['custom','fellership'].includes(mode))return;
-  for(const d of data.dungeons)Object.assign(d,correctDungeon(d,mode));
-  dungeonDataMode=mode;
-  try{localStorage.setItem(dungeonDataKey,mode);}catch{}
-  drag=null;draft=[];hideHover();$('#enemy-menu').hidden=true;$('#inspector').hidden=true;inspected=null;
-  packNumbers=new Map([...new Set(dungeon.enemies.map(p=>p.packId))].map((id,i)=>[id,i+1]));
-  packNumbers.set('modifier:ghorn','Ghorn');packNumbers.set('modifier:witch','Witch');
-  refreshPositions();render();
-  if($('#search').value)search();
-}
-function pointScore(p){return placementScore(p,enemies.get(p.id),route,data.shadow);}
+function pointScore(p){return placementScore(p,enemies.get(p.id),route);}
 function positionsPercent(members){
   const scores=members.map(pointScore);
   return dungeon.requiredScore>0&&!scores.some(score=>score==null)?scores.reduce((sum,score)=>sum+score,0)/dungeon.requiredScore*100:null;
@@ -236,18 +229,18 @@ function render(){
   hideChickenTooltip();
   hidePullTooltip();
   refreshPositions();
-  if(document.activeElement!==$('#route-name'))$('#route-name').value=route.name;const totals=scoreRoute(route,dungeon,enemies,data.shadow);
+  if(document.activeElement!==$('#route-name'))$('#route-name').value=route.name;const totals=scoreRoute(route,dungeon,enemies);
   $('#total-percent').innerHTML=`${totals.percent==null?'—':totals.percent.toFixed(2)}<span>%</span>`;
   $('#total-score').textContent=`${fmt(totals.score)} / ${fmt(dungeon.requiredScore)} points`;
   $('#progress-fill').style.width=`${Math.min(100,totals.percent||0)}%`;
   $('#progress-fill').style.background=totals.percent>=100?'var(--green)':'var(--gold)';
-  const timeline=shadowTimeline(route,dungeon,enemies,data.shadow),orbs=orbCount(totals.orbScore,dungeon);
+  const timeline=shadowTimeline(route,dungeon,enemies),orbs=orbCount(totals.orbScore,dungeon);
   if(route.shadow){$('#total-percent').innerHTML=`${orbs}<span> / ${shadowTarget(dungeon)} orbs</span>`;$('#progress-fill').style.width=`${Math.min(100,orbs/shadowTarget(dungeon)*100)}%`;$('#progress-fill').style.background=orbs>=shadowTarget(dungeon)?'var(--green)':'var(--gold)';}
   const remaining=dungeon.requiredScore-totals.score;
-  $('#score-remaining').textContent=totals.unknown?`Unknown scores: ${totals.unknown} enemies` : remaining>0?`${fmt(remaining)} points to reach 100%`: `${fmt(-remaining)} extra points`;
+  $('#score-remaining').textContent=totals.unknown?`Unknown scores: ${totals.unknown} enemies` : remaining>0?`${fmt(remaining)} points to reach 100%`: `${fmt(Math.max(0,-remaining))} extra points`;
   if(route.shadow){$('#total-score').textContent=`${fmt(totals.score)} KS · ${pct(totals.percent)}`;$('#score-remaining').textContent=`${Math.max(0,shadowTarget(dungeon)-orbs)} orbs remaining · estimated`;}
   $('#shadow').setAttribute('aria-pressed',String(route.shadow));
-  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=!canEdit()||(kind==='empowered'?!(route.modifiers.empowered.enemies.length||data['modifier-placements'].dungeons[dungeon.id]?.empowered?.length):!route.modifiers[kind].packId);$('#'+kind).title=$('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?(packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'):'Choose a pack'}`;}
+  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=!canEdit()||(kind==='empowered'?!(route.modifiers.empowered.enemies.length||data['modifier-placements'].dungeons[dungeon.id]?.empowered?.length):!route.modifiers[kind].packId);$('#'+kind).title=$('#'+kind).getAttribute('aria-label')+' · '+($('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?(packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'):'Choose a pack'}`);}
   $('#pull-count').textContent=route.pulls.length;$('#undo').disabled=!canEdit()||!routeDocument.canUndo();$('#redo').disabled=!canEdit()||!routeDocument.canRedo();
   for(const el of $$('#dungeon,#library,#together,#export,#share,#delete-route'))el.disabled=!!logPreview;
   for(const el of $$('#route-name,#shadow,#add-pull,#clear-route,#new-route,#import,[data-tool]'))el.disabled=!canEdit()&&el.dataset.tool!=='select';
@@ -255,7 +248,7 @@ function render(){
   const invis=route.drawings.filter(d=>d.kind==='invis').length;
   $('#route-relics').innerHTML=relicSummary(chickens,invis);
   $('#pulls').innerHTML=route.pulls.map((p,i)=>{
-    const score=scorePull(p,dungeon,enemies,route,data.shadow);
+    const score=scorePull(p,dungeon,enemies,route);
     const members=p.enemies.map(id=>positions.get(id)).filter(Boolean);
     const pending=logPreview?.pendingPullID===p.id;
     return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}</div>${pending?'<div class="pull-import-status" title="Choose a pack above to finish this pull.">Pending import</div>':''}${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary':''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button><button data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>`:''}</article>`;
@@ -275,10 +268,11 @@ function deferHideChickenTooltip(){clearTimeout(chickenTooltipTimer);chickenTool
 function showChickenTooltip(anchor){
   clearTimeout(chickenTooltipTimer);hideHover();hidePullTooltip();
   const tip=$('#chicken-tooltip'),chickens=chickenPositions(),owners=assigned();
+  const withoutChicken={...route,excluded:[]};
   const groups=[...route.pulls.map(p=>({name:p.name,id:p.id})),{name:'Not in a pull',id:null}];
   tip.innerHTML=`<strong>Chicken · ${chickens.length}</strong>${chickens.length?groups.map(group=>{
     const members=chickens.filter(p=>(owners.get(p.placementId)?.pull.id??null)===group.id);if(!members.length)return '';
-    return `<div class="tip-pack-heading">${esc(group.name)}</div><ul class="tip-pack">${members.map(p=>{const enemy=enemies.get(p.id),icon=availableImage(enemy);return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify([p.placementId]))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}</span></button></li>`;}).join('')}</ul>`;
+    return `<div class="tip-pack-heading">${esc(group.name)}</div><ul class="tip-pack">${members.map(p=>{const enemy=enemies.get(p.id),icon=availableImage(enemy),score=placementScore(p,enemy,withoutChicken),percent=score!=null&&dungeon.requiredScore>0?score/dungeon.requiredScore*100:null;return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify([p.placementId]))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}</span><span class="tip-pack-status"><span class="tip-pack-percent" title="Contribution without Chicken">${pct(percent)}</span></span></button></li>`;}).join('')}</ul>`;
   }).join(''):'<div class="muted">No Chicken mobs in this route.</div>'}`;
   positionSidebarTooltip(tip,anchor);
 }
@@ -301,7 +295,7 @@ function showPullTooltip(anchor){
     const row={p,count:1,ids:[p.placementId],empowered,chicken};rows.push(row);
     if(!empowered&&!chicken)ordinary.set(p.id,row);
   }
-  const tip=$('#pull-tooltip'),score=scorePull(pull,dungeon,enemies,route,data.shadow);
+  const tip=$('#pull-tooltip'),score=scorePull(pull,dungeon,enemies,route);
   tip.dataset.pull=pull.id;
   tip.innerHTML=`<strong>${esc(pull.name)}</strong><div class="tip-score">${pct(score.percent)} · ${members.length} ${members.length===1?'mob':'mobs'}</div>${rows.length?`<ul class="tip-pack">${rows.map(({p,count,ids,empowered,chicken})=>{
     const enemy=enemies.get(p.id),icon=availableImage(enemy);
@@ -417,7 +411,7 @@ function renderMap(){
   // make neighbors jump. Recompute from source points at the current zoom.
   const layoutMarkers=currentPositions().map(p=>{
     const r=radius*enemyMarkerScale(enemies.get(p.id));
-    return {id:p.placementId,point:coordinates(p),radius:r,maxDisplacement:Math.max(40*unit,r*2)};
+    return {id:p.placementId,point:markerAnchor(p,mapLayer)||coordinates(p),radius:r,maxDisplacement:Math.max(40*unit,r*2)};
   });
   const layoutKey=JSON.stringify([unit,layoutMarkers]);
   if(layoutKey!==enemyMarkerLayoutKey){
@@ -469,15 +463,9 @@ function renderMap(){
       if(own)group.append(svg('circle',{cx:x,cy:y,r,fill:color,'fill-opacity':.3,'pointer-events':'none',class:'mob-pull-tint'}));
     }
     group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(enemy?.isBoss?' boss-ring':'')+(own?' assigned-ring':'')+(chicken?' chicken-ring':'')}));
-    if(p.modifier){
-      const label=p.modifier[0].toUpperCase();
-      const labelX=hasPortrait?x+r*.75:x,labelY=hasPortrait?y+r*.75:y;
-      if(hasPortrait)group.append(svg('circle',{cx:labelX,cy:labelY,r:unit*Math.max(6,String(label).length*3+2),fill:color,stroke:'#10161b','stroke-width':1,'vector-effect':'non-scaling-stroke','pointer-events':'none'}));
-      group.append(svg('text',{x:labelX,y:labelY+unit*3.1,'text-anchor':'middle','font-size':unit*8,'font-family':'Segoe UI,sans-serif','font-weight':700,fill:'#fff','pointer-events':'none'},label));
-    }
     appendEnemyFocus(group);
     markerRoot.append(group);
-    const referencePatrol=mapLayer.patrols?.[mapLayer.placementPatrols?.[p.placementId]];
+    const referencePatrol=!p.gameGuid&&mapLayer.patrols?.[mapLayer.placementPatrols?.[p.placementId]];
     if(referencePatrol?.length>1||p.mapPatrolPath?.length>1){
       // Separate paths at floor transitions; never draw across unrelated layers.
       let segment=[];const flush=()=>{if(segment.length>1){const points=segment.join(' '),key=p.packId+'|'+points;if(!patrolPaths.has(key)){patrolPaths.add(key);$('#patrols').append(svg('polyline',{'data-pack':p.packId,class:'patrol-path',points,fill:'none',stroke:'#ffffff','stroke-width':1.8,'stroke-dasharray':'5 4','vector-effect':'non-scaling-stroke',opacity:.85}));}}segment=[];};
@@ -486,12 +474,13 @@ function renderMap(){
     }
   }
   setHoveredPack(hoveredPack);
+  renderModifierHighlight();
   for(const group of $$('#markers > g'))if(logHighlights.has(group.dataset.placement)){
     const ring=group.querySelector('.mob-ring');if(!ring)continue;
     group.style.opacity='1';group.append(svg('circle',{cx:ring.getAttribute('cx'),cy:ring.getAttribute('cy'),r:Number(ring.getAttribute('r'))+6*scale(),class:'log-choice-ring','pointer-events':'none'}));
   }
   if($('#show-pack-efficiency').checked){
-    const packs=new Map(),efficiency=dungeonPackEfficiencies(dungeon,enemies,route,data.shadow);
+    const packs=new Map(),efficiency=dungeonPackEfficiencies(dungeon,enemies,route);
     for(const p of visible){
       if(!matchesSearch(p))continue;
       if(!packs.has(p.packId))packs.set(p.packId,[]);
@@ -605,13 +594,25 @@ function chooseEnemy(id){choosePacks([id]);}
 function commitDrawing(){if(draft.length!==2)return;const drawing={id:uid(),mapId:mapLayer.id,kind:tool,color:relicColors[tool]||arrowColor,...(tool==='line'?{width:arrowWidth}:{}),points:draft.map(p=>[...p])};draft=[];change({type:'add-drawing',...drawing});}
 function showDialog(title,html){cursorUI?.pause();$('#dialog-title').textContent=title;$('#dialog-content').innerHTML=html;if(!$('#dialog').open)$('#dialog').showModal();}
 function showScoreInfo(){
-  showDialog('Scoring',`<p>Kill score: selected mobs ÷ dungeon requirement. Replaced packs and Chicken mobs contribute zero.</p><p>Empowered: 3× raw score, 2× base health. Ghorn / Witch: 20 KS each.</p><p>Shadow Lord: estimated orbs from cumulative raw score; 30 orbs per Emissary. Miniboss replacements do not generate orbs in this model.</p><p class="muted">Modifier rules are historical and unverified for the current patch. Modifier targets are matched automatically by enemy name and world coordinates from reference data. Disabled modifiers have no recorded placements.</p>`);
+  showDialog('Scoring',`<p>Kill score uses the game’s current values, rounded up per enemy after modifiers. Replaced enemies and Chicken targets contribute zero.</p><p>Empowered multiplies kill score by ${gameServiceRules.empoweredScoreMultiplier}. Its extra health scales only up to difficulty ${gameServiceRules.modifierDifficultyCap}; ordinary health continues scaling. The inspector and pack efficiency use base difficulty, where the health multiplier is ${1+gameServiceRules.empoweredHealthBonus}.</p><p>Shadow Lord uses cumulative kill score and the game’s rounded percentage thresholds. Ghorn and Witch contribute; Emissaries do not. Every ${gameServiceRules.shadowOrbsPerLord} collected orbs can summon an Emissary.</p><p class="muted">Orb totals predict the selected deaths. Pickup timing, unselected summons, resets and failed spawns are not simulated. Kill score percentage is shown against the ordinary dungeon requirement; Shadow Lord completion requires defeating the summoned Emissaries.</p>`);
 }
 function showHelp(){showDialog('Start your route with a pull',`<div class="help-grid"><kbd>Click</kbd><span>Add or remove a whole pack in the active pull.</span><kbd>Right-click enemy</kbd><span>Add or remove Chicken, or choose Info for stats and abilities.</span><kbd>B / V</kbd><span>Box selection of whole packs / pack selection.</span><kbd>N</kbd><span>Create and select the next pull.</span><kbd>S</kbd><span>Split a pull: drag a line or click two points. The pull with the longest intersection is split; mobs closer to the previous pull or entrance stay first. The other part is inserted immediately after it. Preview rings show both groups; Esc cancels.</span><kbd>D · Esc</kbd><span>Draw an arrow with two clicks · cancel. Choose color and thickness beside the arrow tool. Hover an arrow and drag either endpoint.</span><kbd>Right-click drawing</kbd><span>Delete an arrow, portal or invisibility path; edit or delete a note. Hover a numbered note to read its text.</span><kbd>Scroll / F</kbd><span>Zoom / fit the map.</span><kbd>Drag</kbd><span>Pan the map. With other tools, drag using the right mouse button.</span><kbd>Ctrl + Z / Y</kbd><span>Undo / redo a change.</span></div><p>Drag pulls to reorder them. Selecting an enemy assigned to another pull moves its whole pack to the active pull without double-counting. Routes are stored in this browser; export a route string to keep a separate copy.</p><p>The counter uses the base kill scores of selected enemies. <button id="help-score" class="text-button">Shadow Lord calculations and limitations ↗</button></p>`);$('#help-score').onclick=showScoreInfo;}
 function renderInspector(id){
   const p=positions.get(id);if(!p){inspected=null;$('#inspector').hidden=true;return;}inspected=id;const e=enemies.get(p.id),score=pointScore(p),abilities=enemyAbilities(data.abilities,p.id);
-  $('#inspector').innerHTML=`<button class="close-inspector" aria-label="Close enemy details">×</button><div class="enemy-profile">${availableImage(e)?'<img src="'+availableImage(e)+'" alt="">':''}<div><h2>${esc(placementName(p,e))}</h2><small>${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)} · ${e.isBoss?'Boss':e.canBeControlled?'Can be crowd-controlled':'Immune to crowd control'}</small></div></div><div class="enemy-facts"><div><span>Score ${route.shadow?'· archived SL':''}</span>${fmt(score)} / ${pct(score/dungeon.requiredScore*100)}</div><div><span>Base health</span>${e.baseHealth?fmt(Math.round(e.baseHealth*(!e.isBoss&&route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?2:1))):'—'}</div></div>${route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?'<small class="empowered-label">Empowered</small>':''}<h3>ABILITIES · ${abilities.length}</h3>${abilities.length?abilities.map(a=>`<div class="ability"><strong>${esc(a.name)}</strong>${a.description?.replace(/<[^>]*>/g,'').trim()?'<p>'+esc(a.description.replace(/<[^>]*>/g,''))+'</p>':''}<small>${a.castInterruptibility==='always'?'Interruptible':a.castInterruptibility==='sometimes'?'Interruptibility depends on phase':a.castInterruptibility==='never'?'Not interruptible':''}${a.baseCooldownSeconds?' · CD '+fmt(a.baseCooldownSeconds)+' s':''}</small></div>`).join(''):'<p class="muted">No descriptions are available in the dataset.</p>'}`;
+  $('#inspector').innerHTML=`<button class="close-inspector" aria-label="Close enemy details">×</button><div class="enemy-profile">${availableImage(e)?'<img src="'+availableImage(e)+'" alt="">':''}<div><h2>${esc(placementName(p,e))}</h2><small>${p.modifier?enemies.get(p.id).name:'G'+packNumbers.get(p.packId)} · ${e.isBoss?'Boss':e.canBeControlled?'Can be crowd-controlled':'Immune to crowd control'}</small></div></div><div class="enemy-facts"><div><span>Kill score</span>${fmt(score)} / ${pct(score/dungeon.requiredScore*100)}</div><div><span>Base health</span>${e.baseHealth?fmt(Math.round(enemyHealth(e,{empowered:!e.isBoss&&route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)}))):'—'}</div></div>${route.modifiers.empowered.active&&route.modifiers.empowered.enemies.includes(id)?'<small class="empowered-label">Empowered</small>':''}<h3>ABILITIES · ${abilities.length}</h3>${abilities.length?abilities.map(a=>`<div class="ability"><strong>${esc(a.name)}</strong>${a.description?.replace(/<[^>]*>/g,'').trim()?'<p>'+esc(a.description.replace(/<[^>]*>/g,''))+'</p>':''}<small>${a.castInterruptibility==='always'?'Interruptible':a.castInterruptibility==='sometimes'?'Interruptibility depends on phase':a.castInterruptibility==='never'?'Not interruptible':''}${a.baseCooldownSeconds?' · CD '+fmt(a.baseCooldownSeconds)+' s':''}</small></div>`).join(''):'<p class="muted">No descriptions are available in the dataset.</p>'}`;
   $('#inspector').hidden=false;$('.close-inspector').onclick=()=>{$('#inspector').hidden=true;inspected=null;};
+}
+function renderModifierHighlight(){
+  const button=$('.modifiers button:hover')||$('.modifiers button:focus-visible');
+  const kind=button?.id,mod=route.modifiers[kind];
+  if(!mod){modifierHighlightKey='';return;}
+  const ids=new Set(kind==='empowered'
+    ?[...mod.enemies,...(data['modifier-placements'].dungeons[dungeon.id]?.empowered??[])]
+    :mod.active?['modifier:'+kind]:replacementMembers(dungeon,mod.packId,mod.replacedEnemies));
+  const key=JSON.stringify([dungeon.id,kind,mod.active,[...ids]]);
+  if(key===modifierHighlightKey)return;
+  modifierHighlightKey=key;
+  highlightEnemies([...ids].filter(id=>positions.has(id)&&!enemies.get(positions.get(id).id)?.isBoss));
 }
 function clearEnemyFocus(){
   clearTimeout(enemyFocusTimer);focusedEnemies.clear();enemyFocusUntil=0;
@@ -644,7 +645,7 @@ function focusEnemies(ids,{preserveZoom=false}={}){
   if(enemiesInViewport(ps.filter(p=>p.mapPosition))){highlightEnemies(ids);return;}
   const zoomRatio={w:view.w/baseView.w,h:view.h/baseView.h};
   const views=mapViews(dungeon),useFull=views[0].sources&&(mapLayer.sources||new Set(ps.filter(p=>p.mapPosition).map(p=>p.mapImageId)).size>1);
-  const fullIndex=mapLayer.sources?views.findIndex(m=>m.id===mapLayer.id):0;
+  const fullIndex=mapLayer.sources?views.findIndex(m=>m.id===mapLayer.id&&m.path===mapLayer.path):0;
   chooseFloor(useFull?fullIndex:views.findIndex(m=>m.id===first.mapImageId));
   const points=ps.filter(p=>onMap(p,mapLayer)).map(coordinates),xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);
   const cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2;
@@ -672,7 +673,7 @@ async function removeSavedRoute(i){
   $('#restore-saved').onclick=run(async()=>{await routeStorage.saveBookmark(removed);store.saved.splice(i,0,removed);updateSaveButton();showLibrary();});
 }
 function showLibrary(){
-  showDialog('Saved routes',store.saved.length?store.saved.map((r,i)=>`<div class="library-item"><div><strong>${esc(r.name)}</strong><small>${esc(data.dungeons.find(d=>d.id===r.dungeonId)?.name)} · ${r.pulls.length} pulls${r.shadow?' · Shadow Lord (archived)':''}</small></div><div><button data-load="${i}">Open</button><button data-remove="${i}" aria-label="Delete saved route">×</button></div></div>`).join(''):'<p class="empty-library">Your saved routes will appear here.<br>Click “Save route” below the pull list.</p>');
+  showDialog('Saved routes',store.saved.length?store.saved.map((r,i)=>`<div class="library-item"><div><strong>${esc(r.name)}</strong><small>${esc(data.dungeons.find(d=>d.id===r.dungeonId)?.name)} · ${r.pulls.length} pulls${r.shadow?' · Shadow Lord':''}</small></div><div><button data-load="${i}">Open</button><button data-remove="${i}" aria-label="Delete saved route">×</button></div></div>`).join(''):'<p class="empty-library">Your saved routes will appear here.<br>Click “Save route” below the pull list.</p>');
   $$('[data-load]').forEach(b=>b.onclick=run(async()=>{const r=store.saved[Number(b.dataset.load)];await selectDungeon(r.dungeonId,r.id);$('#dialog').close();}));
   $$('[data-remove]').forEach(b=>b.onclick=run(()=>removeSavedRoute(Number(b.dataset.remove))));
 }
@@ -791,11 +792,14 @@ function toggleRouteModifier(kind){
   // Restore fixed map markers even for routes saved by older log imports.
   if(kind==='empowered')patch.enemies=[...new Set([...mod.enemies,...(data['modifier-placements'].dungeons[dungeon.id]?.empowered??[])])];
   const commands=[{type:'set-modifier',kind,patch}];
+  if(kind!=='empowered'&&patch.active){
+    const other=kind==='ghorn'?'witch':'ghorn';
+    if(route.modifiers[other].active)commands.push({type:'set-modifier',kind:other,patch:{active:false}});
+  }
   if(kind!=='empowered'&&!mod.active&&!route.pulls.some(p=>p.enemies.includes('modifier:'+kind))){const pull=route.pulls.find(p=>p.enemies.some(id=>mod.replacedEnemies?.includes(id)));if(pull)commands.push({type:'assign-mobs',pullId:pull.id,mobIds:['modifier:'+kind]});}
   change(commands);
 }
 function bind(){
-  $('#dungeon-data').onchange=run(e=>changeDungeonData(e.target.value));
   const pullList=$('#pulls'),pullTip=$('#pull-tooltip');
   for(const list of [pullTip,$('#chicken-tooltip'),$('#search-results')]){
     const highlightRow=e=>{
@@ -847,7 +851,11 @@ function bind(){
   $('#route-name').oninput=updateSaveButton;
   $('#route-name').onchange=e=>change({type:'set-meta',patch:{name:e.target.value.trim()||route.name}});
   $('#shadow').onclick=()=>change({type:'set-meta',patch:{shadow:!route.shadow}});
-  for(const kind of ['empowered','ghorn','witch'])$('#'+kind).onclick=()=>toggleRouteModifier(kind);
+  for(const kind of ['empowered','ghorn','witch']){
+    const button=$('#'+kind);
+    button.onclick=()=>toggleRouteModifier(kind);
+    for(const event of ['pointerenter','pointerleave','focus','blur'])button.addEventListener(event,renderModifierHighlight);
+  }
   $('#help').onclick=showHelp;$('#close-dialog').onclick=()=>$('#dialog').close();
   $('#add-pull').onclick=addPull;$('#undo').onclick=undo;$('#redo').onclick=redo;$('#save-route').onclick=run(saveNamed);$('#library').onclick=showLibrary;$('#export').onclick=exportRoute;
   $('#import').onclick=showImport;$('#share').onclick=shareRoute;
@@ -994,13 +1002,11 @@ function bind(){
   window.addEventListener('beforeunload',e=>{if(routeBinding?.pending){e.preventDefault();e.returnValue='';}});
 }
 async function init(){
-  data=await loadData();data.shadow=data['shadow-reference'];enemies=new Map(data.enemies.map(e=>[e.id,e]));for(const [kind,name]of [['ghorn','Ghorn'],['witch','Witch']])enemies.set('modifier:'+kind,{id:'modifier:'+kind,name,dungeonScore:20,images:[],isBoss:false});
+  data=await loadData();enemies=new Map(data.enemies.map(e=>[e.id,e]));for(const [kind,name]of [['ghorn','Ghorn'],['witch','Witch']])enemies.set('modifier:'+kind,{...enemies.get(modifierStats[kind].sourceId),...modifierStats[kind],id:'modifier:'+kind,name,isBoss:false});
   if(data['modifier-placements'].buildId!==data.manifest.buildId)throw new Error('Modifier placements need updating for this game data build. Run node scripts/prepare-modifiers.mjs.');
   if(fullMapBuildId!==data.manifest.buildId)throw new Error('Full map coordinates need updating for this game data build. Run node scripts/prepare-full-maps.mjs.');
   if(combinedBuildId!==data.manifest.buildId)throw new Error('Combined maps need updating for this game data build. Run npm run maps.');
-  try{if(localStorage.getItem(dungeonDataKey)==='fellership')dungeonDataMode='fellership';}catch{}
   data.dungeons=data.dungeons.map(d=>correctDungeon(d,dungeonDataMode));
-  $('#dungeon-data').value=dungeonDataMode;
   try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved&&saved.drafts&&Array.isArray(saved.saved))store=saved;}catch{toast('Browser storage is corrupted. You can import a route string backup.');}
   for(const saved of [...Object.values(store.drafts),...store.saved]){
     if(!saved||typeof saved!=='object')continue;

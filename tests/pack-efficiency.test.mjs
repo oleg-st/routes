@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {newRoute,dungeonPackEfficiencies,packEfficiencyColor,applyModifierPresets} from '../route-model.js';
 import {correctDungeon} from '../data/placement-corrections.js';
+import {modifierStats} from '../data/game-modifier-stats.js';
 
 function fixture(){
   const enemies=new Map([
@@ -20,8 +21,7 @@ function fixture(){
     {id:'scenery',placementId:'scenery',packId:'scenery'},
   ]};
   const route=newRoute(dungeon,'test');
-  const reference={enemies:[{name:'Lost Soul',normal:1,shadow:.5}]};
-  return {enemies,dungeon,route,calculate:()=>dungeonPackEfficiencies(dungeon,enemies,route,reference)};
+  return {enemies,dungeon,route,calculate:()=>dungeonPackEfficiencies(dungeon,enemies,route)};
 }
 const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-10,`${actual} != ${expected}`);
 
@@ -58,19 +58,19 @@ test('Chicken removes pack HP and score without shifting dungeon normalization',
   const empty=f.calculate();assert.equal(empty.totalHealth,400);assert.equal(empty.values.size,0);assert.equal(empty.range,null);
 });
 
-test('Empowered and Shadow Lord adjust pack score and HP, not normalization',()=>{
+test('Empowered adjusts score and HP; Shadow Lord does not change those attributes',()=>{
   const f=fixture();f.route.modifiers.empowered={active:true,enemies:['a']};
   const empowered=f.calculate();assert.equal(empowered.totalHealth,400);
-  // Partial score: 3 * 0.5 + 0.5 = 2; HP: 2 * 100 = 200.
-  near(empowered.values.get('low'),.2);near(empowered.values.get('high'),.8);
+  // Score: 3 * 1 = 3; base-difficulty HP: 100 + 100 = 200.
+  near(empowered.values.get('low'),.3);near(empowered.values.get('high'),.8);
   f.route.shadow=true;
-  near(f.calculate().values.get('low'),.15);
+  near(f.calculate().values.get('low'),.3);
   f.route.modifiers.empowered.active=false;
-  near(f.calculate().values.get('low'),.1);
+  near(f.calculate().values.get('low'),.2);
 });
 
 test('Replacements remove original mobs and contribute their own HP and score',()=>{
-  for(const [kind,hp] of [['ghorn',25102],['witch',21337]]){
+  for(const [kind,{baseHealth:hp}] of Object.entries(modifierStats)){
     const f=fixture();f.route.modifiers[kind]={active:true,packId:'low'};
     const result=f.calculate();assert.equal(result.totalHealth,400);assert.equal(result.values.has('low'),false);
     near(result.values.get(`modifier:${kind}`),400/hp);
@@ -114,14 +114,14 @@ test('Color endpoints come from pack ratings; equal ratings and empty dungeons a
 
 test('Every dungeon computes finite pack ratings from game data, including active modifiers',()=>{
   const read=name=>JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`,import.meta.url),'utf8'));
-  const enemies=new Map(read('enemies').map(e=>[e.id,e])),reference=read('shadow-reference'),presets=read('modifier-placements');
+  const enemies=new Map(read('enemies').map(e=>[e.id,e])),presets=read('modifier-placements');
   for(const dungeon of read('dungeons').map(correctDungeon)){
     const route=newRoute(dungeon,'test');applyModifierPresets(route,dungeon,presets);
-    const baseline=dungeonPackEfficiencies(dungeon,enemies,route,reference).totalHealth;
+    const baseline=dungeonPackEfficiencies(dungeon,enemies,route).totalHealth;
     for(const modified of [false,true]){
       route.shadow=modified;
       for(const [kind,mod] of Object.entries(route.modifiers))mod.active=modified&&(kind==='empowered'||!!mod.packId);
-      const result=dungeonPackEfficiencies(dungeon,enemies,route,reference);
+      const result=dungeonPackEfficiencies(dungeon,enemies,route);
       assert.equal(result.totalHealth,baseline,`${dungeon.name}: stable baseline HP`);
       assert.ok(result.values.size>0,dungeon.name);
       assert.ok([...result.values.values()].every(Number.isFinite),dungeon.name);
@@ -134,19 +134,22 @@ test('Every dungeon computes finite pack ratings from game data, including activ
 test('Sands ordinary packs keep their ratings when Empowered, replacements or Chicken change',()=>{
   const read=name=>JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`,import.meta.url),'utf8'));
   const dungeon=correctDungeon(read('dungeons').find(d=>d.name==='Empyrean Sands'));
-  const enemies=new Map(read('enemies').map(e=>[e.id,e])),reference=read('shadow-reference');
+  const enemies=new Map(read('enemies').map(e=>[e.id,e]));
   const route=newRoute(dungeon,'test');applyModifierPresets(route,dungeon,read('modifier-placements'));
   route.shadow=true;
-  const calculate=()=>dungeonPackEfficiencies(dungeon,enemies,route,reference);
-  const baseline=calculate(),pack=dungeon.enemies.find(p=>p.packId.startsWith('pack-308240c4')).packId;
+  const calculate=()=>dungeonPackEfficiencies(dungeon,enemies,route);
+  const controls={'pack-308240c4':'placement-3034c49315fb36dd3116417317759423bbd90852a7bbeae552c3b38f7e9a8e15','pack-f53eada7':'placement-735293bb508989aea4a1e634b148440efc096d92e3bb54e4ac1440fb2e6565b6','pack-50964c76':'placement-3a84285bc8073601c0e1797ca571c7bd0146ee33ec7d2188b18734fea54429c5'};
+  const placement=prefix=>controls[prefix];
+  const gamePack=prefix=>dungeon.enemies.find(p=>p.placementId===placement(prefix)).packId;
+  const baseline=calculate(),pack=gamePack('pack-308240c4');
   assert.equal(baseline.values.get(pack).toFixed(2),'4.51');
   route.modifiers.empowered.active=true;
   route.modifiers.ghorn.active=true;
-  route.excluded=[dungeon.enemies.find(p=>p.packId.startsWith('pack-f53eada7')).placementId];
+  route.excluded=[placement('pack-f53eada7')];
   const modified=calculate();
   assert.equal(modified.totalHealth,baseline.totalHealth);
   assert.equal(modified.values.get(pack),baseline.values.get(pack));
-  const boosted=dungeon.enemies.find(p=>p.packId.startsWith('pack-50964c76')).packId;
+  const boosted=gamePack('pack-50964c76');
   assert.equal(modified.values.get(boosted).toFixed(2),'4.32');
   assert.notEqual(modified.values.get(boosted),baseline.values.get(boosted));
 });

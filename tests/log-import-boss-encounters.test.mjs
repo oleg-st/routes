@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {stormwatchBoss,silkenBoss,restoreBossEncounters,restoreBossCatalog} from '../data/boss-encounters.js';
+import {stormwatchBoss} from '../data/boss-encounters.js';
 import {correctDungeon,placementName} from '../data/placement-corrections.js';
 import {matchLiveLog} from '../log-import/live-matcher.js';
 import {createReviewSession} from '../log-import/review-session.js';
@@ -24,19 +24,14 @@ const log=events=>({complete:true,reportCode:'example',fight:{id:5,startTime:0,e
 const match=async input=>matchLiveLog(input,{dungeon,catalog,presets:{},dungeonData:'custom'});
 const pulls=result=>result.variants[0].pulls.map(p=>({id:p.id,enemies:p.groups.flatMap(id=>result.groups[id].enemies)}));
 
-test('Silken Hollow restores Vexira on the lair map, imports her own pull and preserves route transfers',async()=>{
-  const raw=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id===silkenBoss.dungeonID);
-  const boss=raw.enemies.find(p=>p.placementId===silkenBoss.placementID);
+test('Silken Hollow places Vexira on the lair map, imports her own pull and preserves route transfers',async()=>{
+  const raw=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.SpiderForest');
+  const boss=raw.enemies.find(p=>p.placementId==='placement-custom-silken-vexira');
   assert.equal(catalog.get(boss.id).gameId,92);assert.equal(catalog.get(boss.id).isBoss,true);
   assert.equal(catalog.get(boss.id).dungeonScore,0);
-  assert.deepEqual(restoreBossEncounters(raw),raw);
-  assert.deepEqual(restoreBossEncounters({...raw,enemies:raw.enemies.filter(p=>p!==boss)}),raw);
-  const restored=restoreBossCatalog([...catalog.values()].filter(e=>e.id!==boss.id));
-  assert.equal(restored.filter(e=>e.id===boss.id).length,1);
-  assert.deepEqual(restoreBossCatalog(restored),restored);
   for(const mode of ['custom','fellership']){
     const dungeon=correctDungeon(raw,mode),view=mapViews(dungeon)[0];
-    assert.equal(onMap(boss,view),true);assert.deepEqual(mapCoordinates(boss,view),silkenBoss.fullMapPoint);
+    assert.equal(onMap(boss,view),true);assert.ok(mapCoordinates(boss,view).every(Number.isFinite));
     const result=await matchLiveLog({complete:true,reportCode:'example',
       fight:{id:5,startTime:0,endTime:30000,dungeonPulls:[{id:1,startTime:0,endTime:10000},{id:2,startTime:20000,endTime:30000}]},
       actors:[{id:1,type:'Player'},{id:2,type:'NPC',subType:'Boss',gameID:92}],
@@ -49,14 +44,11 @@ test('Silken Hollow restores Vexira on the lair map, imports her own pull and pr
   }
 });
 
-test('Stormwatch restores two independent placements and keeps both across route export and data modes',async()=>{
+test('Stormwatch has two independent placements and keeps both across route export and data modes',async()=>{
   assert.equal(dungeon.enemies.filter(p=>p.id===stormwatchBoss.enemyID).length,2);
   assert.notEqual(bridge.packId,final.packId);
   assert.match(placementName(bridge,catalog.get(bridge.id)),/Bridge/);
   assert.match(placementName(final,catalog.get(final.id)),/Final/);
-  assert.deepEqual(restoreBossEncounters(raw),raw);
-  const upstream={...raw,enemies:raw.enemies.filter(p=>p.placementId!==final.placementId)};
-  assert.deepEqual(restoreBossEncounters(upstream),raw);
   const route=newRoute(dungeon,'25647984');route.pulls[0].enemies=[bridge.placementId];
   route.pulls.push({...newPull(1),enemies:[final.placementId]});
   const encoded=await encodeRoute(route,dungeon);

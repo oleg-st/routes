@@ -1,61 +1,12 @@
 {
-  "schemaVersion": 10,
-  "generatedAt": "2026-10-01T13:01:13Z",
+  "schemaVersion": 1,
   "buildId": "25647984",
+  "source": "installed-game",
   "data": {
-    "heroes": 14,
-    "enemies": 135,
-    "abilities": 919,
-    "talents": 319,
-    "auras": 989,
-    "auraMechanics": 989,
-    "heroItems": 237,
-    "heroItemVisuals": 464,
-    "gems": 60,
-    "socketGems": 24,
-    "relics": 11,
-    "mounts": 54,
-    "itemSetBonuses": 21,
-    "itemTraits": 40,
-    "itemTraitTrees": 2,
-    "blessings": 14,
-    "gearMechanics": 1351,
-    "itemStatModel": 1,
-    "dungeonDifficulty": 1,
-    "dungeons": 15
+    "enemies": 136,
+    "dungeons": 15,
+    "heroes": 11,
+    "abilities": 814
   },
-  "images": {
-    "total": 4686,
-    "byType": {
-      "ability": 1472,
-      "aura": 642,
-      "blessing": 56,
-      "dungeon-loading": 30,
-      "dungeon-map": 30,
-      "enemy": 266,
-      "gem": 168,
-      "hero": 60,
-      "hero-item": 1078,
-      "item-set-bonus": 36,
-      "item-trait": 80,
-      "mount": 108,
-      "relic": 22,
-      "talent": 638
-    },
-    "bySize": {
-      "200": 2307,
-      "400": 27,
-      "full": 2352
-    }
-  },
-  "validation": {
-    "warnings": 67,
-    "mechanicResolution": {
-      "none": 167,
-      "partial": 686,
-      "resolved": 313,
-      "unresolved": 0
-    }
-  },
-  "packageVersion": "15.0.3"
+  "sourceManifestSha256": "f60ac921828a55fddbdab2cc553efcf92e50809cbadc9841e37c159ff29f60c9"
 }

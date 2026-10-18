@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {fullMaps} from '../data/full-maps.js';
 import {combinedLayouts} from '../data/combined-layouts.js';
+import {modifierStats} from '../data/game-modifier-stats.js';
 
 export const projectRoot = fileURLToPath(new URL('..', import.meta.url));
 
@@ -11,6 +12,7 @@ export function usedImages({includeReferenced = false, includeLayers = false} = 
   const read = name => JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`, import.meta.url), 'utf8'));
   const dungeons = read('dungeons');
   const enemyIds = new Set(dungeons.flatMap(dungeon => dungeon.enemies.map(enemy => enemy.id)));
+  for(const stats of Object.values(modifierStats))enemyIds.add(stats.sourceId);
   const images = new Set(dungeons.filter(dungeon => !combinedLayouts[dungeon.id]).map(dungeon => publicMapPath(dungeon.mapImages[0])));
   if (includeLayers) for (const dungeon of dungeons) for (const image of dungeon.mapImages) images.add(image.path);
   if (includeReferenced) for (const map of Object.values(fullMaps)) images.add(map.path);

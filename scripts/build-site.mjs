@@ -6,17 +6,22 @@ import {projectRoot, usedImages, publicMapPath} from './image-assets.mjs';
 import {fullMaps, fullMapBuildId} from '../data/full-maps.js';
 import {combinedLayouts} from '../data/combined-layouts.js';
 import {compactPublicData} from './compact-public-data.mjs';
-import {compactCustomModule} from './compact-route-data.mjs';
+import {dataNames} from '../data/runtime-loader.js';
 
 const check = spawnSync(process.execPath, ['scripts/verify-data.mjs', '--public'], {stdio: 'inherit'});
 if (check.status !== 0) throw new Error('Image/data verification failed.');
 // Explicit publication allowlist: private originals and build tooling never enter dist.
-const files = ['index.html', 'app.js', 'route-model.js', 'map-geometry.js', 'pull-split.js', 'map-views.js', 'marker-symbols.js', 'styles.css',
+const files = ['index.html', 'app.js', 'route-model.js', 'game-scoring.js', 'map-geometry.js', 'pull-split.js', 'map-views.js', 'marker-symbols.js', 'styles.css',
   ...['import-ui','review-session','fight-label','live-import','live-api','live-analysis','live-matcher','matcher-client','matcher-worker','oauth','report-url',
     'pack-corrections','placement-geometry','assignment','pack-solver','approach-filter','reverse-approach','summon-evidence','summon-patterns','boss-encounters',
     'modifier-evidence','invisibility','portals','route-relics','intended-pulls','matching-config','activation','path-proximity','gap-approach','neighbor-approach'].map(name=>`log-import/${name}.js`),
   ...fs.readdirSync('collaboration').filter(file=>file.endsWith('.js')).map(file=>'collaboration/'+file),
-  ...fs.readdirSync('data').filter(file => /\.(js|json|txt)$/.test(file)).map(file => 'data/' + file),
+  ...dataNames.map(name=>`data/${name}.json`),
+  ...['full-maps','map-starts','map-campfires','combined-layouts','combined-legacy-layouts','combined-maps',
+    'boss-encounters','placement-corrections','route-mapping','route-dictionary','game-modifier-stats',
+    'game-modifier-positions','game-service-rules','ability-corrections','enemy-marker-sizes','marker-anchors',
+    'compact-data','runtime-loader'].map(name=>`data/${name}.js`),
+  'data/LICENSE-fellowship-data.txt',
   ...usedImages()];
 if (files.some(file => file.startsWith('private/') || file.includes('..'))) throw new Error('Private path in publication allowlist.');
 const destination = path.resolve(projectRoot, 'dist');
@@ -28,6 +33,8 @@ for (const file of files) {
   fs.copyFileSync(file, target);
 }
 // Keep only calibration needed by Full map; no Referenced view or private URLs.
+// Local background choices never enter the published application module graph.
+fs.writeFileSync(path.join(destination,'local-map-views.js'),"export {mapViews} from './map-views.js';\n");
 const coordinates = Object.fromEntries(Object.entries(fullMaps).map(([id, map]) => {
   const {name, path, sha256, sourcePath, sourceSha256, ...calibration} = map;
   return [id, calibration];
@@ -52,6 +59,5 @@ const html=fs.readFileSync(path.join(destination,'index.html'),'utf8')
   .replace(/<label id="floor-panel-option">.*?<\/label>/,'');
 fs.writeFileSync(path.join(destination,'index.html'),html);
 compactPublicData(destination);
-fs.writeFileSync(path.join(destination,'data/custom-dungeons.js'),compactCustomModule());
 await buildSiteAssets(destination);
 console.log(`Prepared ${files.length} public files in dist/. Publish only this directory.`);

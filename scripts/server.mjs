@@ -4,16 +4,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {fullMaps} from '../data/full-maps.js';
+import {combinedLayouts} from '../data/combined-layouts.js';
+import {retouchedMapPath} from '../local-map-views.js';
 const root = path.resolve(fileURLToPath(new URL('..',import.meta.url)));
 const referencedImages=new Set(Object.values(fullMaps).map(map=>'/'+map.path));
+for(const id of Object.keys(combinedLayouts))referencedImages.add('/'+retouchedMapPath(id));
 const dungeons=JSON.parse(fs.readFileSync(path.join(root,'data/dungeons.json'),'utf8'));
 for(const dungeon of dungeons)for(const map of dungeon.mapImages)referencedImages.add('/'+map.path);
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.avif':'image/avif','.jpg':'image/jpeg','.txt':'text/plain; charset=utf-8'};
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.avif':'image/avif','.jpg':'image/jpeg','.png':'image/png','.txt':'text/plain; charset=utf-8'};
 const server=http.createServer(async(req,res)=>{
   let pathname;
   try { pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname); } catch {res.writeHead(400).end();return;}
   if(pathname.includes('\\')||pathname.split('/').includes('..')){res.writeHead(403).end('Forbidden');return;}
-  const allowed=pathname==='/'||['/index.html','/app.js','/route-model.js','/map-geometry.js','/map-views.js','/styles.css'].includes(pathname)||/^\/log-import\/[a-z-]+\.js$/.test(pathname)&&!pathname.endsWith('/probe.js')||pathname.startsWith('/data/')||pathname.startsWith('/images/')||referencedImages.has(pathname);
+  const allowed=pathname==='/'||['/index.html','/app.js','/route-model.js','/game-scoring.js','/map-geometry.js','/map-views.js','/styles.css'].includes(pathname)||/^\/log-import\/[a-z-]+\.js$/.test(pathname)&&!pathname.endsWith('/probe.js')||pathname.startsWith('/data/')||pathname.startsWith('/images/')||referencedImages.has(pathname);
   const filename=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
   if(!allowed||!filename.startsWith(root+path.sep)){res.writeHead(403).end('Forbidden');return;}
   if(pathname==='/app.js'){

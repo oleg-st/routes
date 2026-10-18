@@ -4,9 +4,15 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {usedImages} from '../scripts/image-assets.mjs';
-import {combinedRasterSize} from '../scripts/avif-assets.mjs';
+import {combinedRasterSize,originalFor} from '../scripts/avif-assets.mjs';
 import {combinedLayouts} from '../data/combined-layouts.js';
 import {fullMaps} from '../data/full-maps.js';
+
+test('Active image originals come from game exports or our combined maps',()=>{
+  for(const file of usedImages({includeLayers:true}))
+    assert.match(originalFor(file),/^private\/(?:game-data\/|images-combined\/)/,file);
+  assert.throws(()=>originalFor('images/enemies/obsolete-source.avif'),/Missing private original/);
+});
 
 test('Combined raster keeps native source density and independent logical coordinates', () => {
   const dungeon = {mapImages: [{id: 'a', width: 2048, height: 1024}, {id: 'b', width: 2048, height: 1024}]};
@@ -72,6 +78,12 @@ test('Server serves AVIF MIME and rejects private paths including encoded traver
     assert.equal(response.headers.get('content-type'), 'image/avif');
     await response.arrayBuffer();
     const referenced = Object.values(fullMaps).find(map => fs.existsSync(map.path));
+    const retouchedPath='private/images-combined/desertdunes-background-user.avif';
+    if(fs.existsSync(retouchedPath)){
+      const png=await fetch(`${origin}/${retouchedPath}`);
+      assert.equal(png.status,200);assert.equal(png.headers.get('content-type'),'image/avif');
+      await png.arrayBuffer();
+    }
     if (referenced) {
       const jpeg = await fetch(`${origin}/${referenced.path}`);
       assert.equal(jpeg.status, 200);
@@ -85,7 +97,7 @@ test('Server serves AVIF MIME and rejects private paths including encoded traver
       assert.equal(layerResponse.headers.get('content-type'),'image/avif');
       await layerResponse.arrayBuffer();
     }
-    for (const url of ['/private/images/dungeons/maps/unlisted.avif', '/private/images-referenced/a.jpg', '/private/images-archive/a.webp', '/images/..%2fprivate/images-referenced/a.jpg', '/images/%2e%2e%5cprivate/images-referenced/a.jpg', '/scripts/prepare-images.mjs']) {
+    for (const url of ['/private/images-combined/map-background-project-user.json','/private/images-combined/desertdunes-background-v6.png','/private/images/dungeons/maps/unlisted.avif', '/private/images-referenced/a.jpg', '/private/images-archive/a.webp', '/images/..%2fprivate/images-referenced/a.jpg', '/images/%2e%2e%5cprivate/images-referenced/a.jpg', '/scripts/prepare-images.mjs']) {
       const result = await fetch(origin + url);
       assert.equal(result.status, 403, url);
       await result.text();

@@ -5,7 +5,7 @@ import {newRoute,clearRoute,hasRouteChanges,newPull,renamePull,movePull,assignEn
 import {pullOutline} from '../map-geometry.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8'));
-const dungeons=read('dungeons').map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e])),reference=read('shadow-reference');
+const dungeons=read('dungeons').map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
 const d=dungeons.find(d=>d.name==="Sailor's Abyss"),lost=d.enemies.find(p=>enemies.get(p.id).name==='Lost Soul');
 test('Clearing removes all route content, preserves identity, and reloads with zero pulls',()=>{
   const r=newRoute(d,'test'),id=r.id;r.name='My route';r.shadow=true;
@@ -17,7 +17,7 @@ test('Clearing removes all route content, preserves identity, and reloads with z
   assert.deepEqual(r.pulls,[]);assert.deepEqual(r.drawings,[]);assert.deepEqual(r.excluded,[]);
   assert.equal(r.shadow,false);assert.ok(Object.values(r.modifiers).every(m=>!m.active));
   const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons,enemies);
-  assert.equal(loaded.pulls.length,0);assert.equal(scoreRoute(loaded,d,enemies,reference).score,0);
+  assert.equal(loaded.pulls.length,0);assert.equal(scoreRoute(loaded,d,enemies).score,0);
 });
 test('Arrow style survives JSON; old paths become straight and invalid widths use medium',()=>{
   const r=newRoute(d,'test');
@@ -67,33 +67,33 @@ test('Invalid or unchanged pull moves leave the route untouched',()=>{
   for(const [from,to]of [[0,0],[-1,0],[0,-1],[0,1],[1,0],[0,.5]])movePull(r,from,to);
   assert.deepEqual(r,before);
 });
-test('Normal and Shadow Lord use distinct historical fractional scores',()=>{
+test('Shadow Lord uses the same current kill scores without name-based deductions',()=>{
   const r=newRoute(d,'test');assignEnemies(r,r.pulls[0].id,[lost.placementId]);
-  assert.equal(scoreRoute(r,d,enemies,reference).score,1);
-  r.shadow=true;assert.equal(scoreRoute(r,d,enemies,reference).score,.5);
-  assert.equal(scoreRoute(r,d,enemies,reference).percent,.5/d.requiredScore*100);
+  assert.equal(scoreRoute(r,d,enemies).score,1);
+  r.shadow=true;assert.equal(scoreRoute(r,d,enemies).score,1);
+  assert.equal(scoreRoute(r,d,enemies).percent,1/d.requiredScore*100);
 });
 test('Moving an existing pack to another pull never counts it twice',()=>{
   const r=newRoute(d,'test'),p=newPull(1);r.pulls.push(p);
   const ids=d.enemies.filter(e=>e.packId===lost.packId).map(e=>e.placementId);
-  assignEnemies(r,r.pulls[0].id,ids);const before=scoreRoute(r,d,enemies,reference);
-  assignEnemies(r,p.id,ids);assert.equal(r.pulls[0].enemies.length,0);assert.equal(scoreRoute(r,d,enemies,reference).score,before.score);
-  assignEnemies(r,p.id,ids);assert.equal(scoreRoute(r,d,enemies,reference).score,0);
+  assignEnemies(r,r.pulls[0].id,ids);const before=scoreRoute(r,d,enemies);
+  assignEnemies(r,p.id,ids);assert.equal(r.pulls[0].enemies.length,0);assert.equal(scoreRoute(r,d,enemies).score,before.score);
+  assignEnemies(r,p.id,ids);assert.equal(scoreRoute(r,d,enemies).score,0);
 });
 test('Chicken mobs stay in the pull and count as mobs while scoring zero',()=>{
   const r=newRoute(d,'test'),boss=d.enemies.find(p=>enemies.get(p.id).isBoss);
   assignEnemies(r,r.pulls[0].id,[lost.placementId,boss.placementId]);r.excluded=[lost.placementId];
-  const s=scoreRoute(r,d,enemies,reference);assert.equal(s.score,0);assert.equal(s.orbScore,0);assert.equal(s.bosses,1);assert.equal(s.count,2);
+  const s=scoreRoute(r,d,enemies);assert.equal(s.score,0);assert.equal(s.orbScore,0);assert.equal(s.bosses,1);assert.equal(s.count,2);
   assert.ok(effectivePositions(r,d).some(p=>p.placementId===lost.placementId));
   const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons,enemies);
   assert.ok(loaded.pulls[0].enemies.includes(lost.placementId));assert.deepEqual(loaded.excluded,[lost.placementId]);
   r.modifiers.empowered={active:true,enemies:[lost.placementId]};r.shadow=true;
-  assert.equal(scoreRoute(r,d,enemies,reference).score,0);assert.equal(scoreRoute(r,d,enemies,reference).orbScore,0);
-  r.excluded=[];assert.equal(scoreRoute(r,d,enemies,reference).score,1.5);
+  assert.equal(scoreRoute(r,d,enemies).score,0);assert.equal(scoreRoute(r,d,enemies).orbScore,0);
+  r.excluded=[];assert.equal(scoreRoute(r,d,enemies).score,3);
 });
-test('Archive override only applies when the current normal score still matches',()=>{
-  assert.equal(enemyScore({name:'Lost Soul',dungeonScore:2},true,reference),2);
-  assert.equal(enemyScore({name:'Unknown',dungeonScore:null},false,reference),null);
+test('Kill score depends on attributes, not the display name',()=>{
+  assert.equal(enemyScore({name:'Lost Soul',dungeonScore:2}),2);
+  assert.equal(enemyScore({name:'Unknown',dungeonScore:null},false),null);
 });
 test('JSON roundtrip preserves Unicode notes, floors, drawings and mode',()=>{
   const r=newRoute(d,'test');r.name='Test route 🧭';r.pulls[0].note='Interrupt the cast → save cooldowns';r.shadow=true;
@@ -108,37 +108,37 @@ test('Import rejects duplicate, foreign, malformed and incompatible data',()=>{
   r.pulls[0].enemies=[];r.drawings=[{mapId:d.mapImages[0].id,points:[[NaN,0]]}];assert.throws(()=>validateRoute(r,dungeons),/coordinates/);
   assert.throws(()=>validateRoute({version:999},dungeons),/format/);
 });
-test('Empowered uses raw fractional score and never empowers bosses',()=>{
+test('Empowered multiplies the game score and never empowers bosses',()=>{
   const r=newRoute(d,'test'),boss=d.enemies.find(p=>enemies.get(p.id).isBoss);
   assignEnemies(r,r.pulls[0].id,[lost.placementId,boss.placementId]);
   r.modifiers.empowered={active:true,enemies:[lost.placementId,boss.placementId]};
-  assert.equal(scoreRoute(r,d,enemies,reference).score,2);
-  r.shadow=true;assert.equal(scoreRoute(r,d,enemies,reference).score,1.5);
-  r.modifiers.empowered.active=false;assert.equal(scoreRoute(r,d,enemies,reference).score,.5);
+  assert.equal(scoreRoute(r,d,enemies).score,3);
+  r.shadow=true;assert.equal(scoreRoute(r,d,enemies).score,3);
+  r.modifiers.empowered.active=false;assert.equal(scoreRoute(r,d,enemies).score,1);
 });
 test('Both replacements suppress original packs, count once, and restore on disable',()=>{
   const r=newRoute(d,'test');r.pulls.push(newPull(1));
   const packs=[...new Set(d.enemies.filter(p=>!enemies.get(p.id).isBoss).map(p=>p.packId))].slice(0,2);
   const ids=d.enemies.filter(p=>packs.includes(p.packId)).map(p=>p.placementId);
-  assignEnemies(r,r.pulls[0].id,ids);const original=scoreRoute(r,d,enemies,reference).score;
+  assignEnemies(r,r.pulls[0].id,ids);const original=scoreRoute(r,d,enemies).score;
   setReplacement(r,'ghorn',packs[0],d,enemies);setReplacement(r,'witch',packs[1],d,enemies);
   assignEnemies(r,r.pulls[1].id,['modifier:ghorn','modifier:witch']);
-  assert.equal(scorePull(r.pulls[0],d,enemies,r,reference).score,0);
-  assert.equal(scoreRoute(r,d,enemies,reference).score,40);assert.equal(scoreRoute(r,d,enemies,reference).orbScore,0);
+  assert.equal(scorePull(r.pulls[0],d,enemies,r).score,0);
+  assert.equal(scoreRoute(r,d,enemies).score,40);assert.equal(scoreRoute(r,d,enemies).orbScore,40);
   assert.equal(effectivePositions(r,d).filter(p=>p.modifier).length,2);
   assert.ok(ids.every(id=>!effectivePositions(r,d).some(p=>p.placementId===id)));
   assert.throws(()=>setReplacement(r,'witch',packs[0],d,enemies),/already/);
   r.modifiers.ghorn.active=false;r.modifiers.witch.active=false;
-  assert.equal(scoreRoute(r,d,enemies,reference).score,original);
+  assert.equal(scoreRoute(r,d,enemies).score,original);
   r.modifiers.ghorn.active=true;r.excluded=['modifier:ghorn'];
-  assert.equal(scorePull(r.pulls[1],d,enemies,r,reference).score,0);
+  assert.equal(scorePull(r.pulls[1],d,enemies,r).score,0);
   const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons,enemies);assert.deepEqual(loaded.modifiers,r.modifiers);
 });
 test('Orb rounding uses cumulative score, handles reordering and thresholds',()=>{
-  const dungeon={name:"Cithrel's Fall",requiredScore:188,enemies:[{id:'a',placementId:'a'},{id:'b',placementId:'b'},{id:'c',placementId:'c'}]};
+  const dungeon={id:'Level.ID.FrozenKingdom',name:"Cithrel's Fall",requiredScore:188,enemies:[{id:'a',placementId:'a'},{id:'b',placementId:'b'},{id:'c',placementId:'c'}]};
   const es=new Map([['a',{dungeonScore:1}],['b',{dungeonScore:1}],['c',{dungeonScore:63}]]),r=newRoute(dungeon,'test');r.shadow=true;r.pulls=[{enemies:['a']},{enemies:['b']},{enemies:['c']}];
-  const result=shadowTimeline(r,dungeon,es,reference);assert.deepEqual(result.map(p=>p.orbs),[1,0,30]);assert.equal(result[2].spawns,1);
-  r.pulls.reverse();const reversed=shadowTimeline(r,dungeon,es,reference);assert.equal(reversed.at(-1).total,result.at(-1).total);
+  const result=shadowTimeline(r,dungeon,es);assert.deepEqual(result.map(p=>p.orbs),[1,0,30]);assert.equal(result[2].spawns,1);
+  r.pulls.reverse();const reversed=shadowTimeline(r,dungeon,es);assert.equal(reversed.at(-1).total,result.at(-1).total);
   assert.equal(reversed.reduce((s,p)=>s+p.orbs,0),orbCount(65,dungeon));
   assert.equal(shadowTarget(dungeons.find(d=>d.name==='The Heart of Tuzari')),90);assert.equal(shadowTarget(d),60);
 });
@@ -157,7 +157,7 @@ test('Pull envelopes contain padded single, collinear and spread-out mobs',()=>{
   assert.deepEqual(pullOutline([],4),[]);
 });
 test('All dungeons can create, score and validate a complete map route',()=>{
-  for(const dungeon of dungeons){const r=newRoute(dungeon,'test');assignEnemies(r,r.pulls[0].id,dungeon.enemies.map(e=>e.placementId));const s=scoreRoute(r,dungeon,enemies,reference);assert.equal(s.unknown,0);assert.ok(s.percent>=100,dungeon.name);assert.doesNotThrow(()=>validateRoute(r,dungeons));}
+  for(const dungeon of dungeons){const r=newRoute(dungeon,'test');assignEnemies(r,r.pulls[0].id,dungeon.enemies.map(e=>e.placementId));const s=scoreRoute(r,dungeon,enemies);assert.equal(s.unknown,0);assert.ok(s.percent>=100,dungeon.name);assert.doesNotThrow(()=>validateRoute(r,dungeons));}
 });
 test('Every automatic modifier target exists and replacements exclude only the matched mobs',()=>{
   const presets=read('modifier-placements');assert.equal(presets.buildId,read('manifest').buildId);
@@ -166,20 +166,20 @@ test('Every automatic modifier target exists and replacements exclude only the m
     const r=newRoute(dungeon,'test'),row=presets.dungeons[dungeon.id];applyModifierPresets(r,dungeon,presets);
     assert.deepEqual(r.modifiers.empowered.enemies,row.empowered);marked+=row.empowered.length;
     assignEnemies(r,r.pulls[0].id,dungeon.enemies.map(p=>p.placementId));
-    const before=scoreRoute(r,dungeon,enemies,reference).score;
+    const before=scoreRoute(r,dungeon,enemies).score;
     for(const kind of ['ghorn','witch'])if(row[kind]){
       replacements++;const ids=row[kind].replacedEnemies;
       assert.ok(ids.every(id=>dungeon.enemies.some(p=>p.placementId===id&&!enemies.get(p.id)?.isBoss)));
       toggleModifier(r,kind);
       assert.ok(r.pulls[0].enemies.includes('modifier:'+kind));
       const expected=before-ids.reduce((s,id)=>s+enemies.get(dungeon.enemies.find(p=>p.placementId===id).id).dungeonScore,0)+20;
-      assert.equal(scoreRoute(r,dungeon,enemies,reference).score,expected);
+      assert.equal(scoreRoute(r,dungeon,enemies).score,expected);
       assert.equal(effectivePositions(r,dungeon).length,dungeon.enemies.length-ids.length+1);
       const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons,enemies);assert.deepEqual(loaded.modifiers,r.modifiers);
-      toggleModifier(r,kind);assert.equal(scoreRoute(r,dungeon,enemies,reference).score,before);
+      toggleModifier(r,kind);assert.equal(scoreRoute(r,dungeon,enemies).score,before);
     }
   }
-  assert.equal(marked,64);assert.equal(replacements,18);
+  assert.equal(marked,64);assert.equal(replacements,28);
 });
 
 test('Save state tracks content through saving, undo, clearing, and reload',()=>{

@@ -7,6 +7,7 @@
     "dev": "node scripts/server.mjs",
     "start": "node scripts/server.mjs",
     "data": "node scripts/prepare-data.mjs",
+    "data:game": "node scripts/prepare-data.mjs",
     "images": "node scripts/prepare-images.mjs",
     "maps": "node scripts/prepare-combined-maps.mjs",
     "build:local": "node scripts/build-local.mjs",
@@ -27,7 +28,6 @@
     "data:mapping": "node scripts/update-route-mapping.mjs"
   },
   "dependencies": {
-    "@crockery/fellowship-data": "15.0.3",
     "@trystero-p2p/core": "0.26.0",
     "loro-crdt": "1.16.4",
     "trystero": "0.26.0"

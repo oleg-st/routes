@@ -2,7 +2,7 @@
 
 These recipes generate the UI's **Full map** (formerly Combined). The Method comparison view is now **Referenced** and loads local JPGs from `private/images-referenced/`. Internal `Combined` IDs and the `referenceFrame: "Full"` recipe option retain their original names for compatibility; references to Full coordinates below mean the Referenced calibration.
 
-Each module is the complete stitching recipe for one dungeon. The shared renderer is `../prepare-combined-maps.mjs`; its image inputs are Fellership originals only. A recipe may opt into Full map coordinate metadata; no Method background image is read.
+Each module is the complete stitching recipe for one dungeon. The shared renderer is `../prepare-combined-maps.mjs`; its image inputs are textures from our installed-game export, resolved through `data/game-image-sources.json`. A recipe may opt into Full map coordinate metadata; no Method background image is read.
 
 | Recipe | Dungeon |
 | --- | --- |
@@ -28,7 +28,7 @@ This rebuilds only Sands and its entry in `data/combined-layouts.js`. Other priv
 
 All source coordinates use a **1024 × 512 reference frame**, regardless of the original image resolution. Independent logical canvases use twice that scale; reference mode uses Full map’s dimensions and source calibration. Raster pixel dimensions are computed separately from the original image sizes and their artwork transforms.
 
-- `referenceFrame: "Full"`: use the dungeon’s Full dimensions, source calibration, marker overrides and patrols. Ignores layer `at`, `scale`, `join` and `offset`; image inputs remain original Fellership artwork. The generated reference hash is checked for staleness.
+- `referenceFrame: "Full"`: use the dungeon’s Full dimensions, source calibration, marker overrides and patrols. Ignores layer `at`, `scale`, `join` and `offset`; image inputs are textures from the installed-game export. The generated reference hash is checked for staleness.
 - `artworkTransform: {scale,x,y}`: optional registration of original artwork into Full canvas pixels, separate from marker/source-drawing calibration. `scale` is output pixels per source-reference pixel. Sands fits five `landmarks` (temple, lake, gate, canyon and south edge); these are matched image features, not enemy coordinates. Landmark residuals are verified by tests. The build still embeds only original artwork.
 - `coordinateTransform: {scale,x,y}`: explicit source-drawing transform only for layers without enough encounters to fit world calibration. Regath's chamber is anchored to its single encounter; Silken Hollow's empty lair follows its registered artwork. Known world positions and encounter overrides still use Full coordinates.
 - `seamFeather` and `contextSeamFeather`: separate blend widths for playable terrain and surrounding background; this keeps cliff linework sharp while blending parchment.

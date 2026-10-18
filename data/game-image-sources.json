@@ -1,0 +1,897 @@
+{
+  "images/game/2341f11620960708db13367c.avif": {
+    "source": "private/game-data/planner/images\\dc94c1b5b5c7589657e1479a86880cd4cfaacff7c1692153fd4bba2d99728111.png",
+    "sha256": "2341f11620960708db13367c281e58d212e8e51e7b233ca11ac6ea73a8a08e41",
+    "gameAsset": "/Game/ui/UnitPortraits/CrystalMines/T_Portrait_NPC_CM_EarthElemental"
+  },
+  "images/game/ad7b198ff571956f95187fee.avif": {
+    "source": "private/game-data/planner/images\\1b089bb44e27294917a2caad4a81897cf62b4202f38ba7d35cda6a153cfffac2.png",
+    "sha256": "ad7b198ff571956f95187fee06ddfe9df618fdf39b5009b68e37f8dff88cab3a",
+    "gameAsset": "/Game/ui/UnitPortraits/ElfMines/T_NPC_CM_Elf_ArcaneWarden"
+  },
+  "images/game/3cdb7689a754b0826638fecd.avif": {
+    "source": "private/game-data/planner/images\\40af994d0fb4fb7d0ba9e40850f4b86bfb023cef12148d394654a0cedea89669.png",
+    "sha256": "3cdb7689a754b0826638fecd9cb0f24c0ea6abec6aa802519f18e2a530caf149",
+    "gameAsset": "/Game/ui/UnitPortraits/ElfMines/T_NPC_CM_Elf_Enforcer"
+  },
+  "images/game/78d8c0b5264711e320334cb7.avif": {
+    "source": "private/game-data/planner/images\\e8f4c770a39f4825ee393856f1ba7836b4baa09e1a43b1f87e3e3cee17a65d4f.png",
+    "sha256": "78d8c0b5264711e320334cb7a130017e11f8f62031186049e3c5705ffa0235fe",
+    "gameAsset": "/Game/ui/UnitPortraits/ElfMines/T_NPC_CM_Elf_Goon"
+  },
+  "images/game/e9de002453cd447326a47ab4.avif": {
+    "source": "private/game-data/planner/images\\9268cf744551dfcfb5e48168b9b3a404466d64f71bda27f1035d061d235666d2.png",
+    "sha256": "e9de002453cd447326a47ab4f9009cca1292c18f2fe07315adf8bc03db8ff3dc",
+    "gameAsset": "/Game/ui/UnitPortraits/ElfMines/T_NPC_CM_Elf_Interrogator"
+  },
+  "images/game/fc5bd129633702033a999422.avif": {
+    "source": "private/game-data/planner/images\\461cc67214f03584518baa8a3b533ef3f8a9c95490fcc024d060a8d3769420e2.png",
+    "sha256": "fc5bd129633702033a9994221d720a843a2195f74da0cb7276159327e5275087",
+    "gameAsset": "/Game/ui/UnitPortraits/ElfMines/T_NPC_CM_Elf_Lookout"
+  },
+  "images/game/0a6b364a2a4ffdec52090357.avif": {
+    "source": "private/game-data/planner/images\\bee4dd5f7ca42877b10d0a7d857ba12fed46983d5c6996514542b642d795eeac.png",
+    "sha256": "0a6b364a2a4ffdec52090357d7e9466056cc9dfaa2ad210c823c9f210397096e",
+    "gameAsset": "/Game/ui/UnitPortraits/ElfMines/T_NPC_CM_Elf_Taskmaster"
+  },
+  "images/game/0f4ddae1f01ee7c8ddac431d.avif": {
+    "source": "private/game-data/planner/images\\5316fdd5fb3df71f38cfce6338d53b8964b96f60f23450b1b659f764d8db1327.png",
+    "sha256": "0f4ddae1f01ee7c8ddac431d051a47f3ad71a093169a479ff6806be2e0f62b11",
+    "gameAsset": "/Game/ui/UnitPortraits/ElfMines/T_NPC_CM_RubiliteAurastone"
+  },
+  "images/game/27eb5939c4083763286b26ec.avif": {
+    "source": "private/game-data/planner/images\\b8de30fbd8519c817b0103c9f54919f4ebce87520bdb843fbec4d6bafb4b438e.png",
+    "sha256": "27eb5939c4083763286b26eca1483f66c677a0c9a1c970603dc8a3211a3f4b90",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_NPC_DR_BloodfangMauler"
+  },
+  "images/game/4c8635a6432c357e5f3ffafa.avif": {
+    "source": "private/game-data/planner/images\\e2001aa25eec259f3d1ed483387ddd066f1bc7f9b68f06b35687b45848584f13.png",
+    "sha256": "4c8635a6432c357e5f3ffafa7d725bca64c131a157b14ca69041fc7036b4bd07",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_Portrait_NPC_DR_BossCultLeader"
+  },
+  "images/game/681af3be02e4a76b925521e5.avif": {
+    "source": "private/game-data/planner/images\\5a73679084ad92a33e2aa8b71b6c42b7de90965e0c8842b33c5bdcac8d092a60.png",
+    "sha256": "681af3be02e4a76b925521e57a3db490af91846b0b79f39478b1f962088edb67",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_Portrait_NPC_DR_BossDemonPlant"
+  },
+  "images/game/3867908ee0b23b285b3f6fe5.avif": {
+    "source": "private/game-data/planner/images\\f7c147a605626a52646d436b8d5510fb4995aa809f0aa5b3dac1c7e341eee617.png",
+    "sha256": "3867908ee0b23b285b3f6fe50de81dc134835ca6e68e1da637b70db947e36dfb",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_Portrait_NPC_DR_BossGateWizard"
+  },
+  "images/game/f5d696a6c77e69e818e0ceb5.avif": {
+    "source": "private/game-data/planner/images\\035f7f995f2e926cea041525fc1f88bcbfbae561367534aa020ded25efdd9c67.png",
+    "sha256": "f5d696a6c77e69e818e0ceb5cf00b776cb3e9b3268e994f0c74ed670b320b429",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_Portrait_NPC_DR_CultistCaster"
+  },
+  "images/game/d801a722f6652adb8deab786.avif": {
+    "source": "private/game-data/planner/images\\1800d69e0146911ca2fb0337ab5fbeecc9080651828ab9e2ba04730daaeed97b.png",
+    "sha256": "d801a722f6652adb8deab786d299d04bccc46d4767792c2c9f2d7361ad1c687a",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_Portrait_NPC_DR_CultistSickle"
+  },
+  "images/game/1b0322aed4ee796a772da973.avif": {
+    "source": "private/game-data/planner/images\\3ce7091562979cc1fa2d8db0f03f776d4b83f5a9b598f9ecbb6fccf18aa0bb75.png",
+    "sha256": "1b0322aed4ee796a772da9739afbc9aab0ec8bcd6a3dac7d6dfce0974c06ce70",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_Portrait_NPC_DR_CultistMajorCaster"
+  },
+  "images/game/27d31f52a2de53ec9a43cd93.avif": {
+    "source": "private/game-data/planner/images\\653221bb1fc5fea9fe07f986a467d7b7693188832b4fd9bd42268af12d304ac2.png",
+    "sha256": "27d31f52a2de53ec9a43cd93b0429b46e7ecc1cd238f52e72ef5ac1fe79b4277",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_Portrait_NPC_DR_DangerousBrute"
+  },
+  "images/game/96ca914fea70e2cdab9c5d68.avif": {
+    "source": "private/game-data/planner/images\\7b13250a7e0740abae169b19d34a8a35d2d62ceb1a58255a036ed075b20ed330.png",
+    "sha256": "96ca914fea70e2cdab9c5d683659073e1cb21cb99aa55a1f4eb508551579a74b",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_Portrait_NPC_DR_BossSummonedDemon"
+  },
+  "images/game/89834fe80765d39cbb9b4592.avif": {
+    "source": "private/game-data/planner/images\\746e0a62674702e3b0ec0681e86927738c3df8b989f3acf3422a57be474ff456.png",
+    "sha256": "89834fe80765d39cbb9b4592e654740606ae1b623fd202f192aa474625c2d86f",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_NPC_DR_Mancatcher"
+  },
+  "images/game/a4fbf4fc7d08e219da217921.avif": {
+    "source": "private/game-data/planner/images\\9f25b68d38bac6d01368ba2f103a5617ec7410341b1852967c835d90ce4cfa5a.png",
+    "sha256": "a4fbf4fc7d08e219da2179214c9529da5da4683e9a93e8eaa824c23d8d079f8b",
+    "gameAsset": "/Game/ui/UnitPortraits/DesertDunes/T_NPC_DD_RuinsLasher"
+  },
+  "images/game/e793491146a77b18c60cdb8d.avif": {
+    "source": "private/game-data/planner/images\\fc55c86bd3f4838edc04d1f2416c6b4258b9fefc29134d325cb1694c9a12ea6f.png",
+    "sha256": "e793491146a77b18c60cdb8dc747c41607ddbb9ba4997d33d1b21cb7c3af1b7a",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_BarbarousLasher"
+  },
+  "images/game/7239f43a3e5e114a5bfa6161.avif": {
+    "source": "private/game-data/planner/images\\cc73155ccbbb8bff8efedd68e84a287141da9560c1c1427ee843e6f43ef0a52f.png",
+    "sha256": "7239f43a3e5e114a5bfa616141cd0fb2be3714d03ba390016b2dd3dd06e02ec6",
+    "gameAsset": "/Game/ui/UnitPortraits/DesertDunes/T_Portrait_NPC_DD_Arbalist"
+  },
+  "images/game/66fe3fb57538e61250cefde0.avif": {
+    "source": "private/game-data/planner/images\\d32bea25d9a04d3ecf7d5a0c5d15b385ba60079a9a2221032fe83e49b028b3c8.png",
+    "sha256": "66fe3fb57538e61250cefde03af5c4152b8295167a18ec4b6f9f08deda7ad91a",
+    "gameAsset": "/Game/ui/UnitPortraits/DesertDunes/T_Portrait_BP_NPC_DD_DesertBrute"
+  },
+  "images/game/707a07639380d03e738832b4.avif": {
+    "source": "private/game-data/planner/images\\a40be1405bfaf61cac46579673b473ed9e85003aa62943a8ad0111a029e0f56c.png",
+    "sha256": "707a07639380d03e738832b4b230e23bc3599df0a7a1803aa5a95f895e274d91",
+    "gameAsset": "/Game/ui/UnitPortraits/DesertDunes/T_NPC_DD_DesertNomad"
+  },
+  "images/game/5389626d7c325829864930a2.avif": {
+    "source": "private/game-data/planner/images\\e13b9ef3f0448acd524c492e672215efd4f4553ac7f18863f954876839db29d1.png",
+    "sha256": "5389626d7c325829864930a271061ab765b27f622e3b315d4f967e71146255dc",
+    "gameAsset": "/Game/ui/UnitPortraits/DesertDunes/T_NPC_DD_Warrior"
+  },
+  "images/game/85517fc3ad42b8e69a32262c.avif": {
+    "source": "private/game-data/planner/images\\35a7fe403189e1db05f9482de14705cd3b33df3de149127b285b5f5c9a6962a8.png",
+    "sha256": "85517fc3ad42b8e69a32262c43c17638aecbdad11431471b4a5398026878696b",
+    "gameAsset": "/Game/ui/UnitPortraits/DesertDunes/T_Portrait_NPC_UB_SoulSpreader"
+  },
+  "images/game/ba73e2041826ca838230887c.avif": {
+    "source": "private/game-data/planner/images\\1fade3ca04d01032dff1be9116337392ff7c86c04d25a1338bfa27d97ec3037a.png",
+    "sha256": "ba73e2041826ca838230887c72e7dc0e1fac2d7ceb734ace1c56e7ab8da844e8",
+    "gameAsset": "/Game/ui/UnitPortraits/DesertDunes/T_Portrait_NPC_DD_WitheringMagi"
+  },
+  "images/game/d2735676589433fe7692c915.avif": {
+    "source": "private/game-data/planner/images\\837bd3a2a4b5721f78f5c37511ecac4cdae1be32254cf40b14dc18e1a63159b8.png",
+    "sha256": "d2735676589433fe7692c91504d695081c405b6576df48895359540bc98266d5",
+    "gameAsset": "/Game/ui/UnitPortraits/ElfMines/T_NPC_EM_BossGiantTroll"
+  },
+  "images/game/7eb43c7ce1777bce5f63cae2.avif": {
+    "source": "private/game-data/planner/images\\9afcaa1036e4dacff5d831a2acfec47376ef6e4c332aa9129e33b714199498d2.png",
+    "sha256": "7eb43c7ce1777bce5f63cae2d01ebcf3b7ae8001353ce011d94379c8b4519906",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_Elf_Illusionist"
+  },
+  "images/game/cd1d25c776ef4166b6ea8afe.avif": {
+    "source": "private/game-data/planner/images\\c74f51e18e6dbc2a4770870ee288052d9ad13c7f4b8588c90350a669277005f5.png",
+    "sha256": "cd1d25c776ef4166b6ea8afee49a2c64bac9f090c6d8e38fff9b7d05895779ad",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_BossElfDragon"
+  },
+  "images/game/b8893f8c3a3a67083f88557c.avif": {
+    "source": "private/game-data/planner/images\\20b2c25c750810665032b1195be68ebb9667d8527b7c91e780a36ed4847ab4f5.png",
+    "sha256": "b8893f8c3a3a67083f88557c237b932e4d9272e52513370fab2a66adad2275a1",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_BossFreezingWaterLord"
+  },
+  "images/game/c3ea52fb01e07676a46d2ce5.avif": {
+    "source": "private/game-data/planner/images\\2522f74d4d9d7c4b01d76d6b1be755b368812ef0dde8b4772e7cea15a7a074a6.png",
+    "sha256": "c3ea52fb01e07676a46d2ce58fc96301d6ae71f4f9c4489e116f73013e794bef",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_BossRangerCaptain"
+  },
+  "images/game/534557455ffd3ea591a42f1c.avif": {
+    "source": "private/game-data/planner/images\\a66755c8597d5dda6cb5caca9fd78d95b256b9c126d264d001bdc2b769ba5638.png",
+    "sha256": "534557455ffd3ea591a42f1c358ad2ff203088f182e483a5dafab8cac06f873b",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_Elf_Cleric"
+  },
+  "images/game/6a830455adec8d79c50e9f5e.avif": {
+    "source": "private/game-data/planner/images\\e1132618c986c4acb912eebe908e4669d3f1e07701fbcbacd70601c5eabe7225.png",
+    "sha256": "6a830455adec8d79c50e9f5efc938d367d688404f29e7f39e9e7872cc7c33764",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_Elf_Duelist"
+  },
+  "images/game/0f818f07bffd7ff925131523.avif": {
+    "source": "private/game-data/planner/images\\7c16b70c74fddcde3e5cec0f879197f41cb16199a102b978d375da5e84e0ad10.png",
+    "sha256": "0f818f07bffd7ff925131523d2acd70a0211a571dd3acfdac5ca31ecbc6a86b4",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_Elf_Goon"
+  },
+  "images/game/44fed7bb15ba139b07b1c99b.avif": {
+    "source": "private/game-data/planner/images\\bfcec68bd3c6bf04c8118e9b779b694563eb432bfdeeb7e8b4e7f2fafc3a58b1.png",
+    "sha256": "44fed7bb15ba139b07b1c99ba8102698187674de92a60a0ca749db75960ca577",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_Elf_Guard"
+  },
+  "images/game/78059fa7a5586e1409f56300.avif": {
+    "source": "private/game-data/planner/images\\8ddb4c54612d21a44a324a01349a200fb1c8467fe09c778af46645969f321c6b.png",
+    "sha256": "78059fa7a5586e1409f563002ec7033d235539517ba80bf54b7ce5704bca2793",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_Elf_Ranger"
+  },
+  "images/game/5e2155291b0c90c392e61cd2.avif": {
+    "source": "private/game-data/planner/images\\ca6f16588eb27ae219ebf526d837ec81cd55cf399b9a9766b8d5b6982eecf05e.png",
+    "sha256": "5e2155291b0c90c392e61cd296fd564c355e7dcd32bdc8bfcc907ef27113da13",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_Elf_Shardling"
+  },
+  "images/game/5880dac5b0e7dab3d27860c8.avif": {
+    "source": "private/game-data/planner/images\\983fcec10b6dd29c7e8da6fb9ebe243b8389076b7ea0815b2ffe1efe3fa75e79.png",
+    "sha256": "5880dac5b0e7dab3d27860c8ab7101114dc6015f8574a7cb082d8fea7b2c5a76",
+    "gameAsset": "/Game/ui/UnitPortraits/FrozenKingdom/T_Portrait_NPC_FK_IceGolem"
+  },
+  "images/game/d9dd09c2306b04f79099bf37.avif": {
+    "source": "private/game-data/planner/images\\efe91e41e5a6abf2a0812c1bcb67a4537e5fb5c22dbd93052ca4b9f96997668e.png",
+    "sha256": "d9dd09c2306b04f79099bf373cec1e055d563c03f4b5a5a1aa7bb3d99fe2e529",
+    "gameAsset": "/Game/ui/UnitPortraits/IceCave/T_Portrait_NPC_IC_Assassin"
+  },
+  "images/game/ffc4a9cf26badcc9ace0e0c5.avif": {
+    "source": "private/game-data/planner/images\\77ef5c15eabd6ef7483a862d904f86168b1ba50fa2d700419d5d0b0c29ee3fe4.png",
+    "sha256": "ffc4a9cf26badcc9ace0e0c5a0e1da9be9952f764e55af973112088b01b9d2bc",
+    "gameAsset": "/Game/ui/UnitPortraits/IceCave/T_Portrait_NPC_IC_BossMagistrate"
+  },
+  "images/game/36042ac3a9a1ea0737332fc1.avif": {
+    "source": "private/game-data/planner/images\\e873c3462da957de1d2fcb16789864869c2962c925a847529708c832f49de2e5.png",
+    "sha256": "36042ac3a9a1ea0737332fc175b6ced0f5ac34199c446972f0514e2a8b6aea24",
+    "gameAsset": "/Game/ui/UnitPortraits/IceCave/T_Portrait_NPC_IC_GlacialSprite"
+  },
+  "images/game/6027fa66c6ea817004dbeeb2.avif": {
+    "source": "private/game-data/planner/images\\459c6c3e0d149d229ef0ccece54e96cafa50c4ebbe7fd1c20b1b337c8765875b.png",
+    "sha256": "6027fa66c6ea817004dbeeb268798d4fa0c2a588ec153331640c1f810b940b93",
+    "gameAsset": "/Game/ui/UnitPortraits/IceCave/T_Portrait_NPC_IC_GreaterIceElemental"
+  },
+  "images/game/10c6f7f405febd66708dd796.avif": {
+    "source": "private/game-data/planner/images\\d157079c362b73ef34546c19d0d37b41f241329863b068cc8d8678c605e21a47.png",
+    "sha256": "10c6f7f405febd66708dd7964874a00a2864f1ebb8f85fafad683df1c6b54fd0",
+    "gameAsset": "/Game/ui/UnitPortraits/IceCave/T_Portrait_NPC_IC_Healer"
+  },
+  "images/game/212819c3ad48b0258970c809.avif": {
+    "source": "private/game-data/planner/images\\04a3b08e0a972a48429f91c52ca969f75c41329bac4633ec5b14cb4da6f467bc.png",
+    "sha256": "212819c3ad48b0258970c809c668c5ea6c8e9831221c1aa4f9d02894fa0bf57e",
+    "gameAsset": "/Game/ui/UnitPortraits/IceCave/T_Portrait_NPC_IC_Lookout"
+  },
+  "images/game/334721d07e101d5b56bd0708.avif": {
+    "source": "private/game-data/planner/images\\174dc60e13a3f4281b64c577b59324abf5a822b12e2c5d0911e0d0f954b29b5e.png",
+    "sha256": "334721d07e101d5b56bd0708a920d7b02f6c6ab7ed038e23a4ce8696f54f935c",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_MC_BloodCaster2"
+  },
+  "images/game/696e41860030e2be66196c40.avif": {
+    "source": "private/game-data/planner/images\\57361e19c265a26e046044fceced99de511b21d1db4cd307fb60fb3fe70cf8ff.png",
+    "sha256": "696e41860030e2be66196c40e914ddcd495ddcc947a6b42a5bae5d1688c6c93b",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_MC_BloodGrunt"
+  },
+  "images/game/831a550e2ac9cdae8c85deca.avif": {
+    "source": "private/game-data/planner/images\\1befa62a5e8a78c2bb9d4658fed81a5349e8bddfa4838e1644e3e2ab9ced2332.png",
+    "sha256": "831a550e2ac9cdae8c85deca991b3299a9affc9929ea01248bf88ad167009a2a",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_MC_BloodGuard"
+  },
+  "images/game/7149f4600dc0059552edf2a4.avif": {
+    "source": "private/game-data/planner/images\\559989f22ab8eeeaf7ff73a8f90afd00cb6c747a0c39a60b091b08b39419a830.png",
+    "sha256": "7149f4600dc0059552edf2a42afdb6b77dd584b10e37ea4a464a2d890df030f4",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_MC_BloodHound"
+  },
+  "images/game/e0a37994762f26218dee07d5.avif": {
+    "source": "private/game-data/planner/images\\1a08e32bf8856255a1b458939411dd235a52fe16e178bb3f651d44896c7d5c51.png",
+    "sha256": "e0a37994762f26218dee07d54e209d3ad09e63ffd31ca09c71670cb25f69cb41",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_MC_BloodSummoner"
+  },
+  "images/game/a554b868f2fb7da6fd6bb3fe.avif": {
+    "source": "private/game-data/planner/images\\76f5390a75aa5578c4ed415d40f3681ec1416915279c57d6278277c79d279f20.png",
+    "sha256": "a554b868f2fb7da6fd6bb3fef00a715f939b0c6af1afa104c73f9dabc457bcac",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_MC_BossGuardian"
+  },
+  "images/game/4c82c9a03cd03802510267b0.avif": {
+    "source": "private/game-data/planner/images\\3a93f30309a17bdd269eebdf6819ce5f1123529e274da427608cb5b659eb7b4c.png",
+    "sha256": "4c82c9a03cd03802510267b0f6f087a90eea085dc2a512efc62fd6ee38753537",
+    "gameAsset": "/Game/ui/UnitPortraits/General/T_NPC_MC_WanderingGhostGuard"
+  },
+  "images/game/181e0b96b112e916aca9eabb.avif": {
+    "source": "private/game-data/planner/images\\f020c7844750c083c75048e121d4fdd49b0917f3217d346d2100b0c04e74fc88.png",
+    "sha256": "181e0b96b112e916aca9eabbed0922d623f36deee001660a80dd0b45e343e2f3",
+    "gameAsset": "/Game/ui/UnitPortraits/General/T_NPC_MC_WanderingGhostPriest"
+  },
+  "images/game/6c62077c63a05261b92f3820.avif": {
+    "source": "private/game-data/planner/images\\4fb1b58ff79ec9ff177e2f85998fe02976c142b6d4500cd930a46d5483be0101.png",
+    "sha256": "6c62077c63a05261b92f3820d996e3ce7b142a3f347bf7a361a94cf5b743ceeb",
+    "gameAsset": "/Game/ui/UnitPortraits/General/T_NPC_MC_WanderingGhostWarrior"
+  },
+  "images/game/7499d7f4e1124d917489087e.avif": {
+    "source": "private/game-data/planner/images\\2b500a5d940105897a759fc684ba9d792f3d366ff7d9369de81bf4ee2ae136cc.png",
+    "sha256": "7499d7f4e1124d917489087ecf286f8f819f6fbb95971e34ed09d26c2e548288",
+    "gameAsset": "/Game/ui/UnitPortraits/MythicForest/T_NPC_MF_BlightedMorningGlory"
+  },
+  "images/game/b08156f46247aae5f49e5dbc.avif": {
+    "source": "private/game-data/planner/images\\2f002c53a6d9d355e7225291ed404479f38b70483f03e5cbf12d84f0bdd40c02.png",
+    "sha256": "b08156f46247aae5f49e5dbcfcf33b3a9f419848369101941bd8553223129a92",
+    "gameAsset": "/Game/ui/UnitPortraits/MythicForest/T_NPC_MF_BossNecrolord"
+  },
+  "images/game/f9e3748b5f894a744216d721.avif": {
+    "source": "private/game-data/planner/images\\7a038f4fa06f87d94130813dbfcdade42c59eb99c02e16b0f8b594b4379bb913.png",
+    "sha256": "f9e3748b5f894a744216d721a4f5a6695d9e4e02182b80b99ae3bd2fc7c78cfd",
+    "gameAsset": "/Game/ui/UnitPortraits/MythicForest/T_NPC_MF_BossUnicorn"
+  },
+  "images/game/c45119217774fa227c56253e.avif": {
+    "source": "private/game-data/planner/images\\8a35ebe024de05117e2d47a8962d03822cd072bfc17050b3c13f053e4e67f2f5.png",
+    "sha256": "c45119217774fa227c56253e94903bc020034f70abd6e7e59ce94aa453152fca",
+    "gameAsset": "/Game/ui/UnitPortraits/MythicForest/T_NPC_MF_DawnstoneGuardian"
+  },
+  "images/game/40bc6266a5d91a96a036e175.avif": {
+    "source": "private/game-data/planner/images\\97923e895e34c412095c1a489c8a052de2d7527284a6437cc53b2b4c40d58fd1.png",
+    "sha256": "40bc6266a5d91a96a036e1754ece5979d8ae8590618cb4bb485cba69a742b186",
+    "gameAsset": "/Game/ui/UnitPortraits/MythicForest/T_NPC_MF_FoulTotemic"
+  },
+  "images/game/3e052a039b696345aae183b7.avif": {
+    "source": "private/game-data/planner/images\\35678f0cd81a21d6b4cbf778e61f5f9c3a7c58cd7771be339d076e93b4c43341.png",
+    "sha256": "3e052a039b696345aae183b76281de801495a68e69081f46d1e0451b9b501488",
+    "gameAsset": "/Game/ui/UnitPortraits/MythicForest/T_NPC_MF_MangyBrute"
+  },
+  "images/game/0e39fbad58c5857441aae707.avif": {
+    "source": "private/game-data/planner/images\\608412be247879f057e2db70db97fb54fb3c0a00d405d5d6e72c92422e0a848a.png",
+    "sha256": "0e39fbad58c5857441aae7071cd4090a156203ac372cf6c3940d1f77f56cd5bf",
+    "gameAsset": "/Game/ui/UnitPortraits/MythicForest/T_NPC_MF_Skittershard"
+  },
+  "images/game/c719c01967a667771427fd43.avif": {
+    "source": "private/game-data/planner/images\\c0ecec1edf86f431640f5ff9b773b3be2dc1f334cc56a0e64a7ea4150d910bb1.png",
+    "sha256": "c719c01967a667771427fd435c106ce2da604d6b0e205d1df897718770326c01",
+    "gameAsset": "/Game/ui/UnitPortraits/NightPatrol/T_NPC_NP_BossHellcaller"
+  },
+  "images/game/4e8cf8ca781c497fbb72f2e6.avif": {
+    "source": "private/game-data/planner/images\\f8e90f6323bb9f6250c4adebe35516f17719384226b4d57bf1653124a44040fd.png",
+    "sha256": "4e8cf8ca781c497fbb72f2e65499d9e51e4e4e0ce8e3fe6cd9bf21c5c086f44a",
+    "gameAsset": "/Game/ui/UnitPortraits/DemonicRitual/T_NPC_NP_HalfMancatcher"
+  },
+  "images/game/c499e91c1a12d2b54f8ac4a1.avif": {
+    "source": "private/game-data/planner/images\\039847f29d4b1cbff787ab7a1d23995cbb10a6585392635222322069a85e8e05.png",
+    "sha256": "c499e91c1a12d2b54f8ac4a18a2e6b230a70902090ed50a3e647e7b099ece1f0",
+    "gameAsset": "/Game/ui/UnitPortraits/NightPatrol/T_NPC_NP_BullyBasher"
+  },
+  "images/game/243774ccdde416674ec2853f.avif": {
+    "source": "private/game-data/planner/images\\5b78b8c1884f233fdb19742b5fc6dfbf447ee50bc5f88d8f559e79a432459ab7.png",
+    "sha256": "243774ccdde416674ec2853f0b554e0b4468a08558b9e3ea2d918f31f362cb11",
+    "gameAsset": "/Game/ui/UnitPortraits/NightPatrol/T_NPC_NP_Facestabber"
+  },
+  "images/game/089c9b6e1ab49600d87f8a75.avif": {
+    "source": "private/game-data/planner/images\\699c1b6448b2de7271bc3bc438ba3580b41aa38372056fb3a3ba0d0ed3ea69c6.png",
+    "sha256": "089c9b6e1ab49600d87f8a7555c6015aac83ea5c05d3744df37078daa0c45799",
+    "gameAsset": "/Game/ui/UnitPortraits/NightPatrol/T_NPC_NP_Shinchopper"
+  },
+  "images/game/0fbb6eefbdaf972ba72a203c.avif": {
+    "source": "private/game-data/planner/images\\bbb737291227af68214f4400f216b94182b3a3421b01d5016a8d7b5e55525637.png",
+    "sha256": "0fbb6eefbdaf972ba72a203cf783c74f5ad584693e5722c5dcdfcf1b2856843c",
+    "gameAsset": "/Game/ui/UnitPortraits/SpiderForest/T_NPC_SH_Venomdrinker"
+  },
+  "images/game/c02b97398f6b5324c43ad089.avif": {
+    "source": "private/game-data/planner/images\\a0d6d47170251037cf2139fbb47a67c0ab805ef22e199d3db0a4bcc6e4eb6a6f.png",
+    "sha256": "c02b97398f6b5324c43ad0894a270f75bc5df23149ecd979ddb63c7d5975c577",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_Bilgerat"
+  },
+  "images/game/92da34842e64e506b3d96499.avif": {
+    "source": "private/game-data/planner/images\\39f7b83d4cbaa77137a2f81794d5f089c90903abe619d16e0338dd1b9c28cea6.png",
+    "sha256": "92da34842e64e506b3d96499cbd596ad64ef742ebcfede3acb9a3f0becd25622",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_BlunderbussPirate"
+  },
+  "images/game/74e89eb4abfcb94efd63b5b8.avif": {
+    "source": "private/game-data/planner/images\\2dda28001a06d9767919787edcbada5db0aaacf98701630315c649b1633d466c.png",
+    "sha256": "74e89eb4abfcb94efd63b5b816ae1dd7727d376f463285b0dbc9ff2966e5dc4e",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_BossAnchor"
+  },
+  "images/game/58b400910792abf3553f1f33.avif": {
+    "source": "private/game-data/planner/images\\9701daa711303ed3420ded6e834a77c189a094391d411f3e8b431c4ccbe57bda.png",
+    "sha256": "58b400910792abf3553f1f33d293de5200bed072de84a8ce9edbdd9bd3dcfa0a",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_BossPirateCaptain"
+  },
+  "images/game/940e13ec9fd933c366ad2b5a.avif": {
+    "source": "private/game-data/planner/images\\0cf6a6f2ef7394b6ed4843fcf7d87ddfcc0c82d673f68ad81af08fcc486e044a.png",
+    "sha256": "940e13ec9fd933c366ad2b5aeb075e5b8a57329f04b7dabc9cfd59f812de997b",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_BossTreasureDemon"
+  },
+  "images/game/c4f06cdb2bfd4d1c0a183dba.avif": {
+    "source": "private/game-data/planner/images\\caa7f40b23b940fcade3be5f0869710cdd70da942c038e888e7553cfe65a5561.png",
+    "sha256": "c4f06cdb2bfd4d1c0a183dba689897c2c3d356202fae3c0abe556b01b2af89e4",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_CannonPirate"
+  },
+  "images/game/f5dee6d6299ae7c651c9178d.avif": {
+    "source": "private/game-data/planner/images\\d6eee5f81b716d522ab81dd6683ae2c1cb926f674864a4a1370593f39f12d089.png",
+    "sha256": "f5dee6d6299ae7c651c9178dfbcf0e0857023c5928e912d03d9235e7213b392f",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_GoldenConstructVolatile"
+  },
+  "images/game/d3a8c15e574832ea37b66cea.avif": {
+    "source": "private/game-data/planner/images\\d6cd662131267eb14ba60a4357e928b426f3369a89379bc2b3e80304d1f27f0b.png",
+    "sha256": "d3a8c15e574832ea37b66cea83e1da8d7cd19f5e6d9c11906082f8495c4bdf85",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_PirateGrunt"
+  },
+  "images/game/3ad4e90f774cbfaf54e958ef.avif": {
+    "source": "private/game-data/planner/images\\1199586f78c061c72d686c1cf782d1b941d58271cfd13501bf9886887188b7a9.png",
+    "sha256": "3ad4e90f774cbfaf54e958efee8d7f248994e829a45246213286845b60050ac2",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_PossessedArmor"
+  },
+  "images/game/7b80956e5ca66b986053d5cf.avif": {
+    "source": "private/game-data/planner/images\\4b604d90258223908745868795d1f4a14b01b478b9d2353ea2cfc65eae426ce1.png",
+    "sha256": "7b80956e5ca66b986053d5cf0a33007646325f2afd3f4ab09a3d4b68fbd9476f",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_Scallywag"
+  },
+  "images/game/8cfb5564a3a2faaf1ff30fb5.avif": {
+    "source": "private/game-data/planner/images\\0e0ef21197393e100fffa68b1218e93604d3858cf2e1894e34fc9271fdc9ab1b.png",
+    "sha256": "8cfb5564a3a2faaf1ff30fb58f38727641eba6087db2c92936037f1998854492",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_Swashbuckler"
+  },
+  "images/game/b4ccd3af2f3a2ee41d47c85f.avif": {
+    "source": "private/game-data/planner/images\\16fc5ae22c7ce5cf0bc180c2863fe527aee73ac5fea50398190d21009340181c.png",
+    "sha256": "b4ccd3af2f3a2ee41d47c85f61844ca550f286ea970335ad073defa4fe6209ce",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_TigerCat"
+  },
+  "images/game/6f347fab235a087edb95b40a.avif": {
+    "source": "private/game-data/planner/images\\1bdc07271b4decf1043772537c448360b773e5a6e3f414b0c112da295b7f02a9.png",
+    "sha256": "6f347fab235a087edb95b40ab3dc6e4caaf93e278dca5f94918c9bfaed074a4b",
+    "gameAsset": "/Game/ui/UnitPortraits/PirateRaid/T_Portrait_NPC_PR_WaterCaster"
+  },
+  "images/game/a8ef07870b2ca35816bfbe7d.avif": {
+    "source": "private/game-data/planner/images\\72ba38cd79d50eaccacefb4899e452aa79a7f4c255e7d422bc323c14b93dc3d9.png",
+    "sha256": "a8ef07870b2ca35816bfbe7dcf62bdd725f5c34a3ec64ffe1e39da2219d6b65d",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BigBloodElemental"
+  },
+  "images/game/1ce5ee224466f41b8b37e7e2.avif": {
+    "source": "private/game-data/planner/images\\6315c09a02eeaa3a173c588c6fdb481c084df6974079aa367292121813fed778.png",
+    "sha256": "1ce5ee224466f41b8b37e7e2c56033a9b34fd7953623d43185100e4e731b8ba8",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossArbiter"
+  },
+  "images/game/dfa0839c4e425c481a9e8698.avif": {
+    "source": "private/game-data/planner/images\\e2851b4418fe2e8df710859b5b5298c40fe2a3c465a2b1b0a0feccc83696f1d1.png",
+    "sha256": "dfa0839c4e425c481a9e869834e024052d223d8a4d2d3032d4bae861fa2ab274",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossDefenseEye"
+  },
+  "images/game/bf34936c3c87b315ba9dbf57.avif": {
+    "source": "private/game-data/planner/images\\34f55e907b8b64581746de7addf72ea0a51287b43789aad0a39d2b6d622912ba.png",
+    "sha256": "bf34936c3c87b315ba9dbf57a677def408c97f3be40fa3409a68736a56a20d59",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossGatekeeper"
+  },
+  "images/game/f672bc1a4c701603296d30e4.avif": {
+    "source": "private/game-data/planner/images\\5a759417a3e07a33ab98d70ad47c69aa08d7e0201811674c62ee19c4e5c7e622.png",
+    "sha256": "f672bc1a4c701603296d30e472aed5bf5cecb3ff9623eaa3c007e9027340dc65",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_SanguineCrusher"
+  },
+  "images/game/d6e02e838027112861fc24e6.avif": {
+    "source": "private/game-data/planner/images\\a4540000dc795a16d61a9e05c4c5573a562d72a0b4aa289d6f50a85a2063a948.png",
+    "sha256": "d6e02e838027112861fc24e6e9e7e343419e074af5a36b6024cd76eb10a118f9",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_SmallBloodElemental"
+  },
+  "images/game/b5d06064fb058897472fd519.avif": {
+    "source": "private/game-data/planner/images\\3f5d5edd0ab49786afee8e4d423cc5dfa9abddcbd802433c0bad58e646c42015.png",
+    "sha256": "b5d06064fb058897472fd51950a1fd2f2b33334a628ecbd15a19e7b9c6f89c54",
+    "gameAsset": "/Game/ui/UnitPortraits/ShipGraveyard/T_Portrait_NPC_SG_BossSiren"
+  },
+  "images/game/ae070e2e8c425588a6c24726.avif": {
+    "source": "private/game-data/planner/images\\08553cb62921db488ea142dcf29e9e927be4fc6508584f93d048a0400eb1ab6d.png",
+    "sha256": "ae070e2e8c425588a6c2472608b964f006fa4691a03d8744106129a4464a1409",
+    "gameAsset": "/Game/ui/UnitPortraits/ShipGraveyard/T_Portrait_NPC_SG_CoralLasher"
+  },
+  "images/game/8dabfa360ef15f1d9e50d092.avif": {
+    "source": "private/game-data/planner/images\\ffea6963603556a5ea2ee6cd47694a76576494e336fccdfc42657b912c303e36.png",
+    "sha256": "8dabfa360ef15f1d9e50d09294a5405bf8a8680a2acd644cd7e5af7f9be6a797",
+    "gameAsset": "/Game/ui/UnitPortraits/ShipGraveyard/T_Portrait_NPC_SG_DrownedSailor"
+  },
+  "images/game/f7d0ec926ef8e3d63198ad21.avif": {
+    "source": "private/game-data/planner/images\\bff56c07830b1a8193b312c984bb795aeba00fccaf3919e2db905d5d4b44f835.png",
+    "sha256": "f7d0ec926ef8e3d63198ad21ddbc0c9e850feb47b9ebd21402232b72a50d269e",
+    "gameAsset": "/Game/ui/UnitPortraits/ShipGraveyard/T_Portrait_NPC_SG_EchoingSpirit"
+  },
+  "images/game/fa78266eee08b2ee83c24ae1.avif": {
+    "source": "private/game-data/planner/images\\88d47c9662304281e5b93d08dade731f54230b0ccc2a79e7188aec1dfa866ec4.png",
+    "sha256": "fa78266eee08b2ee83c24ae1c2ab6c815baee9a83754387f7401b74390ccaa38",
+    "gameAsset": "/Game/ui/UnitPortraits/UndeadBattlefield/T_Portrait_NPC_UB_Corpse"
+  },
+  "images/game/59096477abee62fb8a6a35f5.avif": {
+    "source": "private/game-data/planner/images\\eefe3235a56ec22455e0d6f350e1e4c202b7fa17e2dda81f276b91bc13f9adba.png",
+    "sha256": "59096477abee62fb8a6a35f5a28ef4f4b62a2b412144262e4d6e453a06b9fd86",
+    "gameAsset": "/Game/ui/UnitPortraits/UndeadBattlefield/T_Portrait_NPC_UB_FerventSoldier"
+  },
+  "images/game/6937ae4ce97ee5a0276ffa97.avif": {
+    "source": "private/game-data/planner/images\\d1714f93b221c3aa83fdd04c9a4512c8508f020221b573db3150bdb971a230bb.png",
+    "sha256": "6937ae4ce97ee5a0276ffa97a58d8235164f3b560e1c98acf18007e025e5049f",
+    "gameAsset": "/Game/ui/UnitPortraits/ShipGraveyard/T_Portrait_NPC_SG_GhostOrc"
+  },
+  "images/game/e91d906b8f954ebd5c2cd73e.avif": {
+    "source": "private/game-data/planner/images\\ff1dfbb33d21e89d7a38c04a369b8e8158d4ba72fd004f85b37eae7e5c1e4a00.png",
+    "sha256": "e91d906b8f954ebd5c2cd73e3fc426c86e31839a9adcb240857c1107e900ba81",
+    "gameAsset": "/Game/ui/UnitPortraits/ShipGraveyard/T_Portrait_NPC_SG_WaterElemental"
+  },
+  "images/game/fde4333d4b296d5752d486ab.avif": {
+    "source": "private/game-data/planner/images\\b76d6783ebfe1c83f6673a2b36d7421b418ca7da44121dbe33951463b6f79aac.png",
+    "sha256": "fde4333d4b296d5752d486abfd71f372f1f028d6f254fe58876d7bae2f679509",
+    "gameAsset": "/Game/ui/UnitPortraits/SpiderForest/T_NPC_SH_BossSpider"
+  },
+  "images/game/5ed5f26b1147d7c460854e11.avif": {
+    "source": "private/game-data/planner/images\\aa725f2833d12bd26bfc4a22eb48fb921bd1605cfc2c384df64467a7d19b3400.png",
+    "sha256": "5ed5f26b1147d7c460854e110c5c1cc5498f8241173b703d2b3f5eb241e919a2",
+    "gameAsset": "/Game/ui/UnitPortraits/SpiderForest/T_NPC_SH_CarrionHorror"
+  },
+  "images/game/d57f0e1be8d2cc2b3cc318d0.avif": {
+    "source": "private/game-data/planner/images\\478f23ca5a910a8454d52f439b258a07c92e6a0e80fb9bf97fd1de4cfa50446d.png",
+    "sha256": "d57f0e1be8d2cc2b3cc318d0a088656c54b012f40e8b4d8b5e8342058b2a7d47",
+    "gameAsset": "/Game/ui/UnitPortraits/SpiderForest/T_NPC_SH_Eggbearer"
+  },
+  "images/game/b494668a932f25715c85da52.avif": {
+    "source": "private/game-data/planner/images\\e6f6e1a91cc2a60cc78c6c67202ccd075331d87447327cc66f34ec724bff43e7.png",
+    "sha256": "b494668a932f25715c85da522952998a323787ecc494a0f282de0b5ab651cda0",
+    "gameAsset": "/Game/ui/UnitPortraits/SpiderForest/T_NPC_SH_GravesnareKidnapper"
+  },
+  "images/game/fd0b066c8dcc553fccfb2010.avif": {
+    "source": "private/game-data/planner/images\\6a58f58f48c116bd1f61d0e3cfe8d276e6ce74d0b31b2d1cdf2613c259d2eece.png",
+    "sha256": "fd0b066c8dcc553fccfb201059825b01daafccdba708d5e0d4f5d797a0785da1",
+    "gameAsset": "/Game/ui/UnitPortraits/SpiderForest/T_NPC_SH_RotheartRecluse"
+  },
+  "images/game/157153a1a986dc4e441940a1.avif": {
+    "source": "private/game-data/planner/images\\a4a7537021fa2cff2b6fd90d8abec68cde3bee481e2c84b0bf6d84815668ab21.png",
+    "sha256": "157153a1a986dc4e441940a126d25f5002c1555d85792577e8c301fce23412df",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_SP_BossMarcass"
+  },
+  "images/game/a19c8e229eb234d1c45ac13e.avif": {
+    "source": "private/game-data/planner/images\\e8c587011e50a4e1584fc4f64bfb14e6cf19cc814304729cd78ea0bf67ba1454.png",
+    "sha256": "a19c8e229eb234d1c45ac13e4ce4d22db7fe959ea375644ce2bb7f07af5b777f",
+    "gameAsset": "/Game/ui/UnitPortraits/General/T_NPC_SP_FrostWolf"
+  },
+  "images/game/2edbb60a82eb1a82d03d2a88.avif": {
+    "source": "private/game-data/planner/images\\347e7596f013c312b74d92e79079bef115412336ac26779fa4cfa8a9131badfe.png",
+    "sha256": "2edbb60a82eb1a82d03d2a887dc092d9edb7267edebc839161c084ab4a67fec0",
+    "gameAsset": "/Game/ui/UnitPortraits/General/T_NPC_SP_PolarBear"
+  },
+  "images/game/b072948ec0774d5f57aceb74.avif": {
+    "source": "private/game-data/planner/images\\306b235dc55fcec04125bf2fa62ec768877b16ab9128e5062d33e2a173f4c86c.png",
+    "sha256": "b072948ec0774d5f57aceb749531fb65ed62bb261ac6e14e49c296f50a7f2d5c",
+    "gameAsset": "/Game/ui/UnitPortraits/DesertDunes/T_Portrait_BP_NPC_DD_BossLifebringer"
+  },
+  "images/game/d76013a64c224338c0f979e6.avif": {
+    "source": "private/game-data/planner/images\\d31000fafc0da4283cd75ed49b016af69853d10f45ca222e84eb322944411537.png",
+    "sha256": "d76013a64c224338c0f979e665f42ac571710af5e648aed4bbbf06849963f19c",
+    "gameAsset": "/Game/ui/UnitPortraits/Animals/T_Portrait_NPC_Rat_Generic"
+  },
+  "images/game/08ac7468855ea930239a57a0.avif": {
+    "source": "private/game-data/planner/images\\2b8041eefeef3bc3cdc1cd7debed58cce19f0a4c57b798b8220dc6e03e3040ac.png",
+    "sha256": "08ac7468855ea930239a57a0b153780f06dccee104ad8ca67e0f0608f28e031b",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/T_NPC_UM_BossDrazhulTheFleshbroker"
+  },
+  "images/game/667045f3f9699a393772a167.avif": {
+    "source": "private/game-data/planner/images\\1e23628cc66608de92f8a5ce8acfb7aa604289cbd8dbd50eff07e664e919bc3d.png",
+    "sha256": "667045f3f9699a393772a16706745960149e6d98b42878a07c9140447ed2c528",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/T_NPC_UM_BossSlavetraderBrull"
+  },
+  "images/game/fe3f8af4d254f431f82845f6.avif": {
+    "source": "private/game-data/planner/images\\7b280176d085f4461995ea1e6e4a5097ba3a6515d6b5dccf24844155375b6545.png",
+    "sha256": "fe3f8af4d254f431f82845f640b54e595efd0e7a88b84335fdd8f2894863ca02",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/T_NPC_UM_Desecrater"
+  },
+  "images/game/f9b9f815afa2127dde56508a.avif": {
+    "source": "private/game-data/planner/images\\0e04237d3ae5b3f0dd9423f7f572d795f70a341c0ba18971108e2a91f27215f9.png",
+    "sha256": "f9b9f815afa2127dde56508a6386ac567e1891608b00bccf0eaa0c48948a9675",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/T_NPC_UM_GorestainedButcher"
+  },
+  "images/game/835549ec4c61dc7cc7bf7a05.avif": {
+    "source": "private/game-data/planner/images\\e82e05dbff58dfb2819e53b8abda898387d8359776fd6d9ed264ec3dcc6649ef.png",
+    "sha256": "835549ec4c61dc7cc7bf7a059c69f440ef965862062b99ec725d2530a503dd64",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/T_NPC_UM_HornedSeer"
+  },
+  "images/game/52b324ab85d01f25bab63b8a.avif": {
+    "source": "private/game-data/planner/images\\7e9442310f494c71dbd0717108cc752dc439be2175a5e465aae63de43b51f310.png",
+    "sha256": "52b324ab85d01f25bab63b8ab70315f98eeb90356d3ae96a4c179a7b8e42f915",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/T_NPC_UM_Outrunner"
+  },
+  "images/game/340fbaf46edf4cf3fffc87a6.avif": {
+    "source": "private/game-data/planner/images\\57a5b0ee52744fd61fff9755187e885660c5b0113d76db8bfa791a26e1aa9680.png",
+    "sha256": "340fbaf46edf4cf3fffc87a6f50ebe10dcedb872eb829f1df104bb9d41b5b214",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/BP_NPC_UM_SlaveCage"
+  },
+  "images/game/12f487d746bad1596ab91972.avif": {
+    "source": "private/game-data/planner/images\\bde9d6a1b0e6e2394adb2f869f894c291957a2784855f53366d7b1a7bdc43be7.png",
+    "sha256": "12f487d746bad1596ab919728a5d1eecc36bb1447ef62a732702d61a5b6ba4ab",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/T_NPC_UM_UrrakSlaver"
+  },
+  "images/game/b745b15374c8b11d1067a0e7.avif": {
+    "source": "private/game-data/planner/images\\f7b9ee36595aa5c4ccdae3b58bf2fc3a73566cedb5096860c3ec76a2a258359c.png",
+    "sha256": "b745b15374c8b11d1067a0e7157fd7f84c6f9cdb54b15f7cf9b0da76269a6a0b",
+    "gameAsset": "/Game/ui/UnitPortraits/UrrakMarkets/T_NPC_UM_UrrakWitch"
+  },
+  "images/game/239d641e7c3b1118962aac00.avif": {
+    "source": "private/game-data/planner/images\\29c0a7804a780cf417f32c0d53582a516e983551d337ddde079f2a4a72f7bcab.png",
+    "sha256": "239d641e7c3b1118962aac00625be7e95ee5818946e1a95cd0f166f4323a1333",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_BlackburnMystic"
+  },
+  "images/game/e313c0e2119bcbf0e9f4392c.avif": {
+    "source": "private/game-data/planner/images\\a5d068f1591ad8ff58a91c86712bc25de55f20303c6795e711a96ea83d7d3be6.png",
+    "sha256": "e313c0e2119bcbf0e9f4392cac44aaca8595d2b288dd9e544ed0a5871b5e7893",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_BlackburnSlaver"
+  },
+  "images/game/24c4f8bc8386075996c891cd.avif": {
+    "source": "private/game-data/planner/images\\80e8dc6795a9d850a549097ce481e6378d8940ab80353a7486f4fb1314c9fb56.png",
+    "sha256": "24c4f8bc8386075996c891cd1a900c07ca5228466eff49ca02340c9ebdcf3b44",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_BlackmistCutthroat"
+  },
+  "images/game/c4fd8f2fa61934ec5f9a2913.avif": {
+    "source": "private/game-data/planner/images\\e207691a44890b34bf2e418a58d1893193365970bd3ed5161e8a8835078f8b76.png",
+    "sha256": "c4fd8f2fa61934ec5f9a29134ca7d31c8b821967041e046cb4cc484ac8585f48",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_BlackmistShadow"
+  },
+  "images/game/c5752bc2a9b7f37ef4c79a6e.avif": {
+    "source": "private/game-data/planner/images\\fa9fe35d041f80469680cdebe42a1480d71529fc6e28019cd71c3cbff0088d0e.png",
+    "sha256": "c5752bc2a9b7f37ef4c79a6e95f5762efe9528cb04dd7c1c912baf9f690b196b",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_BlackmistWhisperer"
+  },
+  "images/game/7aa9be8ddc725dcfe3042aeb.avif": {
+    "source": "private/game-data/planner/images\\c9b779b481c2f61cfdf9daae076ae8462abeb6d12af6f73c62f6ad063705c48a.png",
+    "sha256": "7aa9be8ddc725dcfe3042aeb29631b61d979e9982e239434843b0d536bf8a582",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_BossChilgar"
+  },
+  "images/game/052d0192ac6b4fc7405c12f6.avif": {
+    "source": "private/game-data/planner/images\\0b42d4fec3a1b1198d305eff83cf25776ac91ac486873aea29c6df2909f25d79.png",
+    "sha256": "052d0192ac6b4fc7405c12f6fa49e050fed07bbbc21fb355036f843334799239",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_Portrait_NPC_VV_BossFrostTroll"
+  },
+  "images/game/6f88c959460546bde2f86541.avif": {
+    "source": "private/game-data/planner/images\\e75a187db4114c94e72c3bc5735856a5c0e35e68b8caec002401f028c45d1073.png",
+    "sha256": "6f88c959460546bde2f865417322b2f9d39a7ea31590dfcdda2d4e5780d3f89e",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_Portrait_NPC_VV_BossKaldursonFire"
+  },
+  "images/game/b085c3de26b776fdcebd13af.avif": {
+    "source": "private/game-data/planner/images\\3038a17a1b649b4801f22aad907bb596879c7e4c00653d5465d111630f1c7dbc.png",
+    "sha256": "b085c3de26b776fdcebd13af16d0fdfca0e67ea658256a43a3cebf7fdef40894",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_Portrait_NPC_VV_BossKaldursonIce"
+  },
+  "images/game/809ae475cecd0320406b9df7.avif": {
+    "source": "private/game-data/planner/images\\d87c9d7bfd7ac045cc104b1c0263847f503412466e45b6787e6c1cbc295326a8.png",
+    "sha256": "809ae475cecd0320406b9df79c2ae3b9715471751e9a18b9af75eb0251ffc262",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_BossVikingMystic"
+  },
+  "images/game/0740dc0f4feb535672f9ca01.avif": {
+    "source": "private/game-data/planner/images\\b959df5549db63b911e9af921a2af8540e4120d58cd4e0fa994015012a412844.png",
+    "sha256": "0740dc0f4feb535672f9ca019116c9780fec448a50e8f33766651b6b9e92e555",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_ColdbrineFiend"
+  },
+  "images/game/f31d782527ac4cc03fb2fc9b.avif": {
+    "source": "private/game-data/planner/images\\8934211ab032c639ab7065966d7d6f5c11bf47dd1aaea5c77bf15b9151668187.png",
+    "sha256": "f31d782527ac4cc03fb2fc9ba62b5d49f3f79871ede3c6bee6f6b86edba7e9ab",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_CravenHiisi"
+  },
+  "images/game/c81f6993c23e9184e5311f5b.avif": {
+    "source": "private/game-data/planner/images\\03575717f222faf4948507154b6984c6879073838298fed1757b1701e3df6c88.png",
+    "sha256": "c81f6993c23e9184e5311f5bd042abb49f5e65d82cd81c10600520205df4aa46",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_FrenziedLooter"
+  },
+  "images/game/7582e96637157d8fd2b47cf9.avif": {
+    "source": "private/game-data/planner/images\\79df2668de8587d727f4937f6acd505ec7ec6facedef2eaea2072b0469785b35.png",
+    "sha256": "7582e96637157d8fd2b47cf983753a5dee8b8727148c78f73ccc8905f450bfbe",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_IcebitePillager"
+  },
+  "images/game/ad9ed187f9879e926e577120.avif": {
+    "source": "private/game-data/planner/images\\29a6cf4e1e62ef0fd275a0bcf2e078895ad1f230c9d48152a72d2f2475699f2a.png",
+    "sha256": "ad9ed187f9879e926e5771203c85b2eae1aedb43484f64f73d4009715bb6e3f5",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_IcebiteReaver"
+  },
+  "images/game/75c807ef056e3a75058c6f54.avif": {
+    "source": "private/game-data/planner/images\\d547196bae70e25981655800af79dd9810c6c4553b92ebfabfc763cfce5c8d16.png",
+    "sha256": "75c807ef056e3a75058c6f54ef984195ea803fec26e39135975d903f73d38ed6",
+    "gameAsset": "/Game/ui/UnitPortraits/VikingVillageAttack/T_NPC_VV_SootstainedArsonist"
+  },
+  "images/game/cc607504fbfbcacebbcae55e.avif": {
+    "source": "private/game-data/planner/images\\49d43d0ca113729f2e83c1ea7d0053aaa5fb08894cbad161caaec11b1e3ef65b.png",
+    "sha256": "cc607504fbfbcacebbcae55e1b26d9195de3b1281dfd00040b3e4ad84b46d796",
+    "gameAsset": "/Game/ui/UnitPortraits/Winter/T_NPC_DM_WinterGiant"
+  },
+  "images/game/3dd77ff8fa03b2187afad1f8.avif": {
+    "source": "private/game-data/planner/images\\42bbdc73a3a38179acd5a175dea26089b494157dcdbc5ae6e98f6a112b6454c2.png",
+    "sha256": "3dd77ff8fa03b2187afad1f87dd7ad1c85c4a44fecc37cb3b89369f51c57b492",
+    "gameAsset": "/Game/ui/UnitPortraits/Winter/T_NPC_DM_WinterWitch"
+  },
+  "private/images/dungeons/maps/demonicritual-t_map_demonicritual_start-game.avif": {
+    "source": "private/game-data/planner/images\\0293ef3de171ba6abc1759180e515bb67dbc75fde7d119dd9c9b3f2aa8778696.png",
+    "sha256": "5b269215e7ed212b1bc0f199c228c1f360af03c84400da857e852c3dd9fdeeeb",
+    "gameAsset": "/Game/Environment/DemonicRitual/Minimap/T_Map_Demonicritual_Start"
+  },
+  "private/images/dungeons/maps/demonicritual-t_map_demonicritual_upperfloor-game.avif": {
+    "source": "private/game-data/planner/images\\f44463e88cc9e47e60b4fb8db77b81bed4f6a07b9fc84c0f81722f4ddf400ad8.png",
+    "sha256": "db10465d0292591be1de8160cdf55f63709ebd9eacd3ed073d39ac8390789a02",
+    "gameAsset": "/Game/Environment/DemonicRitual/Minimap/T_Map_Demonicritual_UpperFloor"
+  },
+  "private/images/dungeons/maps/demonicritual-t_map_demonicritual_end-game.avif": {
+    "source": "private/game-data/planner/images\\3882756f657cd8c58669dc3ca7eca6b2f536cad7402ff11ba43dc8b01ad81643.png",
+    "sha256": "dec546fceb995cd206d4523126acb6eafe26f4987721fa5801c3b40aa4ab5e0f",
+    "gameAsset": "/Game/Environment/DemonicRitual/Minimap/T_Map_Demonicritual_End"
+  },
+  "private/images/dungeons/maps/demonicritual-t_map_demonicritual_lowerfloor-game.avif": {
+    "source": "private/game-data/planner/images\\6d750b84519da005fa2979990a61ba9fcc2f534a80d36dea4553ff6416078af6.png",
+    "sha256": "bf5d31fdf8407150c5f998efdef45e47661ce77ac198dc2c3471c65efba97969",
+    "gameAsset": "/Game/Environment/DemonicRitual/Minimap/T_Map_Demonicritual_LowerFloor"
+  },
+  "private/images/dungeons/maps/desertdunes-t_map_desertdunes_start-game.avif": {
+    "source": "private/game-data/planner/images\\751b65b7757f2539b83dd39737f341689a120571f5bf8562979b72841c28b098.png",
+    "sha256": "73b0f7784fb8f09062b2860a4084d9eb2f4d0082d987b236b69f3e5de380443c",
+    "gameAsset": "/Game/Environment/DesertDunes/Minimap/T_Map_DesertDunes_Start"
+  },
+  "private/images/dungeons/maps/desertdunes-t_map_desertdunes_end-game.avif": {
+    "source": "private/game-data/planner/images\\baee0e31139e3c564726bcc591f1d2a6dec5a69e8771b140a1d03ba69a71ffb9.png",
+    "sha256": "174824471a23964f48beca469d46a228e577f6fd1d0f52f77f47cb8b6095bb49",
+    "gameAsset": "/Game/Environment/DesertDunes/Minimap/T_Map_DesertDunes_End"
+  },
+  "images/dungeons/maps/elfmines-t_map_em_global-game.avif": {
+    "source": "private/game-data/planner/images\\5e4e8eb5e6fb33514170990182701428749e08a1153baecca474762e590da6a9.png",
+    "sha256": "8a057790162bd11035180873c23eadfa2a74682c195e90b4e4e2a7b10626dbbd",
+    "gameAsset": "/Game/Environment/ElfMines/Maps/T_Map_EM_Global"
+  },
+  "images/dungeons/maps/frozenkingdom-t_map_frozenkingdom_01-game.avif": {
+    "source": "private/game-data/planner/images\\5d0046a9a4f8d3d90b158a8a34800db6edfc6618ff792d726e4a768e53a02aef.png",
+    "sha256": "397d99c67c957b9a3cffcfb871c7ad3e789bf2afc87880fe884b6ad2a373a26d",
+    "gameAsset": "/Game/Environment/FrozenKingdom/Minimap/T_Map_FrozenKingdom_01"
+  },
+  "private/images/dungeons/maps/icecave-t_map_icecave_startarea-game.avif": {
+    "source": "private/game-data/planner/images\\992729959560489acdb31667bcb879dbac359e342dbc7a4867d4b78ba17a4d89.png",
+    "sha256": "0074a2d7d99c8c3a64c9a2a08223efb952bbbecc221ff65a08df603ebf99e9a4",
+    "gameAsset": "/Game/Environment/IceCave/Minimap/T_Map_IceCave_StartArea"
+  },
+  "private/images/dungeons/maps/icecave-t_map_icecave_ending-game.avif": {
+    "source": "private/game-data/planner/images\\bd8d0cbe7c5be223f2301c3663e2d2a796daef76326257146bc208bfeecd6966.png",
+    "sha256": "aa70b2a2507063a047220c6fdef029d44fc0725d5ac4092e5b072a8b7ca28e26",
+    "gameAsset": "/Game/Environment/IceCave/Minimap/T_Map_IceCave_Ending"
+  },
+  "private/images/dungeons/maps/moorcastle-t_map_mc_global_01-game.avif": {
+    "source": "private/game-data/planner/images\\5d6fcc3074d7814477871cdf9550a5055e512401aec5b596bb1e2e7ca6de5b91.png",
+    "sha256": "c0d69a862cd88e29dffdced0fa7aefff56e5d4b9d823f1eb2fbf4c876a34d73e",
+    "gameAsset": "/MoorCastle/Environment/Map/T_Map_MC_Global_01"
+  },
+  "private/images/dungeons/maps/moorcastle-t_map_mc_chamber_01-game.avif": {
+    "source": "private/game-data/planner/images\\9c162a7a2f7b4e6d7e18c96b1c5b2ae2ebac0f4d81004f3ac3ccb67990db2677.png",
+    "sha256": "e0eb0da07bd2b5d3edaa98bb9e07e3afa8618bcd8aeec3a3335d03d9f24f2ae0",
+    "gameAsset": "/MoorCastle/Environment/Map/T_Map_MC_Chamber_01"
+  },
+  "images/dungeons/maps/mythicforest-t_map_mythicforest_global-game.avif": {
+    "source": "private/game-data/planner/images\\c7b337ebdc04e7ebe8077bdf7b51df8350ca86aca65b74db7de86e9d3d1caf59.png",
+    "sha256": "9ae4794064a05efb66af4bcd8c8e7db3924a340a8f28632a9baf9247afb03998",
+    "gameAsset": "/Game/Environment/MythicForest/Minimap/T_Map_MythicForest_Global"
+  },
+  "private/images/dungeons/maps/nightpatrol-t_map_nightpatrol_02-game.avif": {
+    "source": "private/game-data/planner/images\\090871b336d17498d08987c455ff8d7982debb02a7c828d5eada9e2c8b1227e6.png",
+    "sha256": "ab41cdea70787542881bb741f4b5acddff3c8d6b6f292038bd2358954453e55d",
+    "gameAsset": "/Game/Environment/NightPatrol/Minimap/T_Map_Nightpatrol_02"
+  },
+  "private/images/dungeons/maps/nightpatrol-t_map_nightpatrol-game.avif": {
+    "source": "private/game-data/planner/images\\32767dcc594c351b1fb99d1d900fc13eb73d5bdb1eee8cfc8cd0261559817783.png",
+    "sha256": "3e77a5cd5a514b50a296450d3c7b463578931f12a243529e7954882da7e682db",
+    "gameAsset": "/Game/Environment/NightPatrol/Minimap/T_Map_NightPatrol"
+  },
+  "private/images/dungeons/maps/pirateraid-t_map_pirateraid_lower-game.avif": {
+    "source": "private/game-data/planner/images\\7a2db660238d265e1ff57725d48c7aaea7fc3ecd8a407c490017adb6ef6eefdd.png",
+    "sha256": "4db82d742a9ed444496f4308599284e0a60426fd155331fef74e7363f1bfa4b3",
+    "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_Lower"
+  },
+  "private/images/dungeons/maps/pirateraid-t_map_pirateraid_upper-game.avif": {
+    "source": "private/game-data/planner/images\\fbc9477f1d075efb9b6926a4614b07ceca8d686a5161315bf2755d8a892ebc1b.png",
+    "sha256": "e7d537d0eb3235d148c2d4768999a7bc62bf6183be728f9891a556caa3adfb08",
+    "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_Upper"
+  },
+  "private/images/dungeons/maps/pirateraid-t_map_pirateraid_ship-game.avif": {
+    "source": "private/game-data/planner/images\\915a30bf4638aaa2f421edce7cdafc83780a70d71aea5b13352e49197c4f12ff.png",
+    "sha256": "b9d1733b2afd23e95b3bcfc3a4892bad49242baf0fef62b095464a1f98581590",
+    "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_Ship"
+  },
+  "private/images/dungeons/maps/pirateraid-t_map_pirateraid_junglearea-game.avif": {
+    "source": "private/game-data/planner/images\\cb0c612400ad09cd8b543bd3c9cc6c80b5b65e7ab36b92a6461f20ec9ed91673.png",
+    "sha256": "7fa7fc8c615cfd9e4a26df491be55b2f9abcebd307b764e0f102c9423ca3ba46",
+    "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_JungleArea"
+  },
+  "private/images/dungeons/maps/sandtomb-t_st_map_exterior_01-game.avif": {
+    "source": "private/game-data/planner/images\\c06e6b1fffab30d21d60708ecd8d50c59050f7845e1415796996ac04afc0a531.png",
+    "sha256": "6129f1862650ab0e7c2b9d2e979f3c60d941aaf19e4ec47dbf1fd8c011501fcc",
+    "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_Exterior_01"
+  },
+  "private/images/dungeons/maps/sandtomb-t_st_map_interior_01-game.avif": {
+    "source": "private/game-data/planner/images\\4dfa60e585912991db97c9c3cf6e67c8af763d6fd8b6ea0383c40669c20bdf39.png",
+    "sha256": "36bac07d37369650fe7aae7dd1cfcdc21c4b3ec3d74e9c5137c579e6ddcdff4f",
+    "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_Interior_01"
+  },
+  "private/images/dungeons/maps/sandtomb-t_st_map_end_01-game.avif": {
+    "source": "private/game-data/planner/images\\71c2c8433227bf57970152e58c4753742ff9febc07998c430f588f962d3857cf.png",
+    "sha256": "5e28d61d97ff65fd1028bd480267499e4b0b1391b234f64c84b8f8ace6feea53",
+    "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_End_01"
+  },
+  "images/dungeons/maps/shipgraveyard-t_map_shipgraveyard_01-game.avif": {
+    "source": "private/game-data/planner/images\\9a2464c55652c568a3f8ff23dc023611c9b89e5bb1cb8176db92b3abd4225bbb.png",
+    "sha256": "e4495b212a86999a186e2cac5dbf321bee3a179ab579dac61520ca0100ee5116",
+    "gameAsset": "/Game/Environment/ShipGraveyard/Minimap/T_Map_ShipGraveyard_01"
+  },
+  "images/dungeons/maps/snowpeak-t_sp_map_global_01-game.avif": {
+    "source": "private/game-data/planner/images\\cee7ed5dfc1a1af68a34d2db01c2edc8b67222f7c67e964ae4d5ff2de4204b98.png",
+    "sha256": "5760c71b1e0a8f6eda2848af3d748c1eb07a075e748ead34771cafe32632c253",
+    "gameAsset": "/SnowPeak/Environment/Map/T_SP_Map_global_01"
+  },
+  "private/images/dungeons/maps/spiderforest-t_map_sf_01-game.avif": {
+    "source": "private/game-data/planner/images\\b016b332895a973375757d9786915381d96df3ee3060671fb226f2676b5cb97c.png",
+    "sha256": "4e120f622df31eb9a2b89814ec2aa998ddf3da7dfe54b63495cc91fef92f45f6",
+    "gameAsset": "/Game/Environment/SpiderForest/MapAssets/T_Map_SF_01"
+  },
+  "private/images/dungeons/maps/spiderforest-t_map_sf_lair-game.avif": {
+    "source": "private/game-data/planner/images\\00e083d32ea2406e9024eb3d7851e60b955240eea6f41e34f548b5371e3e4293.png",
+    "sha256": "f09492cfe8c656215fa1a74663e5eabd8a3ecdff91b88e4a325cb6cfea6d194b",
+    "gameAsset": "/Game/Environment/SpiderForest/MapAssets/T_Map_SF_Lair"
+  },
+  "images/dungeons/maps/urrakmarkets-t_map_urrakmarkets_global-game.avif": {
+    "source": "private/game-data/planner/images\\b5d9c0f8841cadaf088b658610d1f7e6fe7376d6262429090dfe9815b46c02a8.png",
+    "sha256": "48f7a8e82a4e22df61576c3743468dcbffb2af3a26b9f3a69d95756b701d5541",
+    "gameAsset": "/Game/Environment/UrrakMarkets/MapAssets/T_Map_UrrakMarkets_Global"
+  },
+  "private/images/dungeons/maps/vikingvillageattack-t_vikingvillage_church-game.avif": {
+    "source": "private/game-data/planner/images\\fa14acd6c36dd976dbfbb8ac8d853ed1eab5e11916087b1f5464ac32054faedb.png",
+    "sha256": "f8ab79398d22c388b2a3bd17c28cf0a9eaf7d36f21fc99ed673ca784d3f503f9",
+    "gameAsset": "/Game/Environment/VikingVillageAttack/T_VikingVillage_Church"
+  },
+  "private/images/dungeons/maps/vikingvillageattack-t_vikingvillage_lower-game.avif": {
+    "source": "private/game-data/planner/images\\0f061ba6b10a9ccf27d2f771866c580683e7eecfa19c5be75405148bbc4599b9.png",
+    "sha256": "ff208f3a80e2fc844087172a669a303167a33f33ac646783dc10b7af62d46c14",
+    "gameAsset": "/Game/Environment/VikingVillageAttack/T_VikingVillage_Lower"
+  },
+  "private/images/dungeons/maps/vikingvillageattack-t_map_vv_market-game.avif": {
+    "source": "private/game-data/planner/images\\c78179aa37446f13407f57b2e543cd5a571b4220bcc19285164a5e379b0246a2.png",
+    "sha256": "13097804208b6aac71702e29a55ca7c2943b52607d2f38254cabdbd7f045a954",
+    "gameAsset": "/Game/Environment/VikingVillageAttack/T_Map_VV_Market"
+  },
+  "images/game/a598c57c116b6f6d3c8f9a7a.avif": {
+    "source": "private/game-data/planner/images\\4d75e5eed71aa76bad8108e4c35031a8096c10cc569867e4b28f6c98c7a5f09f.png",
+    "sha256": "a598c57c116b6f6d3c8f9a7a4bfd0ddef5936c803bbb10d8e2d50c2916781d14",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_warmaster_01"
+  },
+  "images/game/b6d367c751b473c837616630.avif": {
+    "source": "private/game-data/planner/images\\a96e9b5c4615e94903ffc8afb27bd31e3b26f3bfa9a44e63f52e4317c83f2e95.png",
+    "sha256": "b6d367c751b473c837616630d16318a3303fc9934fc81ce13dbab0713c3e17ef",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Mosse_01_default"
+  },
+  "images/game/0182dce81ab694530b55b3aa.avif": {
+    "source": "private/game-data/planner/images\\1d709caaff33b17711f959ab762cc5176b27c6af8afb88cc78cdc4598d31e8ad.png",
+    "sha256": "0182dce81ab694530b55b3aab96df379d12533e74c0b5dd9d4566d5cf773ac6c",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_vigor_default"
+  },
+  "images/game/30b2171294f67d6d2858a865.avif": {
+    "source": "private/game-data/planner/images\\be0efa12351f8ec3c3d1b86ba4f2609c2e463a30044108cdea72e4dc5c6a5d92.png",
+    "sha256": "30b2171294f67d6d2858a865efd4f20dcd6351042c8f37c90cd72e9240a8e21b",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Ink_01"
+  },
+  "images/game/4b0100ab126650fbf41fb863.avif": {
+    "source": "private/game-data/planner/images\\abd0f4e51172bdc9a99491216cc1745b3f2c24fcade3b6f53389d98f9fded68e.png",
+    "sha256": "4b0100ab126650fbf41fb863d702762a7673e1aca3a8dbb14ef6a218518a2fdc",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_meiko_default"
+  },
+  "images/game/a3fc0285169b891bc2214580.avif": {
+    "source": "private/game-data/planner/images\\78a59d19727e07c3a656470a03834c8a9b6636bba53248b8af90fb74be0d1bb0.png",
+    "sha256": "a3fc0285169b891bc2214580fdefc92768dbcb8dbf829a12ff56dc4ab2a362c9",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Mara_01"
+  },
+  "images/game/105c81fa196ce71a8b99f90f.avif": {
+    "source": "private/game-data/planner/images\\912d2c20ea3db709cd748764919e80807f6385be1b0f6d2384e85f4119560c2e.png",
+    "sha256": "105c81fa196ce71a8b99f90f20a5b8511c1d76315b807a383e2fb784c6ccc9f2",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_rime_default"
+  },
+  "images/game/1e2d185816e03572a7beefcd.avif": {
+    "source": "private/game-data/planner/images\\ea262f9c6ed7ad2a634885c02fef865e2ee8a6d89acece095aa1207efb4b7564.png",
+    "sha256": "1e2d185816e03572a7beefcd8d361fb1fa79ab9f682a253806826d1a26dc99f2",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Bowguy_01"
+  },
+  "images/game/4f195577ba3f83573a3eb8cb.avif": {
+    "source": "private/game-data/planner/images\\bf35cf4a6529a600c30e83528548b8a3628ea8e36d69e073ba2f7f96a86fcc89.png",
+    "sha256": "4f195577ba3f83573a3eb8cbcd72a5c0bce2ce30fe477f15f00c0804bb59c0e2",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Firemage_default"
+  },
+  "images/game/1de4103e4bb5d25a8a160a3a.avif": {
+    "source": "private/game-data/planner/images\\157d2255cfe6b0faa0dc3fcfc154740174f0541ba0854979f6a90ba8dddfeb15.png",
+    "sha256": "1de4103e4bb5d25a8a160a3ace1eac95668b8d34ccff7944d04fd875058b970e",
+    "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Lisa_default"
+  },
+  "images/game/e0cdeed8e71860bc08957539.avif": {
+    "source": "private/game-data/planner/images\\24651b3cb129f4e84ad06a2505e209e3d44499f55a5a849789676677245b1913.png",
+    "sha256": "e0cdeed8e71860bc08957539ceb36db017687ee0746598cb811e12699a6e0ea5",
+    "gameAsset": "/Game/ui/icons/hero_portraits/T_HeroPortrait_Sune"
+  },
+  "images/modifiers/empowered-minions.avif": {
+    "source": "private/game-data/planner/images\\1c5a56132b4b62c50b07fc510f462ed5fd2feaa32ccdffcde7ab3e70f16ded7e.png",
+    "sha256": "db88cb4f5248f478b3fdb0b37d21f81ffd8b897183ff80f639c7b9b0491719ab",
+    "gameAsset": "/Game/ui/icons/NhanceRPGIcons/Textures/T_Nhance_RPG_Gold_01"
+  },
+  "images/modifiers/shadow-lord.avif": {
+    "source": "private/game-data/planner/images\\f4bd8ebad6d7d42770453d241044ff091044f2fc0f2f9799f2406f516cd25ff6.png",
+    "sha256": "47c19e0d28276946b8cb65b1dadaeb91b8282fa140383e93e9076d411a8fd82f",
+    "gameAsset": "/Game/ui/icons/NhanceIconsBundle/Textures/T_Madness"
+  },
+  "images/modifiers/winter-giant.avif": {
+    "source": "private/game-data/planner/images\\a4b2851f9bdfb8ee161e71de5ec51cb1dd9b2a7c5024e3b1586c6d3e5f23e0b8.png",
+    "sha256": "de08946c6ac75e7d87b79092e241403a270b620040812d0d8525f881ba51f374",
+    "gameAsset": "/Game/ui/icons/Modifiers/Curses/T_Modifier_FrostGiant"
+  },
+  "images/modifiers/winter-witch.avif": {
+    "source": "private/game-data/planner/images\\3fa7057af532ad898a6abfc643852686c43427864d377689d437781c6af38c3c.png",
+    "sha256": "b10837d9d7db788774122f6d51103628ab01c1af4b9b0df46cce4212ab608e96",
+    "gameAsset": "/Game/ui/icons/Modifiers/Curses/T_Modifier_WinterWitch"
+  },
+  "images/pois/bonfire.avif": {
+    "source": "private/game-data/planner/images\\2dca8b8b879f7212f5f5fd7a39c5a09059ab8ba8b9f169ea71dfbd39620c3588.png",
+    "sha256": "6738213a5d2f815b90b86879588c678278f9810fd6019f798236f135d5aef453",
+    "gameAsset": "/Game/ui/DesignSystem/Textures/Icons/T_Icons_MapMarker_BonfireLit"
+  },
+  "images/hero-items/relic-b-crit-portal-hero-item-200.avif": {
+    "source": "private/game-data/planner/images\\c427d28b7f68ecdd8779f23377da6a000e0bee4e6539ab98515e7b78761b26ab.png",
+    "sha256": "2ae1bed7623032ba278204bcb64e9679c02d774bc5703091518f03bf96da7986",
+    "gameAsset": "/Game/ui/icons/RelicIcons/T_Relic_Portal"
+  },
+  "images/hero-items/relic-b-expertise-groupinvisibility-hero-item-200.avif": {
+    "source": "private/game-data/planner/images\\eca34f6f2e3ad9acf02cb9cb1deaeb2243505c10739e7dcbc1ae484219f09820.png",
+    "sha256": "f7a38a1909a0396e25e32d36822ce504a6569c0a1802a68b3b73e4d77a23ad78",
+    "gameAsset": "/Game/ui/icons/NhanceIconsBundle/Textures/T_OrbofShadow"
+  },
+  "images/relics/ga-relicpower-polymorphtargetwithsharedcharges-relic-200.avif": {
+    "source": "private/game-data/planner/images\\f0da7983b6bf7359e5ec7d03cae23ce7af5c637994896cfaa491fa266ea7f52d.png",
+    "sha256": "646a5d4716bfae117a433a23ad112adf07739441d63b872cbce26ad494a302c6",
+    "gameAsset": "/Game/ui/icons/RelicIcons/T_Relic_Chicken"
+  }
+}

@@ -20,6 +20,11 @@ export function compressionProfile(destination) {
 }
 
 export function originalFor(image) {
+  const sourcesFile='data/game-image-sources.json';
+  if(fs.existsSync(sourcesFile)){
+    const own=JSON.parse(fs.readFileSync(sourcesFile,'utf8'))[image];
+    if(own){if(hashFile(own.source)!==own.sha256)throw new Error('Changed extracted image: '+own.source);return own.source;}
+  }
   image = image.replace(/^private\/images\//, 'images/').replace(/^images\/dungeons\/overview\//, 'images/dungeons/maps/');
   if (!/^images\/[a-zA-Z0-9_./-]+$/.test(image) || image.split('/').includes('..')) throw new Error(`Invalid image path: ${image}`);
   const relative = image.slice('images/'.length);
@@ -27,9 +32,7 @@ export function originalFor(image) {
     ? [['private/images-referenced', relative.slice('dungeons/full/'.length)]]
     : relative.startsWith('dungeons/combined/')
       ? [['private/images-combined', relative.slice('dungeons/combined/'.length)]]
-      : relative.startsWith('dungeons/maps/')
-        ? [['private/images-archive', relative]]
-        : [['private/assets', relative], ['private/images-archive', relative]];
+      : [];
   for (const [root, name] of roots) {
     const directory = path.join(root, path.dirname(name));
     if (!fs.existsSync(directory)) continue;

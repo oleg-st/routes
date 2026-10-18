@@ -9,7 +9,7 @@ import {placementAliases,correctDungeon} from '../data/placement-corrections.js'
 import {newRoute,newPull,validateRoute,scoreRoute,effectivePositions,applyModifierPresets,toggleModifier} from '../route-model.js';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url)));
 const raw=read('dungeons'),dungeons=raw.map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
-const reference=read('shadow-reference'),presets=read('modifier-placements');
+const presets=read('modifier-placements');
 
 test('World-only relic positions agree with known map positions on every single-layer dungeon',()=>{
  const single=dungeons.filter(d=>d.mapImages.length===1);assert.equal(single.length,6);
@@ -88,8 +88,8 @@ test('Dungeon starts appear only on the entrance layer and full map, within imag
   }
   const sands=dungeons.find(d=>d.id.endsWith('DesertDunes'));
   const point=mapStart(sands,mapViews(sands)[0]);
-  assert.ok(Math.abs(point[0]-(442.91*2.95-150))<.0001);
-  assert.ok(Math.abs(point[1]-(3375-(215.09*2.95-55)))<.0001);
+  assert.deepEqual(point,mapCoordinates(mapStarts[sands.id],mapViews(sands)[0]));
+  assert.deepEqual(mapStarts[sands.id].worldPosition,{x:-19960.4785,y:-47085.725,z:3056.746875});
   assert.equal(mapStart({id:'unknown'},mapViews(sands)[0]),null);
 });
 test('All nine multi-layer dungeons have a full view with every mapped enemy exactly once',()=>{
@@ -107,9 +107,9 @@ test('All nine multi-layer dungeons have a full view with every mapped enemy exa
   }
   assert.equal(count,9);
 });
-test('Sands honors manual reference positions; original layers and saved annotations remain stable',()=>{
+test('Game Sands uses world positions; original layers and saved annotations remain stable',()=>{
   const d=dungeons.find(d=>d.id.endsWith('DesertDunes')),views=mapViews(d),p=d.enemies.find(p=>p.id==='ub-bossarchbishop');
-  const [x,y]=mapCoordinates(p,views[0]);assert.ok(Math.abs(x-(968.8888888888887*4.3+980))<.0001);assert.ok(Math.abs(y-(3375-(515.1907495265427*4.3+635)))<.0001);
+  const [x,y]=mapCoordinates(p,views[0]);assert.deepEqual([x,y],mapCoordinates({...p,placementId:undefined},views[0]));
   const rawPoint=mapCoordinates({...p,placementId:undefined},views[0]);assert.ok(Math.abs(rawPoint[0]-5099.662221818181)<.0001);assert.ok(Math.abs(rawPoint[1]-570.0224814545459)<.0001);
   const layer=views.find(m=>m.id===p.mapImageId),point=mapCoordinates(p,layer);
   assert.deepEqual(point,[p.mapPosition.x*layer.width,p.mapPosition.y*layer.height]);
@@ -120,9 +120,10 @@ test('Sands honors manual reference positions; original layers and saved annotat
   const route=newRoute(d,'test');route.drawings=[drawing,{...drawing,id:'full',mapId:views[0].id,points:[[x,y]]}];
   const imported=validateRoute(JSON.parse(JSON.stringify(route)),dungeons,enemies);assert.equal(imported.drawings.length,2);assert.deepEqual(imported.drawings.map(d=>d.points),route.drawings.map(d=>d.points));
 });
-test('Wraithtide uses the stitched captain override instead of the source-layer position',()=>{
+test('Game Wraithtide captain follows world coordinates rather than a frozen marker override',()=>{
   const d=dungeons.find(d=>d.id.endsWith('PirateRaid')),p=d.enemies.find(p=>p.id==='pr-bosspiratecaptain');
-  assert.deepEqual(mapCoordinates(p,mapViews(d)[0]),[3253.953884138809,3375-926.8169565017415]);
+  assert.deepEqual(mapCoordinates(p,mapViews(d)[0]),mapCoordinates({...p,placementId:undefined},mapViews(d)[0]));
+  assert.notDeepEqual(mapCoordinates({...p,worldPosition:{...p.worldPosition,y:p.worldPosition.y+1000}},mapViews(d)[0]),mapCoordinates(p,mapViews(d)[0]));
 });
 
 test('Combined projects original layers, patrols and modifier members in its chosen frame',()=>{
@@ -154,8 +155,8 @@ test('Combined projects original layers, patrols and modifier members in its cho
     for(const kind of ['ghorn','witch'])if(route.modifiers[kind].packId){
       toggleModifier(route,kind,d);
       for(const p of effectivePositions(route,d).filter(p=>p.modifier&&onMap(p,combined))){
-        const points=p.mapMembers.map(member=>mapCoordinates(member,combined));
-        assert.deepEqual(mapCoordinates(p,combined),[0,1].map(i=>points.reduce((sum,point)=>sum+point[i],0)/points.length));
+        const preset=presets.dungeons[d.id][p.modifier];
+        assert.deepEqual(mapCoordinates(p,combined),mapCoordinates(preset,combined),'Native presets use the spawner point, including on stitched maps');
       }
       toggleModifier(route,kind,d);
     }
@@ -185,7 +186,7 @@ test('Saved Full map and Referenced objects share both overviews without changin
   const imported=validateRoute(JSON.parse(JSON.stringify(route)),dungeons,enemies);
   assert.deepEqual(imported.drawings.map(({id,...drawing})=>drawing),route.drawings.map(({id,...drawing})=>drawing));
   assert.deepEqual(imported.pulls,route.pulls);
-  assert.deepEqual(scoreRoute(imported,d,enemies,reference),scoreRoute(route,d,enemies,reference));
+  assert.deepEqual(scoreRoute(imported,d,enemies),scoreRoute(route,d,enemies));
   assert.deepEqual(drawingOnMap(imported.drawings[0],combined,d),imported.drawings[0]);
   assert.deepEqual(drawingOnMap(imported.drawings[0],full,d),imported.drawings[0]);
   assert.deepEqual(drawingOnMap(imported.drawings[1],combined,d),imported.drawings[1]);
@@ -232,10 +233,10 @@ test('Layer visibility hides outside objects but keeps crossing lines and revers
 test('Duplicate boss placements migrate to one encounter, including old selections and exclusions',()=>{
   for(const [id,aliases]of Object.entries(placementAliases)){
     const d=dungeons.find(d=>d.id===id),original=raw.find(d=>d.id===id),[old,current]=Object.entries(aliases)[0];
-    assert.equal(d.enemies.length,original.enemies.length-1);assert.ok(!effectivePositions(newRoute(d,'test'),original).some(p=>p.placementId===old));
+    assert.equal(d.enemies.length,original.enemies.length);assert.ok(!effectivePositions(newRoute(d,'test'),original).some(p=>p.placementId===old));
     const route=newRoute(d,'test');route.pulls[0].enemies=[old];route.pulls.push({...newPull(1),enemies:[current]});
-    const imported=validateRoute(route,dungeons,enemies);assert.deepEqual(imported.pulls.flatMap(p=>p.enemies),[current]);assert.equal(scoreRoute(imported,d,enemies,reference).bosses,1);assert.equal(scoreRoute(route,original,enemies,reference).bosses,1);
-    route.excluded=[old];assert.deepEqual(validateRoute(route,dungeons,enemies).excluded,[]);assert.equal(scoreRoute(route,original,enemies,reference).bosses,1);
+    const imported=validateRoute(route,dungeons,enemies);assert.deepEqual(imported.pulls.flatMap(p=>p.enemies),[current]);assert.equal(scoreRoute(imported,d,enemies).bosses,1);assert.equal(scoreRoute(route,original,enemies).bosses,1);
+    route.excluded=[old];assert.deepEqual(validateRoute(route,dungeons,enemies).excluded,[]);assert.equal(scoreRoute(route,original,enemies).bosses,1);
     route.pulls[1].enemies=[old];assert.throws(()=>validateRoute(route,dungeons,enemies),/multiple pulls/);
   }
 });

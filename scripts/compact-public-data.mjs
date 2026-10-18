@@ -10,7 +10,7 @@ export function compactPublicData(destination) {
   const dungeons = read('dungeons');
   const enemyIds = new Set(dungeons.flatMap(dungeon => dungeon.enemies.map(enemy => enemy.id)));
   write('dungeons', dungeons.map(dungeon => {
-    const compact = pick(dungeon, ['id', 'name', 'requiredScore', 'mapImages']);
+    const compact = pick(dungeon, ['id', 'name', 'requiredScore', 'mapImages', 'retiredPlacementIds']);
     compact.mapImages = compact.mapImages.map(image => pick(image, ['id', 'name', 'path', 'width', 'height']));
     const indexes = new Map(), sharedPatrols = [];
     compact.enemies = dungeon.enemies.map(({patrolPath, mapPatrolPath, ...enemy}) => {
@@ -20,8 +20,8 @@ export function compactPublicData(destination) {
     });
     return {...compact, sharedPatrols};
   }));
-  write('enemies', read('enemies').filter(enemy => enemyIds.has(enemy.id)).map(enemy => {
-    const compact = pick(enemy, ['id', 'gameId', 'name', 'dungeonScore', 'baseHealth', 'isBoss', 'canBeControlled']);
+  write('enemies', read('enemies').filter(enemy => enemyIds.has(enemy.id)||['dm-wintergiant','dm-winterwitch'].includes(enemy.id)).map(enemy => {
+    const compact = pick(enemy, ['id', 'gameId', 'name', 'dungeonScore', 'countsTowardsDungeonScore', 'shadowOrbEligible', 'baseHealth', 'isBoss', 'canBeControlled']);
     const image = enemy.images?.find(image => image.size === '200') || enemy.images?.[0];
     return {...compact, images: image ? [pick(image, ['path', 'size'])] : []};
   }));

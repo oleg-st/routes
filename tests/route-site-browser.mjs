@@ -16,6 +16,14 @@ try{
   page.on('pageerror',e=>errors.push(e.message));page.on('websocket',socket=>external.push(socket.url()));
   await page.route('**/*',r=>{if(!r.request().url().startsWith(origin)){external.push(r.request().url());return r.abort();}return r.continue();});
   await page.goto(origin+prefix);await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#floor-panel').count(),0);
+  for(const kind of ['ghorn','witch']){
+    assert.ok(await page.locator('#'+kind+' img').evaluate(async i=>{await i.decode();return i.naturalWidth>0;}));
+    await page.locator('#'+kind).click();
+    const portrait=page.locator(`[data-placement="modifier:${kind}"] image`);
+    assert.equal(await portrait.count(),1);
+    assert.ok(await portrait.evaluate(async e=>{const i=new Image();i.src=e.getAttribute('href');await i.decode();return i.naturalWidth>0;}));
+    await page.locator('#undo').click();
+  }
   await page.locator('#add-pull').click();await page.locator('#shadow').click();await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
   await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#pull-count').textContent(),'2');assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');
   await page.locator('#import-log-button').click();await page.locator('#log-url').waitFor();
