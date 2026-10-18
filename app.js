@@ -2,7 +2,7 @@ import {uid,enemyHealth,newRoute,hasRouteChanges,newPull,pullColor,scorePull,sco
 import {pullOutline,separateMarkerCenters} from './map-geometry.js';
 import {planPullSplit} from './pull-split.js';
 import {markerSymbols,markerColors,markerIcon,numberedAnnotations,markerSymbol,legacyMarkerGlyph} from './marker-symbols.js';
-import {onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from './map-views.js';
+import {onMap,mapCoordinates,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires,mapPatrols} from './map-views.js';
 import {mapViews} from './local-map-views.js';
 import {correctDungeon,placementName} from './data/placement-corrections.js';
 import {enemyAbilities} from './data/ability-corrections.js';
@@ -460,7 +460,10 @@ function renderMap(){
     label.append(svg('circle',{cx:x,cy:y,r:11*unit,fill:pull.color,stroke:'#111820','stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('text',{x,y,'text-anchor':'middle','dominant-baseline':'central','font-size':12*unit,'font-weight':700,fill:'#fff'},i+1));
     $('#pull-labels').append(label);
   }
-  const patrolPaths=new Set();
+  const visiblePacks=new Set(visible.map(p=>p.packId));
+  for(const {packId,points} of mapPatrols(currentPositions().filter(p=>visiblePacks.has(p.packId)),mapLayer)){
+    $('#patrols').append(svg('polyline',{'data-pack':packId,class:'patrol-path',points:points.map(xy=>xy.join(',')).join(' '),fill:'none',stroke:'#ffffff','stroke-width':1.8,'stroke-dasharray':'5 4','vector-effect':'non-scaling-stroke',opacity:.85}));
+  }
   for(const p of sorted){
     const enemy=enemies.get(p.id),own=owners.get(p.placementId),chicken=!enemy?.isBoss&&(route.excluded.includes(p.placementId)||logPreview&&logChickenPreview.has(p.placementId)),[x,y]=markerCoordinates(p),r=radius*enemyMarkerScale(enemy);
     const portrait=chicken?chickenIcon:showIcons&&availableImage(enemy),hasPortrait=portrait&&!failedMobImages.has(portrait);
@@ -489,13 +492,6 @@ function renderMap(){
     group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(enemy?.isBoss?' boss-ring':'')+(own?' assigned-ring':'')+(chicken?' chicken-ring':'')}));
     appendEnemyFocus(group);
     markerRoot.append(group);
-    const referencePatrol=!p.gameGuid&&mapLayer.patrols?.[mapLayer.placementPatrols?.[p.placementId]];
-    if(referencePatrol?.length>1||p.mapPatrolPath?.length>1){
-      // Separate paths at floor transitions; never draw across unrelated layers.
-      let segment=[];const flush=()=>{if(segment.length>1){const points=segment.join(' '),key=p.packId+'|'+points;if(!patrolPaths.has(key)){patrolPaths.add(key);$('#patrols').append(svg('polyline',{'data-pack':p.packId,class:'patrol-path',points,fill:'none',stroke:'#ffffff','stroke-width':1.8,'stroke-dasharray':'5 4','vector-effect':'non-scaling-stroke',opacity:.85}));}}segment=[];};
-      if(referencePatrol)segment=referencePatrol.map(xy=>xy.join(','));
-      else for(const [i,pt] of p.mapPatrolPath.entries()){if(i&&pt.mapImageId!==p.mapPatrolPath[i-1].mapImageId)flush();if(onMap(pt,mapLayer)){const xy=coordinates({...pt,worldPosition:p.patrolPath?.[i]});if(xy)segment.push(xy.join(','));else flush();}else flush();}flush();
-    }
   }
   setHoveredPack(hoveredPack);
   renderModifierHighlight();

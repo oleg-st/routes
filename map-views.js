@@ -20,6 +20,31 @@ export function mapViews(dungeon){
   return [combined,full,...layers].filter(view=>view?.path);
 }
 export function onMap(position,view){return !!position.mapPosition&&(position.mapImageId===view.id||!!view.sources?.[position.mapImageId]);}
+export function mapPatrols(placements,view){
+  const packs=new Map();
+  for(const p of placements){
+    const reference=!p.gameGuid&&view.patrols?.[view.placementPatrols?.[p.placementId]];
+    const segments=[];let segment=[];
+    const flush=()=>{if(segment.length>1)segments.push(segment);segment=[];};
+    if(reference?.length>1)segment=reference;
+    else for(const [i,point] of (p.mapPatrolPath||[]).entries()){
+      // Keep floor transitions disconnected, including on stitched overviews.
+      if(i&&point.mapImageId!==p.mapPatrolPath[i-1].mapImageId)flush();
+      const xy=onMap(point,view)?mapCoordinates({...point,worldPosition:p.patrolPath?.[i]},view):null;
+      if(xy)segment.push(xy);else flush();
+    }
+    flush();
+    if(!segments.length)continue;
+    const length=segments.reduce((total,points)=>total+points.slice(1).reduce((sum,point,i)=>sum+Math.hypot(point[0]-points[i][0],point[1]-points[i][1]),0),0);
+    const key=p.packId??p.placementId,previous=packs.get(key);
+    // Offset member trails describe one pack patrol. Use the longest existing
+    // trail instead of inventing averaged coordinates; break ties consistently.
+    if(!previous||length>previous.length||length===previous.length&&p.placementId<previous.placementId){
+      packs.set(key,{packId:p.packId,placementId:p.placementId,segments,length});
+    }
+  }
+  return [...packs.values()].flatMap(({packId,segments})=>segments.map(points=>({packId,points})));
+}
 export function mapCoordinates(position,view){
   if(view.sources&&position.mapMembers?.length){const points=position.mapMembers.map(p=>mapCoordinates(p,view));return [0,1].map(i=>points.reduce((sum,p)=>sum+p[i],0)/points.length);}
   if(view.referenceId){

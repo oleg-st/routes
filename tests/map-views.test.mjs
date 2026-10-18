@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {mapViews,mapCoordinates,worldMapCoordinates,onMap,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires} from '../map-views.js';
+import {mapViews,mapCoordinates,worldMapCoordinates,onMap,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires,mapPatrols} from '../map-views.js';
 import {campfires,campfireBuildId} from '../data/map-campfires.js';
 import {mapStarts,mapStartBuildId} from '../data/map-starts.js';
 import {legacyCombinedMap} from '../data/combined-maps.js';
@@ -10,6 +10,32 @@ import {newRoute,newPull,validateRoute,scoreRoute,effectivePositions,applyModifi
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url)));
 const raw=read('dungeons'),dungeons=raw.map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
 const presets=read('modifier-placements');
+
+test('Desert patrols show one existing trail per pack, independent of member order',()=>{
+  const dungeon=dungeons.find(d=>d.id==='Level.ID.DesertDunes'),view=mapViews(dungeon)[0];
+  const members=dungeon.enemies.filter(p=>onMap(p,view)&&p.mapPatrolPath?.length>1);
+  const paths=mapPatrols(members,view);
+  assert.ok(paths.length<members.length);
+  assert.equal(paths.length,new Set(members.map(p=>p.packId)).size);
+  const byPack=paths=>paths.sort((a,b)=>a.packId.localeCompare(b.packId));
+  assert.deepEqual(byPack(paths),byPack(mapPatrols([...members].reverse(),view)));
+  for(const path of paths)assert.ok(members.some(p=>p.packId===path.packId&&JSON.stringify(path.points)===JSON.stringify(p.mapPatrolPath.map((pt,i)=>mapCoordinates({...pt,worldPosition:p.patrolPath[i]},view)))));
+});
+
+test('Pack patrols retain floor breaks and choose a complete visible trail',()=>{
+  const point=(floor,x)=>({mapImageId:floor,mapPosition:{x,y:.5}});
+  const member=(placementId,points)=>({placementId,packId:'pack',mapPatrolPath:points});
+  const members=[member('short',[point('a',0),point('a',.1)]),member('full',[point('a',0),point('a',.4),point('b',.5),point('b',.8),point('a',.6),point('a',1)])];
+  const floor={id:'a',width:100,height:100};
+  assert.deepEqual(mapPatrols(members,floor),[
+    {packId:'pack',points:[[0,50],[40,50]]},
+    {packId:'pack',points:[[60,50],[100,50]]},
+  ]);
+  const overview={kind:'combined',sources:{a:{x:0,y:0,width:100,height:100},b:{x:100,y:0,width:100,height:100}}};
+  assert.equal(mapPatrols(members,overview).length,3);
+  const reference={...floor,placementPatrols:{full:'route'},patrols:{route:[[5,5],[95,95]]}};
+  assert.deepEqual(mapPatrols(members,reference),[{packId:'pack',points:[[5,5],[95,95]]}]);
+});
 
 test('World-only relic positions agree with known map positions on every single-layer dungeon',()=>{
  const single=dungeons.filter(d=>d.mapImages.length===1);assert.equal(single.length,6);
