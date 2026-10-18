@@ -73,3 +73,19 @@ test('dense overviews respect displacement limits and zooming in restores source
   for(const marker of zoomed)assert.deepEqual(detail.get(marker.id),marker.point);
   assert.deepEqual(result,separateMarkerCenters(markers,5),'returning to the same zoom restores the same layout');
 });
+
+test('a bounded solve returns every dense marker deterministically without changing source positions',()=>{
+  const markers=Array.from({length:1000},(_,i)=>({id:`mob-${i}`,point:[i%20,Math.floor(i/20)],radius:10,maxDisplacement:40}));
+  const original=structuredClone(markers),options={maxChecks:5000,tolerance:.02};
+  const result=separateMarkerCenters(markers,0,.25,options);
+  assert.equal(result.size,markers.length);
+  assert.deepEqual(result,separateMarkerCenters([...markers].reverse(),0,.25,options));
+  assert.deepEqual(markers,original);
+  for(const marker of markers){
+    const [x,y]=result.get(marker.id);
+    assert.ok(Number.isFinite(x)&&Number.isFinite(y));
+    assert.ok(Math.hypot(x-marker.point[0],y-marker.point[1])<=40.00001);
+  }
+  const untouched=separateMarkerCenters(markers,0,.25,{maxChecks:0});
+  for(const marker of markers)assert.deepEqual(untouched.get(marker.id),marker.point);
+});

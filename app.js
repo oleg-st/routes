@@ -418,7 +418,7 @@ function renderMap(){
   });
   const layoutKey=JSON.stringify([unit,layoutMarkers]);
   if(layoutKey!==enemyMarkerLayoutKey){
-    enemyMarkerCenters=separateMarkerCenters(layoutMarkers,0,.25);enemyMarkerLayoutKey=layoutKey;
+    enemyMarkerCenters=separateMarkerCenters(layoutMarkers,0,.25,{tolerance:.02*unit});enemyMarkerLayoutKey=layoutKey;
   }
   renderMapStart(unit);
   renderCampfires();
@@ -466,11 +466,11 @@ function renderMap(){
       if(own)group.append(svg('circle',{cx:x,cy:y,r,fill:color,'fill-opacity':.3,'pointer-events':'none',class:'mob-pull-tint'}));
     }
     group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(enemy?.isBoss?' boss-ring':'')+(own?' assigned-ring':'')+(chicken?' chicken-ring':'')}));
-    if(enemy?.isBoss||p.modifier){
-      const label=p.modifier?p.modifier[0].toUpperCase():'◆';
+    if(p.modifier){
+      const label=p.modifier[0].toUpperCase();
       const labelX=hasPortrait?x+r*.75:x,labelY=hasPortrait?y+r*.75:y;
       if(hasPortrait)group.append(svg('circle',{cx:labelX,cy:labelY,r:unit*Math.max(6,String(label).length*3+2),fill:color,stroke:'#10161b','stroke-width':1,'vector-effect':'non-scaling-stroke','pointer-events':'none'}));
-      group.append(svg('text',{x:labelX,y:labelY+unit*3.1,'text-anchor':'middle','font-size':unit*(enemy?.isBoss?10:8),'font-family':'Segoe UI,sans-serif','font-weight':700,fill:'#fff','pointer-events':'none'},label));
+      group.append(svg('text',{x:labelX,y:labelY+unit*3.1,'text-anchor':'middle','font-size':unit*8,'font-family':'Segoe UI,sans-serif','font-weight':700,fill:'#fff','pointer-events':'none'},label));
     }
     appendEnemyFocus(group);
     markerRoot.append(group);
@@ -920,7 +920,7 @@ function bind(){
       if(Math.hypot(e.clientX-drag.client[0],e.clientY-drag.client[1])>4)drag.moved=true;
       if(drag.split&&drag.moved){drag.end=point(e);renderSplitDraft([drag.start,drag.end]);}
       else if(drag.edit&&drag.moved){const pos=draggedDrawingPoint(e,drag);if(pos){drag.edit.points[drag.endpoint]=pos;renderMap();}}
-      else if(drag.pan&&drag.moved){const now=point(e);view.x+=drag.start[0]-now[0];view.y+=drag.start[1]-now[1];renderMap();$('#tooltip').hidden=true;}
+      else if(drag.pan&&drag.moved){const now=point(e);view.x+=drag.start[0]-now[0];view.y+=drag.start[1]-now[1];$('#map').setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);cursorUI?.refresh();$('#tooltip').hidden=true;}
       else if(drag.box&&drag.moved){const now=point(e);$('#draft').replaceChildren(svg('rect',{x:Math.min(drag.start[0],now[0]),y:Math.min(drag.start[1],now[1]),width:Math.abs(now[0]-drag.start[0]),height:Math.abs(now[1]-drag.start[1]),fill:'#e4b76b22',stroke:'#e4b76b','stroke-width':1,'vector-effect':'non-scaling-stroke'}));}
       return;
     }

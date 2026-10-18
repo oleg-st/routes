@@ -11,44 +11,58 @@ export function pullOutline(points,padding){
 // Resolve collisions in display space, starting from the source on every zoom.
 // A displacement limit keeps dense groups near their real positions. Crowded
 // overviews may retain some overlap rather than pushing icons across the map.
-export function separateMarkerCenters(markers,gap=0,overlap=0){
-  const placed=markers.map(({id,point,radius,maxDisplacement=Infinity})=>({id,point:[...point],origin:point,radius,maxDisplacement})).sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
+export function separateMarkerCenters(markers,gap=0,overlap=0,{tolerance=.001,maxChecks=1200000}={}){
+  const placed=markers.map(({id,point,radius,maxDisplacement=Infinity})=>({id,x:point[0],y:point[1],ox:point[0],oy:point[1],radius,maxDisplacement})).sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
   if(!placed.length)return new Map();
-  const cellSize=Math.max(1,...placed.map(p=>p.radius*2+gap));
+  const cellSize=placed.reduce((size,p)=>Math.max(size,p.radius*2+gap),1),epsilonSquared=tolerance*tolerance;
+  // Count candidate visits, including rejected pairs, to bound even coincident
+  // crowds. A local cap distributes work instead of spending it on one mob.
+  let checks=0;
+  const neighborLimit=Math.max(64,Math.floor(maxChecks/placed.length/4));
   const move=(marker,dx,dy)=>{
-    let x=marker.point[0]+dx-marker.origin[0],y=marker.point[1]+dy-marker.origin[1];
-    const distance=Math.hypot(x,y);
-    if(distance>marker.maxDisplacement){const ratio=marker.maxDisplacement/distance;x*=ratio;y*=ratio;}
-    const next=[marker.origin[0]+x,marker.origin[1]+y],delta=Math.hypot(next[0]-marker.point[0],next[1]-marker.point[1]);
-    marker.point=next;return delta;
+    let x=marker.x+dx-marker.ox,y=marker.y+dy-marker.oy;
+    const squared=x*x+y*y;
+    if(squared>marker.maxDisplacement*marker.maxDisplacement){const ratio=marker.maxDisplacement/Math.sqrt(squared);x*=ratio;y*=ratio;}
+    x+=marker.ox;y+=marker.oy;
+    const mx=x-marker.x,my=y-marker.y;marker.x=x;marker.y=y;
+    return mx*mx+my*my>epsilonSquared;
   };
-  for(let pass=0;pass<80;pass++){
+  passes:for(let pass=0;pass<80;pass++){
     // Only nearby cells can collide; avoid comparing every mob on the map.
+    // Numeric keys avoid allocating a string for every neighbor lookup.
     const cells=new Map();
-    for(const [i,marker] of placed.entries()){
-      const key=`${Math.floor(marker.point[0]/cellSize)},${Math.floor(marker.point[1]/cellSize)}`;
-      if(!cells.has(key))cells.set(key,[]);cells.get(key).push(i);
-    }
-    let moved=false;
     for(let i=0;i<placed.length;i++){
-      const a=placed[i],cx=Math.floor(a.point[0]/cellSize),cy=Math.floor(a.point[1]/cellSize);
-      for(let gx=cx-1;gx<=cx+1;gx++)for(let gy=cy-1;gy<=cy+1;gy++)for(const j of cells.get(`${gx},${gy}`)||[]){
-        if(j<=i)continue;
-        const b=placed[j],dx=b.point[0]-a.point[0],dy=b.point[1]-a.point[1];
-        // Limit the overlap depth by the smaller portrait's diameter, so a
-        // large neighbor cannot hide most of a small mob.
-        const squared=dx*dx+dy*dy,minimum=a.radius+b.radius+gap-2*Math.min(a.radius,b.radius)*overlap;
-        if(squared>=(minimum-.001)**2)continue;
-        const distance=Math.sqrt(squared);
-        // Different deterministic directions prevent coincident groups becoming
-        // a long horizontal row. Sorting by ID keeps rerenders reproducible.
-        const angle=(i*137.508+j*99.492)*Math.PI/180;
-        const ux=distance?dx/distance:Math.cos(angle),uy=distance?dy/distance:Math.sin(angle),shift=(minimum-distance)/2;
-        const da=move(a,-ux*shift,-uy*shift),db=move(b,ux*shift,uy*shift);
-        if(da>.001||db>.001)moved=true;
+      const marker=placed[i],cx=Math.floor(marker.x/cellSize),cy=Math.floor(marker.y/cellSize);
+      let column=cells.get(cx);if(!column)cells.set(cx,column=new Map());
+      let bucket=column.get(cy);if(!bucket)column.set(cy,bucket=[]);bucket.push(i);
+    }
+    let moved=false,truncated=false;
+    for(let i=0;i<placed.length;i++){
+      const a=placed[i],cx=Math.floor(a.x/cellSize),cy=Math.floor(a.y/cellSize);
+      let neighbors=0;
+      nearby:for(let gx=cx-1;gx<=cx+1;gx++){
+        const column=cells.get(gx);if(!column)continue;
+        for(let gy=cy-1;gy<=cy+1;gy++){
+          const bucket=column.get(gy);if(!bucket)continue;
+          const offset=bucket.length>neighborLimit?(pass*31+i*17)%bucket.length:0;
+          for(let k=0;k<bucket.length;k++){
+            if(checks++>=maxChecks)break passes;
+            if(neighbors++>=neighborLimit){truncated=true;break nearby;}
+            const j=bucket[(k+offset)%bucket.length];if(j<=i)continue;
+            const b=placed[j],dx=b.x-a.x,dy=b.y-a.y;
+            // Measure overlap depth against the smaller portrait's diameter.
+            const squared=dx*dx+dy*dy,minimum=a.radius+b.radius+gap-2*Math.min(a.radius,b.radius)*overlap;
+            if(squared>=(minimum-tolerance)**2)continue;
+            const distance=Math.sqrt(squared);
+            const angle=(i*137.508+j*99.492)*Math.PI/180;
+            const ux=distance?dx/distance:Math.cos(angle),uy=distance?dy/distance:Math.sin(angle),shift=(minimum-distance)/2;
+            const da=move(a,-ux*shift,-uy*shift),db=move(b,ux*shift,uy*shift);
+            if(da||db)moved=true;
+          }
+        }
       }
     }
-    if(!moved)break;
+    if(!moved&&!truncated)break;
   }
-  return new Map(placed.map(({id,point})=>[id,point]));
+  return new Map(placed.map(({id,x,y})=>[id,[x,y]]));
 }
