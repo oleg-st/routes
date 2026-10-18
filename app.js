@@ -319,6 +319,9 @@ function focusListedEnemies(ids){
 }
 function setHoveredPack(packId){
   hoveredPack=packId;
+  for(const marker of $$('#markers > [data-placement]')){
+    marker.classList.toggle('pack-hover',packId!=null&&positions.get(marker.dataset.placement)?.packId===packId);
+  }
   for(const path of $$('#patrols [data-pack]')){
     const highlighted=$('#show-patrols').checked&&packId===path.dataset.pack;
     path.classList.toggle('highlighted',highlighted);
