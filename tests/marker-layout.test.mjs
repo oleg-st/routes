@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {separateMarkerCenters} from '../map-geometry.js';
 import {enemyMarkerRadius} from '../data/enemy-marker-sizes.js';
 import {markerAnchor} from '../data/marker-anchors.js';
+import {mapViews,mapCoordinates} from '../map-views.js';
 
 test('Sinnari portrait uses its centered overview anchor without changing source coordinates',()=>{
   const boss={placementId:'placement-2f08a0644a58616a92aee8c52e26e64e6160054dba296541b472deed07cee715',worldPosition:{x:17150.752,y:18276.22,z:3470.7163}};
@@ -14,6 +16,23 @@ test('Sinnari portrait uses its centered overview anchor without changing source
   assert.equal(markerAnchor(boss,{id:'Level.ID.DesertDunes:T_Map_DesertDunes_End'}),null);
   assert.equal(markerAnchor(boss,{id:'Level.ID.UrrakMarkets:Full'}),null);
   assert.equal(markerAnchor({placementId:'other'},full),null);
+  assert.deepEqual(boss,original);
+});
+
+test('Game Vexira keeps her portrait inside the lair on both overviews without moving game coordinates',()=>{
+  const dungeon=JSON.parse(fs.readFileSync(new URL('../data/dungeons.json',import.meta.url))).find(d=>d.id==='Level.ID.SpiderForest');
+  const boss=dungeon.enemies.find(p=>p.placementId==='placement-custom-silken-vexira');
+  assert.ok(boss.gameGuid);
+  const original=structuredClone(boss),views=mapViews(dungeon);
+  for(const view of views.filter(v=>v.sources)){
+    const worldPoint=mapCoordinates(boss,view),point=markerAnchor(boss,view);
+    assert.deepEqual(point,[3257.1428571428573,271.2365388960006]);
+    assert.ok(worldPoint[1]>600,'The game spawn projection reproduces the below-lair regression');
+    assert.deepEqual(mapCoordinates(boss,view),worldPoint,'Display anchors must not alter log/world projection');
+    for(const mob of dungeon.enemies.filter(p=>p!==boss))assert.equal(markerAnchor(mob,view),null);
+  }
+  for(const view of dungeon.mapImages)assert.equal(markerAnchor(boss,view),null);
+  assert.equal(markerAnchor(boss,{id:'Level.ID.DesertDunes:Full'}),null);
   assert.deepEqual(boss,original);
 });
 
