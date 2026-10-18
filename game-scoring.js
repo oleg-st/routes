@@ -1,4 +1,5 @@
 import {gameServiceRules as rules} from './data/game-service-rules.js';
+import {healthAffixRules} from './data/game-difficulty.js';
 export function modifierAvailable(dungeonId,kind){
  return rules.modifierAvailabilityByDungeon[dungeonId]?.[kind]===true;
 }
@@ -19,11 +20,13 @@ export function difficultyHealthScale(difficulty=0){
  const values=rules.difficultyHealthScales;
  return values[Math.min(values.length-1,Math.max(0,difficulty))];
 }
-export function enemyHealth(enemy,{empowered=false,difficulty=0}={}){
+export function enemyHealth(enemy,{empowered=false,stoneskin=false,ultimatum=false,difficulty=0}={}){
  const base=enemy?.baseHealth;if(!Number.isFinite(base))return null;
- const ordinary=base*difficultyHealthScale(difficulty);
+ const ordinary=base*difficultyHealthScale(difficulty)*(ultimatum?healthAffixRules.ultimatumMultiplier:1);
  const capped=rules.modifierDifficultyCap>0?Math.min(difficulty,rules.modifierDifficultyCap):difficulty;
- return ordinary+(empowered?base*difficultyHealthScale(capped)*rules.empoweredHealthBonus:0);
+ // Empowered and Stone Skin independently add capped base HP (AddFinal).
+ // Stone Skin also carries the game's flat post-calculation bonus.
+ return ordinary+(empowered?base*difficultyHealthScale(capped)*rules.empoweredHealthBonus:0)+(stoneskin?base*difficultyHealthScale(capped)*healthAffixRules.stoneSkinBonus+healthAffixRules.stoneSkinFlatBonus:0);
 }
 export function shadowTarget(dungeon){
  const lords=rules.shadowLordsByDungeon[dungeon.id]??dungeon.shadowLords;

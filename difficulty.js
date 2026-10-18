@@ -1,7 +1,12 @@
-import {dungeonDifficulties} from './data/game-difficulty.js';
+import {dungeonDifficulties,healthAffixRules} from './data/game-difficulty.js';
 export const difficultyOptions=dungeonId=>dungeonDifficulties[dungeonId]??[];
 export const defaultDifficulty=dungeonId=>difficultyOptions(dungeonId)[0]?.value;
 export const difficultyChoice=(dungeonId,value)=>difficultyOptions(dungeonId).find(row=>row.value===value);
+const healthTargets=Object.fromEntries(Object.entries(healthAffixRules.targets).map(([kind,ids])=>[kind,new Set(ids)]));
+export function difficultyHealthModifiers(route,enemyId,{difficulty=route.difficulty,isBossMinion=false}={}){
+ const modifiers=difficultyChoice(route.dungeonId,difficulty)?.modifiers??[];
+ return {stoneskin:!isBossMinion&&modifiers.includes('stoneskin')&&healthTargets.stoneskin.has(enemyId),ultimatum:modifiers.includes('ultimatum')&&healthTargets.ultimatum.has(enemyId)};
+}
 export function checkDifficulty(dungeonId,value){
  if(!difficultyChoice(dungeonId,value))throw new Error('Difficulty unavailable in this dungeon.');
  return value;

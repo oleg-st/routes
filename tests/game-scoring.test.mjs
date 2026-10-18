@@ -57,6 +57,16 @@ test('Observed same-type HP contrasts support the cap on both sides of difficult
  const observations=[{difficulty:48,normal:1117881,empowered:2235674},{difficulty:75,normal:2458985,empowered:4149656},{difficulty:75,normal:1747503,empowered:2949086}];
  for(const r of observations){const predicted=enemyHealth({baseHealth:1},{empowered:true,difficulty:r.difficulty})/enemyHealth({baseHealth:1},{difficulty:r.difficulty});assert.ok(Math.abs(predicted/(r.empowered/r.normal)-1)<.00005);}
 });
+
+test('Stone Skin adds capped base HP independently of Empowered; Ultimatum scales ordinary HP',()=>{
+ const enemy={baseHealth:100};
+ const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-8,`${actual} != ${expected}`);
+ near(enemyHealth(enemy,{difficulty:62,stoneskin:true}),100*172.32*1.3+1);
+ near(enemyHealth(enemy,{difficulty:75,stoneskin:true}),100*250.61+100*172.32*.3+1);
+ near(enemyHealth(enemy,{difficulty:75,empowered:true,stoneskin:true}),100*250.61+100*172.32*1.3+1);
+ near(enemyHealth(enemy,{difficulty:75,ultimatum:true}),100*250.61*1.1);
+ assert.equal(enemyHealth({baseHealth:null},{stoneskin:true,ultimatum:true}),null);
+});
 test('Efficiency uses the same capped-health formula when difficulty is supplied',()=>{
  const enemy={baseHealth:100,dungeonScore:1},d={requiredScore:10,enemies:[{id:'a',placementId:'a',packId:'p'}]},r=newRoute(d,'test');r.modifiers.empowered={active:true,enemies:['a']};
  const result=dungeonPackEfficiencies(d,new Map([['a',enemy]]),r,{difficulty:75});

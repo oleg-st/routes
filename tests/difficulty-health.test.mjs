@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {difficultyOptions,applyDifficulty,defaultDifficulty,formatHealth} from '../difficulty.js';
-import {newRoute,applyModifierPresets,encodeRoute,decodeRoute,routeHealth,shadowHealth,positionsHealth,enemyHealth,dungeonPackEfficiencies,hasRouteChanges} from '../route-model.js';
+import {difficultyOptions,applyDifficulty,defaultDifficulty,formatHealth,difficultyHealthModifiers} from '../difficulty.js';
+import {newRoute,applyModifierPresets,encodeRoute,decodeRoute,routeHealth,shadowHealth,positionsHealth,placementHealth,enemyHealth,dungeonPackEfficiencies,hasRouteChanges} from '../route-model.js';
+import {difficultyHealthScale} from '../game-scoring.js';
 import {createRouteDocument,restoreRouteDocument} from '../collaboration/route-document.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 const dungeons=JSON.parse(fs.readFileSync('data/dungeons.json')).map(correctDungeon);
@@ -76,6 +77,32 @@ test('Efficiency and grouped HP use selected difficulty and the empowered cap',(
 });
 test('Health formatting uses readable suffixes and does not turn unknown values into zero',()=>{
  assert.equal(formatHealth(744440),'744.44k');assert.equal(formatHealth(1350000),'1.35m');assert.equal(formatHealth(null),'—');assert.equal(formatHealth(0),'0');assert.equal(formatHealth(999999),'1.00m');
+});
+
+test('Selected Stone Skin and Ultimatum affect eligible HP, route totals, DPS and efficiency',async()=>{
+ for(const kind of ['stoneskin','ultimatum']){
+  const {route,dungeon}=fixture('Level.ID.DesertDunes',c=>c.value>62&&c.modifiers.includes(kind));
+  const boss=dungeon.enemies.find(p=>enemies.get(p.id).isBoss);
+  const mob=dungeon.enemies.find(p=>difficultyHealthModifiers(route,p.id).stoneskin||(!enemies.get(p.id).isBoss&&!p.modifier));
+  route.modifiers.empowered.active=false;route.modifiers.ghorn.active=false;route.modifiers.witch.active=false;
+  route.pulls[0].enemies=[mob.placementId,boss.placementId];
+  const normalMob=enemyHealth(enemies.get(mob.id),{difficulty:route.difficulty}),normalBoss=enemyHealth(enemies.get(boss.id),{difficulty:route.difficulty});
+  const expectedMob=normalMob+(kind==='stoneskin'?enemies.get(mob.id).baseHealth*difficultyHealthScale(62)*.3+1:0);
+  const expectedBoss=normalBoss*(kind==='ultimatum'?1.1:1);
+  assert.equal(placementHealth(mob,enemies.get(mob.id),route),expectedMob);
+  assert.equal(placementHealth(boss,enemies.get(boss.id),route),expectedBoss);
+  const health=routeHealth(route,dungeon,enemies);
+  assert.equal(health.mobs,expectedMob+expectedBoss);assert.equal(health.total,health.mobs+health.shadow);assert.equal(health.dps,health.total/dungeon.timerSeconds);
+  const plain={...route,dungeonId:'test'},ratings=dungeonPackEfficiencies(dungeon,enemies,route),baseline=dungeonPackEfficiencies(dungeon,enemies,plain);
+  if(kind==='stoneskin')assert.ok(ratings.values.get(mob.packId)<baseline.values.get(mob.packId));
+  else assert.deepEqual(ratings,baseline);
+  const restored=await decodeRoute(await encodeRoute(route,dungeon),dungeons,enemies);
+  assert.equal(restored.difficulty,route.difficulty);assert.deepEqual(difficultyHealthModifiers(restored,mob.id),difficultyHealthModifiers(route,mob.id));
+  assert.deepEqual(difficultyHealthModifiers(route,'dm-wintergiant'),{stoneskin:false,ultimatum:false});
+  assert.deepEqual(difficultyHealthModifiers(route,'dm-winterwitch'),{stoneskin:false,ultimatum:false});
+  assert.equal(difficultyHealthModifiers(route,mob.id,{isBossMinion:true}).stoneskin,false);
+  delete route.difficulty;assert.deepEqual(difficultyHealthModifiers(route,mob.id),{stoneskin:false,ultimatum:false});assert.equal(routeHealth(route,dungeon,enemies).total,null);
+ }
 });
 test('Unselected difficulty preserves manual affixes, skips HP and survives export and undo',async()=>{
  const {route,dungeon}=fixture('Level.ID.IceCave',c=>c.modifiers.includes('empowered'));

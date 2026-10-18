@@ -11,5 +11,23 @@
     }
   ],
   "eternalOffset": 20,
-  "shadowCharacterId": "DungeonModifier_ShadowLord"
+  "shadowCharacterId": "DungeonModifier_ShadowLord",
+  "healthAffixSources": [
+    {
+      "source": "fellowship/Content/Modifiers/DungeonModifiers/StoneSkin/GE_DungeonModifier_StoneSkin_EnemyMaxHealthbuff.uasset",
+      "sha256": "7aa5ff1dc4ecd0728d779996fd5b68f1a385e2cf847a8529658e2bd296e98954"
+    },
+    {
+      "source": "fellowship/Content/Modifiers/HeroModifiers/BossBoost/GE_Ascension_BossBoost.uasset",
+      "sha256": "bcbc16201261d6cba5f3d1f5d59c84844a1e54c70e52443d9667174a076369be"
+    },
+    {
+      "source": "fellowship/Content/Modifiers/DungeonModifiers/StoneSkin/BP_DungeonModifier_StoneSkin.uasset",
+      "sha256": "ff88999130849583492c5106b983da450ddc9abe2717b27a11afb0ded381d79c"
+    },
+    {
+      "source": "fellowship/Content/Modifiers/HeroModifiers/BossBoost/BP_Ascension_BossBoost.uasset",
+      "sha256": "eb766014cd1abe0b2394dd7c240e76c70ccc46c9f731bbfcab3e3387678bc3d6"
+    }
+  ]
 }

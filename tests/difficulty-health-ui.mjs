@@ -51,11 +51,14 @@ try{
   await page.locator('#difficulty').selectOption({label:'E48'});
   await page.locator('#layers').click();await page.locator('#show-pack-efficiency').check();await page.locator('#layers').click();
   const ratings=()=>page.locator('[data-pack-efficiency]').evaluateAll(nodes=>Object.fromEntries(nodes.map(n=>[n.dataset.packEfficiency,{label:n.querySelector('text').textContent,color:n.querySelector('rect').getAttribute('fill')}])));
-  const before=await ratings();
+  const stone=await ratings();
   await page.locator('#difficulty').selectOption({label:'E52'});
+  const before=await ratings();
+  assert.ok(Object.entries(stone).some(([id,r])=>before[id]&&Number(r.label)<Number(before[id].label)),'Stone Skin increases HP and reduces efficiency');
+  await page.locator('#difficulty').selectOption({label:'E62'});
   const after=await ratings();let compared=0;
   for(const [id,rating] of Object.entries(before))if(after[id]?.label===rating.label){assert.equal(after[id].color,rating.color);compared++;}
-  assert.ok(compared>10,'ordinary packs retain their colors between E48 and E52');
+  assert.ok(compared>10,'ordinary packs retain their colors between E52 and E62');
   await page.locator('#dungeon').selectOption('Level.ID.SandTomb');await page.waitForFunction(()=>document.querySelector('#difficulty option:nth-child(2)')?.textContent==='Normal');
   assert.deepEqual(await page.locator('#difficulty option').allTextContents(),['Not selected','Normal','Hard','Nightmare']);
   await page.locator('#difficulty').selectOption({label:'Nightmare'});

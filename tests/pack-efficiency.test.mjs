@@ -149,7 +149,7 @@ test('Sands ordinary packs keep their ratings when Empowered, replacements or Ch
   assert.equal(modified.totalHealth,baseline.totalHealth);
   assert.equal(modified.values.get(pack),baseline.values.get(pack));
   assert.equal(packEfficiencyColor(modified.values.get(pack),modified.range),packEfficiencyColor(baseline.values.get(pack),baseline.range));
-  for(const difficulty of [68,72,90,110]){
+  for(const difficulty of [72,82,102]){
     route.difficulty=difficulty;
     const scaled=calculate();
     near(scaled.values.get(pack),baseline.values.get(pack));

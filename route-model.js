@@ -5,7 +5,7 @@ import {routeDictionary,historicPack,replacementMembers,encodeMembers,decodeMemb
 import {modifierStats} from './data/game-modifier-stats.js';
 import {modifierPositions} from './data/game-modifier-positions.js';
 import {shadowBaseHealth} from './data/game-difficulty.js';
-import {applyDifficulty,checkDifficulty} from './difficulty.js';
+import {applyDifficulty,checkDifficulty,difficultyHealthModifiers} from './difficulty.js';
 import {modifierAvailable,restrictRouteModifiers} from './game-scoring.js';
 import {gameKillScore,enemyHealth,orbCount,shadowTarget,shadowOrbsPerLord} from './game-scoring.js';
 export {enemyHealth,orbCount,shadowTarget} from './game-scoring.js';
@@ -129,7 +129,7 @@ export function dungeonPackEfficiencies(dungeon,enemies,route,{difficulty=route.
     if(score===0&&baseHealth==null)continue;
     if(!Number.isFinite(score)||score<0||!Number.isFinite(baseHealth)||baseHealth<=0){complete=false;continue;}
     const empowered=!pos.modifier&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId);
-    const health=enemyHealth({baseHealth},{empowered,difficulty});
+    const health=enemyHealth({baseHealth},{empowered,difficulty,...difficultyHealthModifiers(route,pos.id,{difficulty,isBossMinion:pos.isBossMinion||enemy?.isBossMinion})});
     const pack=totals.get(pos.packId)||{score:0,health:0};
     pack.score+=score;pack.health+=health;
     totals.set(pos.packId,pack);
@@ -195,7 +195,7 @@ export function placementHealth(pos,enemy,route,{includeExcluded=false}={}){
   if(!includeExcluded&&!enemy?.isBoss&&route.excluded.includes(pos.placementId))return 0;
   const stats=enemy??modifierStats[pos.modifier];
   if(stats?.baseHealth==null&&stats?.dungeonScore===0)return 0;
-  return enemyHealth(stats,{difficulty:route.difficulty??0,empowered:!pos.modifier&&!stats?.isBoss&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId)});
+  return enemyHealth(stats,{difficulty:route.difficulty,...difficultyHealthModifiers(route,pos.id,{isBossMinion:pos.isBossMinion||stats?.isBossMinion}),empowered:!pos.modifier&&!stats?.isBoss&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId)});
 }
 export function positionsHealth(members,enemies,route){
   if(route.difficulty===undefined)return null;
