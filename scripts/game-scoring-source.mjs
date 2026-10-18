@@ -1,5 +1,16 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+export function gameModifierAvailability(s){
+ const table=s.tables.find(t=>t.name==='DT_ModifersInDungeons');
+ assert.ok(table&&Object.keys(table.rows).length,'Missing dungeon modifier assignments');
+ const tags={witch:'WinterWitch',ghorn:'WinterGiant',empowered:'EmpoweredMinions',shadow:'ShadowLord'};
+ // Availability means assigned at any exported difficulty, not active at every difficulty.
+ // Map actors alone are not evidence: dormant spawners also exist in other dungeons.
+ return Object.fromEntries(s.read('dungeons').playable.map(d=>{
+  const assigned=new Set(Object.entries(table.rows).filter(([key])=>key.startsWith(d.key+'.')).flatMap(([,row])=>Object.values(row)));
+  return [d.id,Object.fromEntries(Object.entries(tags).map(([kind,tag])=>[kind,assigned.has('Modifiers.Dungeon.'+tag)]))];
+ }));
+}
 // Interpreted formulas are guarded by reviewed Blueprint/native hashes in
 // prepare-game-services. Values below always come from the current export.
 export function gameScoringRules(s){
@@ -30,5 +41,5 @@ export function gameScoringRules(s){
  const markerDefaultBaseHealth=s.curve('Default.BasicAttributeSet.BaseHealth');
  assert.ok(markerDefaultBaseHealth>0,'Missing default base health for Polymorph sizes');
  assert.ok(markerHealthThresholds.medium>0&&markerHealthThresholds.large>markerHealthThresholds.medium,'Invalid Polymorph size thresholds');
- return {empoweredScoreMultiplier:s.scalable(score.ModifierMagnitude.ScalableFloatMagnitude),empoweredHealthBonus:s.scalable(magnitude.Coefficient),modifierDifficultyCap:cap,difficultyHealthScales:curve.Keys.map(k=>k.Value),shadowOrbsPerLord,shadowLordsByDungeon,markerHealthThresholds,markerDefaultBaseHealth};
+ return {empoweredScoreMultiplier:s.scalable(score.ModifierMagnitude.ScalableFloatMagnitude),empoweredHealthBonus:s.scalable(magnitude.Coefficient),modifierDifficultyCap:cap,difficultyHealthScales:curve.Keys.map(k=>k.Value),shadowOrbsPerLord,shadowLordsByDungeon,modifierAvailabilityByDungeon:gameModifierAvailability(s),markerHealthThresholds,markerDefaultBaseHealth};
 }

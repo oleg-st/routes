@@ -1,4 +1,5 @@
 import {pullColor, defaultModifiers} from '../route-model.js';
+import {modifierAvailable} from '../game-scoring.js';
 import {visibleIds, rows, pointIds, members, canonical} from './route-schema.js';
 
 export function selectRoute(doc, identity) {
@@ -30,7 +31,7 @@ export function selectRoute(doc, identity) {
   for (const kind of Object.keys(modifiers)) {
     const row = doc.getMap('modifiers').get(kind);
     if (!row) continue;
-    modifiers[kind].active = row.get('active') === true;
+    modifiers[kind].active = row.get('active') === true && modifierAvailable(identity.dungeonId,kind);
     if (kind === 'empowered') modifiers[kind].enemies = members(row.get('enemies'));
     else Object.assign(modifiers[kind], row.get('replacement') ?? {packId: null});
     if (kind !== 'empowered' && !modifiers[kind].packId) modifiers[kind].active = false;
@@ -42,7 +43,7 @@ export function selectRoute(doc, identity) {
   const availableMob = key => !key.startsWith('modifier:') || Boolean(modifiers[key.slice(9)]?.packId);
   for (const pull of pulls) pull.enemies = pull.enemies.filter(availableMob);
   return {version: 2, id: identity.routeId, buildId: identity.buildId, dungeonId: identity.dungeonId,
-    name: meta.get('name'), shadow: meta.get('shadow') === true, modifiers, pulls, drawings: visibleDrawings, markers,
+    name: meta.get('name'), shadow: meta.get('shadow') === true && modifierAvailable(identity.dungeonId,'shadow'), modifiers, pulls, drawings: visibleDrawings, markers,
     excluded: members(doc.getMap('excluded')).filter(availableMob)};
 }
 export function canonicalRoute(doc, identity) {

@@ -1,6 +1,7 @@
 import {LoroDoc, VersionVector, UndoManager} from 'loro-crdt';
 import {drawingMap} from '../map-views.js';
 import {hasCustomPullName} from '../route-model.js';
+import {modifierAvailable,restrictRouteModifiers} from '../game-scoring.js';
 import {historicPack,replacementMembers} from '../data/route-dictionary.js';
 import {SCHEMA_VERSION, MODIFIERS, invariant, record, id, string, role, assertPlayer, uuid, canonical} from './route-schema.js';
 import {executeCommand} from './route-commands.js';
@@ -12,6 +13,7 @@ function makeContext(identity, {dungeon, enemies}) {
   const bosses = new Set(dungeon.enemies.filter(p => enemies.get(p.id)?.isBoss).map(p => p.placementId));
   return {
     bosses,
+    modifier(kind) {invariant(modifierAvailable(dungeon.id,kind),'Modifier unavailable in this dungeon.');},
     map(key) {invariant(drawingMap(dungeon, key), 'Unknown map.');},
     originalMob(key) {invariant(placements.has(key), 'Unknown enemy placement.');},
     mob(key, doc) {
@@ -140,6 +142,7 @@ function wrap(doc, identity, options) {
 export function createRouteDocument(route, options = {}) {
   const participantRole = role(options.role ?? 'player'); assertPlayer(participantRole);
   record(route, ['version', 'id', 'buildId', 'dungeonId', 'name', 'shadow', 'modifiers', 'pulls', 'drawings', 'excluded', 'markers']);
+  route = restrictRouteModifiers(structuredClone(route));
   invariant(route.version === undefined || route.version === 2, 'Migrate legacy routes before creating a CRDT.');
   const identity = checkIdentity({schemaVersion: SCHEMA_VERSION, routeId: route.id ?? uuid(), documentId: uuid(),
     dungeonId: route.dungeonId, buildId: route.buildId ?? ''});

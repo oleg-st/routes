@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {newRoute,clearRoute,hasRouteChanges,newPull,renamePull,movePull,assignEnemies,scoreRoute,scorePull,enemyScore,validateRoute,setReplacement,effectivePositions,shadowTarget,shadowTimeline,orbCount,applyModifierPresets,toggleModifier} from '../route-model.js';
 import {pullOutline} from '../map-geometry.js';
+import {modifierAvailable} from '../game-scoring.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8'));
 const dungeons=read('dungeons').map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
@@ -117,6 +118,7 @@ test('Empowered multiplies the game score and never empowers bosses',()=>{
   r.modifiers.empowered.active=false;assert.equal(scoreRoute(r,d,enemies).score,1);
 });
 test('Both replacements suppress original packs, count once, and restore on disable',()=>{
+  const d=dungeons.find(d=>d.id==='Level.ID.DemonicRitual');
   const r=newRoute(d,'test');r.pulls.push(newPull(1));
   const packs=[...new Set(d.enemies.filter(p=>!enemies.get(p.id).isBoss).map(p=>p.packId))].slice(0,2);
   const ids=d.enemies.filter(p=>packs.includes(p.packId)).map(p=>p.placementId);
@@ -167,7 +169,7 @@ test('Every automatic modifier target exists and replacements exclude only the m
     assert.deepEqual(r.modifiers.empowered.enemies,row.empowered);marked+=row.empowered.length;
     assignEnemies(r,r.pulls[0].id,dungeon.enemies.map(p=>p.placementId));
     const before=scoreRoute(r,dungeon,enemies).score;
-    for(const kind of ['ghorn','witch'])if(row[kind]){
+    for(const kind of ['ghorn','witch'])if(row[kind]&&modifierAvailable(dungeon.id,kind)){
       replacements++;const ids=row[kind].replacedEnemies;
       assert.ok(ids.every(id=>dungeon.enemies.some(p=>p.placementId===id&&!enemies.get(p.id)?.isBoss)));
       toggleModifier(r,kind);
@@ -179,7 +181,7 @@ test('Every automatic modifier target exists and replacements exclude only the m
       toggleModifier(r,kind);assert.equal(scoreRoute(r,dungeon,enemies).score,before);
     }
   }
-  assert.equal(marked,64);assert.equal(replacements,28);
+  assert.equal(marked,64);assert.equal(replacements,18);
 });
 
 test('Save state tracks content through saving, undo, clearing, and reload',()=>{

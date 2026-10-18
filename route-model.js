@@ -4,6 +4,7 @@ import {placementAliases,correctDungeon} from './data/placement-corrections.js';
 import {routeDictionary,historicPack,replacementMembers,encodeMembers,decodeMembers} from './data/route-dictionary.js';
 import {modifierStats} from './data/game-modifier-stats.js';
 import {modifierPositions} from './data/game-modifier-positions.js';
+import {modifierAvailable,restrictRouteModifiers} from './game-scoring.js';
 import {gameKillScore,enemyHealth,orbCount,shadowTarget,shadowOrbsPerLord} from './game-scoring.js';
 export {enemyHealth,orbCount,shadowTarget} from './game-scoring.js';
 export const COLORS=['#e43969','#387bff','#30c99a','#bc78f5','#f5a442','#35bfd9','#e477cf','#b3cc55'];
@@ -40,6 +41,7 @@ export function movePull(route,from,to){
 export const defaultModifiers=()=>({empowered:{active:false,enemies:[]},ghorn:{active:false,packId:null},witch:{active:false,packId:null}});
 export const modifierId=kind=>`modifier:${kind}`;
 export function applyModifierPresets(route,dungeon,presets){
+  restrictRouteModifiers(route);
   const row=presets?.dungeons?.[dungeon.id];if(!row)return;
   route.modifiers??=defaultModifiers();
   route.modifiers.empowered={active:route.modifiers.empowered.active&&row.empowered.length>0,enemies:[...row.empowered]};
@@ -50,6 +52,7 @@ export function applyModifierPresets(route,dungeon,presets){
   }
 }
 export function toggleModifier(route,kind){
+  if(!modifierAvailable(route.dungeonId,kind))return;
   const mod=route.modifiers[kind];mod.active=!mod.active;
   if(kind!=='empowered'&&mod.active&&!route.pulls.some(p=>p.enemies.includes(modifierId(kind)))){
     const pull=route.pulls.find(p=>p.enemies.some(id=>mod.replacedEnemies?.includes(id)));
@@ -146,6 +149,7 @@ export function packEfficiencyColor(value,range){
 }
 export function setReplacement(route,kind,packId,dungeon,enemies){
   if(!['ghorn','witch'].includes(kind))throw new Error('Invalid modifier.');
+  if(!modifierAvailable(dungeon.id,kind))throw new Error('Modifier unavailable in this dungeon.');
   const pack=dungeon.enemies.filter(p=>p.packId===packId);
   if(!pack.length||pack.some(p=>enemies.get(p.id)?.isBoss))throw new Error('Choose a non-boss pack.');
   const other=kind==='ghorn'?'witch':'ghorn';
@@ -256,7 +260,7 @@ export function validateRoute(value,dungeons,enemies){
   if(value.excluded!==undefined&&(!Array.isArray(value.excluded)||!value.excluded.every(id=>known.has(canonical(id)))))throw new Error('Invalid excluded enemies.');
   const bossIds=new Set(dungeon.enemies.filter(p=>enemies?.get(p.id)?.isBoss).map(p=>p.placementId));
   for(const kind of ['ghorn','witch'])if(enemies?.get(modifierId(kind))?.isBoss)bossIds.add(modifierId(kind));
-  return {version:2,id:text(value.id)||uid(),buildId:text(value.buildId),dungeonId:dungeon.id,name:englishDefaultLabel(text(value.name))||'Imported route',shadow:value.shadow===true,modifiers,pulls,drawings,...(markers.length?{markers}:{}),excluded:[...new Set((value.excluded||[]).map(canonical))].filter(id=>!bossIds.has(id))};
+  return restrictRouteModifiers({version:2,id:text(value.id)||uid(),buildId:text(value.buildId),dungeonId:dungeon.id,name:englishDefaultLabel(text(value.name))||'Imported route',shadow:value.shadow===true,modifiers,pulls,drawings,...(markers.length?{markers}:{}),excluded:[...new Set((value.excluded||[]).map(canonical))].filter(id=>!bossIds.has(id))});
 }
 
 

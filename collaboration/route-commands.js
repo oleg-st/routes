@@ -50,6 +50,7 @@ function prepare(doc, c, context) {
       const patch = record(c.patch, ['name', 'shadow']);
       if ('name' in patch) invariant(string(patch.name).trim().length > 0, 'Route name cannot be empty.');
       if ('shadow' in patch) boolean(patch.shadow);
+      if (patch.shadow === true) context.modifier('shadow');
       return () => {for (const [key, value] of Object.entries(patch)) meta.set(key, value);};
     }
     case 'add-pull': {
@@ -113,6 +114,7 @@ function prepare(doc, c, context) {
       const empowered = c.kind === 'empowered';
       const patch = record(c.patch, empowered ? ['active', 'enemies'] : ['active', 'packId', 'replacedEnemies']);
       if ('active' in patch) boolean(patch.active);
+      if (patch.active === true) context.modifier(c.kind);
       const current = doc.getMap('modifiers').get(c.kind);
       let members, replacement;
       if (empowered && 'enemies' in patch) {

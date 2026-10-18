@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright';
 import {campfires} from '../data/map-campfires.js';
+import {modifierAvailable} from '../game-scoring.js';
 const server=spawn(process.execPath,['scripts/server.mjs'],{env:{...process.env,PORT:'0'},stdio:['ignore','pipe','pipe']});
 let browser;
 try{
@@ -28,17 +29,26 @@ try{
    fs.mkdirSync('tmp/game-entrances-markers/screenshots',{recursive:true});
    await page.screenshot({path:'tmp/game-entrances-markers/screenshots/'+d.id+'.png'});
   }
-  for(const kind of ['ghorn','witch'])if(presets.dungeons[d.id][kind]){
+  for(const kind of ['shadow','empowered','ghorn','witch']){
+   const row=presets.dungeons[d.id],placed=kind==='shadow'||(kind==='empowered'?row.empowered.length:row[kind]);
+   assert.equal(await page.locator('#'+kind).isEnabled(),modifierAvailable(d.id,kind)&&!!placed,d.name+' '+kind+' availability');
+   if(!modifierAvailable(d.id,kind))assert.match(await page.locator('#'+kind).getAttribute('title'),/Unavailable in this dungeon/);
+  }
+  if(modifierAvailable(d.id,'shadow')){
+   await page.locator('#shadow').click();assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');
+   await page.locator('#undo').click();
+  }
+  for(const kind of ['ghorn','witch'])if(presets.dungeons[d.id][kind]&&modifierAvailable(d.id,kind)){
    await page.locator('#'+kind).click();
    assert.equal(await page.locator(`[data-placement="modifier:${kind}"]`).count(),1,d.name+' '+kind);
    const portrait=page.locator(`[data-placement="modifier:${kind}"] image`);
    assert.equal(await portrait.count(),1,d.name+' '+kind+' game portrait');
    assert.ok(await portrait.evaluate(async e=>{const i=new Image();i.src=e.getAttribute('href');await i.decode();return i.naturalWidth>0;}));
-   if(d.id==='Level.ID.DesertDunes'&&kind==='witch'){fs.mkdirSync('tmp/game-services/screenshots',{recursive:true});await page.screenshot({path:'tmp/game-services/screenshots/sands-witch.png'});}
+   if(d.id==='Level.ID.ShipGraveyard'&&kind==='witch'){fs.mkdirSync('tmp/game-services/screenshots',{recursive:true});await page.screenshot({path:'tmp/game-services/screenshots/abyss-witch.png'});}
    await page.locator('#undo').click();
   }
  }
  const icons=Object.keys(JSON.parse(fs.readFileSync('data/game-image-sources.json'))).filter(p=>/^images\/(?:modifiers|pois|hero-items|relics)\//.test(p));
  for(const src of icons)assert.ok(await page.evaluate(async src=>{const i=new Image();i.src=src;await i.decode();return i.naturalWidth>0;},src));
- assert.deepEqual(errors,[]);console.log('15 dungeons and entrances, 53 campfires, 28 modifier portraits, '+icons.length+' native icons: browser checks passed.');
+ assert.deepEqual(errors,[]);console.log('15 dungeons and entrances, modifier availability, 53 campfires, 18 available modifier portraits, '+icons.length+' native icons: browser checks passed.');
 }finally{await browser?.close();server.kill();server.stdout.destroy();server.stderr.destroy();server.unref();}

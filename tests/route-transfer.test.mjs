@@ -6,6 +6,7 @@ import {encodeRoute,decodeRoute} from '../route-model.js';
 import {newRoute,newPull,applyModifierPresets,validateRoute} from '../route-model.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 import {mapViews} from '../map-views.js';
+import {modifierAvailable} from '../game-scoring.js';
 
 const read=name=>JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`,import.meta.url)));
 const dungeons=read('dungeons').map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
@@ -19,8 +20,8 @@ test('Compact routes preserve all content in every dungeon, with exact coordinat
   for(const dungeon of dungeons){
     const route=newRoute(dungeon,'25647984','Маршрут 🐉 #?&%');
     applyModifierPresets(route,dungeon,presets);
-    route.shadow=true;
-    for(const modifier of Object.values(route.modifiers))if(modifier.packId||modifier.enemies?.length)modifier.active=true;
+    route.shadow=modifierAvailable(dungeon.id,'shadow');
+    for(const [kind,modifier] of Object.entries(route.modifiers))if(modifierAvailable(dungeon.id,kind)&&(modifier.packId||modifier.enemies?.length))modifier.active=true;
     route.pulls=Array.from({length:12},(_,i)=>newPull(i));
     dungeon.enemies.forEach((enemy,i)=>route.pulls[i%12].enemies.push(enemy.placementId));
     for(const kind of ['ghorn','witch'])if(route.modifiers[kind].packId)route.pulls[0].enemies.push(`modifier:${kind}`);

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {capsuleInCylinder,selectedServiceLevel} from '../scripts/game-service-model.mjs';
 import {campfires} from '../data/map-campfires.js';
 import {modifierPositions} from '../data/game-modifier-positions.js';
+import {modifierAvailable} from '../game-scoring.js';
 import {mapCoordinates,mapViews} from '../map-views.js';
 import {newRoute,applyModifierPresets,toggleModifier,effectivePositions,encodeRoute,decodeRoute} from '../route-model.js';
 const read=name=>JSON.parse(fs.readFileSync('data/'+name+'.json'));
@@ -39,7 +40,7 @@ test('Native modifier markers survive sharing and replacements remain independen
  assert.equal(presets.source,'installed-game');
  for(const d of dungeons){
   const row=presets.dungeons[d.id];assert.ok(!row.ghorn?.replacedEnemies.some(id=>row.witch?.replacedEnemies.includes(id)));
-  for(const kind of ['ghorn','witch'])if(row[kind]){
+  for(const kind of ['ghorn','witch'])if(row[kind]&&modifierAvailable(d.id,kind)){
    const route=newRoute(d,'test');applyModifierPresets(route,d,presets);toggleModifier(route,kind);
    const copy=await decodeRoute(await encodeRoute(route,d),dungeons,catalog);
    const marker=effectivePositions(copy,d).find(p=>p.modifier===kind);

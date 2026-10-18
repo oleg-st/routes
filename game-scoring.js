@@ -1,4 +1,12 @@
 import {gameServiceRules as rules} from './data/game-service-rules.js';
+export function modifierAvailable(dungeonId,kind){
+ return rules.modifierAvailabilityByDungeon[dungeonId]?.[kind]===true;
+}
+export function restrictRouteModifiers(route){
+ if(route.shadow===true&&!modifierAvailable(route.dungeonId,'shadow'))route.shadow=false;
+ for(const kind of ['empowered','ghorn','witch'])if(route.modifiers?.[kind]?.active===true&&!modifierAvailable(route.dungeonId,kind))route.modifiers[kind].active=false;
+ return route;
+}
 // CRAICharacter::GetKillScore returns zero for excluded actors and CeilToInt
 // of the current KillScore attribute otherwise (after effect multiplication).
 export function gameKillScore(enemy,empowered=false){

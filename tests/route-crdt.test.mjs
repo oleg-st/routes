@@ -290,8 +290,10 @@ test('Offline edits merge with stale snapshots and late peers restore all entity
 });
 
 test('Concurrent replacement choices have a deterministic non-overlapping visible result', t => {
-  const packId = dungeon.enemies.find(p => mobs.includes(p.placementId)).packId;
-  const a = seed(t), b = peer(t, a);
+  const dungeon = dungeons.find(d=>d.id==='Level.ID.DemonicRitual'), options={dungeon,enemies,role:'player'};
+  const packId = dungeon.enemies.find(p => !enemies.get(p.id)?.isBoss).packId;
+  const a = createRouteDocument(newRoute(dungeon,'test'),options), b = restoreRouteDocument(a.exportSnapshot(),options);
+  t.after(()=>{a.dispose();b.dispose();});
   a.execute({type: 'set-modifier', kind: 'ghorn', patch: {packId, active: true}});
   b.execute({type: 'set-modifier', kind: 'witch', patch: {packId, active: true}});
   sync(a, b); const mods = a.snapshot().modifiers;

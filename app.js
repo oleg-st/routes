@@ -10,6 +10,7 @@ import {enemyMarkerScale,enemyMarkerRadius} from './data/enemy-marker-sizes.js';
 import {modifierStats} from './data/game-modifier-stats.js';
 import {replacementMembers} from './data/route-dictionary.js';
 import {gameServiceRules} from './data/game-service-rules.js';
+import {modifierAvailable} from './game-scoring.js';
 import {markerAnchor} from './data/marker-anchors.js';
 import {fullMapBuildId} from './data/full-maps.js';
 import {combinedBuildId} from './data/combined-layouts.js';
@@ -240,10 +241,17 @@ function render(){
   $('#score-remaining').textContent=totals.unknown?`Unknown scores: ${totals.unknown} enemies` : remaining>0?`${fmt(remaining)} points to reach 100%`: `${fmt(Math.max(0,-remaining))} extra points`;
   if(route.shadow){$('#total-score').textContent=`${fmt(totals.score)} KS · ${pct(totals.percent)}`;$('#score-remaining').textContent=`${Math.max(0,shadowTarget(dungeon)-orbs)} orbs remaining · estimated`;}
   $('#shadow').setAttribute('aria-pressed',String(route.shadow));
-  for(const kind of ['empowered','ghorn','witch']){$('#'+kind).setAttribute('aria-pressed',String(route.modifiers[kind].active));$('#'+kind).disabled=!canEdit()||(kind==='empowered'?!(route.modifiers.empowered.enemies.length||data['modifier-placements'].dungeons[dungeon.id]?.empowered?.length):!route.modifiers[kind].packId);$('#'+kind).title=$('#'+kind).getAttribute('aria-label')+' · '+($('#'+kind).disabled?'No recorded placements in this dungeon':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${route.modifiers[kind].packId?(packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'):'Choose a pack'}`);}
+  for(const kind of ['shadow','empowered','ghorn','witch']){
+    const button=$('#'+kind),available=modifierAvailable(dungeon.id,kind);
+    const placed=kind==='shadow'||(kind==='empowered'?(route.modifiers.empowered.enemies.length||data['modifier-placements'].dungeons[dungeon.id]?.empowered?.length):route.modifiers[kind].packId);
+    button.setAttribute('aria-pressed',String(kind==='shadow'?route.shadow:route.modifiers[kind].active));
+    button.disabled=!canEdit()||!available||!placed;
+    const detail=!available?'Unavailable in this dungeon':!canEdit()?'Read-only route':!placed?'No recorded placements in this dungeon':kind==='shadow'?'Show estimated Shadow Orbs':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'}`;
+    button.title=button.getAttribute('aria-label')+' · '+detail;
+  }
   $('#pull-count').textContent=route.pulls.length;$('#undo').disabled=!canEdit()||!routeDocument.canUndo();$('#redo').disabled=!canEdit()||!routeDocument.canRedo();
   for(const el of $$('#dungeon,#library,#together,#export,#share,#delete-route'))el.disabled=!!logPreview;
-  for(const el of $$('#route-name,#shadow,#add-pull,#clear-route,#new-route,#import,[data-tool]'))el.disabled=!canEdit()&&el.dataset.tool!=='select';
+  for(const el of $$('#route-name,#add-pull,#clear-route,#new-route,#import,[data-tool]'))el.disabled=!canEdit()&&el.dataset.tool!=='select';
   const chickens=chickenPositions().length;
   const invis=route.drawings.filter(d=>d.kind==='invis').length;
   $('#route-relics').innerHTML=relicSummary(chickens,invis);
@@ -605,7 +613,7 @@ function renderInspector(id){
 function renderModifierHighlight(){
   const button=$('.modifiers button:hover')||$('.modifiers button:focus-visible');
   const kind=button?.id,mod=route.modifiers[kind];
-  if(!mod){modifierHighlightKey='';return;}
+  if(!mod||button.disabled){modifierHighlightKey='';return;}
   const ids=new Set(kind==='empowered'
     ?[...mod.enemies,...(data['modifier-placements'].dungeons[dungeon.id]?.empowered??[])]
     :mod.active?['modifier:'+kind]:replacementMembers(dungeon,mod.packId,mod.replacedEnemies));
@@ -788,6 +796,7 @@ function search(){
 function addPull(){const p=newPull(route.pulls.length);let index=route.pulls.length;while(route.pulls.some(pull=>pull.color===p.color))p.color=pullColor(++index);if(change({type:'add-pull',id:p.id,color:p.color})){activePull=p.id;render();$('#pulls').scrollTop=$('#pulls').scrollHeight;}}
 function movePullTo(id,to){const from=route.pulls.findIndex(p=>p.id===id),target=route.pulls[to];if(!target||from===to)return;change({type:'move-pull',pullId:id,[from<to?'afterId':'beforeId']:target.id});}
 function toggleRouteModifier(kind){
+  if(!modifierAvailable(dungeon.id,kind))return;
   const mod=route.modifiers[kind],patch={active:!mod.active};
   // Restore fixed map markers even for routes saved by older log imports.
   if(kind==='empowered')patch.enemies=[...new Set([...mod.enemies,...(data['modifier-placements'].dungeons[dungeon.id]?.empowered??[])])];
