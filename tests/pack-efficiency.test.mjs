@@ -50,12 +50,12 @@ test('Changing dataset HP or adding a pack automatically updates ratios and colo
   assert.notEqual(packEfficiencyColor(added.values.get('high'),added.range),'rgb(34,197,94)');
 });
 
-test('Chicken removes pack HP and score without shifting dungeon normalization',()=>{
+test('Chicken preserves pack HP while removing score without shifting dungeon normalization',()=>{
   const f=fixture();f.route.excluded=['c'];
-  const partial=f.calculate();assert.equal(partial.totalHealth,400);near(partial.values.get('mixed'),.8);
+  const partial=f.calculate();assert.equal(partial.totalHealth,400);near(partial.values.get('mixed'),.4);
   near(partial.values.get('low'),.2);near(partial.values.get('high'),.8);
   f.route.excluded=['a','b','c','d'];
-  const empty=f.calculate();assert.equal(empty.totalHealth,400);assert.equal(empty.values.size,0);assert.equal(empty.range,null);
+  const empty=f.calculate();assert.equal(empty.totalHealth,400);assert.deepEqual([...empty.values.values()],[0,0,0]);assert.deepEqual(empty.range,partial.range);
 });
 
 test('Empowered adjusts score and HP; Shadow Lord does not change those attributes',()=>{

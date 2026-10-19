@@ -49,13 +49,15 @@ test('Changing replacement difficulty preserves the selected pack and can be und
  doc.undo();assert.deepEqual(doc.snapshot().pulls[0].enemies,['modifier:ghorn']);assert.equal(doc.snapshot().modifiers.ghorn.active,true);
  doc.dispose();
 });
-test('Route HP counts selected bosses and replacements, excludes Chicken and replaced actors, deduplicates',()=>{
+test('Route HP counts bosses, Chicken and replacements, excludes replaced actors and deduplicates',()=>{
  const {route,dungeon}=fixture('Level.ID.IceCave',c=>c.modifiers.includes('ghorn'));
  const boss=dungeon.enemies.find(p=>enemies.get(p.id)?.isBoss),mob=dungeon.enemies.find(p=>!enemies.get(p.id)?.isBoss&&!route.modifiers.ghorn.replacedEnemies.includes(p.placementId));
  route.pulls[0].enemies=[boss.placementId,boss.placementId,mob.placementId,...route.modifiers.ghorn.replacedEnemies,'modifier:ghorn'];
+ const beforeChicken=routeHealth(route,dungeon,enemies);
  route.excluded=[mob.placementId];
  const result=routeHealth(route,dungeon,enemies);
- const expected=enemyHealth(enemies.get(boss.id),{difficulty:route.difficulty})+enemyHealth({baseHealth:25102.40974},{difficulty:route.difficulty});
+ assert.deepEqual(result,beforeChicken,'Chicken preserves pull HP, route HP and DPS');
+ const expected=enemyHealth(enemies.get(boss.id),{difficulty:route.difficulty})+placementHealth(mob,enemies.get(mob.id),route)+enemyHealth({baseHealth:25102.40974},{difficulty:route.difficulty});
  assert.equal(result.total,expected);assert.equal(result.dps,expected/dungeon.timerSeconds);
  route.pulls[0].enemies.push('unknown');assert.equal(routeHealth(route,dungeon,enemies).total,null);
 });
@@ -74,6 +76,9 @@ test('Efficiency and grouped HP use selected difficulty and the empowered cap',(
  assert.ok(hp<2*enemyHealth(catalog.get('a'),{difficulty:75}));
  assert.deepEqual(dungeonPackEfficiencies(dungeon,catalog,route),dungeonPackEfficiencies(dungeon,catalog,route,{difficulty:75}));
  assert.equal(positionsHealth([...dungeon.enemies,...dungeon.enemies],catalog,route),hp);
+ route.excluded=['a'];
+ assert.equal(placementHealth(dungeon.enemies[0],catalog.get('a'),route),hp,'Chicken retains difficulty and Empowered HP');
+ assert.equal(positionsHealth(dungeon.enemies,catalog,route),hp);
 });
 test('Health formatting uses readable suffixes and does not turn unknown values into zero',()=>{
  assert.equal(formatHealth(744440),'744.44k');assert.equal(formatHealth(1350000),'1.35m');assert.equal(formatHealth(null),'—');assert.equal(formatHealth(0),'0');assert.equal(formatHealth(999999),'1.00m');

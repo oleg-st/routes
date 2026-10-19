@@ -122,7 +122,6 @@ export function dungeonPackEfficiencies(dungeon,enemies,route,{difficulty=route.
   for(const pos of effectivePositions(route,dungeon)){
     const enemy=enemies.get(pos.id);
     if(!pos.modifier&&enemy?.isBoss)continue;
-    if(route.excluded.includes(pos.placementId))continue;
     const score=placementScore(pos,enemy,route);
     const baseHealth=enemy?.baseHealth??replacementHealth[pos.modifier];
     // Zero-score scenery with no HP is not a combat target.
@@ -189,10 +188,10 @@ export function scorePull(pull,dungeon,enemies,route){
 export function scoreRoute(route,dungeon,enemies){
   return scorePull({enemies:route.pulls.flatMap(p=>p.enemies)},dungeon,enemies,route);
 }
-export function placementHealth(pos,enemy,route,{includeExcluded=false}={}){
+export function placementHealth(pos,enemy,route){
   if(route.difficulty===undefined)return null;
   if(!pos)return null;
-  if(!includeExcluded&&!enemy?.isBoss&&route.excluded.includes(pos.placementId))return 0;
+  // Until Chicken's health scaling is verified, retain the original enemy HP.
   const stats=enemy??modifierStats[pos.modifier];
   if(stats?.baseHealth==null&&stats?.dungeonScore===0)return 0;
   return enemyHealth(stats,{difficulty:route.difficulty,...difficultyHealthModifiers(route,pos.id,{isBossMinion:pos.isBossMinion||stats?.isBossMinion}),empowered:!pos.modifier&&!stats?.isBoss&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId)});
