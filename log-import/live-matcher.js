@@ -265,6 +265,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     movementHypotheses.length?`Possible approach to ${[...new Set(movementHypotheses.map(h=>h.pack))].join(', ')} is estimated across gaps in the log. The actual path is unknown; review this movement hypothesis before accepting.`:null].filter(Boolean).join(' ')||null;
   const groups={},variants=[],groupByIdentity=new Map(),variantByPulls=new Map(),first=firstEngagements(events,{fightID:fight.id,actors,key:encounters.key});
   const pathProximity=createPathProximity(packs,observations);
+  const playerPassage=createAggroEvidence(packs,observations.filter(p=>p.type==='Player'),{buriedRadius:config.buriedRadius});
   const aggroEvidence=createAggroEvidence(packs,observations.map(p=>({...p,
     confirmedSource:rows.some(r=>r.key===p.key&&anchor(r)&&!skippedKeys.has(r.key))})),{buriedRadius:config.buriedRadius});
   const empoweredKeys=new Set([...affixes.empowered.confirmedInstances.map(r=>r.key),...health.filter(r=>r.empoweredCandidate).map(r=>r.key)]);
@@ -279,12 +280,12 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       const identity=JSON.stringify([members,excluded,empowered]);
       let id=groupByIdentity.get(identity);
       if(!id){id=`group-${groupByIdentity.size}`;groupByIdentity.set(identity,id);groups[id]={id,label:pack.number,enemies:members,excluded,empowered};}
-      proximity[id]=pathProximity(pack.id,time);
+      proximity[id]=null;
       aggro[id]=aggroEvidence(pack.id,Math.max(pullSegments[segment-1]?.endTime??fight.startTime,time-10000),time,as.map(a=>a.key));
       const gap=as.filter(a=>a.gap).sort((a,b)=>a.gap.distance-b.gap.distance)[0]?.gap;
-      if(gap)proximity[id]={minDistance:gap.distance,maxDistance:gap.distance,sources:[gap.source],patrol:gap.patrol,estimated:true};
+      if(gap&&!proximity[id])proximity[id]={minDistance:gap.distance,maxDistance:gap.distance,sources:[gap.source],patrol:gap.patrol,estimated:true};
       const neighbor=as.filter(a=>a.neighbor).sort((a,b)=>a.neighbor.distance-b.neighbor.distance)[0]?.neighbor;
-      if(neighbor)proximity[id]={minDistance:neighbor.distance,maxDistance:neighbor.distance,sources:[neighbor.pack],patrol:false,estimated:true,basis:'neighbor'};
+      if(neighbor&&!proximity[id])proximity[id]={minDistance:neighbor.distance,maxDistance:neighbor.distance,sources:[neighbor.pack],patrol:false,estimated:true,basis:'neighbor'};
       pulls[segment].groups.push(id);
     }
     for(const kind of ['ghorn','witch'])if(affixes[kind].active){
@@ -302,6 +303,22 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   }
   const kept=variants[0].pulls.map((_,i)=>i).filter(i=>variants.some(v=>v.pulls[i].groups.length));
   for(const v of variants)v.pulls=kept.map((i,n)=>({...v.pulls[i],label:`Pull ${n+1}`}));
+  // Use the same window as the movement overlay, after empty/death-skip pulls
+  // have been removed: the approach plus this entire pull. Later visible player
+  // crossings rank choices but never prune route candidates.
+  for(const variant of variants){
+    variant.passage={};
+    for(const [index,pull]of variant.pulls.entries()){
+      const start=fight.startTime+Math.max(0,(variant.pulls[index-1]?.end??0)-5)*1000;
+      const end=fight.startTime+pull.end*1000;
+      for(const id of pull.groups){
+        const pack=packByPlacement.get(groups[id].enemies[0]);
+        if(!pack)continue;
+        variant.proximity[id]=pathProximity(pack.id,end,start)??variant.proximity[id];
+        variant.passage[id]=playerPassage(pack.id,start,end);
+      }
+    }
+  }
   const portals=extractPortals(events,{fightID:fight.id,players,endTime:fight.endTime});
   const intervals=bossIntervals(events,fight.id,fight.endTime),view=mapViews(dungeon)[0];
   const usages=deduplicateRelicUsages([...invisible.usages.map(u=>({...u,kind:'invis'})),...portals.usages].filter(u=>outsideBossCombat(u,intervals)));

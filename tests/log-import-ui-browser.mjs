@@ -49,8 +49,10 @@ try{
     window.ui.open();
   });await submit();
   assert.equal(await page.locator('[data-log-choice]').first().getAttribute('data-log-choice'),'b');
-  assert.match(await page.locator('[data-log-choice]').first().textContent(),/Closest to path.*200.*player/);
-  assert.match(await page.locator('[data-log-choice]').last().textContent(),/900/);
+  assert.match(await page.locator('[data-log-choice]').first().textContent(),/Closest to player path.*200 world units.*player/);
+  assert.match(await page.locator('[data-log-choice]').last().textContent(),/Path distance.*900 world units/);
+  assert.match(await page.locator('.log-proximity').first().getAttribute('title'),/approach and the whole pull/);
+  assert.match(await page.locator('[data-log-movement]').locator('..').textContent(),/approach \+ combat/);
   assert.equal(await page.locator('[data-log-choice]').count(),2);assert.deepEqual(errors,[]);
   assert.equal(await page.locator('[data-log-player]').count(),0);
   assert.equal(await page.locator('.log-movement-legend').textContent(),'Tank');
@@ -67,6 +69,16 @@ try{
   assert.equal(await page.locator('.log-aggro-badge').textContent(),'within aggro');
   assert.equal(await page.locator('[data-log-choice]').count(),2);
   await page.locator('[data-log-cancel]').click();
+  await page.evaluate(()=>{
+    window.extraFixture.variants[1].passage={b:{distance:200,range:1100,sources:['player']}};
+    window.ui.open();
+  });await submit();
+  assert.equal(await page.locator('[data-log-choice]').first().getAttribute('data-log-choice'),'b');
+  assert.equal(await page.locator('.log-option-likely [data-log-choice="b"]').count(),1);
+  assert.equal(await page.locator('[data-log-choice="b"] .log-aggro-badge').textContent(),'player passed nearby');
+  assert.match(await page.locator('[data-log-choice="b"] .log-aggro-badge').getAttribute('title'),/Living, visible player.*during the approach or this pull/);
+  await page.locator('[data-log-cancel]').click();
+  await page.evaluate(()=>{delete window.extraFixture.variants[1].passage;});
   await page.evaluate(()=>{delete window.extraFixture.variants[0].aggro;});
   await page.evaluate(()=>{
     window.result.saved=false;
@@ -76,7 +88,7 @@ try{
     window.ui.open();
   });await submit();
   assert.equal(await page.locator('[data-log-choice]').first().getAttribute('data-log-choice'),'a');
-  assert.match(await page.locator('[data-log-choice="b"]').textContent(),/Estimated across log gap/);
+  assert.match(await page.locator('[data-log-choice="b"]').textContent(),/Estimated approach across log gap/);
   assert.match(await page.locator('#panel').textContent(),/actual path is unknown/);
   await page.locator('[data-log-cancel]').click();
   await page.evaluate(()=>{window.extraFixture.variants=window.extraFixture.variants.slice(1);window.ui.open();});await submit();

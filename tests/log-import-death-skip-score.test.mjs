@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {matchLiveLog} from '../log-import/live-matcher.js';
 import {newRoute,scoreRoute} from '../route-model.js';
+import {createReviewSession} from '../log-import/review-session.js';
 
 // The private diagnostic export is deliberately not published with the tests.
 // Synthetic assignment tests cover the invariant when the export is absent.
@@ -16,6 +17,12 @@ test('KDvzJny1w6YW8BaH/1 keeps whole packs and 270 points without scoring death-
   assert.equal(result.partial,undefined);
   assert.equal(result.deathSkips.length,11);
   assert.ok(result.variants.length>0);
+  const state=createReviewSession(result).state(),zealot=state.options.find(o=>o.label==='G48');
+  assert.equal(state.options[0].label,'G48');
+  assert.ok(zealot.passage,'the visible crossing after the first hit highlights G48');
+  assert.equal(Math.round(zealot.proximity.maxDistance),191);
+  assert.equal(Math.round(zealot.passage.distance),191);
+  assert.equal(state.options.find(o=>o.label==='G47').passage,null);
   const {dungeon,catalog}=options,byID=new Map(dungeon.enemies.map(p=>[p.placementId,p]));
   const packs=Map.groupBy(dungeon.enemies,p=>p.packId);
   for(const group of Object.values(result.groups)){

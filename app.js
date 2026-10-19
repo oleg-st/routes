@@ -235,7 +235,13 @@ function fitMap(){
   baseView={x:0,y:0,w:mapLayer.width,h:mapLayer.height};view={...baseView};renderMap();
 }
 function scale(){const r=$('#map').getBoundingClientRect();return Math.max(view.w/Math.max(r.width,1),view.h/Math.max(r.height,1));}
-function mapMarkerRadius(unit){return enemyMarkerRadius(Number($('#marker-size').value),baseView.w/view.w,$('#show-mob-icons').checked)*unit;}
+function mapMarkerRadius(unit){
+  const bounds=$('#map').getBoundingClientRect();
+  // SVG fits both axes. A tall focus frame can be height-limited even when
+  // its narrow viewBox width suggests a much larger zoom.
+  const baseUnit=Math.max(baseView.w/Math.max(bounds.width,1),baseView.h/Math.max(bounds.height,1));
+  return enemyMarkerRadius(Number($('#marker-size').value),baseUnit/unit,$('#show-mob-icons').checked)*unit;
+}
 function render(){
   hideChickenTooltip();
   hidePullTooltip();
@@ -696,6 +702,22 @@ function focusEnemies(ids,{preserveZoom=false,fit=false,highlight=true}={}){
   const cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2;
   const w=preserveZoom?baseView.w*zoomRatio.w:Math.max(mapLayer.width*.12,Math.max(...xs)-Math.min(...xs)+mapLayer.width*.05),h=preserveZoom?baseView.h*zoomRatio.h:Math.max(mapLayer.height*.16,Math.max(...ys)-Math.min(...ys)+mapLayer.height*.05);
   view={x:cx-w/2,y:cy-h/2,w,h};renderMap();
+  if(!preserveZoom){
+    // Layout can displace portraits from their world positions. Fit the actual
+    // circles, including boss radii, rather than clipping them at the edge.
+    // Expanding the frame changes screen-space marker sizes, so refine it.
+    for(let attempt=0;attempt<8;attempt++){
+      const unit=scale(),radius=mapMarkerRadius(unit),bounds=ps.filter(p=>onMap(p,mapLayer)).map(p=>{
+        const [x,y]=markerCoordinates(p),r=radius*enemyMarkerScale(enemies.get(p.id))+16*unit;
+        return {left:x-r,right:x+r,top:y-r,bottom:y+r};
+      });
+      const left=Math.min(...bounds.map(b=>b.left)),right=Math.max(...bounds.map(b=>b.right));
+      const top=Math.min(...bounds.map(b=>b.top)),bottom=Math.max(...bounds.map(b=>b.bottom));
+      if(left>=view.x&&right<=view.x+view.w&&top>=view.y&&bottom<=view.y+view.h)break;
+      const w=Math.max(view.w,right-left),h=Math.max(view.h,bottom-top);
+      view={x:(left+right-w)/2,y:(top+bottom-h)/2,w,h};renderMap();
+    }
+  }
   if(highlight)highlightEnemies(ids);
 }
 function updateSaveButton(){

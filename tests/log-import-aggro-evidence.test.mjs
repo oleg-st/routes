@@ -42,3 +42,20 @@ test('Evidence is conditional on every assignment for a choice, survives back, a
   const mixed=createReviewSession({...fixture,variants:fixture.variants.map(v=>({...v,pulls:[v.pulls[1]]}))});
   assert.equal(mixed.state().options.find(o=>o.id==='a').aggro,null);
 });
+
+test('A visible player crossing during the pull ranks above pre-engagement proximity and social aggro',()=>{
+  const evidence={distance:200,range:1100,sources:['player']};
+  const fixture={groups:{a:{label:'G1'},b:{label:'G2'}},variants:[
+    {pulls:[{groups:['a']}],aggro:{a:{distance:100,range:1000,sources:['social aggro']}},
+      proximity:{a:{minDistance:100,maxDistance:100,sources:['player']}}},
+    {pulls:[{groups:['b']}],passage:{b:evidence},
+      proximity:{b:{minDistance:200,maxDistance:200,sources:['player']}}},
+  ]};
+  const session=createReviewSession(fixture),state=session.state();
+  assert.deepEqual(state.options.map(o=>o.id),['b','a']);
+  assert.deepEqual(state.options[0].passage,evidence);
+  assert.equal(session.choose('a').complete,true,'weaker alternatives remain selectable');
+  assert.deepEqual(session.back(),state);
+  fixture.variants.push({...fixture.variants[1],passage:{b:null}});
+  assert.equal(createReviewSession(fixture).state().options.find(o=>o.id==='b').passage,null);
+});

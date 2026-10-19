@@ -4,22 +4,22 @@ import {placementDistance,createPackDistance} from './placement-geometry.js';
 export function createPathProximity(packs,observations){
   const byID=new Map(packs.map(p=>[p.id,{pack:p,distance:createPackDistance(p.placements)}])),cache=new Map();
   const points=observations.filter(p=>Number.isFinite(p.t)&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&
-    (p.type==='Player'?p.hp>0&&p.visibility==='visible':p.type==='NPC'&&Number.isFinite(p.activeSince)&&p.t>=p.activeSince&&p.t<=(p.deathTime??Infinity)))
+    p.type==='Player'&&p.hp>0&&p.visibility==='visible'&&!p.interpolated)
     .toSorted((a,b)=>a.t-b.t);
-  return (packID,time)=>{
-    const key=`${packID}|${time}`;if(cache.has(key))return cache.get(key);
+  return (packID,time,start=-Infinity)=>{
+    const key=`${packID}|${start}|${time}`;if(cache.has(key))return cache.get(key);
     const prepared=byID.get(packID);
     let closest=null;
     for(const p of points){
       if(p.t>time)break;
-      if(p.type==='NPC'&&p.t>=time)continue;
+      if(p.t<start)continue;
       if(!prepared||prepared.distance(p,closest?.distance??Infinity)>=(closest?.distance??Infinity))continue;
       // Resolve original member order only for a new minimum, retaining the
       // exact source and spawn/patrol tie-breaking of the unindexed calculation.
       for(const member of prepared.pack.placements){
         const metric=placementDistance(p,member);
         if(Number.isFinite(metric.distance)&&(!closest||metric.distance<closest.distance))closest={distance:metric.distance,
-          source:p.type==='Player'?'player':'engaged enemy',geometry:metric.evidence,time:p.t,key:p.key};
+          source:'player',geometry:metric.evidence,time:p.t,key:p.key};
       }
     }
     const result=closest?{minDistance:closest.distance,maxDistance:closest.distance,sources:[closest.source],patrol:closest.geometry==='patrol'}:null;

@@ -44,7 +44,9 @@ test('A unique gap-based route completes automatically while retaining hypothesi
   const result=await matchLiveLog(log,{dungeon,catalog:new Map([['enemy',{id:'enemy',name:'Enemy',gameId:123}]]),presets:{},dungeonData:'custom'});
   assert.equal(result.matching.aggroRadius,1500);assert.equal(result.variants.length,1);
   assert.ok(result.movementHypotheses.length);assert.match(result.assumption,/actual path is unknown/);
-  assert.equal(result.variants[0].proximity['group-0'].estimated,true);
+  assert.equal(result.variants[0].proximity['group-0'].minDistance,2000,'path distance uses recorded players, not a hypothetical crossing');
+  assert.equal(result.variants[0].proximity['group-0'].estimated,undefined);
+  assert.equal(result.variants[0].passage['group-0'],null,'a drawn line through the pack is not observed contact');
   const review=createReviewSession(result);assert.equal(review.state().complete,true);
   assert.deepEqual(review.state().options,[]);
   const observedLog={...log,events:[events[0],{type:'heal',timestamp:5000,fight:1,targetID:1,targetResources:{x:0,y:-500,hitPoints:100}},...events.slice(1)]};

@@ -44,7 +44,9 @@ test('An opt-in neighbor search keeps ordinary ranges, counts and exact identity
   assert.equal(result.variants.length,1);assert.equal(result.matching.aggroRadius,1500);
   assert.deepEqual(result.neighborHypotheses.map(h=>[h.placementId,h.source.packId]),[['b','a']]);
   const group=Object.values(result.groups).find(g=>g.enemies.includes('b'));
-  assert.equal(result.variants[0].proximity[group.id].basis,'neighbor');
+  assert.equal(result.variants[0].proximity[group.id].minDistance,12800,'player path distance is separate from the retained neighbor hypothesis');
+  assert.deepEqual(result.variants[0].proximity[group.id].sources,['player']);
+  assert.equal(result.variants[0].passage[group.id],null);
   const extra=structuredClone(log);extra.events.push({...extra.events[1],timestamp:300,sourceInstance:2});
   await assert.rejects(matchLiveLog(extra,{...options,neighborRadius:7500}),e=>e.diagnostics.counts.some(c=>c.observed>c.available));
   const unconfirmed=structuredClone(log);unconfirmed.events[0].targetResources.y=500;
