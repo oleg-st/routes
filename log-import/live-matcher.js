@@ -1,7 +1,7 @@
 import {analyzeRouteEvents,routeHealthEvidence,interpolatePlayerPositions} from './live-analysis.js';
 import {correctImportPacks} from './pack-corrections.js';
 import {placementDistance} from './placement-geometry.js';
-import {minimumAssignment,hasCompatibleAssignment} from './assignment.js';
+import {minimumAssignment,hasCompatibleAssignment,hasRequiredAssignment} from './assignment.js';
 import {solveCompletePacks} from './pack-solver.js';
 import {createApproachFilter} from './approach-filter.js';
 import {reverseApproachEvidence,scoreReverseApproach,compareReverseRank} from './reverse-approach.js';
@@ -20,6 +20,7 @@ import {mapViews,worldMapCoordinates,mapCampfires} from '../map-views.js';
 import {encounterIdentity} from './boss-encounters.js';
 import {createNeighborApproach} from './neighbor-approach.js';
 import {confirmedDeathSkips} from './death-skips.js';
+import {createDeathSkipAssignment} from './death-skip-assignment.js';
 
 const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
 export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false,allowPartial=false,neighborRadius=0}){
@@ -64,8 +65,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   rows=rows.filter(r=>staticTypes.has(r.gameID)&&!summons.has(r.key));
   const deathSkipEncounters=confirmedDeathSkips(log,rows,{...encounters,dungeonID:dungeon.id});
   const deathSkips=deathSkipEncounters.flatMap(s=>s.enemyKeys.map(key=>({key,pullID:s.pullID,reason:'survived-death-skip'}))),skippedKeys=new Set(deathSkips.map(r=>r.key));
-  // Match skipped mobs too: their observations establish pack identity, even
-  // when only some members were killed. Omit them from the resulting route.
+  // Skipped observations still constrain identity and reserve distinct map
+  // positions, but do not require their untouched siblings to be observed.
   // A known summon can be Chickenized, but has no original map placement.
   // Only unresolved targets need manual analysis.
   const unknownChickens=chickenCasts.filter(c=>!summons.has(`${c.targetID}:${c.targetInstance??1}`)&&!rows.some(r=>r.key===`${c.targetID}:${c.targetInstance??1}`));
@@ -137,9 +138,12 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     pair.set(`${r.key}|${p.placementId}`,{allowed:!reasons.length,reasons,gap,neighbor,
       distance:r.firstPosition?placementDistance({x:r.firstPosition.y,y:r.firstPosition.x},p).distance:0});
   }
-  const rowsByType=Map.groupBy(rows,r=>r.gameID),requiredIDs=[...new Set(rows.filter(anchor).map(r=>packByPlacement.get(anchor(r))?.id).filter(Boolean))];
+  const rowsByType=Map.groupBy(rows,r=>r.gameID),retainedRows=rows.filter(r=>!skippedKeys.has(r.key));
+  const requiredIDs=[...new Set(retainedRows.filter(anchor).map(r=>packByPlacement.get(anchor(r))?.id).filter(Boolean))];
   const compatibleRows=new Map(allPlacements.map(p=>[p.placementId,(rowsByType.get(catalog.get(p.id).gameId)??[])
     .filter(r=>pair.get(`${r.key}|${p.placementId}`).allowed).map(r=>r.key)]));
+  const assignSkipped=skippedKeys.size?createDeathSkipAssignment({rows,placements:allPlacements,skippedKeys,pair,catalog}):null;
+  const positionsByRow=assignSkipped?rows.map(r=>allPlacements.filter(p=>pair.get(`${r.key}|${p.placementId}`)?.allowed)):null;
   onProgress('Checking complete pack combinations…');await yieldUI();signal?.throwIfAborted();
   const candidates=[],attempts=[];let closestRejected=null;
   let partial=null;
@@ -179,14 +183,33 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   }));
   const attempt={missingBudget,feasiblePacks:feasible.map(p=>p.id),infeasibleRequiredPacks:requiredIDs.filter(id=>!feasible.some(p=>p.id===id))};attempts.push(attempt);
   if(attempt.infeasibleRequiredPacks.length)continue;
-  const enumeration=solveCompletePacks(feasible,Object.fromEntries([...rowsByType].map(([t,rs])=>[t,rs.length])),{requiredIDs,wildcards:missingBudget,maxSolutions:20000,maxNodes:1000000,
-    canSelect:ids=>hasCompatibleAssignment(ids.flatMap(id=>packByID.get(id).placements.map(p=>compatibleRows.get(p.placementId))),missingBudget)});
-  if(!enumeration.exhaustive)throw Object.assign(new Error('Too many pack combinations to check completely. No route was created.'),{diagnostics:{code:'matching-limit'}});
+  const skipAssignments=new Map(),assignmentKey=ids=>ids.join('|');
+  const enumeration=solveCompletePacks(feasible,Object.fromEntries([...Map.groupBy(retainedRows,r=>r.gameID)].map(([t,rs])=>[t,rs.length])),{requiredIDs,wildcards:missingBudget,maxSolutions:20000,maxNodes:1000000,
+    ...(skippedKeys.size?{optionalTarget:Object.fromEntries([...Map.groupBy(rows.filter(r=>skippedKeys.has(r.key)),r=>r.gameID)].map(([t,rs])=>[t,rs.length])),
+      canContinue:(ids,remaining)=>{
+        const available=new Set([...ids,...remaining]);
+        const choices=positionsByRow.map((ps,i)=>ps.filter(p=>skippedKeys.has(rows[i].key)||available.has(p.packId)).map(p=>p.placementId));
+        for(let i=0;i<missingBudget;i++)choices.push(allPlacements.map(p=>p.placementId));
+        return hasRequiredAssignment(choices,ids.flatMap(id=>packByID.get(id).placements.map(p=>p.placementId)));
+      },
+      canComplete:ids=>{
+        const result=assignSkipped(ids.flatMap(id=>packByID.get(id).placements),missingBudget);
+        if(!result)return false;
+        // Selecting a whole pack occupied only by survivors adds no route
+        // information. Its observations can use the same positions outside
+        // the selected set, without enumerating redundant skip-only supersets.
+        const retainedPacks=new Set(result.assignments.filter(a=>!skippedKeys.has(a.key)).map(a=>packByPlacement.get(a.placementId).id));
+        if(ids.some(id=>!retainedPacks.has(id)))return false;
+        skipAssignments.set(assignmentKey(ids),result);return true;
+      }}:{}),
+    canSelect:assignSkipped?undefined:ids=>hasCompatibleAssignment(ids.flatMap(id=>packByID.get(id).placements.map(p=>compatibleRows.get(p.placementId))),missingBudget)});
+  if(!enumeration.exhaustive)throw Object.assign(new Error('Too many pack combinations to check completely. No route was created.'),{diagnostics:{code:'matching-limit',nodes:enumeration.nodes,combinations:enumeration.solutions.length}});
   attempt.combinations=enumeration.solutions.length;
   for(let index=0;index<enumeration.solutions.length;index++){
     if(index%100===0){await yieldUI();signal?.throwIfAborted();}
-    const s=enumeration.solutions[index],placements=s.packIDs.flatMap(id=>packByID.get(id).placements),assignments=[];let valid=true,score=0;
-    for(const [type,rs]of rowsByType){
+    const s=enumeration.solutions[index],placements=s.packIDs.flatMap(id=>packByID.get(id).placements);
+    const skipAssignment=skipAssignments.get(assignmentKey(s.packIDs)),assignments=skipAssignment?.assignments??[];let valid=true,score=skipAssignment?.score??0;
+    for(const [type,rs]of skipAssignment?[]:rowsByType){
       const ps=placements.filter(p=>catalog.get(p.id).gameId===type);
       const result=minimumAssignment(rs.map(r=>ps.map(p=>{const e=pair.get(`${r.key}|${p.placementId}`);return e.allowed?e.distance+(e.gap||e.neighbor?1e9:0):1e12;})));
       result.columns.forEach((col,i)=>{const r=rs[i],p=ps[col],e=pair.get(`${r.key}|${p.placementId}`);valid&&=e.allowed;score+=e.distance;assignments.push({key:r.key,placementId:p.placementId,firstTime:r.firstTime,...(e.gap?{gap:e.gap}:{}),...(e.neighbor?{neighbor:e.neighbor}:{})});});
@@ -199,7 +222,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
         assignments.push({key:`unobserved:${p.placementId}`,placementId:p.placementId,firstTime:Math.min(...siblings.map(a=>a.firstTime)),inferred:true});
       }
     }
-    if(valid)candidates.push({...s,score,assignments,reverse:scoreReverseApproach(reverse,s.packIDs)});
+    if(valid)candidates.push({...s,score,assignments,reverse:scoreReverseApproach(reverse,[...new Set(assignments.map(a=>packByPlacement.get(a.placementId).id))])});
     else{
       const rejected=assignments.filter(a=>!a.inferred&&!pair.get(`${a.key}|${a.placementId}`).allowed);
       if(!closestRejected||rejected.length<closestRejected.length)closestRejected=rejected.map(a=>({...a,...pair.get(`${a.key}|${a.placementId}`)}));

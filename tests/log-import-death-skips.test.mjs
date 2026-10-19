@@ -31,6 +31,85 @@ function example(){
 }
 const detect=({log,dungeon,catalog})=>deathSkipRows(log,analyzeRouteEvents(log,dungeon,catalog).npcRows,{dungeonID:dungeon.id});
 
+function addUnobservedSiblings(input,packID,count){
+  const {dungeon,catalog}=input,base=dungeon.enemies.find(p=>p.packId===packID);
+  for(let i=0;i<count;i++){
+    const id=`${packID}-unobserved-${i}`;
+    catalog.set(id,{id,gameId:910+i,name:id,dungeonScore:5});
+    dungeon.enemies.push({...base,id,placementId:id,worldPosition:{x:base.worldPosition.x+10*(i+1),y:base.worldPosition.y}});
+  }
+}
+
+test('A confirmed death skip can observe one member of a larger untouched pack',async()=>{
+  const input=example();addUnobservedSiblings(input,'skip',3);
+  const {log,dungeon,catalog}=input;
+  const result=await matchLiveLog(log,{dungeon,catalog,presets:{},dungeonData:'custom'});
+  assert.equal(result.partial,undefined);
+  assert.deepEqual(result.inferredPlacements,[]);
+  assert.deepEqual(result.variants.map(v=>v.pulls.flatMap(p=>p.groups.flatMap(id=>result.groups[id].enemies))),[['kill']]);
+  assert.deepEqual(result.deathSkips.map(r=>r.key),['3:1']);
+  assert.equal(result.drawings.filter(d=>d.text==='Death skip').length,1);
+  // The same incomplete pack must fail without the checkpoint/respawn proof.
+  log.events=log.events.filter(e=>e.abilityGameID!==959);
+  await assert.rejects(matchLiveLog(log,{dungeon,catalog,presets:{}}),e=>e.diagnostics?.code==='no-compatible-route');
+});
+
+test('One skipped Echo does not require the other Echoes and Disciple in its pack',async()=>{
+  const input=example(),{log,dungeon,catalog}=input;
+  catalog.get('mob').name='Sanguine Echo';
+  // G85-like composition: three Echoes and a Disciple, with only one Echo
+  // observed before the tank dies. A later ordinary pack kills three Echoes.
+  for(const [placementId,x]of [['untouched-echo-1',110],['untouched-echo-2',120]])dungeon.enemies.push({...dungeon.enemies[0],placementId,worldPosition:{x,y:x}});
+  catalog.set('disciple',{id:'disciple',gameId:910,name:'Sanguine Disciple'});
+  dungeon.enemies.push({...dungeon.enemies[0],id:'disciple',placementId:'untouched-disciple'});
+  for(let instance=2;instance<=3;instance++){
+    const x=10000+100*instance;
+    dungeon.enemies.push({...dungeon.enemies[1],placementId:`kill-${instance}`,worldPosition:{x,y:x}});
+    log.events.push({...log.events[3],timestamp:11000+instance,targetInstance:instance,targetResources:{x,y:x,hitPoints:80,maxHitPoints:100}});
+    log.events.push({...log.events[4],timestamp:20000+instance,targetInstance:instance});
+  }
+  const result=await matchLiveLog(log,{dungeon,catalog,presets:{}});
+  assert.deepEqual(result.inferredPlacements,[]);
+  assert.deepEqual(result.variants.map(v=>v.pulls.flatMap(p=>p.groups.flatMap(id=>result.groups[id].enemies)).sort()),[['kill','kill-2','kill-3']]);
+});
+
+test('Death-skip omissions cannot pay for missing members of an ordinary killed pack',async()=>{
+  for(const count of [1,2]){
+    const input=example();addUnobservedSiblings(input,'skip',3);addUnobservedSiblings(input,'kill',count);
+    const {log,dungeon,catalog}=input;
+    if(count===2){
+      await assert.rejects(matchLiveLog(log,{dungeon,catalog,presets:{}}),e=>e.diagnostics?.code==='no-compatible-route');
+    }else{
+      const result=await matchLiveLog(log,{dungeon,catalog,presets:{}});
+      assert.deepEqual(result.inferredPlacements,['kill-unobserved-0'],'the existing single-sibling hypothesis still needs review');
+      assert.match(result.assumption,/one unobserved pack member/);
+    }
+  }
+});
+
+test('A pack with a killed or later repulled member still requires its untouched siblings',async()=>{
+  for(const later of [false,true]){
+    const input=example(),{log,dungeon,catalog}=input;
+    addUnobservedSiblings(input,'skip',3);
+    log.actors.push({id:5,type:'NPC',gameID:900});
+    dungeon.enemies.push({...dungeon.enemies[0],placementId:'retained',worldPosition:{x:200,y:200}});
+    log.events.push({...log.events[0],timestamp:2000,sourceID:5,sourceResources:{x:200,y:200,hitPoints:90,maxHitPoints:100}});
+    if(later)log.events.push({...log.events.at(-1),timestamp:12000});
+    log.events.push({fight:5,type:'death',timestamp:later?15000:4000,targetID:5});
+    assert.deepEqual(detect(input).map(r=>r.key),['3:1']);
+    await assert.rejects(matchLiveLog(log,{dungeon,catalog,presets:{}}),e=>e.diagnostics?.code==='no-compatible-route');
+  }
+});
+
+test('A death skip still needs a distinct compatible map position for every observed survivor',async()=>{
+  const input=example();addUnobservedSiblings(input,'skip',3);
+  const {log,dungeon,catalog}=input;
+  log.actors.push({id:5,type:'NPC',gameID:900});
+  log.events.push({...log.events[0],timestamp:2000,sourceID:5});
+  assert.deepEqual(new Set(detect(input).map(r=>r.key)),new Set(['3:1','5:1']));
+  await assert.rejects(matchLiveLog(log,{dungeon,catalog,presets:{}}),e=>e.diagnostics?.code==='no-compatible-route');
+});
+
 test('A living diversion pack is omitted while a later kill retains its full score',async()=>{
   const input=example(),{log,dungeon,catalog}=input;
   assert.deepEqual(detect(input),[{key:'3:1',pullID:1,reason:'survived-death-skip'}]);

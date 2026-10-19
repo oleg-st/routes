@@ -55,3 +55,33 @@ export function hasCompatibleAssignment(choices,maxUnmatched=0){
   for(let row=0;row<choices.length;row++)if(!assign(row,new Set())&&++unmatched>maxUnmatched)return false;
   return true;
 }
+
+// Cover all observations and all required positions. Start with a matching
+// covering required columns, then augment unmatched rows without uncovering
+// those columns. Optional columns need not be occupied.
+export function hasRequiredAssignment(choices,required){
+  const rowsByColumn=new Map();
+  choices.forEach((cs,row)=>{for(const col of cs){if(!rowsByColumn.has(col))rowsByColumn.set(col,[]);rowsByColumn.get(col).push(row);}});
+  const rowToColumn=new Map(),columnToRow=new Map();
+  function assignColumn(col,visited){
+    for(const row of rowsByColumn.get(col)??[]){
+      if(visited.has(row))continue;visited.add(row);
+      if(!rowToColumn.has(row)||assignColumn(rowToColumn.get(row),visited)){
+        rowToColumn.set(row,col);columnToRow.set(col,row);return true;
+      }
+    }
+    return false;
+  }
+  for(const col of required)if(!assignColumn(col,new Set()))return false;
+  function assignRow(row,visited){
+    for(const col of choices[row]){
+      if(visited.has(col))continue;visited.add(col);
+      if(!columnToRow.has(col)||assignRow(columnToRow.get(col),visited)){
+        columnToRow.set(col,row);rowToColumn.set(row,col);return true;
+      }
+    }
+    return false;
+  }
+  for(let row=0;row<choices.length;row++)if(!rowToColumn.has(row)&&!assignRow(row,new Set()))return false;
+  return true;
+}

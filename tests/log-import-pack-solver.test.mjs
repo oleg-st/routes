@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {solveCompletePacks} from '../log-import/pack-solver.js';
-import {minimumAssignment,hasCompatibleAssignment} from '../log-import/assignment.js';
+import {minimumAssignment,hasCompatibleAssignment,hasRequiredAssignment} from '../log-import/assignment.js';
 
 test('Whole packs cannot contribute only their matching members', () => {
   const packs = [{id:'a',counts:{husk:2,reaver:1}},{id:'b',counts:{husk:2}}];
@@ -18,6 +18,45 @@ test('Enumeration limits do not mislabel a truncated candidate set as exhaustive
   assert.equal(solveCompletePacks(packs,{husk:1},{maxSolutions:1}).exhaustive,false);
   assert.equal(solveCompletePacks(packs,{husk:1},{maxSolutions:2}).exhaustive,true);
   assert.equal(solveCompletePacks(packs,{husk:1},{maxNodes:1}).exhaustive,false);
+});
+
+test('Optional death-skip observations do not relax whole packs needed by retained observations',()=>{
+  const packs=[{id:'ordinary',counts:{kill:1,untouched:2}},{id:'complete',counts:{kill:1}},{id:'skipped',counts:{survivor:4}}];
+  const options={optionalTarget:{survivor:1}};
+  assert.deepEqual(solveCompletePacks(packs,{kill:1},options).solutions.map(s=>s.packIDs),[['complete']]);
+  assert.deepEqual(solveCompletePacks(packs,{kill:1},{...options,requiredIDs:['ordinary']}).solutions,[]);
+});
+
+test('Optional observations can fill whole packs, with joint assignment checked at every complete selection',()=>{
+  const packs=[{id:'a',counts:{mob:1}},{id:'b',counts:{mob:1}},{id:'c',counts:{mob:1}}];
+  const all=solveCompletePacks(packs,{mob:1},{optionalTarget:{mob:1}});
+  assert.equal(all.exhaustive,true);assert.equal(all.solutions.length,6);
+  assert.equal(new Set(all.solutions.map(s=>s.packIDs.join('|'))).size,6,'exclude branches must not duplicate an earlier selection');
+  const checked=solveCompletePacks(packs,{mob:1},{optionalTarget:{mob:1},canComplete:ids=>ids.includes('b')});
+  assert.deepEqual(checked.solutions,all.solutions.filter(s=>s.packIDs.includes('b')));
+});
+
+test('Pruning unavailable future packs preserves every optional-observation solution',()=>{
+  const packs=[{id:'a',counts:{mob:1}},{id:'b',counts:{mob:1}},{id:'c',counts:{mob:1}}];
+  const expected=solveCompletePacks(packs,{mob:1},{optionalTarget:{mob:1}}).solutions.filter(s=>s.packIDs.includes('b'));
+  const result=solveCompletePacks(packs,{mob:1},{optionalTarget:{mob:1},canComplete:ids=>ids.includes('b'),
+    canContinue:(ids,remaining)=>[...ids,...remaining].includes('b')});
+  assert.equal(result.exhaustive,true);assert.deepEqual(result.solutions,expected);
+});
+
+test('Required-column matching agrees with exhaustive assignments on small graphs',()=>{
+  for(let seed=0;seed<50;seed++){
+    const choices=Array.from({length:3},(_,i)=>Array.from({length:5},(_,j)=>j).filter(j=>(seed*7+i*3+j*5)%11<7));
+    const required=Array.from({length:5},(_,j)=>j).filter(j=>(seed+j)%3===0);
+    function brute(i=0,used=new Set()){
+      if(i===choices.length)return required.every(j=>used.has(j));
+      for(const j of choices[i])if(!used.has(j)){
+        used.add(j);if(brute(i+1,used))return true;used.delete(j);
+      }
+      return false;
+    }
+    assert.equal(hasRequiredAssignment(choices,required),brute(),`seed ${seed}`);
+  }
 });
 test('Joint assignment avoids stealing another observation\'s only nearby placement', () => {
   assert.deepEqual(minimumAssignment([[1,2],[1,100]]),{cost:3,columns:[1,0]});
