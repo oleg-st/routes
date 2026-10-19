@@ -47,6 +47,14 @@ class CompressionTests(unittest.TestCase):
                     module.compress_batch(manifest, 50)
                 with Image.open(output) as result:
                     self.assertEqual(result.size, (32, 24))
+                for limit, expected in [(16, (16, 12)), (8, (8, 6)), (16, (16, 12))]:
+                    job.update(maxSize=limit)
+                    manifest.write_text(json.dumps([job]))
+                    module.compress_batch(manifest, 50)
+                    with Image.open(output) as result:
+                        self.assertEqual(result.size, expected)
+                with patch.object(module, 'compress_avif', side_effect=AssertionError('Size cache was ignored')):
+                    module.compress_batch(manifest, 50)
             finally:
                 os.chdir(previous_directory)
 
@@ -85,6 +93,24 @@ class CompressionTests(unittest.TestCase):
             self.assertFalse(output.exists())
             with self.assertRaisesRegex(ValueError, "different"):
                 module.compress_avif(source, source)
+
+    def test_downscale_preserves_aspect_alpha_and_source_without_upscaling(self):
+        with TemporaryDirectory() as directory:
+            source, output = Path(directory) / 'original.png', Path(directory) / 'result.avif'
+            image = Image.new('RGBA', (256, 128), (80, 120, 160, 0))
+            image.paste((80, 120, 160, 255), (128, 0, 256, 128))
+            image.save(source)
+            before = source.read_bytes()
+            module.compress_avif(source, output, max_size=64)
+            with Image.open(output) as result:
+                self.assertEqual(result.size, (64, 32))
+                self.assertEqual(result.getchannel('A').getextrema(), (0, 255))
+            module.compress_avif(source, output, max_size=512)
+            with Image.open(output) as result:
+                self.assertEqual(result.size, (256, 128))
+            self.assertEqual(before, source.read_bytes())
+            with self.assertRaisesRegex(ValueError, 'positive integer'):
+                module.compress_avif(source, output, max_size=0)
 
 
 if __name__ == "__main__":

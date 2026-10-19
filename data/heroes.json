@@ -12,10 +12,10 @@
         "path": "images/game/1e2d185816e03572a7beefcd.avif",
         "sourcePath": "private/game-data/planner/images\\ea262f9c6ed7ad2a634885c02fef865e2ee8a6d89acece095aa1207efb4b7564.png",
         "sourceSha256": "1e2d185816e03572a7beefcd8d361fb1fa79ab9f682a253806826d1a26dc99f2",
-        "width": 1024,
-        "height": 1024,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Bowguy_01",
-        "sha256": "4ebb3894bc02b39a596482370d95f73d559d58cd24063a1f4fbc56c483608616"
+        "sha256": "3a0cd28ec283c5cd32b7aa57bf35d83633ea96e759537178e28a3b9f25b024be"
       }
     ]
   },
@@ -32,10 +32,10 @@
         "path": "images/game/4f195577ba3f83573a3eb8cb.avif",
         "sourcePath": "private/game-data/planner/images\\bf35cf4a6529a600c30e83528548b8a3628ea8e36d69e073ba2f7f96a86fcc89.png",
         "sourceSha256": "4f195577ba3f83573a3eb8cbcd72a5c0bce2ce30fe477f15f00c0804bb59c0e2",
-        "width": 1024,
-        "height": 1024,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Firemage_default",
-        "sha256": "0b4cd30ffb57ca0a085e1fd3fbb420af0f8d8bf1c9f1b8b0dedc3838f9387625"
+        "sha256": "f638a58bdf638c0578ad11f3cdf6abdeec913d8a473188bd4e9427ed94e87f94"
       }
     ]
   },
@@ -52,10 +52,10 @@
         "path": "images/game/30b2171294f67d6d2858a865.avif",
         "sourcePath": "private/game-data/planner/images\\be0efa12351f8ec3c3d1b86ba4f2609c2e463a30044108cdea72e4dc5c6a5d92.png",
         "sourceSha256": "30b2171294f67d6d2858a865efd4f20dcd6351042c8f37c90cd72e9240a8e21b",
-        "width": 1024,
-        "height": 1024,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Ink_01",
-        "sha256": "f8c72f473f32b5a7cfdd639a49d9ac6e0fd89e58722e6a23fa04bae3446eb406"
+        "sha256": "bcac17fe0396694391fca4e7be73987ecbf77e1b13426b665d72120a41596dd3"
       }
     ]
   },
@@ -72,10 +72,10 @@
         "path": "images/game/1de4103e4bb5d25a8a160a3a.avif",
         "sourcePath": "private/game-data/planner/images\\157d2255cfe6b0faa0dc3fcfc154740174f0541ba0854979f6a90ba8dddfeb15.png",
         "sourceSha256": "1de4103e4bb5d25a8a160a3ace1eac95668b8d34ccff7944d04fd875058b970e",
-        "width": 2048,
-        "height": 2048,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Lisa_default",
-        "sha256": "25375c627654f77f3e01a38c4ef9b52bcd9600560b372d7fc15262d8b81a0a3c"
+        "sha256": "78a6a5f340dccd68868386748421dbc2011a6026125e32ca6b4843da56651e81"
       }
     ]
   },
@@ -92,10 +92,10 @@
         "path": "images/game/a3fc0285169b891bc2214580.avif",
         "sourcePath": "private/game-data/planner/images\\78a59d19727e07c3a656470a03834c8a9b6636bba53248b8af90fb74be0d1bb0.png",
         "sourceSha256": "a3fc0285169b891bc2214580fdefc92768dbcb8dbf829a12ff56dc4ab2a362c9",
-        "width": 1903,
-        "height": 1903,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Mara_01",
-        "sha256": "4058b294db316510eb2d65b908b4bd8573f961b6ca0c4365dfba6a50ea246218"
+        "sha256": "42ad313dfc67c279e834aba5b458b510e6984293b829a18e838fd230cada8fa7"
       }
     ]
   },
@@ -112,10 +112,10 @@
         "path": "images/game/4b0100ab126650fbf41fb863.avif",
         "sourcePath": "private/game-data/planner/images\\abd0f4e51172bdc9a99491216cc1745b3f2c24fcade3b6f53389d98f9fded68e.png",
         "sourceSha256": "4b0100ab126650fbf41fb863d702762a7673e1aca3a8dbb14ef6a218518a2fdc",
-        "width": 1024,
-        "height": 1024,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_meiko_default",
-        "sha256": "bea090cbd3da9110f8b2d06e46016ee20eab34eaf60416c67f6cebcc598edaec"
+        "sha256": "19298a05f31bb74191fb91a6fb1166f21289b2a1096326ce0b39cbdd09c8d5f2"
       }
     ]
   },
@@ -132,10 +132,10 @@
         "path": "images/game/b6d367c751b473c837616630.avif",
         "sourcePath": "private/game-data/planner/images\\a96e9b5c4615e94903ffc8afb27bd31e3b26f3bfa9a44e63f52e4317c83f2e95.png",
         "sourceSha256": "b6d367c751b473c837616630d16318a3303fc9934fc81ce13dbab0713c3e17ef",
-        "width": 1024,
-        "height": 1024,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Mosse_01_default",
-        "sha256": "7ea01b8728e0bdade4b7db3960a69fb5fdfe1920bbc6df83ea94d885481965aa"
+        "sha256": "807ad02113183808c4d2a35206fb5fa0e6709ccee6340d4fa0aff40a50c50ce9"
       }
     ]
   },
@@ -152,10 +152,10 @@
         "path": "images/game/105c81fa196ce71a8b99f90f.avif",
         "sourcePath": "private/game-data/planner/images\\912d2c20ea3db709cd748764919e80807f6385be1b0f6d2384e85f4119560c2e.png",
         "sourceSha256": "105c81fa196ce71a8b99f90f20a5b8511c1d76315b807a383e2fb784c6ccc9f2",
-        "width": 1024,
-        "height": 1024,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_rime_default",
-        "sha256": "2813be1bba05446e42d2208f017a3175e68fdff836cc71cee65954a0606535f8"
+        "sha256": "2b32a6dfd6d1d89e1dc06cd277ce093e323d7682d936073d926410ac0afec3f1"
       }
     ]
   },
@@ -172,10 +172,10 @@
         "path": "images/game/e0cdeed8e71860bc08957539.avif",
         "sourcePath": "private/game-data/planner/images\\24651b3cb129f4e84ad06a2505e209e3d44499f55a5a849789676677245b1913.png",
         "sourceSha256": "e0cdeed8e71860bc08957539ceb36db017687ee0746598cb811e12699a6e0ea5",
-        "width": 2048,
-        "height": 2048,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/T_HeroPortrait_Sune",
-        "sha256": "55215a4dc6e28ce47a4a1d3914cf77c8565af6e039ebe21adcdd3646167882a8"
+        "sha256": "1a53d191b62f361760643a349878edeadc64356b4ac3782ec7b477623ce779f1"
       }
     ]
   },
@@ -192,10 +192,10 @@
         "path": "images/game/0182dce81ab694530b55b3aa.avif",
         "sourcePath": "private/game-data/planner/images\\1d709caaff33b17711f959ab762cc5176b27c6af8afb88cc78cdc4598d31e8ad.png",
         "sourceSha256": "0182dce81ab694530b55b3aab96df379d12533e74c0b5dd9d4566d5cf773ac6c",
-        "width": 1024,
-        "height": 1024,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_vigor_default",
-        "sha256": "79d64713eedb3f2203777c13c7f8d77f91591aa1c87ea798fc623260664bed12"
+        "sha256": "016d10fcc820d3a75b0949d90d1094b71fc5f80ac1db93c3a462a7720fd38f44"
       }
     ]
   },
@@ -212,10 +212,10 @@
         "path": "images/game/a598c57c116b6f6d3c8f9a7a.avif",
         "sourcePath": "private/game-data/planner/images\\4d75e5eed71aa76bad8108e4c35031a8096c10cc569867e4b28f6c98c7a5f09f.png",
         "sourceSha256": "a598c57c116b6f6d3c8f9a7a4bfd0ddef5936c803bbb10d8e2d50c2916781d14",
-        "width": 1024,
-        "height": 1024,
+        "width": 128,
+        "height": 128,
         "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_warmaster_01",
-        "sha256": "6b55eca90cfba88883b6ae8a4dc072a7748e63eb3ba4c7126ef64a7d35850d50"
+        "sha256": "40025a6d951e17d0244a5031a7b70b0aa6c42044fc6b0e5c4b3350d10221920d"
       }
     ]
   }

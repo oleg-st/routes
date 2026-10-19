@@ -4,9 +4,31 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {usedImages} from '../scripts/image-assets.mjs';
-import {combinedRasterSize,originalFor} from '../scripts/avif-assets.mjs';
+import {combinedRasterSize,originalFor,compressionProfile,imageSizeLimits,resizeImageMetadata} from '../scripts/avif-assets.mjs';
 import {combinedLayouts} from '../data/combined-layouts.js';
 import {fullMaps} from '../data/full-maps.js';
+
+test('Portrait limits follow catalog roles while map profiles never resize', () => {
+  const limits = imageSizeLimits();
+  for (const enemy of JSON.parse(fs.readFileSync('data/enemies.json'))) for (const image of enemy.images || []) {
+    assert.ok(compressionProfile(image.path, limits).maxSize >= (enemy.isBoss ? 256 : 128));
+  }
+  for (const hero of JSON.parse(fs.readFileSync('data/heroes.json'))) for (const image of hero.images || []) {
+    assert.equal(compressionProfile(image.path, limits).maxSize, 128);
+  }
+  assert.equal(compressionProfile('images/modifiers/winter-giant.avif', limits).maxSize, 64);
+  for (const file of ['images/dungeons/combined/a.avif', 'images/dungeons/maps/a.avif', 'private/images/dungeons/maps/a.avif']) {
+    const profile = compressionProfile(file, new Map([[file, 128]]));
+    assert.equal(profile.maxSize, undefined);
+    assert.equal(profile.quality, 85);
+    assert.equal(profile.subsampling, '4:4:4');
+  }
+  const image = {width: 512, height: 256};
+  resizeImageMetadata(image, 128);
+  assert.deepEqual(image, {width: 128, height: 64});
+  resizeImageMetadata(image, 256);
+  assert.deepEqual(image, {width: 128, height: 64});
+});
 
 test('Active image originals come from game exports or our combined maps',()=>{
   for(const file of usedImages({includeLayers:true}))

@@ -11,12 +11,31 @@ export const avifPath = file => file.replace(/\.[^.\/]+$/, '.avif');
 
 // Maps contain small serif labels and fine contours. Preserve those details
 // with a higher-quality, full-chroma profile; portraits/icons stay compact.
-export function compressionProfile(destination) {
+export function imageSizeLimits() {
+  const limits = new Map();
+  for (const [name, sizeFor] of [['enemies', enemy => enemy.isBoss ? 256 : 128], ['heroes', () => 128]]) {
+    const entries = JSON.parse(fs.readFileSync(`data/${name}.json`, 'utf8'));
+    for (const entry of entries) for (const image of entry.images || []) {
+      // A shared texture must satisfy the largest of its consumers.
+      limits.set(image.path, Math.max(limits.get(image.path) || 0, sizeFor(entry)));
+    }
+  }
+  return limits;
+}
+
+export function resizeImageMetadata(image, maxSize) {
+  if (!maxSize || !(image.width > 0) || !(image.height > 0)) return;
+  const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+  image.width = Math.max(1, Math.floor(image.width * scale));
+  image.height = Math.max(1, Math.floor(image.height * scale));
+}
+
+export function compressionProfile(destination, sizeLimits = imageSizeLimits()) {
   const normalized = destination.replaceAll('\\', '/');
   if (normalized.startsWith('images/dungeons/combined/')) return {quality: 85, subsampling: '4:4:4', sharpen: true};
-  return /^(?:private\/)?images\/dungeons\/(maps|overview|full)\//.test(normalized)
-    ? {quality: 85, subsampling: '4:4:4'}
-    : {quality: 50, subsampling: '4:2:0'};
+  if (/^(?:private\/)?images\/dungeons\/(maps|overview|full)\//.test(normalized)) return {quality: 85, subsampling: '4:4:4'};
+  const maxSize = /^images\/(hero-items|modifiers|pois|relics)\//.test(normalized) ? 64 : sizeLimits.get(normalized);
+  return {quality: 50, subsampling: '4:2:0', ...(maxSize ? {maxSize} : {})};
 }
 
 export function originalFor(image) {
@@ -102,12 +121,14 @@ export async function rasterizeSvg(source, size) {
 }
 
 export async function compressImages(jobs) {
+  const sizeLimits = imageSizeLimits();
+  for (const job of jobs) Object.assign(job, {...compressionProfile(job.destination, sizeLimits), ...job});
   // Resolve every source before starting to avoid partial runs on missing inputs.
   for (const job of jobs) if (!fs.existsSync(job.source)) throw new Error(`Missing original: ${job.source}`);
   for (const job of jobs) if (job.source.endsWith('.svg')) job.source = await rasterizeSvg(job.source, job.rasterSize);
   fs.mkdirSync('private', {recursive: true});
   const manifest = `private/compress-jobs-${process.pid}.json`;
-  fs.writeFileSync(manifest, JSON.stringify(jobs.map(job => ({...compressionProfile(job.destination), ...job}))));
+  fs.writeFileSync(manifest, JSON.stringify(jobs));
   try {
     const bundledPython = path.join(os.homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe');
     const virtualPython = process.platform === 'win32' ? '.venv/Scripts/python.exe' : '.venv/bin/python';

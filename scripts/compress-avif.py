@@ -1,4 +1,4 @@
-"""Encode static originals without resizing; batch mode caches verified outputs."""
+"""Encode static originals with optional size limits; cache verified outputs."""
 import argparse
 import hashlib
 import json
@@ -10,7 +10,7 @@ import PIL
 from PIL import Image, ImageOps, ImageFilter, features
 
 
-def compress_avif(source: Path, destination: Path, quality: int = 50, subsampling: str = "4:2:0", sharpen: bool = False) -> None:
+def compress_avif(source: Path, destination: Path, quality: int = 50, subsampling: str = "4:2:0", sharpen: bool = False, max_size: int | None = None) -> None:
     if not features.check("avif"):
         raise RuntimeError("This Pillow installation does not support AVIF. Upgrade it: python -m pip install --upgrade Pillow")
     if source.resolve() == destination.resolve():
@@ -19,6 +19,8 @@ def compress_avif(source: Path, destination: Path, quality: int = 50, subsamplin
         raise ValueError("Quality must be between 0 and 100.")
     if subsampling not in ("4:2:0", "4:2:2", "4:4:4"):
         raise ValueError("Unsupported chroma subsampling.")
+    if max_size is not None and (type(max_size) is not int or max_size < 1):
+        raise ValueError("Maximum size must be a positive integer.")
     original_size = source.stat().st_size
     with Image.open(source) as original:
         if getattr(original, "n_frames", 1) > 1:
@@ -26,6 +28,10 @@ def compress_avif(source: Path, destination: Path, quality: int = 50, subsamplin
         image = ImageOps.exif_transpose(original).convert("RGBA")
         if image.getchannel("A").getextrema() == (255, 255):
             image = image.convert("RGB")
+        if max_size is not None and max(image.size) > max_size:
+            scale = max_size / max(image.size)
+            size = tuple(max(1, int(dimension * scale)) for dimension in image.size)
+            image = image.resize(size, Image.Resampling.LANCZOS)
         if sharpen:
             # Restore edge contrast lost while rasterizing transformed artwork.
             # Never sharpen alpha: transparent masks must retain their contours.
@@ -51,7 +57,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def compress_batch(manifest: Path, quality: int, subsampling: str = "4:2:0", sharpen: bool = False):
+def compress_batch(manifest: Path, quality: int, subsampling: str = "4:2:0", sharpen: bool = False, max_size: int | None = None):
     cache_path = Path("private/image-compression-cache.json")
     legacy_cache = json.loads(cache_path.read_text()) if cache_path.exists() else {}
     cache_directory = Path("private/image-compression-cache")
@@ -62,9 +68,12 @@ def compress_batch(manifest: Path, quality: int, subsampling: str = "4:2:0", sha
         job_quality = job.get("quality", quality)
         job_subsampling = job.get("subsampling", subsampling)
         job_sharpen = job.get("sharpen", sharpen)
+        job_max_size = job.get("maxSize", max_size)
         settings = f"Pillow {PIL.__version__};q={job_quality};speed=0;subsampling={job_subsampling};threads=4;exif=transpose"
         if job_sharpen:
             settings += ";sharpen=unsharp:0.7,100,2"
+        if job_max_size is not None:
+            settings += f";max-size={job_max_size};resize=lanczos-v1"
         key = destination.as_posix()
         entry_path = cache_directory / (hashlib.sha256(key.encode()).hexdigest() + ".json")
         source_hash = digest(source)
@@ -73,7 +82,7 @@ def compress_batch(manifest: Path, quality: int, subsampling: str = "4:2:0", sha
                 and destination.exists() and previous.get("sha256") == digest(destination)):
             print(f"Cached: {destination}", flush=True)
             return
-        compress_avif(source, destination, job_quality, job_subsampling, job_sharpen)
+        compress_avif(source, destination, job_quality, job_subsampling, job_sharpen, job_max_size)
         entry = {"sourceSha256": source_hash, "sha256": digest(destination), "settings": settings}
         temporary = entry_path.with_suffix(f".{os.getpid()}.tmp")
         temporary.write_text(json.dumps(entry, indent=2) + "\n")
@@ -85,18 +94,19 @@ def compress_batch(manifest: Path, quality: int, subsampling: str = "4:2:0", sha
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Compress static images to AVIF without resizing.")
+    parser = argparse.ArgumentParser(description="Compress static images to AVIF with optional downscaling.")
     parser.add_argument("source", type=Path, nargs="?")
     parser.add_argument("destination", type=Path, nargs="?")
     parser.add_argument("--batch", type=Path, help="JSON array of source/destination pairs")
     parser.add_argument("-q", "--quality", type=int, default=50, choices=range(101), metavar="0-100")
     parser.add_argument("--subsampling", default="4:2:0", choices=("4:2:0", "4:2:2", "4:4:4"))
     parser.add_argument("--sharpen", action="store_true", help="Restore rasterized artwork edge contrast without resizing")
+    parser.add_argument("--max-size", type=int, help="Limit the longest edge in pixels; never upscale")
     args = parser.parse_args()
     if args.batch:
-        compress_batch(args.batch, args.quality, args.subsampling, args.sharpen)
+        compress_batch(args.batch, args.quality, args.subsampling, args.sharpen, args.max_size)
     elif args.source:
-        compress_avif(args.source, args.destination or args.source.with_suffix(".avif"), args.quality, args.subsampling, args.sharpen)
+        compress_avif(args.source, args.destination or args.source.with_suffix(".avif"), args.quality, args.subsampling, args.sharpen, args.max_size)
     else:
         parser.error("source or --batch is required")
 
