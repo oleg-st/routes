@@ -16,8 +16,15 @@ export async function buildSiteAssets(destination){
     return url;
   };
   fs.mkdirSync(path.join(destination,'assets'),{recursive:true});
+  const dungeonURLs={};
+  const catalogue=JSON.parse(fs.readFileSync(path.join(destination,'data/dungeons.json'),'utf8')).map(dungeon=>{
+    if(!/^Level\.ID\.[A-Za-z0-9]+$/.test(dungeon.id))throw new Error('Invalid dungeon asset ID.');
+    const dataURL=emit(`dungeon-${dungeon.id.slice('Level.ID.'.length)}.json`,JSON.stringify(dungeon)+'\n');
+    dungeonURLs[dungeon.id]=dataURL;
+    return {id:dungeon.id,name:dungeon.name,dataURL};
+  });
   const dataURLs=Object.fromEntries(dataNames.map(name=>[
-    name,emit(`${name}.json`,fs.readFileSync(path.join(destination,`data/${name}.json`))),
+    name,name==='dungeons'?emit('dungeons-index.json',JSON.stringify(catalogue)+'\n'):emit(`${name}.json`,fs.readFileSync(path.join(destination,`data/${name}.json`))),
   ]));
   const options={absWorkingDir:destination,bundle:true,format:'esm',write:false,minify:true,target:['es2022']};
   // Keep the library and its binary independent of application/data changes.
@@ -48,5 +55,5 @@ export async function buildSiteAssets(destination){
   fs.writeFileSync(htmlPath,html.replace('src="app.js"',`src="${appURL}"`).replace('href="styles.css"',`href="${cssURL}"`));
   // Keep the old entry usable for HTML cached before hashed URLs were introduced.
   fs.writeFileSync(path.join(destination,'app.js'),`import ${JSON.stringify('./'+appURL)};\n`);
-  return {appURL,cssURL,workerURL,dataURLs,loroURL,wasmURL};
+  return {appURL,cssURL,workerURL,dataURLs,dungeonURLs,loroURL,wasmURL};
 }

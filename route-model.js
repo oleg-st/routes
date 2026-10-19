@@ -432,7 +432,7 @@ async function expandRoute(payload,dungeons,extended=false,mapped=false){
   };
 }
 
-export async function decodeRoute(text,dungeons,enemies){
+export async function decodeRoute(text,dungeons,enemies,loadDungeon){
   text=text.trim();
   if(!text)throw new Error('Paste a route string first.');
   if(text.length>27_000_000)throw tooLarge();
@@ -452,6 +452,7 @@ export async function decodeRoute(text,dungeons,enemies){
   const decoded=await transform(bytes,DecompressionStream);
   const payload=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(decoded));
   if(!Array.isArray(payload))throw invalid();
+  if(loadDungeon)await loadDungeon(`Level.ID.${payload[0]}`);
   const mapped=text.startsWith('R3.');
   const value=await expandRoute(payload,dungeons,text.startsWith('R2.')||mapped&&payload.length>9,mapped);
   return validateRoute(value,dungeons,enemies);

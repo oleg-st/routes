@@ -20,7 +20,7 @@ const files = ['index.html', 'app.js', 'route-model.js', 'game-scoring.js', 'dif
   ...['full-maps','map-starts','map-campfires','combined-layouts','combined-legacy-layouts','combined-maps',
     'boss-encounters','placement-corrections','route-mapping','route-dictionary','game-modifier-stats',
     'game-modifier-positions','game-service-rules','game-difficulty','game-summon-rules','ability-corrections','enemy-marker-sizes','marker-anchors',
-    'compact-data','runtime-loader'].map(name=>`data/${name}.js`),
+    'compact-data','runtime-loader','dungeon-loader'].map(name=>`data/${name}.js`),
   'data/LICENSE-fellowship-data.txt',
   ...usedImages()];
 if (files.some(file => file.startsWith('private/') || file.includes('..'))) throw new Error('Private path in publication allowlist.');

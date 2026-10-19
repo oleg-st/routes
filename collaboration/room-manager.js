@@ -8,7 +8,7 @@ import {createTrysteroTransport} from './trystero-transport.js';
 
 // Each session owns its document/binding. The editor only borrows them while joined.
 export async function createRoomSession({code,role='player',name='Player',classId='',classes=[],initialPacket,storage,resolveOptions,
-  transportFactory=createTrysteroTransport,connectionConfig={},onDocument=()=>{},onArchive=async()=>{},onState=()=>{},onStorage=()=>{},onPresence=()=>{},onKicked=async()=>{},cursorIntervalMs=50,intervalMs=5000,now=()=>Date.now()}) {
+  prepareOptions=async()=>{},transportFactory=createTrysteroTransport,connectionConfig={},onDocument=()=>{},onArchive=async()=>{},onState=()=>{},onStorage=()=>{},onPresence=()=>{},onKicked=async()=>{},cursorIntervalMs=50,intervalMs=5000,now=()=>Date.now()}) {
   const roomId=roomCode(code),sessionId=uuid();checkRole(role);name=name.trim().slice(0,40)||'Player';
   const cached=await storage.loadRoom(roomId),participantId=cached?.participantId||uuid();
   let roomEpoch=initialPacket?1:cached?.roomEpoch||1,target=null,switching=false;
@@ -58,6 +58,8 @@ export async function createRoomSession({code,role='player',name='Player',classI
   function queue(fn){if(closed||queued>=128)return;queued++;const operation=tail.then(()=>{if(!closed)return fn();});tail=operation.catch(report).finally(()=>queued--);return operation;}
   async function attach(packet,{replace=false,epoch=roomEpoch}={}){
     invariant(replace||!identity||identityKey(identity)===identityKey(packet.identity),'Conflicting route identities in this room.');
+    resolveOptions(checkIdentity(packet.identity));
+    await prepareOptions(packet.identity);if(closed)return;
     const options=resolveOptions(checkIdentity(packet.identity)),next=restoreRouteDocument(packet,{...options,role});
     const previous=document,previousBinding=binding,nextBinding=storage.bind(next,onStorage);let installed=false;
     try{
@@ -114,6 +116,7 @@ export async function createRoomSession({code,role='player',name='Player',classI
     if(!knownRoute(selected))return;
     const packet=await storage.load(selected.routeId);if(!packet)return;
     invariant(identityKey(packet.identity)===identityKey(selected),'Saved room route identity changed.');
+    resolveOptions(selected);await prepareOptions(selected);if(closed)return;
     const archived=restoreRouteDocument(packet,{...resolveOptions(selected),role});
     try{return await fn(archived,true);}finally{archived.dispose();}
   }

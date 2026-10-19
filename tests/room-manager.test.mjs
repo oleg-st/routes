@@ -25,6 +25,29 @@ function network(){const endpoints=new Map();let serial=0,drop=()=>false;const s
 async function until(fn){for(let i=0;i<200;i++){if(fn())return;await new Promise(r=>setTimeout(r,5));}assert.ok(fn(),'Timed out waiting for room state');}
 async function member(t,net,config={}){const session=await createRoomSession({code:'ABCDEFGH2345',storage:storage(),resolveOptions,transportFactory:net.factory,intervalMs:0,cursorIntervalMs:0,...config});t.after(()=>session.leave());await session.start();return session;}
 
+test('Joining and switching rooms wait for the selected dungeon geometry',async t=>{
+  const net=network(),loaded=new Set(),waiting=new Map();
+  const resolve=i=>({dungeon:dungeons.find(d=>d.id===i.dungeonId),enemies,role:'player'});
+  const host=await member(t,net,{initialPacket:seed(),resolveOptions:resolve});
+  const guest=await member(t,net,{
+    resolveOptions:i=>loaded.has(i.dungeonId)?resolve(i):{dungeon:{id:i.dungeonId},enemies},
+    prepareOptions:async i=>{
+      if(loaded.has(i.dungeonId))return;
+      await new Promise(done=>waiting.set(i.dungeonId,()=>{loaded.add(i.dungeonId);done();}));
+    },
+  });
+  await until(()=>waiting.has(dungeon.id));assert.equal(guest.document,undefined);
+  waiting.get(dungeon.id)();await until(()=>guest.document);
+  assert.equal(guest.document.canonical(),host.document.canonical());
+  const other=dungeons.find(d=>d.id!==dungeon.id);
+  const next=createRouteDocument({name:'Other dungeon',buildId:'test',dungeonId:other.id},{dungeon:other,enemies,role:'player'});
+  const packet=next.exportSnapshot();next.dispose();
+  await host.switchDocument(packet);
+  await until(()=>waiting.has(other.id));assert.equal(guest.document.identity.dungeonId,dungeon.id);
+  waiting.get(other.id)();await until(()=>guest.document.identity.dungeonId===other.id);
+  assert.equal(guest.document.canonical(),host.document.canonical());
+});
+
 test('Peer ping refreshes at most every five seconds and unavailable or stale peers have no ping',async t=>{
   let clock=0,pingMs=42,calls=0;const net=network(),factory=net.factory;
   net.factory=async callbacks=>({...await factory(callbacks),async connectionStats(){calls++;return {connection:'direct',pingMs};}});

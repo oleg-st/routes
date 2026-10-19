@@ -96,8 +96,10 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
         const log=await loadLog(url,{...options,token,validateFight(fight){
           const raw=data.dungeons.find(d=>d.name===fight.name);
           if(!raw)throw new Error('This dungeon is not available in the selected game data.');
-          dungeon=correctDungeon(raw,mode);
+          dungeon=raw;
         }});
+        dungeon=correctDungeon(data.loadDungeon?await data.loadDungeon(dungeon.id):dungeon,mode);
+        options?.signal?.throwIfAborted();
         loadedLog=log;
         matchingOptions={dungeon,dungeonData:mode,catalog:data.enemies,presets:data['modifier-placements'].dungeons[dungeon.id]};
         const result=await runLogMatching(log,{...options,...matchingOptions,catalog:new Map(data.enemies.map(e=>[e.id,e]))});

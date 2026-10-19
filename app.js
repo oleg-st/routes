@@ -17,6 +17,7 @@ import {markerAnchor} from './data/marker-anchors.js';
 import {fullMapBuildId} from './data/full-maps.js';
 import {combinedBuildId} from './data/combined-layouts.js';
 import {loadData} from './data/runtime-loader.js';
+import {createDungeonLoader} from './data/dungeon-loader.js';
 import {createCursorOverlay} from './collaboration/cursor-overlay.js';
 import {createRoomSession} from './collaboration/room-manager.js';
 import {createRoomUI} from './collaboration/room-ui.js';
@@ -98,7 +99,8 @@ async function loadDungeon(id,imported){
   routeBusy=true;drag=null;draft=[];
   try{
     await persist();
-    const target=data.dungeons.find(d=>d.id===id)||data.dungeons[0];
+    const selected=data.dungeons.find(d=>d.id===id)||data.dungeons[0];
+    const target=await data.loadDungeon(selected.id);
     const options={dungeon:target,enemies,role:'player'};
     const packet=typeof imported==='string'?await routeStorage.load(imported):!imported&&store.drafts[target.id]?await routeStorage.load(store.drafts[target.id]):null;
     if(typeof imported==='string'&&!packet)throw new Error('Saved route data is missing.');
@@ -107,7 +109,7 @@ async function loadDungeon(id,imported){
     try{await binding.flush();await routeStorage.setDraft(target.id,next.identity.routeId);}catch(error){await binding.dispose().catch(()=>{});next.dispose();throw error;}
     await routeBinding?.dispose();stopRoute?.();routeDocument?.dispose();
     displayRouteDocument(next,binding);
-  }finally{routeBusy=false;}
+  }finally{routeBusy=false;if(dungeon)$('#dungeon').value=dungeon.id;}
 }
 function displayRouteDocument(next,binding,{preserveMap=false}={}){
     const camera=preserveMap&&dungeon?.id===next.identity.dungeonId&&mapLayer?{id:mapLayer.id,path:mapLayer.path,view:{...view}}:null;
@@ -138,6 +140,7 @@ async function startRoom({code,name,classId='',role='player',config={},create=fa
     let session;
     session=await createRoomSession({code,role,name,classId,classes:data.heroes,initialPacket:packet,storage:routeStorage,connectionConfig:config,
       resolveOptions:identity=>{const target=data.dungeons.find(d=>d.id===identity.dungeonId);if(!target||identity.buildId!==data.manifest.buildId)throw new Error('This room uses an incompatible dungeon or game data build.');return {dungeon:target,enemies};},
+      prepareOptions:identity=>data.loadDungeon(identity.dungeonId),
       onArchive:async saved=>{await routeStorage.saveBookmark(saved);const i=store.saved.findIndex(r=>r.id===saved.id);if(i>=0)store.saved[i]=saved;else store.saved.push(saved);},
       onKicked:async()=>{if(roomSession===session){$('#dialog').close();await leaveRoom();toast('You were disconnected by the room creator.');}},
       onStorage:storageStatus,onPresence:cursors=>cursorUI?.setRemote(cursors),
@@ -155,10 +158,11 @@ async function startRoom({code,name,classId='',role='player',config={},create=fa
 async function changeDungeon(id){
   if(!roomSession)return selectDungeon(id);
   if(id===dungeon.id)return;
-  const target=data.dungeons.find(d=>d.id===id);if(!target)throw new Error('Unknown dungeon.');
+  if(!data.dungeons.some(d=>d.id===id))throw new Error('Unknown dungeon.');
   if(!roomSession.state().canChangeDungeon){$('#dungeon').value=dungeon.id;throw new Error('Only the room creator can change the dungeon.');}
   roomTransition=true;updateRoomControls();
   try{
+    const target=await data.loadDungeon(id);
     let packet=await roomSession.savedRoute(id);
     if(!packet){const next=createRouteDocument(await createRoute(target),{dungeon:target,enemies,role:'player'});try{packet=next.exportSnapshot();}finally{next.dispose();}}
     await roomSession.switchDocument(packet);toast('Dungeon changed for everyone. The previous route was saved locally.');
@@ -770,7 +774,7 @@ async function shareRoute(){
 }
 async function importRouteText(text){
   if(roomSession||roomTransition)throw new Error('Leave the room before importing a route.');
-  const incoming=await decodeRoute(text,data.dungeons,enemies);incoming.id=uid();
+  const incoming=await decodeRoute(text,data.dungeons,enemies,data.loadDungeon);incoming.id=uid();
   if(!canEdit())throw new Error('Only players can import routes.');
   await selectDungeon(incoming.dungeonId,incoming);
   toast(incoming.buildId!==data.manifest.buildId?'Imported a route from another build. Check scores and pull contents.':'Route imported.');
@@ -800,6 +804,7 @@ function logPreviewRoute(fixture,state,id){
 async function previewLogRoute(fixture,state){
   if(!logPreview&&!canEdit())throw new Error('Leave the room before importing a log.');
   if(roomSession||roomTransition)throw new Error('Leave the room before importing a log.');
+  await data.loadDungeon(fixture.dungeonID);
   const id=logPreview?.id??uid(),{next,target}=logPreviewRoute(fixture,state,id);
   const document=createRouteDocument(next,{dungeon:target,enemies,role:'player'});
   if(!logPreview){
@@ -1092,7 +1097,7 @@ async function init(){
   if(data['modifier-placements'].buildId!==data.manifest.buildId)throw new Error('Modifier placements need updating for this game data build. Run node scripts/prepare-modifiers.mjs.');
   if(fullMapBuildId!==data.manifest.buildId)throw new Error('Full map coordinates need updating for this game data build. Run node scripts/prepare-full-maps.mjs.');
   if(combinedBuildId!==data.manifest.buildId)throw new Error('Combined maps need updating for this game data build. Run npm run maps.');
-  data.dungeons=data.dungeons.map(d=>correctDungeon(d,dungeonDataMode));
+  data.loadDungeon=createDungeonLoader(data.dungeons,d=>correctDungeon(d,dungeonDataMode));
   try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved&&saved.drafts&&Array.isArray(saved.saved))store=saved;}catch{toast('Browser storage is corrupted. You can import a route string backup.');}
   for(const saved of [...Object.values(store.drafts),...store.saved]){
     if(!saved||typeof saved!=='object')continue;
@@ -1101,12 +1106,23 @@ async function init(){
   }
   $('#dungeon').innerHTML=[...data.dungeons].sort((a,b)=>a.name.localeCompare(b.name)).map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
   routeStorage=await openRouteStorage();
+  if(!await routeStorage.isMigrated()){
+    const ids=new Set([...Object.values(store.drafts),...store.saved].map(value=>value?.dungeonId));
+    // Resolve only referenced legacy routes before migrating. A network failure
+    // must not mark the library migrated and strand otherwise valid backups.
+    await Promise.all([...ids].filter(id=>data.dungeons.some(d=>d.id===id)).map(id=>data.loadDungeon(id)));
+  }
   const errors=await migrateLegacyLibrary(routeStorage,store,{dungeons:data.dungeons,enemies,presets:data['modifier-placements']});
   store=await routeStorage.library();
-  bind();setupRooms();setupLogImport();await selectDungeon(store.lastDungeon||'Level.ID.FrozenKingdom');
+  let incoming;
+  if(location.hash.startsWith('#route=')){
+    try{incoming=await decodeRoute(location.hash,data.dungeons,enemies,data.loadDungeon);incoming.id=uid();}
+    catch(error){toast('Import: '+error.message);}
+  }
+  bind();setupRooms();setupLogImport();await selectDungeon(incoming?.dungeonId||store.lastDungeon||'Level.ID.FrozenKingdom',incoming);
   let resume;try{resume=JSON.parse(sessionStorage.getItem('rt-room'));}catch{}
   if(location.hash.startsWith('#room=')){const code=roomCode(location.hash);if(resume?.code===code)await startRoom({...resume,code});else openRoomHash();}
-  else await importRouteHash();setTool('select');
+  setTool('select');
   if(errors.length)toast('Some older routes could not be migrated. Their original browser backup is preserved.');
   await logImportUI.resume();
 }
