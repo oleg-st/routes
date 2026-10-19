@@ -567,7 +567,7 @@ function renderMap(){
       // Keep room for status badges without moving the label when a status changes.
       const points=ps.map(markerCoordinates),x=points.reduce((s,p)=>s+p[0],0)/ps.length,y=Math.min(...points.map((p,i)=>p[1]-radius*enemyMarkerScale(enemies.get(ps[i].id))))-30*unit;
       const score=ps.reduce((s,p)=>s+(pointScore(p)||0),0);
-      const label=`${ps[0].modifier?enemies.get(ps[0].id).name:'G'+packNumbers.get(id)} · ${pct(score/dungeon.requiredScore*100)}`;
+      const label=pct(score/dungeon.requiredScore*100);
       const width=label.length*5.7*unit,box={x:x-width/2,y:y-11*unit,w:width,h:15*unit};
       if(placedLabels.some(r=>box.x<r.x+r.w&&box.x+box.w>r.x&&box.y<r.y+r.h&&box.y+box.h>r.y))continue;
       placedLabels.push(box);
