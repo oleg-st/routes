@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {buildMovementTrail,movementTrailLines,movementPlayerColor} from '../log-import/movement-trail.js';
+import {mapViews,worldMapCoordinates,worldMapImage} from '../map-views.js';
 
 const view={id:'start',name:'Start',path:'map.avif',width:1000,height:1000};
 const dungeon={id:'test-trail',mapImages:[view],enemies:[
@@ -9,6 +11,27 @@ const dungeon={id:'test-trail',mapImages:[view],enemies:[
 ]};
 const log={fight:{startTime:1000,friendlyPlayers:[1]},actors:[{id:1,name:'Tank'}],events:[]};
 const row=positions=>({type:'Player',actorID:1,key:'1:1',positions:positions.map(([t,x,y,hp=100])=>({t:t+1000,x,y,hp}))});
+
+test('Xul movement uses Exterior world coordinates even though Sanctum is the first map',()=>{
+  const dungeon=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.SandTomb');
+  assert.equal(dungeon.mapImages[0].name,'Sanctum');
+  const view=mapViews(dungeon)[0],exterior=dungeon.mapImages.find(m=>m.name==='Exterior');
+  // First recorded player position in KDvzJny1w6YW8BaH/1.
+  const positions=[[0,-19863,-8512],[1000,-19814,-8540],[2000,-19700,-8500],[3000,-19600,-8500]];
+  const trail=buildMovementTrail({...log,events:[{type:'mapchange',timestamp:2500,mapName:''}]},[row(positions)],dungeon);
+  assert.equal(trail.players[0].segments.length,2);
+  assert.deepEqual(trail.players[0].segments[0][0].slice(1),worldMapCoordinates({x:-8512,y:-19863},exterior.id,view,dungeon));
+  assert.equal(worldMapImage({x:25000,y:0},dungeon,'').name,'Interior');
+  assert.equal(worldMapImage({x:90000,y:0},dungeon,'').name,'Sanctum');
+  assert.equal(worldMapImage({x:50000,y:0},dungeon,''),null,'overlapping floors need additional evidence');
+  assert.equal(worldMapImage({x:50000,y:0},dungeon,'Interior').name,'Interior');
+});
+
+test('An inferred floor transition breaks the trail even without a named map-change event',()=>{
+  const dungeon=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.SandTomb');
+  const trail=buildMovementTrail(log,[row([[0,0,18800],[1000,0,18900],[2000,0,19100],[3000,0,19200]])],dungeon);
+  assert.deepEqual(trail.players[0].segments.map(s=>s.map(p=>p[0])),[[0,1],[2,3]]);
+});
 test('Movement preserves world axis conversion, players and time, excluding unrelated actors',()=>{
   const trail=buildMovementTrail(log,[row([[0,10,20],[1000,30,40]]),{...row([[0,0,0],[1000,10,10]]),actorID:2}],dungeon);
   assert.equal(trail.players.length,1);

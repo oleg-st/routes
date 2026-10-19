@@ -69,6 +69,26 @@ export function mapCoordinates(position,view){
   // Leaflet reference coordinates increase upwards; SVG increases downwards.
   return [(w.y-t.left)*t.factor+t.x,view.height-((w.x-t.bottom)*t.factor+t.y)];
 }
+// Log map changes may have an empty name, and mapImages is not entrance-first.
+// Resolve a layer from its world bounds instead of projecting through an
+// arbitrary first layer. Overlapping floors without a name/height stay unknown.
+export function worldMapImage(worldPosition,dungeon,mapName){
+  if(dungeon.mapImages.length===1)return dungeon.mapImages[0];
+  const sources=fullMaps[dungeon.id]?.sources;
+  const contains=map=>{
+    const bounds=sources?.[map.id]?.bounds;
+    return bounds&&['x','y','z'].every(k=>!Number.isFinite(worldPosition[k])||worldPosition[k]>=bounds[0][k]&&worldPosition[k]<=bounds[1][k]);
+  };
+  const named=dungeon.mapImages.find(m=>mapName&&m.name===mapName);
+  if(named&&(!sources?.[named.id]?.bounds||contains(named)))return named;
+  const matches=dungeon.mapImages.filter(contains);
+  if(matches.length===1)return matches[0];
+  if(mapName==='Start'){
+    const entrance=dungeon.mapImages.find(m=>m.id===mapStarts[dungeon.id]?.mapImageId);
+    if(entrance&&(!sources?.[entrance.id]?.bounds||contains(entrance)))return entrance;
+  }
+  return null;
+}
 // Log events have world coordinates but no normalized map position. Overviews
 // already contain world transforms; original layers need their own calibration.
 export function worldMapCoordinates(worldPosition,mapImageId,view,dungeon){

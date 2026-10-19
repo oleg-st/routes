@@ -205,7 +205,7 @@ test('The first respawn can be delayed; explicit checkpoint events only need coo
   assert.equal(detect(input).length,1);
 });
 
-test('A partially killed pack retains its killed and later repulled members without restoring skipped siblings',async()=>{
+test('A retained pack includes its surviving siblings; only diversion-only packs are omitted',async()=>{
   for(const later of [false,true]){
     const input=example(),{log,dungeon,catalog}=input;
     log.actors.push({id:5,type:'NPC',gameID:900});
@@ -215,7 +215,7 @@ test('A partially killed pack retains its killed and later repulled members with
     log.events.push({fight:5,type:'death',timestamp:later?15000:4000,targetID:5});
     assert.deepEqual(detect(input).map(r=>r.key),['3:1']);
     const result=await matchLiveLog(log,{dungeon,catalog,presets:{},dungeonData:'custom'});
-    assert.deepEqual(result.variants[0].pulls.flatMap(p=>p.groups.flatMap(id=>result.groups[id].enemies)).sort(),['kill','retained']);
+    assert.deepEqual(result.variants[0].pulls.flatMap(p=>p.groups.flatMap(id=>result.groups[id].enemies)).sort(),['kill','retained','skip']);
     assert.deepEqual(result.inferredPlacements,[]);
     assert.equal(result.drawings.filter(d=>d.kind==='note').length,1);
   }
@@ -231,4 +231,19 @@ test('Every participant must die and respawn at the same checkpoint; passive hea
   assert.equal(detect(input).length,1);
   input.log.events.push({fight:5,type:'heal',timestamp:4000,sourceID:2,targetID:1});
   assert.equal(detect(input).length,1);
+});
+
+test('A later death-skip observation cannot complete an earlier killed pack',async()=>{
+  const {log,dungeon,catalog}=example();
+  log.fight.dungeonPulls.unshift({id:0,startTime:0,endTime:500,encounterID:0});
+  log.actors.push({id:5,type:'NPC',gameID:900});
+  dungeon.enemies.push({...dungeon.enemies[0],placementId:'early-kill',worldPosition:{x:200,y:200}});
+  log.events.push({...log.events[0],timestamp:100,sourceID:5,sourceResources:{x:200,y:200,hitPoints:90,maxHitPoints:100}});
+  log.events.push({fight:5,type:'death',timestamp:400,targetID:5});
+  log.events.sort((a,b)=>a.timestamp-b.timestamp);
+  assert.deepEqual(detect({log,dungeon,catalog}).map(r=>r.key),['3:1']);
+  await assert.rejects(matchLiveLog(log,{dungeon,catalog,presets:{}}),e=>e.diagnostics?.code==='no-compatible-route');
+  const recovery=await matchLiveLog(log,{dungeon,catalog,presets:{},allowPartial:true});
+  assert.ok(recovery.partial);
+  assert.deepEqual(recovery.variants[0].pulls.flatMap(p=>p.groups.flatMap(id=>recovery.groups[id].enemies)).sort(),['early-kill','kill']);
 });

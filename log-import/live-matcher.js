@@ -16,7 +16,7 @@ import {createPathProximity,combineProximity} from './path-proximity.js';
 import {buildMovementTrail} from './movement-trail.js';
 import {createAggroEvidence,combineAggroEvidence} from './aggro-evidence.js';
 import {createGapApproach} from './gap-approach.js';
-import {mapViews,worldMapCoordinates,mapCampfires} from '../map-views.js';
+import {mapViews,worldMapCoordinates,worldMapImage,mapCampfires} from '../map-views.js';
 import {encounterIdentity} from './boss-encounters.js';
 import {createNeighborApproach} from './neighbor-approach.js';
 import {confirmedDeathSkips} from './death-skips.js';
@@ -142,7 +142,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const requiredIDs=[...new Set(retainedRows.filter(anchor).map(r=>packByPlacement.get(anchor(r))?.id).filter(Boolean))];
   const compatibleRows=new Map(allPlacements.map(p=>[p.placementId,(rowsByType.get(catalog.get(p.id).gameId)??[])
     .filter(r=>pair.get(`${r.key}|${p.placementId}`).allowed).map(r=>r.key)]));
-  const assignSkipped=skippedKeys.size?createDeathSkipAssignment({rows,placements:allPlacements,skippedKeys,pair,catalog}):null;
+  const assignSkipped=skippedKeys.size?createDeathSkipAssignment({rows,placements:allPlacements,skippedKeys,pair,catalog,
+    engagementByKey:new Map(rows.map(r=>[r.key,engagementSegmentIndex(pullSegments,r.firstTime)]))}):null;
   const positionsByRow=assignSkipped?rows.map(r=>allPlacements.filter(p=>pair.get(`${r.key}|${p.placementId}`)?.allowed)):null;
   onProgress('Checking complete pack combinations…');await yieldUI();signal?.throwIfAborted();
   const candidates=[],attempts=[];let closestRejected=null;
@@ -252,7 +253,10 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const gapCount=c=>new Set(c.assignments.filter(a=>a.gap||a.neighbor).map(a=>packByPlacement.get(a.placementId).id)).size;
   candidates.sort((a,b)=>gapCount(a)-gapCount(b)||compareReverseRank(a,b));
   for(const c of candidates)c.routeAssignments=[...Map.groupBy(c.assignments,a=>packByPlacement.get(a.placementId).id).values()]
-    .flatMap(as=>as.some(a=>!a.inferred&&!skippedKeys.has(a.key))?as.filter(a=>!skippedKeys.has(a.key)):[]);
+    // Complete candidates have passed the joint engagement checks and retain
+    // whole packs. Explicit partial recovery has no such proof; never turn its
+    // skipped observations back into kills just to fill a pack.
+    .flatMap(as=>as.some(a=>!a.inferred&&!skippedKeys.has(a.key))?(partial?as.filter(a=>!skippedKeys.has(a.key)):as):[]);
   const inferredPlacements=[...new Set(candidates.flatMap(c=>c.routeAssignments.filter(a=>a.inferred).map(a=>a.placementId)))];
   const movementHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.gap).map(a=>[`${a.placementId}|${a.gap.key}|${a.gap.start}`,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,...a.gap}]))).values()];
   const neighborHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.neighbor).map(a=>[a.placementId,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,source:a.neighbor}]))).values()];
@@ -304,8 +308,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const drawings=usages.map((u,i)=>({id:`log-${u.kind}-${i}`,mapId:view.id,kind:u.kind,color:u.kind==='portal'?'#70d9ff':'#bb86fc',
     points:[u.start,u.end].map(b=>{
       const change=events.filter(e=>e.type==='mapchange'&&e.timestamp<=b.time).at(-1);
-      const map=dungeon.mapImages.find(m=>m.name===(change?.mapName??'Start'))??dungeon.mapImages[0];
-      const point=worldMapCoordinates({x:b.position.y,y:b.position.x},map.id,view,dungeon);
+      const world={x:b.position.y,y:b.position.x},map=worldMapImage(world,dungeon,change?.mapName??'Start');
+      const point=map&&worldMapCoordinates(world,map.id,view,dungeon);
       if(!point?.every(Number.isFinite))throw new Error('Could not project a relic position onto this dungeon map. Download import diagnostics to investigate.');
       return point;
     }),afterTime:(u.end.time-fight.startTime)/1000}));

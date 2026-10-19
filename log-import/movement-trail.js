@@ -3,7 +3,7 @@ export const movementPlayerColor=(player,heroes=[])=>{
   return /^#[0-9a-f]{6}$/i.test(color)?color:'#60c7ff';
 };
 
-import {mapViews,worldMapCoordinates,drawingOnMap} from '../map-views.js';
+import {mapViews,worldMapCoordinates,worldMapImage,drawingOnMap} from '../map-views.js';
 
 // Preview evidence only: never treat straight lines between samples as navmesh
 // paths or save them as route annotations.
@@ -14,21 +14,21 @@ export function buildMovementTrail({fight,actors,events},trajectories,dungeon){
   for(const row of trajectories.filter(r=>r.type==='Player'&&(!fight.friendlyPlayers||fight.friendlyPlayers.includes(r.actorID)))){
     const breaks=events.filter(e=>e.targetID===row.actorID&&
       (e.type==='death'&&!e.fake||e.type==='resurrect'||e.type==='respawn'||e.type==='applydebuff'&&e.abilityGameID===1002176)).map(e=>e.timestamp);
-    const segments=[];let segment=null,previous=null,changeIndex=-1,lastKept=-Infinity;
+    const segments=[];let segment=null,previous=null,previousMap=null,changeIndex=-1,lastKept=-Infinity;
     for(const p of row.positions){
       while(changeIndex+1<changes.length&&changes[changeIndex+1].timestamp<=p.t)changeIndex++;
-      const map=dungeon.mapImages.find(m=>m.name===(changes[changeIndex]?.mapName??'Start'))??dungeon.mapImages[0];
-      const point=worldMapCoordinates({x:p.y,y:p.x},map.id,view,dungeon);
+      const world={x:p.y,y:p.x},map=worldMapImage(world,dungeon,changes[changeIndex]?.mapName??'Start');
+      const point=map&&worldMapCoordinates(world,map.id,view,dungeon);
       if(p.hp<=0||!point?.every(Number.isFinite)){segment=null;previous=null;continue;}
       const dt=p.t-(previous?.t??p.t),distance=previous?Math.hypot(p.x-previous.x,p.y-previous.y):0;
-      const interrupted=!previous||dt>15000||distance>Math.max(100,dt*3)||
+      const interrupted=!previous||map.id!==previousMap||dt>15000||distance>Math.max(100,dt*3)||
         changes.some(e=>e.timestamp>previous.t&&e.timestamp<=p.t)||breaks.some(t=>t>=previous.t&&t<=p.t);
       if(interrupted){segment=[];segments.push(segment);lastKept=-Infinity;}
       const sample=[(p.t-fight.startTime)/1000,...point];
       // Retain endpoints while reducing dense combat samples to ~5 per second.
       if(p.t-lastKept>=200||segment.length<2){segment.push(sample);lastKept=p.t;}
       else segment[segment.length-1]=sample;
-      previous=p;
+      previous=p;previousMap=map.id;
     }
     const actor=actors.find(a=>a.id===row.actorID);
     if(segments.some(s=>s.length>1))players.push({id:row.key,className:actor?.subType,name:actor?.name??actor?.subType??`Player ${row.actorID}`,segments:segments.filter(s=>s.length>1)});
