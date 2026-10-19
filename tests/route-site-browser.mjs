@@ -7,6 +7,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {chromium} from 'playwright';
 import {newRoute,encodeRoute} from '../route-model.js';
+import {applyDifficulty,formatHealth} from '../difficulty.js';
+import {routeHealth} from '../route-model.js';
 const root=path.resolve('dist'),prefix='/RoutePlanner/';
 const requests=[];
 const server=http.createServer((req,res)=>{
@@ -55,6 +57,10 @@ try{
   assert.equal(dungeonRequests().length,1,'returning to a loaded dungeon does not fetch it again');
   const raw=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.DesertDunes');
   const sharedRoute=newRoute(raw,'test');sharedRoute.pulls[0].enemies=raw.enemies.slice(0,2).map(p=>p.placementId);
+  sharedRoute.difficulty=difficultyOptions(raw.id).find(c=>c.label==='E55').value;applyDifficulty(sharedRoute);
+  const enemies=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(enemy=>[enemy.id,enemy]));
+  const expectedDPS=routeHealth(sharedRoute,raw,enemies).dps;
+  assert.ok(expectedDPS>0);
   const code=await encodeRoute(sharedRoute,raw);
   const shared=await browser.newPage();shared.on('pageerror',e=>errors.push(e.message));requests.length=0;
   const sharedBase=origin+prefix+'?source=share';
@@ -63,10 +69,12 @@ try{
   assert.equal(await shared.locator('#dungeon').inputValue(),raw.id);
   assert.equal(dungeonRequests().length,1,'a share link loads its dungeon without fetching the default first');
   assert.match(dungeonRequests()[0],/dungeon-DesertDunes\./);
+  assert.equal(await shared.locator('#route-health strong').textContent(),formatHealth(expectedDPS),'published Sands E55 DPS uses the dungeon timer');
   await shared.locator('#add-pull').click();
   await shared.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
   await shared.reload();await shared.locator('#map-loading').waitFor({state:'hidden'});
   assert.equal(await shared.locator('#pull-count').textContent(),'2','reload preserves edits to the imported route');
+  assert.equal(await shared.locator('#route-health strong').textContent(),formatHealth(expectedDPS),'DPS survives reload');
   await shared.locator('#dungeon').selectOption('Level.ID.SandTomb');
   await shared.waitForFunction(()=>document.querySelector('#map-image').getAttribute('href')?.includes('sandtomb'));
   await shared.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
