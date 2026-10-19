@@ -1,5 +1,10 @@
 import {gameServiceRules as rules} from './data/game-service-rules.js';
 import {healthAffixRules} from './data/game-difficulty.js';
+import {enemyMarkerTier} from './data/enemy-marker-sizes.js';
+export function polymorphChicken(enemy){
+ if(enemy?.isBoss||!Number.isFinite(enemy?.baseHealth)||enemy.baseHealth<=0)return null;
+ return rules.polymorphChickens[enemyMarkerTier(enemy)];
+}
 export function modifierAvailable(dungeonId,kind){
  return rules.modifierAvailabilityByDungeon[dungeonId]?.[kind]===true;
 }

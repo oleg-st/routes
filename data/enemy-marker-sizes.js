@@ -1,5 +1,5 @@
 import {gameServiceRules} from './game-service-rules.js';
-// Game Polymorph tiers use default base-health multipliers. Pixel scale and
+// Effective Polymorph tiers use default base-health multipliers. Pixel scale and
 // the separate boss size are our presentation policy, not in-game dimensions.
 const factors={small:1,medium:1.3,large:1.65,boss:3};
 export function enemyMarkerTier(enemy){

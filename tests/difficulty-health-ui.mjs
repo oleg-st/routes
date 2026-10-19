@@ -3,6 +3,8 @@ import {spawn} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
 import {difficultyOptions} from '../difficulty.js';
+import fs from 'node:fs';
+const chickenTarget=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.DesertDunes').enemies.find(p=>p.id==='dd-witheringmagi');
 const server=spawn(process.execPath,['scripts/server.mjs'],{env:{...process.env,PORT:'0'},stdio:['ignore','pipe','pipe']});
 let browser;
 try{
@@ -59,6 +61,18 @@ try{
   const after=await ratings();let compared=0;
   for(const [id,rating] of Object.entries(before))if(after[id]?.label===rating.label){assert.equal(after[id].color,rating.color);compared++;}
   assert.ok(compared>10,'ordinary packs retain their colors between E52 and E62');
+  await page.locator('#difficulty').selectOption({label:'E55'});
+  const chickenMarker=page.locator(`#markers > g[data-placement="${chickenTarget.placementId}"]`);
+  await chickenMarker.dispatchEvent('click');
+  const routeHPBefore=await page.locator('#route-health .health-value').getAttribute('title');
+  await chickenMarker.press('Shift+F10');await page.getByRole('menuitem',{name:'Add Chicken',exact:true}).click();
+  assert.notEqual(await page.locator('#route-health .health-value').getAttribute('title'),routeHPBefore);
+  await chickenMarker.press('Shift+F10');await page.getByRole('menuitem',{name:'Info',exact:true}).click();
+  assert.equal(await page.locator('#inspector .health-value').getAttribute('title'),'1,555,786 HP','Medium Chicken matches report c4nFLaThdAxtVpYv fight 5');
+  await page.locator('.close-inspector').click();
+  await page.locator('.pull-card').first().hover();await page.locator('#pull-tooltip').waitFor({state:'visible'});
+  assert.ok(await page.locator('#pull-tooltip .health-value[title="1,555,786 HP"]').count()>0);
+  await page.mouse.move(0,0);
   await page.locator('#dungeon').selectOption('Level.ID.SandTomb');await page.waitForFunction(()=>document.querySelector('#difficulty option:nth-child(2)')?.textContent==='Normal');
   assert.deepEqual(await page.locator('#difficulty option').allTextContents(),['Not selected','Normal','Hard','Nightmare']);
   await page.locator('#difficulty').selectOption({label:'Nightmare'});

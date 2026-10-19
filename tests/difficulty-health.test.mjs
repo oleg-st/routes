@@ -56,7 +56,7 @@ test('Route HP counts bosses, Chicken and replacements, excludes replaced actors
  const beforeChicken=routeHealth(route,dungeon,enemies);
  route.excluded=[mob.placementId];
  const result=routeHealth(route,dungeon,enemies);
- assert.deepEqual(result,beforeChicken,'Chicken preserves pull HP, route HP and DPS');
+ assert.notEqual(result.total,beforeChicken.total,'Chicken substitutes its own HP in route totals and DPS');
  const expected=enemyHealth(enemies.get(boss.id),{difficulty:route.difficulty})+placementHealth(mob,enemies.get(mob.id),route)+enemyHealth({baseHealth:25102.40974},{difficulty:route.difficulty});
  assert.equal(result.total,expected);assert.equal(result.dps,expected/dungeon.timerSeconds);
  route.pulls[0].enemies.push('unknown');assert.equal(routeHealth(route,dungeon,enemies).total,null);
@@ -77,8 +77,10 @@ test('Efficiency and grouped HP use selected difficulty and the empowered cap',(
  assert.deepEqual(dungeonPackEfficiencies(dungeon,catalog,route),dungeonPackEfficiencies(dungeon,catalog,route,{difficulty:75}));
  assert.equal(positionsHealth([...dungeon.enemies,...dungeon.enemies],catalog,route),hp);
  route.excluded=['a'];
- assert.equal(placementHealth(dungeon.enemies[0],catalog.get('a'),route),hp,'Chicken retains difficulty and Empowered HP');
- assert.equal(positionsHealth(dungeon.enemies,catalog,route),hp);
+ const chickenHP=placementHealth(dungeon.enemies[0],catalog.get('a'),route);
+ assert.notEqual(chickenHP,hp,'Chicken substitutes its own template');
+ route.modifiers.empowered.active=false;
+ assert.equal(positionsHealth(dungeon.enemies,catalog,route),chickenHP,'Original Empowered HP is not transferred');
 });
 test('Health formatting uses readable suffixes and does not turn unknown values into zero',()=>{
  assert.equal(formatHealth(744440),'744.44k');assert.equal(formatHealth(1350000),'1.35m');assert.equal(formatHealth(null),'—');assert.equal(formatHealth(0),'0');assert.equal(formatHealth(999999),'1.00m');

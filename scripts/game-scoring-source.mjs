@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import {npcCatalogId} from './game-catalog-actors.mjs';
 export function gameModifierAvailability(s){
  const table=s.tables.find(t=>t.name==='DT_ModifersInDungeons');
  assert.ok(table&&Object.keys(table.rows).length,'Missing dungeon modifier assignments');
@@ -12,8 +13,9 @@ export function gameModifierAvailability(s){
  }));
 }
 // Interpreted formulas are guarded by reviewed Blueprint/native hashes in
-// prepare-game-services. Values below always come from the current export.
-export function gameScoringRules(s){
+// prepare-game-services. Values come from the current export, with any explicit
+// provisional planner override preserved as separate provenance in the result.
+export function gameScoringRules(s,semantics={}){
  const defaults=name=>{const o=[...s.objects.values()].find(o=>o.Name==='Default__'+name+'_C');assert.ok(o,'Missing '+name);return s.properties(o.ref);};
  const effect=defaults('GE_DungeonModifiers_EmpoweredMinions_EmpoweredEnemyBuff');
  const score=effect.Modifiers.find(m=>m.Attribute.AttributeName==='KillScore');
@@ -38,8 +40,26 @@ export function gameScoringRules(s){
  assert.ok(shadowOrbsPerLord>0&&Object.values(shadowLordsByDungeon).every(n=>n>0));
  const polymorph=defaults('GA_RelicPower_PolymorphTargetWithSharedCharges');
  const markerHealthThresholds={medium:s.scalable(polymorph.HealthThresholdMedium),large:s.scalable(polymorph.HealthThresholdLarge)};
+ const thresholdOverride=semantics.polymorphLargeThresholdOverride;
+ if(thresholdOverride){
+  // Keep the installed-game value intact in the export. This is an explicit,
+  // provisional planner estimate until the server-side discrepancy is resolved.
+  assert.equal(String(s.manifest.steamBuild),thresholdOverride.steamBuild,'Review provisional Polymorph threshold after a game update');
+  assert.equal(markerHealthThresholds.large,thresholdOverride.exportedValue,'Exported Polymorph threshold changed; review the provisional override');
+  assert.ok(Number.isFinite(thresholdOverride.value)&&thresholdOverride.value>markerHealthThresholds.medium,'Invalid provisional Polymorph threshold');
+  markerHealthThresholds.large=thresholdOverride.value;
+ }
  const markerDefaultBaseHealth=s.curve('Default.BasicAttributeSet.BaseHealth');
  assert.ok(markerDefaultBaseHealth>0,'Missing default base health for Polymorph sizes');
  assert.ok(markerHealthThresholds.medium>0&&markerHealthThresholds.large>markerHealthThresholds.medium,'Invalid Polymorph size thresholds');
- return {empoweredScoreMultiplier:s.scalable(score.ModifierMagnitude.ScalableFloatMagnitude),empoweredHealthBonus:s.scalable(magnitude.Coefficient),modifierDifficultyCap:cap,difficultyHealthScales:curve.Keys.map(k=>k.Value),shadowOrbsPerLord,shadowLordsByDungeon,modifierAvailabilityByDungeon:gameModifierAvailability(s),markerHealthThresholds,markerDefaultBaseHealth};
+ const polymorphChickens=Object.fromEntries(['small','medium','large'].map(size=>{
+  const ref=polymorph['ChickenClass'+size[0].toUpperCase()+size.slice(1)]?.ObjectPath?.split('.')[0].toLowerCase();
+  const npc=s.npcs.find(n=>n.ref.split('.')[0].toLowerCase()===ref);
+  assert.ok(npc,'Missing Polymorph chicken template: '+size);
+  const value=key=>s.curve(npc.characterId+'.'+key)??s.curve('Default.'+key);
+  const baseHealth=value('BasicAttributeSet.BaseHealth')*value('Custom.DefaultBaseHealthMultiplier');
+  assert.ok(baseHealth>0,'Missing Polymorph chicken HP: '+size);
+  return [size,{id:npcCatalogId(npc),baseHealth}];
+ }));
+ return {empoweredScoreMultiplier:s.scalable(score.ModifierMagnitude.ScalableFloatMagnitude),empoweredHealthBonus:s.scalable(magnitude.Coefficient),modifierDifficultyCap:cap,difficultyHealthScales:curve.Keys.map(k=>k.Value),shadowOrbsPerLord,shadowLordsByDungeon,modifierAvailabilityByDungeon:gameModifierAvailability(s),markerHealthThresholds,markerDefaultBaseHealth,polymorphChickens,...(thresholdOverride?{polymorphLargeThresholdOverride:thresholdOverride}:{})};
 }

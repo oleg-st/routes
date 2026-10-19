@@ -28,12 +28,15 @@ test('Entrance extraction refuses missing coordinates, attachments and unhandled
  assert.throws(()=>playerStartCenter([point(1,2,3)],'Other'),/streamed/);
 });
 
-test('Marker sizes follow game Polymorph thresholds with independent boss styling',()=>{
- assert.deepEqual(rules.markerHealthThresholds,{medium:2,large:3.5});
+test('Marker sizes follow effective Polymorph thresholds with independent boss styling',()=>{
+ assert.deepEqual(rules.markerHealthThresholds,{medium:2,large:3.3});
+ assert.equal(rules.polymorphLargeThresholdOverride.status,'provisional');
+ assert.equal(rules.polymorphLargeThresholdOverride.exportedValue,3.5);
  const enemy=m=>({baseHealth:rules.markerDefaultBaseHealth*m});
  assert.equal(enemyMarkerTier(enemy(1.999)),'small');
  assert.equal(enemyMarkerTier(enemy(2)),'medium');
- assert.equal(enemyMarkerTier(enemy(3.499)),'medium');
+ assert.equal(enemyMarkerTier(enemy(3.299)),'medium');
+ assert.equal(enemyMarkerTier(enemy(3.3)),'large');
  assert.equal(enemyMarkerTier(enemy(3.5)),'large');
  assert.equal(enemyMarkerScale({...enemy(.5),isBoss:true}),3);
  assert.equal(enemyMarkerTier({...enemy(2),id:'new-mob',name:'Renamed',dungeonScore:500}),'medium');

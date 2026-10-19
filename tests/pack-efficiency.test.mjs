@@ -50,9 +50,9 @@ test('Changing dataset HP or adding a pack automatically updates ratios and colo
   assert.notEqual(packEfficiencyColor(added.values.get('high'),added.range),'rgb(34,197,94)');
 });
 
-test('Chicken preserves pack HP while removing score without shifting dungeon normalization',()=>{
+test('Chicken substitutes pack HP while removing score without shifting dungeon normalization',()=>{
   const f=fixture();f.route.excluded=['c'];
-  const partial=f.calculate();assert.equal(partial.totalHealth,400);near(partial.values.get('mixed'),.4);
+  const partial=f.calculate();assert.equal(partial.totalHealth,400);near(partial.values.get('mixed'),(4/20)/((2730+100)/400));
   near(partial.values.get('low'),.2);near(partial.values.get('high'),.8);
   f.route.excluded=['a','b','c','d'];
   const empty=f.calculate();assert.equal(empty.totalHealth,400);assert.deepEqual([...empty.values.values()],[0,0,0]);assert.deepEqual(empty.range,partial.range);

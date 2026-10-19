@@ -6,7 +6,7 @@ import {modifierStats} from './data/game-modifier-stats.js';
 import {modifierPositions} from './data/game-modifier-positions.js';
 import {shadowBaseHealth} from './data/game-difficulty.js';
 import {applyDifficulty,checkDifficulty,difficultyHealthModifiers} from './difficulty.js';
-import {modifierAvailable,restrictRouteModifiers} from './game-scoring.js';
+import {modifierAvailable,restrictRouteModifiers,polymorphChicken} from './game-scoring.js';
 import {gameKillScore,enemyHealth,orbCount,shadowTarget,shadowOrbsPerLord} from './game-scoring.js';
 export {enemyHealth,orbCount,shadowTarget} from './game-scoring.js';
 export const COLORS=['#e43969','#387bff','#30c99a','#bc78f5','#f5a442','#35bfd9','#e477cf','#b3cc55'];
@@ -127,8 +127,8 @@ export function dungeonPackEfficiencies(dungeon,enemies,route,{difficulty=route.
     // Zero-score scenery with no HP is not a combat target.
     if(score===0&&baseHealth==null)continue;
     if(!Number.isFinite(score)||score<0||!Number.isFinite(baseHealth)||baseHealth<=0){complete=false;continue;}
-    const empowered=!pos.modifier&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId);
-    const health=enemyHealth({baseHealth},{empowered,difficulty,...difficultyHealthModifiers(route,pos.id,{difficulty,isBossMinion:pos.isBossMinion||enemy?.isBossMinion})});
+    const health=placementHealth(pos,enemy,route,{difficulty});
+    if(!Number.isFinite(health)||health<=0){complete=false;continue;}
     const pack=totals.get(pos.packId)||{score:0,health:0};
     pack.score+=score;pack.health+=health;
     totals.set(pos.packId,pack);
@@ -188,13 +188,18 @@ export function scorePull(pull,dungeon,enemies,route){
 export function scoreRoute(route,dungeon,enemies){
   return scorePull({enemies:route.pulls.flatMap(p=>p.enemies)},dungeon,enemies,route);
 }
-export function placementHealth(pos,enemy,route){
-  if(route.difficulty===undefined)return null;
+export function placementHealth(pos,enemy,route,{difficulty=route.difficulty}={}){
+  if(difficulty===undefined)return null;
   if(!pos)return null;
-  // Until Chicken's health scaling is verified, retain the original enemy HP.
   const stats=enemy??modifierStats[pos.modifier];
   if(stats?.baseHealth==null&&stats?.dungeonScore===0)return 0;
-  return enemyHealth(stats,{difficulty:route.difficulty,...difficultyHealthModifiers(route,pos.id,{isBossMinion:pos.isBossMinion||stats?.isBossMinion}),empowered:!pos.modifier&&!stats?.isBoss&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId)});
+  if(!stats?.isBoss&&route.excluded.includes(pos.placementId)){
+    const chicken=polymorphChicken(stats);if(!chicken)return null;
+    // A fresh NPC uses its own HP and affix eligibility, without the original's
+    // Empowered selection. Integer base HP before scaling matches logged chickens.
+    return Math.trunc(enemyHealth({...chicken,baseHealth:Math.ceil(chicken.baseHealth)},{difficulty,...difficultyHealthModifiers(route,chicken.id,{difficulty})}));
+  }
+  return enemyHealth(stats,{difficulty,...difficultyHealthModifiers(route,pos.id,{difficulty,isBossMinion:pos.isBossMinion||stats?.isBossMinion}),empowered:!pos.modifier&&!stats?.isBoss&&route.modifiers?.empowered?.active&&route.modifiers.empowered.enemies.includes(pos.placementId)});
 }
 export function positionsHealth(members,enemies,route){
   if(route.difficulty===undefined)return null;

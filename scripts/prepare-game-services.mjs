@@ -66,9 +66,9 @@ for(const d of s.read('dungeons').playable){
  }
  presets.dungeons[d.id]=row;report.dungeons.push({id:d.id,campfires:campfires[d.id].length,empowered:empowered.length,ghorn:row.ghorn?.replacedEnemies.length??0,witch:row.witch?.replacedEnemies.length??0});
 }
-const rules=gameScoringRules(s);
+const rules=gameScoringRules(s,semantics);
 assert.ok(rules.empoweredScoreMultiplier>0);
-fs.writeFileSync(out+'/game-service-rules.js','// Generated from game effect definitions.\nexport const gameServiceRules='+JSON.stringify(rules)+';\n');
+fs.writeFileSync(out+'/game-service-rules.js','// Generated from game effect definitions and reviewed planner overrides.\nexport const gameServiceRules='+JSON.stringify(rules)+';\n');
 fs.writeFileSync(out+'/map-campfires.js','// Generated from installed-game respawn actors.\nexport const campfireBuildId='+JSON.stringify(s.manifest.steamBuild)+';\nexport const campfires='+JSON.stringify(campfires,null,2)+';\n');
 fs.writeFileSync(out+'/map-starts.js','// Generated from installed-game PlayerStart actors; flag = party spawn centroid.\nexport const mapStartBuildId='+JSON.stringify(s.manifest.steamBuild)+';\nexport const mapStarts='+JSON.stringify(starts,null,2)+';\n');
 fs.writeFileSync(out+'/modifier-placements.json',JSON.stringify(presets,null,2)+'\n');
