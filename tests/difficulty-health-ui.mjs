@@ -17,7 +17,7 @@ try{
   await page.locator('#clear-route').click();assert.ok(await page.locator('#empowered').isEnabled());assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'false');
   const options=difficultyOptions('Level.ID.IceCave'),choice=options.find(c=>c.modifiers.includes('empowered')&&c.value>62);
   await page.locator('#difficulty').selectOption(String(choice.value));
-  for(const kind of ['empowered','ghorn','witch','shadow']){assert.ok(await page.locator('#'+kind).isDisabled());assert.equal(await page.locator('#'+kind).getAttribute('aria-pressed'),String(choice.modifiers.includes(kind)));}
+  for(const kind of ['empowered','ghorn','witch','shadow']){assert.ok(await page.locator('#'+kind).isDisabled());assert.equal(await page.locator('#'+kind).getAttribute('aria-pressed'),String(choice.modifiers.includes(kind)));assert.equal(await page.locator('#'+kind).isVisible(),choice.modifiers.includes(kind),'Only active locked affixes remain visible');}
   await page.locator('[data-placement]').first().dispatchEvent('click');
   assert.equal(await page.locator('#route-health .health-heart').count(),0);
   assert.notEqual(await page.locator('#route-health').innerText(),'Total HP 0\nDPS 0');
@@ -62,6 +62,7 @@ try{
   await page.locator('#dungeon').selectOption('Level.ID.SandTomb');await page.waitForFunction(()=>document.querySelector('#difficulty option:nth-child(2)')?.textContent==='Normal');
   assert.deepEqual(await page.locator('#difficulty option').allTextContents(),['Not selected','Normal','Hard','Nightmare']);
   await page.locator('#difficulty').selectOption({label:'Nightmare'});
+  assert.ok(await page.locator('.modifiers').isHidden(),'Hide the empty affix group and its separator');
   await page.locator('[data-placement]').first().dispatchEvent('click');
   await page.screenshot({path:'tmp/difficulty-health-desktop.png'});
   await page.setViewportSize({width:390,height:900});await page.screenshot({path:'tmp/difficulty-health-mobile.png'});
