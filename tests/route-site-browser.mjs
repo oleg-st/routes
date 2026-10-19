@@ -10,7 +10,7 @@ const root=path.resolve('dist'),prefix='/RoutePlanner/';
 const server=http.createServer((req,res)=>{
   const url=new URL(req.url,'http://localhost');if(!url.pathname.startsWith(prefix)){res.writeHead(404).end();return;}
   const file=path.resolve(root,url.pathname.slice(prefix.length)||'index.html');if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}
-  fs.readFile(file,(error,bytes)=>{if(error){res.writeHead(404).end();return;}res.writeHead(200,{'Content-Type':{'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.avif':'image/avif'}[path.extname(file)]||'application/octet-stream'});res.end(bytes);});
+  fs.readFile(file,(error,bytes)=>{if(error){res.writeHead(404).end();return;}res.writeHead(200,{'Content-Type':{'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.avif':'image/avif','.wasm':'application/wasm'}[path.extname(file)]||'application/octet-stream'});res.end(bytes);});
 });await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));let browser;
 try{
   browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage(),errors=[],external=[];
@@ -33,5 +33,5 @@ try{
   await page.locator('#log-url').press('Escape');assert.equal(await page.locator('#pull-count').textContent(),'2');
   await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#pull-count').textContent(),'2');
   assert.equal(fs.existsSync(path.join(root,'log-import/prototype-fixtures.js')),false);
-  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log('Published bundle: Pages prefix, embedded WASM, edits, URL-only log dialog and refresh passed without external requests.');
+  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log('Published bundle: Pages prefix, separate WASM, edits, URL-only log dialog and refresh passed without external requests.');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

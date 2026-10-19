@@ -22,7 +22,7 @@ const server=http.createServer((req,res)=>{
     if(error){res.writeHead(404).end();return;}
     const extension=path.extname(filename);
     res.writeHead(200,{
-      'Content-Type':{'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'}[extension],
+      'Content-Type':{'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.wasm':'application/wasm'}[extension],
       'Cache-Control':extension==='.html'?'no-cache':'public, max-age=31536000, immutable',
     });
     res.end(contents);
@@ -44,7 +44,10 @@ try{
     fs.writeFileSync(path.join(root,'app.js'),`
       import {loadData} from './data/runtime-loader.js';
       import {runLogMatching} from './log-import/matcher-client.js';
-      window.result={version:${version},data:(await loadData()).heroes,worker:await runLogMatching({},{})};
+      import {LoroDoc} from 'loro-crdt';
+      const doc=new LoroDoc();doc.getMap('test').set('version',${version});
+      window.result={version:doc.getMap('test').get('version'),data:(await loadData()).heroes,worker:await runLogMatching({},{})};
+      doc.free();
     `);
     fs.writeFileSync(path.join(root,'styles.css'),`body { --version: ${version}; }`);
     for(const name of dataNames)fs.writeFileSync(path.join(root,`data/${name}.json`),JSON.stringify(name==='heroes'?[version]:[]));
@@ -70,6 +73,7 @@ try{
   await page.goto(`http://127.0.0.1:${server.address().port}${prefix}`);
   await page.waitForFunction(()=>window.result);
   assert.deepEqual(await page.evaluate(()=>window.result),{version:1,data:[1],worker:1});
+  for(const url of [first.loroURL,first.wasmURL])assert.equal(requests.filter(p=>p===prefix+url).length,1,`library asset loaded once: ${url}`);
   requests.length=0;
   // Prove the cache is warm using a second document navigation.
   await page.goto(`http://127.0.0.1:${server.address().port}${prefix}`);
@@ -77,6 +81,7 @@ try{
   assert.ok(!requests.includes(prefix+first.appURL),'the old application must actually be cached');
   prepare(2);
   const second=await buildSiteAssets(root);
+  for(const key of ['loroURL','wasmURL'])assert.equal(second[key],first[key],'application changes preserve library URLs');
   for(const key of ['appURL','cssURL','workerURL'])assert.notEqual(second[key],first[key]);
   assert.notEqual(second.dataURLs.heroes,first.dataURLs.heroes);
   assert.equal(second.dataURLs.enemies,first.dataURLs.enemies,'unchanged data remains cacheable');
@@ -86,8 +91,14 @@ try{
   assert.deepEqual(await page.evaluate(()=>window.result),{version:2,data:[2],worker:2});
   assert.equal(await page.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--version').trim()),'2');
   for(const url of [second.appURL,second.cssURL,second.workerURL,second.dataURLs.heroes])assert.ok(requests.includes(prefix+url),`new asset fetched: ${url}`);
+  for(const url of [second.loroURL,second.wasmURL])assert.ok(!requests.includes(prefix+url),`unchanged library asset stays cached: ${url}`);
+  // Older cached HTML still points at /app.js rather than /assets/app.<hash>.js.
+  fs.writeFileSync(path.join(root,'index.html'),'<!doctype html><script type="module" src="app.js"></script>');
+  await page.reload();
+  await page.waitForFunction(()=>window.result);
+  assert.deepEqual(await page.evaluate(()=>window.result),{version:2,data:[2],worker:2});
   assert.deepEqual(errors,[]);
-  console.log('Warm-cache deployment: ordinary reload loads the new app, CSS, JSON and bundled worker beneath a Pages prefix.');
+  console.log('Warm-cache deployment: new app, CSS, JSON and worker load; Loro JS/WASM stay cached. Legacy app entry works beneath a Pages prefix.');
 }finally{
   await browser?.close();
   if(server.listening)await new Promise(resolve=>server.close(resolve));
