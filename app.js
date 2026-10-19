@@ -864,8 +864,16 @@ function showImport(){
   };
 }
 async function importRouteHash(){
-  if(!location.hash.startsWith('#route='))return;
-  try{await importRouteText(location.hash);}catch(err){toast('Import: '+err.message);}
+  const hash=location.hash;
+  if(!hash.startsWith('#route='))return;
+  try{await importRouteText(hash);clearImportedRouteHash(hash);}catch(err){toast('Import: '+err.message);}
+}
+function clearImportedRouteHash(hash){
+  // Consume the link only after the imported route is persisted. Do not remove
+  // another link the user navigated to while the import was loading.
+  if(location.hash!==hash||!hash.startsWith('#route='))return;
+  const url=new URL(location.href);url.hash='';
+  window.history.replaceState(window.history.state,'',url);
 }
 function search(){
   renderMap();const q=$('#search').value.trim();$('#search-results').hidden=!q;if(!q)return;
@@ -1114,12 +1122,13 @@ async function init(){
   }
   const errors=await migrateLegacyLibrary(routeStorage,store,{dungeons:data.dungeons,enemies,presets:data['modifier-placements']});
   store=await routeStorage.library();
-  let incoming;
-  if(location.hash.startsWith('#route=')){
-    try{incoming=await decodeRoute(location.hash,data.dungeons,enemies,data.loadDungeon);incoming.id=uid();}
+  let incoming;const initialRouteHash=location.hash;
+  if(initialRouteHash.startsWith('#route=')){
+    try{incoming=await decodeRoute(initialRouteHash,data.dungeons,enemies,data.loadDungeon);incoming.id=uid();}
     catch(error){toast('Import: '+error.message);}
   }
   bind();setupRooms();setupLogImport();await selectDungeon(incoming?.dungeonId||store.lastDungeon||'Level.ID.FrozenKingdom',incoming);
+  if(incoming)clearImportedRouteHash(initialRouteHash);
   let resume;try{resume=JSON.parse(sessionStorage.getItem('rt-room'));}catch{}
   if(location.hash.startsWith('#room=')){const code=roomCode(location.hash);if(resume?.code===code)await startRoom({...resume,code});else openRoomHash();}
   setTool('select');
