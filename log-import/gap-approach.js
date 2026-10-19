@@ -13,10 +13,36 @@ function closest(a,b,c,d=c){
   return choices.sort((a,b)=>a.distance-b.distance)[0];
 }
 
-// A plausible straight-line crossing, never an observed position or proof of
+// A player may keep moving toward a pack and turn back between samples. Use
+// the immediately preceding recorded heading/speed, and require enough time
+// both to enter the ordinary aggro radius and to reach the next recorded point.
+// This is a possible path, never a new observed position or a wider radius.
+function turnaround(s,target,time,radius){
+  if(!s.incoming)return null;
+  const {dx,dy,speed}=s.incoming,travel=speed*Math.max(0,Math.min(time,s.end)-s.start);
+  const end={x:s.a.x+dx*travel,y:s.a.y+dy*travel};
+  const hit=closest(s.a,end,target.a,target.b);
+  if(hit.distance>radius||closest(s.a,s.a,target.a,target.b).distance<=radius)return null;
+  let low=0,high=hit.fraction;
+  for(let i=0;i<40;i++){
+    const mid=(low+high)/2,p=at(s.a,end,mid);
+    if(closest(p,p,target.a,target.b).distance<=radius)high=mid;else low=mid;
+  }
+  const point=at(s.a,end,high),outward=travel*high;
+  const pathDistance=outward+Math.hypot(point.x-s.b.x,point.y-s.b.y);
+  if(pathDistance>speed*(s.end-s.start))return null;
+  return {distance:closest(point,point,target.a,target.b).distance,time:s.start+outward/speed,
+    model:'turnaround',speed:speed*1000,pathDistance};
+}
+
+// A plausible crossing or turnaround, never an observed position or proof of
 // aggro. Only used when ordinary evidence cannot produce a complete route.
 export function createGapApproach({packs,trajectories,events=[],invisibility=[],maxGapMs=15000,maxSpeed=3000}){
   const segments=[],cache=new Map(),byID=new Map(packs.map(p=>[p.id,p]));
+  const blocked=(row,start,end)=>row.deaths.some(d=>d.timestamp>=start&&d.timestamp<=end)||
+    events.some(e=>e.timestamp>=start&&e.timestamp<=end&&(e.type==='mapchange'||
+      [1506,1002176].includes(e.abilityGameID)&&(e.sourceID===row.actorID||e.targetID===row.actorID)))||
+    row.type==='Player'&&invisibility.some(v=>v.playerID===row.actorID&&(v.start?.time??-Infinity)<end&&(v.end?.time??Infinity)>start);
   for(const row of trajectories){
     if(!['Player','NPC'].includes(row.type))continue;
     const active=row.positions.find(p=>['damage','cast','begincast'].includes(p.eventType))?.t;
@@ -25,12 +51,16 @@ export function createGapApproach({packs,trajectories,events=[],invisibility=[],
       if(gap<=2000||gap>maxGapMs||!(a.hp>0&&b.hp>0)||a.x===b.x&&a.y===b.y)continue;
       if(row.type==='NPC'&&!(active<=a.t))continue;
       if(Math.hypot(a.x-b.x,a.y-b.y)/gap*1000>maxSpeed)continue;
-      if(row.deaths.some(d=>d.timestamp>=a.t&&d.timestamp<=b.t))continue;
-      if(events.some(e=>e.timestamp>=a.t&&e.timestamp<=b.t&&(e.type==='mapchange'||
-        [1506,1002176].includes(e.abilityGameID)&&(e.sourceID===row.actorID||e.targetID===row.actorID))))continue;
-      if(row.type==='Player'&&invisibility.some(v=>v.playerID===row.actorID&&(v.start?.time??-Infinity)<b.t&&(v.end?.time??Infinity)>a.t))continue;
+      if(blocked(row,a.t,b.t))continue;
+      let incoming=null;
+      if(row.type==='Player'){
+        // Same-time status/damage events often repeat a movement sample.
+        let previous=i-2;while(previous>=0&&row.positions[previous].t===a.t)previous--;
+        const p=row.positions[previous],dt=a.t-p?.t,dx=a.y-p?.y,dy=a.x-p?.x,length=Math.hypot(dx,dy);
+        if(dt>0&&dt<=2000&&p.hp>0&&length>0&&length/dt*1000<=maxSpeed&&!blocked(row,p.t,a.t))incoming={dx:dx/length,dy:dy/length,speed:length/dt};
+      }
       segments.push({key:row.key,source:row.type==='Player'?'player':'engaged enemy',start:a.t,end:b.t,
-        a:{x:a.y,y:a.x},b:{x:b.y,y:b.x}});
+        a:{x:a.y,y:a.x},b:{x:b.y,y:b.x},incoming});
     }
   }
   return (packID,time,radius)=>{
@@ -49,8 +79,9 @@ export function createGapApproach({packs,trajectories,events=[],invisibility=[],
         for(const target of targets){
           if(![target.a,target.b].every(p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)))continue;
           const hit=closest(s.a,b,target.a,target.b),crossing=s.start+(end-s.start)*hit.fraction;
-          if(hit.distance>radius||s.source==='engaged enemy'&&crossing>=time)continue;
-          if(!best||hit.distance<best.distance)best={...hit,key:s.key,source:s.source,start:s.start,end:s.end,time:crossing,patrol:target.patrol,gapMs:s.end-s.start};
+          const evidence=hit.distance<=radius&&!(s.source==='engaged enemy'&&crossing>=time)?{...hit,time:crossing}:turnaround(s,target,time,radius);
+          if(!evidence)continue;
+          if(!best||evidence.distance<best.distance)best={...evidence,key:s.key,source:s.source,start:s.start,end:s.end,patrol:target.patrol,gapMs:s.end-s.start};
         }
       }
     }
