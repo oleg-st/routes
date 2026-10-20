@@ -237,7 +237,12 @@ function chooseFloor(index){
   $$('[data-floor]').forEach((e,i)=>e.classList.toggle('active',i===index));fitMap();
 }
 function fitMap(){
-  baseView={x:0,y:0,w:mapLayer.width,h:mapLayer.height};view={...baseView};renderMap();
+  baseView={x:0,y:0,w:mapLayer.width,h:mapLayer.height};view={...baseView};
+  if(matchMedia('(max-width:760px)').matches){
+    const start=mapStart(dungeon,mapLayer)||[view.w/2,view.h/2];
+    view={x:start[0]-view.w/6,y:start[1]-view.h/6,w:view.w/3,h:view.h/3};
+  }
+  renderMap();
 }
 function scale(){const r=$('#map').getBoundingClientRect();return Math.max(view.w/Math.max(r.width,1),view.h/Math.max(r.height,1));}
 function mapMarkerRadius(unit){
@@ -650,7 +655,7 @@ function renderDraft(preview){const root=$('#draft');root.replaceChildren();if(t
 function point(event){const p=$('#map').createSVGPoint();p.x=event.clientX;p.y=event.clientY;const v=p.matrixTransform($('#map').getScreenCTM().inverse());return[v.x,v.y];}
 function commitDrag(state){if(!state.edit||!state.moved)return;change(state.edit.kind==='marker'?{type:'update-marker',markerId:state.edit.id,patch:{position:state.edit.points[0]}}:{type:'move-point',drawingId:state.edit.id,pointId:state.edit.pointIds[state.endpoint],position:state.edit.points[state.endpoint]});}
 function draggedDrawingPoint(event,state){const pos=point(event).map((v,i)=>v+state.offset[i]);return drawingPointFromMap(pos,state.edit,mapLayer,dungeon);}
-function zoom(factor,at){const anchor=at||[view.x+view.w/2,view.y+view.h/2];factor=Math.max(baseView.w/24,Math.min(baseView.w*2.5,view.w*factor))/view.w;if(factor===1)return;view={x:anchor[0]+(view.x-anchor[0])*factor,y:anchor[1]+(view.y-anchor[1])*factor,w:view.w*factor,h:view.h*factor};renderMap();}
+function zoom(factor,at,pan=[0,0]){const anchor=at||[view.x+view.w/2,view.y+view.h/2];factor=Math.max(baseView.w/24,Math.min(baseView.w*2.5,view.w*factor))/view.w;if(factor===1&&!pan.some(Boolean))return;view={x:anchor[0]+(view.x-anchor[0]+pan[0])*factor,y:anchor[1]+(view.y-anchor[1]+pan[1])*factor,w:view.w*factor,h:view.h*factor};renderMap();}
 function setTool(value,{cancel=false}={}){
   if(value!=='line')closeArrowOptions();
   if(value!==tool||cancel){
@@ -1024,10 +1029,34 @@ function bind(){
   $('#pulls').ondragstart=e=>{if(e.target.closest('textarea,input,button')){e.preventDefault();return;}draggedPull=e.target.closest('[data-pull]')?.dataset.pull;e.dataTransfer.effectAllowed='move';};
   $('#pulls').ondragover=e=>e.preventDefault();$('#pulls').ondrop=e=>{e.preventDefault();const target=e.target.closest('[data-pull]')?.dataset.pull;if(!target||!draggedPull||target===draggedPull)return;movePullTo(draggedPull,route.pulls.findIndex(p=>p.id===target));draggedPull=null;};
   const map=$('#map');
+  const touches=new Map();
+  let touchGesture=false,touchFrame=null;
+  const gestureFrame=()=>{
+    const [a,b=a]=[...touches.values()];
+    return a?{clientX:(a.clientX+b.clientX)/2,clientY:(a.clientY+b.clientY)/2,distance:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}:null;
+  };
+  const endTouch=e=>{
+    if(!touches.delete(e.pointerId))return false;
+    const handled=touchGesture;
+    touchFrame=gestureFrame();
+    if(!touches.size){touchGesture=false;map.classList.remove('dragging');}
+    if(handled)suppressClick=true;
+    if(map.hasPointerCapture(e.pointerId))map.releasePointerCapture(e.pointerId);
+    return handled;
+  };
   map.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1.12:1/1.12,point(e));},{passive:false});
   map.addEventListener('pointerdown',e=>{
     if(e.button!==0&&e.button!==2)return;
     $('#enemy-menu').hidden=true;hideHover();
+    if(e.pointerType==='touch'){
+      touches.set(e.pointerId,{clientX:e.clientX,clientY:e.clientY});
+      map.setPointerCapture(e.pointerId);
+      if(touches.size>1){
+        // A second finger cancels any pending selection/drawing edit.
+        touchGesture=true;drag=null;draft=[];suppressClick=true;
+        touchFrame=gestureFrame();map.classList.add('dragging');renderMap();return;
+      }
+    }
     suppressClick=false;
     const pan=e.button===2||tool==='select';
     drag={start:point(e),client:[e.clientX,e.clientY],view:{...view},pan,moved:false,box:tool==='box'&&e.button===0,target:e.target.closest('[data-placement]')?.dataset.placement,drawing:e.target.closest('[data-drawing]')?.dataset.drawing};
@@ -1040,6 +1069,15 @@ function bind(){
     map.setPointerCapture(e.pointerId);if(drag.pan)map.classList.add('dragging');
   });
   map.addEventListener('pointermove',e=>{
+    if(touches.has(e.pointerId)){
+      touches.set(e.pointerId,{clientX:e.clientX,clientY:e.clientY});
+      if(touchGesture){
+        const next=gestureFrame(),anchor=point(touchFrame),destination=point(next);
+        const factor=touchFrame.distance>0&&next.distance>0?touchFrame.distance/next.distance:1;
+        zoom(factor,anchor,anchor.map((v,i)=>v-destination[i]));
+        touchFrame=next;return;
+      }
+    }
     if(drag){
       if(Math.hypot(e.clientX-drag.client[0],e.clientY-drag.client[1])>4)drag.moved=true;
       if(drag.split&&drag.moved){drag.end=point(e);renderSplitDraft([drag.start,drag.end]);}
@@ -1065,7 +1103,8 @@ function bind(){
     positionPopover(tip,e);
   });
   map.addEventListener('pointerup',e=>{
-    if(!drag)return;const state=drag;drag=null;map.classList.remove('dragging');map.releasePointerCapture(e.pointerId);suppressClick=state.moved;
+    if(endTouch(e))return;
+    if(!drag)return;const state=drag;drag=null;map.classList.remove('dragging');if(map.hasPointerCapture(e.pointerId))map.releasePointerCapture(e.pointerId);suppressClick=state.moved;
     if(state.split&&state.moved){commitSplit([state.start,point(e)]);return;}
     if(state.edit){
       suppressClick=true;
@@ -1077,7 +1116,9 @@ function bind(){
     if(e.button===0&&!state.moved&&tool==='select'&&state.target){chooseEnemy(state.target);suppressClick=true;}
     if(e.button===2&&!state.moved){if(state.drawing)showDrawingMenu(state.drawing,e,state.vertex);else if(state.target)showEnemyMenu(state.target,e);}
   });
-  map.addEventListener('pointercancel',()=>{const state=drag;drag=null;if(state?.split)draft=[];if(state?.edit&&state.moved)commitDrag(state);suppressClick=true;map.classList.remove('dragging');renderMap();});
+  const cancelPointer=e=>{if(endTouch(e))return;const state=drag;drag=null;if(state?.split)draft=[];if(state?.edit&&state.moved)commitDrag(state);suppressClick=true;map.classList.remove('dragging');renderMap();};
+  map.addEventListener('pointercancel',cancelPointer);
+  map.addEventListener('lostpointercapture',e=>{if(touches.has(e.pointerId))cancelPointer(e);});
   map.addEventListener('contextmenu',e=>e.preventDefault());
   map.addEventListener('pointerleave',e=>{if(!$('#tooltip').contains(e.relatedTarget))hideHover();});
   $('#tooltip').addEventListener('pointerleave',hideHover);
