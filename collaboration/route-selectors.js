@@ -1,6 +1,6 @@
 import {pullColor, defaultModifiers} from '../route-model.js';
 import {modifierAvailable} from '../game-scoring.js';
-import {applyDifficulty} from '../difficulty.js';
+import {applyDifficulty,checkDifficulty} from '../difficulty.js';
 import {visibleIds, rows, pointIds, members, canonical} from './route-schema.js';
 
 export function selectRoute(doc, identity) {
@@ -43,10 +43,12 @@ export function selectRoute(doc, identity) {
       ghorn.replacedEnemies?.some(key => witch.replacedEnemies?.includes(key)))) witch.active = false;
   const availableMob = key => !key.startsWith('modifier:') || Boolean(modifiers[key.slice(9)]?.packId);
   for (const pull of pulls) pull.enemies = pull.enemies.filter(availableMob);
-  return applyDifficulty({version: 2, id: identity.routeId, buildId: identity.buildId, dungeonId: identity.dungeonId,
+  const route={version: 2, id: identity.routeId, buildId: identity.buildId, dungeonId: identity.dungeonId,
     ...(meta.get('difficulty')===undefined?{}:{difficulty:meta.get('difficulty')}),
     name: meta.get('name'), shadow: meta.get('shadow') === true && modifierAvailable(identity.dungeonId,'shadow'), modifiers, pulls, drawings: visibleDrawings, markers,
-    excluded: members(doc.getMap('excluded')).filter(availableMob)});
+    excluded: members(doc.getMap('excluded')).filter(availableMob)};
+  if(route.difficulty!==undefined)checkDifficulty(identity.dungeonId,route.difficulty);
+  return meta.get('manualAffixes')===true?route:applyDifficulty(route);
 }
 export function canonicalRoute(doc, identity) {
   return JSON.stringify(canonical({schemaVersion: identity.schemaVersion, ...selectRoute(doc, identity)}));

@@ -265,14 +265,21 @@ function render(){
     $('#score-remaining').textContent=orbsLeft>0?`${orbsLeft} orbs left`:'';
   }
   $('#shadow').setAttribute('aria-pressed',String(route.shadow));
+  const selectedDifficulty=difficultyChoice(dungeon.id,route.difficulty);
   for(const kind of ['shadow','empowered','ghorn','witch']){
     const button=$('#'+kind),available=modifierAvailable(dungeon.id,kind);
     const placed=kind==='shadow'||(kind==='empowered'?(route.modifiers.empowered.enemies.length||data['modifier-placements'].dungeons[dungeon.id]?.empowered?.length):route.modifiers[kind].packId);
-    button.setAttribute('aria-pressed',String(kind==='shadow'?route.shadow:route.modifiers[kind].active));
-    button.disabled=route.difficulty!==undefined||!canEdit()||!available||!placed;
+    const active=kind==='shadow'?route.shadow:route.modifiers[kind].active;
+    const expected=selectedDifficulty?.modifiers.includes(kind),overridden=selectedDifficulty&&active!==expected;
+    button.setAttribute('aria-pressed',String(active));
+    const badge=button.querySelector('.affix-override');
+    badge.hidden=!overridden;badge.textContent=active?'+':'−';
+    const deviation=overridden?`Manually ${active?'enabled':'disabled'}; normally ${expected?'on':'off'} at ${selectedDifficulty.label}`:'';
+    if(deviation)button.setAttribute('aria-description',deviation);else button.removeAttribute('aria-description');
+    button.disabled=!canEdit()||!available||!placed;
     button.hidden=button.disabled&&button.getAttribute('aria-pressed')!=='true';
     const detail=!available?'Unavailable in this dungeon':!canEdit()?'Read-only route':!placed?'No recorded placements in this dungeon':kind==='shadow'?'Show estimated Shadow Orbs':kind==='empowered'?`${route.modifiers.empowered.enemies.length} marked enemies`:`${packNumbers.has(route.modifiers[kind].packId)?'G'+packNumbers.get(route.modifiers[kind].packId):(route.modifiers[kind].replacedEnemies?.length??0)+' replacement enemies'}`;
-    button.title=button.getAttribute('aria-label')+' · '+(route.difficulty===undefined?detail:'Determined by '+difficultyChoice(dungeon.id,route.difficulty)?.label);
+    button.title=button.getAttribute('aria-label')+' · '+(deviation||detail);
   }
   $('.modifiers').hidden=$$('.modifiers button').every(button=>button.hidden);
   const health=route.difficulty===undefined?null:routeHealth(route,dungeon,enemies),choices=difficultyOptions(dungeon.id);

@@ -5,7 +5,7 @@ import {routeDictionary,historicPack,replacementMembers,encodeMembers,decodeMemb
 import {modifierStats} from './data/game-modifier-stats.js';
 import {modifierPositions} from './data/game-modifier-positions.js';
 import {shadowBaseHealth} from './data/game-difficulty.js';
-import {applyDifficulty,checkDifficulty,difficultyHealthModifiers} from './difficulty.js';
+import {checkDifficulty,difficultyHealthModifiers} from './difficulty.js';
 import {modifierAvailable,restrictRouteModifiers,polymorphChicken} from './game-scoring.js';
 import {gameKillScore,enemyHealth,orbCount,shadowTarget,shadowOrbsPerLord} from './game-scoring.js';
 export {enemyHealth,orbCount,shadowTarget} from './game-scoring.js';
@@ -307,7 +307,7 @@ export function validateRoute(value,dungeons,enemies){
   if(value.excluded!==undefined&&(!Array.isArray(value.excluded)||!value.excluded.every(id=>known.has(canonical(id)))))throw new Error('Invalid excluded enemies.');
   const bossIds=new Set(dungeon.enemies.filter(p=>enemies?.get(p.id)?.isBoss).map(p=>p.placementId));
   for(const kind of ['ghorn','witch'])if(enemies?.get(modifierId(kind))?.isBoss)bossIds.add(modifierId(kind));
-  return applyDifficulty(restrictRouteModifiers({version:2,id:text(value.id)||uid(),buildId:text(value.buildId),dungeonId:dungeon.id,...(value.difficulty===undefined?{}:{difficulty:value.difficulty}),name:englishDefaultLabel(text(value.name))||'Imported route',shadow:value.shadow===true,modifiers,pulls,drawings,...(markers.length?{markers}:{}),excluded:[...new Set((value.excluded||[]).map(canonical))].filter(id=>!bossIds.has(id))}));
+  return restrictRouteModifiers({version:2,id:text(value.id)||uid(),buildId:text(value.buildId),dungeonId:dungeon.id,...(value.difficulty===undefined?{}:{difficulty:value.difficulty}),name:englishDefaultLabel(text(value.name))||'Imported route',shadow:value.shadow===true,modifiers,pulls,drawings,...(markers.length?{markers}:{}),excluded:[...new Set((value.excluded||[]).map(canonical))].filter(id=>!bossIds.has(id))});
 }
 
 

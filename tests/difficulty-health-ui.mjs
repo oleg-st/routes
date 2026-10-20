@@ -3,6 +3,7 @@ import {spawn} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
 import {difficultyOptions} from '../difficulty.js';
+import {modifierAvailable} from '../game-scoring.js';
 import fs from 'node:fs';
 const chickenTarget=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.DesertDunes').enemies.find(p=>p.id==='dd-witheringmagi');
 const server=spawn(process.execPath,['scripts/server.mjs'],{env:{...process.env,PORT:'0'},stdio:['ignore','pipe','pipe']});
@@ -19,7 +20,24 @@ try{
   await page.locator('#clear-route').click();assert.ok(await page.locator('#empowered').isEnabled());assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'false');
   const options=difficultyOptions('Level.ID.IceCave'),choice=options.find(c=>c.modifiers.includes('empowered')&&c.value>62);
   await page.locator('#difficulty').selectOption(String(choice.value));
-  for(const kind of ['empowered','ghorn','witch','shadow']){assert.ok(await page.locator('#'+kind).isDisabled());assert.equal(await page.locator('#'+kind).getAttribute('aria-pressed'),String(choice.modifiers.includes(kind)));assert.equal(await page.locator('#'+kind).isVisible(),choice.modifiers.includes(kind),'Only active locked affixes remain visible');}
+  for(const kind of ['empowered','ghorn','witch','shadow']){
+   const available=modifierAvailable('Level.ID.IceCave',kind),button=page.locator('#'+kind);
+   assert.equal(await button.isEnabled(),available,kind);assert.equal(await button.getAttribute('aria-pressed'),String(choice.modifiers.includes(kind)));assert.equal(await button.isVisible(),available);
+   assert.ok(await button.locator('.affix-override').isHidden());
+   if(available){
+    await button.click();assert.equal(await button.getAttribute('aria-pressed'),String(!choice.modifiers.includes(kind)));
+    assert.ok(await button.locator('.affix-override').isVisible());assert.equal(await button.locator('.affix-override').innerText(),choice.modifiers.includes(kind)?'−':'+');
+    assert.ok((await button.getAttribute('title')).includes(`normally ${choice.modifiers.includes(kind)?'on':'off'} at ${choice.label}`));
+    await page.locator('#undo').click();assert.equal(await button.getAttribute('aria-pressed'),String(choice.modifiers.includes(kind)));assert.ok(await button.locator('.affix-override').isHidden());
+   }
+  }
+  await page.locator('#empowered').click();assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'false');
+  await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
+  assert.equal(await page.locator('#difficulty').inputValue(),String(choice.value));assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'false');
+  assert.ok(await page.locator('#empowered .affix-override').isVisible());
+  await page.screenshot({path:'tmp/affix-override-desktop.png'});
+  await page.setViewportSize({width:390,height:900});await page.screenshot({path:'tmp/affix-override-mobile.png'});await page.setViewportSize({width:1440,height:1000});
+  await page.locator('#empowered').click();assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'true');
   await page.locator('[data-placement]').first().dispatchEvent('click');
   assert.equal(await page.locator('#route-health .health-heart').count(),0);
   assert.notEqual(await page.locator('#route-health').innerText(),'Total HP 0\nDPS 0');
@@ -40,6 +58,7 @@ try{
   assert.equal(await page.locator('#inspector .health-heart').count(),0);
   await page.locator('#layers').click();await page.locator('#show-hp').check();await page.locator('#layers').click();
   await page.locator('#difficulty').selectOption('');assert.ok(await page.locator('#route-health').isHidden());assert.ok(await page.locator('#show-hp').isDisabled());
+  assert.equal(await page.locator('.affix-override:visible').count(),0);
   assert.equal(await page.locator('#pack-health text').count(),0);assert.equal(await page.locator('#inspector .health-value').count(),0);
   assert.ok(await page.locator('#empowered').isEnabled());assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'true');
   await page.locator('#empowered').click();assert.equal(await page.locator('#empowered').getAttribute('aria-pressed'),'false');

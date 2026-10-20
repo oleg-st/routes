@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {LoroDoc} from 'loro-crdt';
 import {difficultyOptions,applyDifficulty,defaultDifficulty,formatHealth,difficultyHealthModifiers} from '../difficulty.js';
 import {newRoute,applyModifierPresets,encodeRoute,decodeRoute,routeHealth,shadowHealth,positionsHealth,placementHealth,enemyHealth,dungeonPackEfficiencies,hasRouteChanges} from '../route-model.js';
 import {difficultyHealthScale} from '../game-scoring.js';
@@ -19,18 +20,54 @@ test('Each dungeon offers only its game difficulties, at most E90; Pinnacle has 
  assert.deepEqual(difficultyOptions('Level.ID.IceCave').slice(0,3).map(c=>c.label),['E2','E6','E9']);
  assert.deepEqual(difficultyOptions('Level.ID.SandTomb').map(c=>c.label),['Normal','Hard','Nightmare']);
 });
-test('Difficulty synchronizes, restores, undoes, and locks manual affix commands',()=>{
+test('Difficulty synchronizes, restores, undoes, and allows manual affix commands',()=>{
  const {route,dungeon}=fixture(),a=createRouteDocument(route,{dungeon,enemies});
  const b=restoreRouteDocument(a.exportSnapshot(),{dungeon,enemies,role:'player'});
  const selected=difficultyOptions(dungeon.id).find(c=>c.modifiers.includes('empowered'));
  a.execute({type:'set-difficulty',value:selected.value});b.import(a.exportSnapshot());
  assert.equal(b.snapshot().difficulty,selected.value);assert.equal(b.snapshot().modifiers.empowered.active,true);
- assert.throws(()=>a.execute({type:'set-modifier',kind:'empowered',patch:{active:false}}),/determined by difficulty/);
- assert.throws(()=>a.execute({type:'set-meta',patch:{shadow:true}}),/determined by difficulty/);
+ a.execute({type:'set-modifier',kind:'empowered',patch:{active:false}});
+ a.execute({type:'set-meta',patch:{shadow:true}});
+ b.import(a.exportSnapshot());
+ assert.equal(b.snapshot().difficulty,selected.value);assert.equal(b.snapshot().modifiers.empowered.active,false);assert.equal(b.snapshot().shadow,true);
+ a.undo();a.undo();
  assert.throws(()=>a.execute({type:'set-difficulty',value:21}),/unavailable/);
  a.undo();assert.equal(a.snapshot().difficulty,route.difficulty);a.redo();assert.equal(a.snapshot().difficulty,selected.value);
  a.execute({type:'clear-route'});assert.equal(a.snapshot().difficulty,selected.value);assert.deepEqual(a.snapshot().modifiers.empowered.enemies,route.modifiers.empowered.enemies.sort());
  a.dispose();b.dispose();
+});
+test('Custom affixes retain difficulty, affect HP, and survive reload and compact sharing',async()=>{
+ const {route,dungeon}=fixture('Level.ID.IceCave',c=>c.modifiers.includes('empowered'));
+ route.pulls[0].enemies=[...route.modifiers.empowered.enemies];
+ const doc=createRouteDocument(route,{dungeon,enemies}),before=routeHealth(doc.snapshot(),dungeon,enemies).mobs;
+ doc.execute({type:'set-modifier',kind:'empowered',patch:{active:false}});
+ doc.execute({type:'set-meta',patch:{shadow:!route.shadow}});
+ const custom=doc.snapshot();
+ assert.ok(routeHealth(custom,dungeon,enemies).mobs<before);
+ const decoded=await decodeRoute(await encodeRoute(custom,dungeon),dungeons,enemies);
+ const loaded=createRouteDocument(decoded,{dungeon,enemies});
+ const restored=restoreRouteDocument(doc.exportSnapshot(),{dungeon,enemies});
+ for(const state of [decoded,loaded.snapshot(),restored.snapshot()]){
+  assert.equal(state.difficulty,route.difficulty);assert.equal(state.modifiers.empowered.active,false);assert.equal(state.shadow,custom.shadow);
+ }
+ doc.execute({type:'clear-route'});assert.equal(doc.snapshot().shadow,custom.shadow);assert.equal(doc.snapshot().modifiers.empowered.active,false);
+ doc.execute({type:'set-difficulty',value:null});assert.equal(doc.snapshot().shadow,custom.shadow);assert.equal(doc.snapshot().modifiers.empowered.active,false);
+ doc.execute({type:'set-difficulty',value:route.difficulty});assert.equal(doc.snapshot().modifiers.empowered.active,true);assert.equal(doc.snapshot().shadow,route.shadow);
+ doc.dispose();loaded.dispose();restored.dispose();
+});
+test('Old difficulty-derived documents keep their displayed defaults until an affix is edited',()=>{
+ const {route,dungeon}=fixture('Level.ID.IceCave',c=>c.modifiers.includes('empowered'));
+ const original=createRouteDocument(route,{dungeon,enemies}),packet=original.exportSnapshot(),legacy=new LoroDoc();
+ legacy.import(packet.bytes);legacy.getMap('meta').delete('manualAffixes');
+ legacy.getMap('modifiers').get('empowered').set('active',false);legacy.commit();
+ const doc=restoreRouteDocument({...packet,bytes:legacy.export({mode:'snapshot'})},{dungeon,enemies,role:'player'});
+ assert.equal(doc.snapshot().modifiers.empowered.active,true);
+ doc.execute({type:'set-meta',patch:{shadow:!route.shadow}});
+ assert.equal(doc.snapshot().modifiers.empowered.active,true);assert.equal(doc.snapshot().shadow,!route.shadow);
+ doc.execute({type:'set-modifier',kind:'empowered',patch:{active:false}});
+ assert.equal(doc.snapshot().modifiers.empowered.active,false);
+ doc.undo();doc.undo();assert.equal(doc.snapshot().modifiers.empowered.active,true);assert.equal(doc.snapshot().shadow,route.shadow);
+ original.dispose();doc.dispose();legacy.free();
 });
 test('Compact route round trip retains difficulty and dirty state sees difficulty changes',async()=>{
  const {route,dungeon}=fixture();assert.equal(hasRouteChanges(route),true);

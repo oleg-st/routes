@@ -170,7 +170,10 @@ export function createRouteDocument(route, options = {}) {
     for (const drawing of route.drawings ?? []) execute({...drawing, type: 'add-drawing'});
     for (const marker of route.markers ?? []) execute({...marker, type: 'add-marker'});
     for (const mobId of route.excluded ?? []) execute({type: 'set-excluded', mobId, excluded: true});
-    if(route.difficulty!==undefined)execute({type:'set-difficulty',value:route.difficulty});
+    // Loading a route preserves its saved affixes and assignments; only a user
+    // choosing a difficulty should apply that difficulty's defaults.
+    if(route.difficulty!==undefined)doc.getMap('meta').set('difficulty',context.difficulty(route.difficulty));
+    doc.commit({origin:'initialize'});
     checkDocument(doc, identity);
     return wrap(doc, identity, {...options, role: participantRole});
   } catch (error) {doc.free(); throw error;}

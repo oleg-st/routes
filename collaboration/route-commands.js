@@ -41,6 +41,19 @@ function textBoundary(text, index) {
   invariant(!(before >= 0xD800 && before <= 0xDBFF && after >= 0xDC00 && after <= 0xDFFF), 'Cannot split a Unicode character.');
 }
 
+function writeDifficultyAffixes(doc, choice) {
+  doc.getMap('meta').set('shadow',choice.modifiers.includes('shadow'));
+  for(const kind of MODIFIERS)doc.getMap('modifiers').ensureMergeableMap(kind).set('active',choice.modifiers.includes(kind));
+}
+function retainAffixes(doc, context) {
+  const meta=doc.getMap('meta');
+  if(meta.get('manualAffixes')===true)return;
+  // Older documents derived affixes from difficulty instead of storing their displayed state.
+  const choice=difficultyChoice(context.dungeonId,meta.get('difficulty'));
+  if(choice)writeDifficultyAffixes(doc,choice);
+  meta.set('manualAffixes',true);
+}
+
 // Validate the entire command before the first write: Loro transactions do not roll back.
 function prepare(doc, c, context) {
   const fields = commandFields[c?.type];
@@ -50,13 +63,8 @@ function prepare(doc, c, context) {
   switch (c.type) {
     case 'set-difficulty': {
       if(c.value===null){
-        const previous=difficultyChoice(context.dungeonId,meta.get('difficulty'));
         return ()=>{
-          // Keep the currently displayed affixes when returning to manual mode.
-          if(previous){
-            meta.set('shadow',previous.modifiers.includes('shadow'));
-            for(const kind of MODIFIERS)doc.getMap('modifiers').ensureMergeableMap(kind).set('active',previous.modifiers.includes(kind));
-          }
+          retainAffixes(doc,context);
           meta.delete('difficulty');
         };
       }
@@ -64,6 +72,8 @@ function prepare(doc, c, context) {
       const choice=difficultyChoice(context.dungeonId,c.value);
       return ()=>{
         meta.set('difficulty',c.value);
+        writeDifficultyAffixes(doc,choice);
+        meta.set('manualAffixes',true);
         const assignments=doc.getMap('assignments'),pulls=visibleIds(doc,'pulls');
         for(const kind of ['ghorn','witch']){
           const targets=doc.getMap('modifiers').get(kind)?.get('replacement')?.replacedEnemies??[];
@@ -81,11 +91,13 @@ function prepare(doc, c, context) {
     }
     case 'set-meta': {
       const patch = record(c.patch, ['name', 'shadow']);
-      if('shadow' in patch)invariant(meta.get('difficulty')===undefined,'Affixes are determined by difficulty.');
       if ('name' in patch) invariant(string(patch.name).trim().length > 0, 'Route name cannot be empty.');
       if ('shadow' in patch) boolean(patch.shadow);
       if (patch.shadow === true) context.modifier('shadow');
-      return () => {for (const [key, value] of Object.entries(patch)) meta.set(key, value);};
+      return () => {
+        if('shadow' in patch)retainAffixes(doc,context);
+        for (const [key, value] of Object.entries(patch)) meta.set(key, value);
+      };
     }
     case 'add-pull': {
       const key = newId(doc, 'pulls', c.id), live = visibleIds(doc, 'pulls');
@@ -144,7 +156,6 @@ function prepare(doc, c, context) {
       return () => doc.getMap('excluded').set(c.mobId, c.excluded);
     }
     case 'set-modifier': {
-      invariant(meta.get('difficulty')===undefined,'Affixes are determined by difficulty.');
       invariant(MODIFIERS.includes(c.kind), 'Invalid modifier.');
       const empowered = c.kind === 'empowered';
       const patch = record(c.patch, empowered ? ['active', 'enemies'] : ['active', 'packId', 'replacedEnemies']);
@@ -170,6 +181,7 @@ function prepare(doc, c, context) {
         invariant(patch.active !== true || (replacement ?? previous).packId, 'Choose a replacement pack.');
       }
       return () => {
+        retainAffixes(doc,context);
         const row = doc.getMap('modifiers').ensureMergeableMap(c.kind);
         if (members) writeMembership(row.ensureMergeableMap('enemies'), members);
         if (replacement) {
@@ -279,7 +291,8 @@ function prepare(doc, c, context) {
       for (const group of ['pulls', 'drawings', 'markers']) for (const key of visibleIds(doc, group)) markDeleted(deleted(doc, group), key);
       for (const key of doc.getMap('colors').keys()) doc.getMap('colors').delete(key);
       for (const key of doc.getMap('assignments').keys()) doc.getMap('assignments').set(key, null);
-      writeMembership(doc.getMap('excluded'), []); meta.set('shadow', false);
+      writeMembership(doc.getMap('excluded'), []);
+      if(meta.get('difficulty')===undefined)meta.set('shadow', false);
       for (const kind of meta.get('difficulty')===undefined?MODIFIERS:[]) {
         const row = doc.getMap('modifiers').ensureMergeableMap(kind); row.set('active', false);
         if (kind === 'empowered') writeMembership(row.ensureMergeableMap('enemies'), []);
