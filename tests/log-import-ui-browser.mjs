@@ -21,7 +21,7 @@ const bundle=await build({stdin:{contents:`
     movement:visible=>{window.result.movement=visible;},
     frame:ids=>{window.result.frame=ids;},
     heroes:[{name:'Xavian',classColor:'#077365'}],
-    highlight:(ids,{excluded=[]}={})=>{window.result.highlight=ids;window.result.chickens=excluded;},focus:(ids,{excluded=[]}={})=>{window.result.focus=ids;window.result.chickens=excluded;},describe:ids=>ids.length+' enemies',onError:error=>{throw new Error(error);}});
+    highlight:(ids,{excluded=[]}={})=>{window.result.highlight=ids;window.result.chickens=excluded;},focus:(ids,{excluded=[]}={})=>{window.result.focus=ids;window.result.chickens=excluded;},describe:ids=>ids.length+' enemies',onError:error=>{if(window.captureWarnings)window.result.warning=error;else throw new Error(error);}});
   window.ui.open();`,resolveDir:process.cwd(),loader:'js'},bundle:true,format:'iife',write:false});
 const html=`<!doctype html><html><body><dialog></dialog><section id="panel" hidden></section><script>${bundle.outputFiles[0].text}</script></body></html>`;
 const server=http.createServer((req,res)=>{res.writeHead(200,{'Content-Type':'text/html'});res.end(html);});
@@ -39,6 +39,16 @@ try{
   await page.locator('[data-log-cancel]').click();assert.equal(await page.evaluate(()=>window.result.cancelled),true);
   await page.evaluate(()=>{window.example='c4nFLaThdAxtVpYv-5';window.ui.open();});await submit();
   assert.equal(await page.evaluate(()=>window.result.saved),true);assert.equal(await page.locator('#panel').isHidden(),true);
+  await page.evaluate(()=>{
+    window.captureWarnings=true;window.result.saved=false;
+    window.extraFixture={title:'Relic warning',groups:{a:{label:'G1',enemies:['a']}},variants:[{pulls:[{groups:['a']}]}],
+      skippedRelics:[{kind:'portal'}],assumption:'1 relic marker was omitted. Add the missing portal manually.'};
+    window.ui.open();
+  });await submit();
+  assert.equal(await page.evaluate(()=>window.result.saved),true);
+  assert.match(await page.evaluate(()=>window.result.warning),/1 relic marker was omitted/);
+  assert.equal(await page.locator('#panel').isHidden(),true);
+  await page.evaluate(()=>{delete window.extraFixture;window.captureWarnings=false;});
   await page.evaluate(()=>{window.result.saved=false;window.example='rgTQYB9dqPzjJFha-7';window.ui.open();});await submit();
   assert.match(await page.locator('#panel').textContent(),/hypothesis/);await page.locator('[data-log-choice]').first().click();
   assert.equal(await page.evaluate(()=>window.result.saved),true);assert.equal(await page.locator('#panel').isHidden(),true);assert.deepEqual(errors,[]);
@@ -111,7 +121,7 @@ try{
   assert.match(await page.locator('#log-missing-enemies').textContent(),/Pull 1Raider ×1Shade ×2Pull 2Soul ×1/);
   assert.equal(await page.locator('#log-expand').isVisible(),true);
   assert.equal(await page.locator('#log-expand').textContent(),'Find missing mobs');
-  assert.match(await page.locator('#log-expand').getAttribute('title'),/confirmed packs pulled earlier.*Newly found packs do not extend/);
+  assert.match(await page.locator('#log-expand').getAttribute('title'),/near confirmed packs.*Newly found packs do not extend/);
   assert.equal(await page.locator('#log-live-form > p.muted').count(),0);
   const previousURL=await page.locator('#log-url').inputValue();
   await page.evaluate(()=>{window.cancelledFailure=window.failure;window.result.saved=false;});

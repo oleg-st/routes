@@ -55,6 +55,7 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
           neighborRadius:maxRadius,adaptiveRadius:true});
         options?.signal?.throwIfAborted();
         saved.expandedSearch={maxRadius,matching:result.matching,neighborHypotheses:result.neighborHypotheses};
+        saved.skippedRelics=result.skippedRelics;
         saved.recoveryPreview={matched:Object.values(result.groups).flatMap(g=>g.enemies).length,skipped:[]};
         return markExpanded(result,saved.expandedSearch);
       }catch(error){
@@ -70,7 +71,7 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
       if(!canContinue()||selection.reportCode!==saved.log.reportCode||selection.fightID!==saved.log.fight.id)throw new Error('Import this log first before continuing after an error.');
       if(dungeonData()!==saved.matching.dungeonData)throw new Error('Dungeon data changed. Import the log again.');
       const result=recoveryResult??await runLogMatching(saved.log,{...options,...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e])),allowPartial:true});
-      options?.signal?.throwIfAborted();saved.recovery=result.partial;
+      options?.signal?.throwIfAborted();saved.recovery=result.partial;saved.skippedRelics=result.skippedRelics;
       return result;
     },
     async connect(url,{signal}={}){
@@ -109,7 +110,7 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
         matchingOptions={dungeon,dungeonData:mode,catalog:data.enemies,presets:data['modifier-placements'].dungeons[dungeon.id]};
         const result=await runLogMatching(log,{...options,...matchingOptions,catalog:new Map(data.enemies.map(e=>[e.id,e]))});
         options?.signal?.throwIfAborted();
-        diagnostics={version:1,buildId:data.manifest?.buildId,log:loadedLog,matching:matchingOptions};
+        diagnostics={version:1,buildId:data.manifest?.buildId,log:loadedLog,matching:matchingOptions,...(result.skippedRelics?{skippedRelics:result.skippedRelics}:{})};
         return result;
       }catch(error){
         if(error.status===401)token=null;

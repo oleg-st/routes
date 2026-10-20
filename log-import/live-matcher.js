@@ -324,14 +324,24 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const portals=extractPortals(events,{fightID:fight.id,players,endTime:fight.endTime});
   const intervals=bossIntervals(events,fight.id,fight.endTime),view=mapViews(dungeon)[0];
   const usages=deduplicateRelicUsages([...invisible.usages.map(u=>({...u,kind:'invis'})),...portals.usages].filter(u=>outsideBossCombat(u,intervals)));
-  const drawings=usages.map((u,i)=>({id:`log-${u.kind}-${i}`,mapId:view.id,kind:u.kind,color:u.kind==='portal'?'#70d9ff':'#bb86fc',
-    points:[u.start,u.end].map(b=>{
+  const skippedRelics=[];
+  const drawings=usages.flatMap((u,i)=>{
+    const endpoints=[u.start,u.end].map(b=>{
       const change=events.filter(e=>e.type==='mapchange'&&e.timestamp<=b.time).at(-1);
       const world={x:b.position.y,y:b.position.x},map=worldMapImage(world,dungeon,change?.mapName??'Start');
       const point=map&&worldMapCoordinates(world,map.id,view,dungeon);
-      if(!point?.every(Number.isFinite))throw new Error('Could not project a relic position onto this dungeon map. Download import diagnostics to investigate.');
-      return point;
-    }),afterTime:(u.end.time-fight.startTime)/1000}));
+      return {time:b.time,world,mapName:change?.mapName??'Start',mapImageId:map?.id??null,point:point?.every(Number.isFinite)?point:null};
+    });
+    // Relic annotations are optional. Missing floor evidence must not discard
+    // matched enemies or invent an endpoint on an arbitrary overlapping layer.
+    if(endpoints.some(b=>!b.point)){
+      skippedRelics.push({kind:u.kind,reason:'unprojectable-position',endpoints});
+      return [];
+    }
+    return [{id:`log-${u.kind}-${i}`,mapId:view.id,kind:u.kind,color:u.kind==='portal'?'#70d9ff':'#bb86fc',
+      points:endpoints.map(b=>b.point),afterTime:(u.end.time-fight.startTime)/1000}];
+  });
+  const relicWarning=skippedRelics.length?`${skippedRelics.length} relic marker${skippedRelics.length===1?' was':'s were'} omitted because the recorded positions could not be placed reliably on the map. Add the missing portal or invisibility marker manually.`:null;
   const fires=mapCampfires(dungeon,view);
   for(const skip of deathSkipEncounters){
     const fire=fires.find(f=>f.id===skip.campfireID);if(!fire)continue;
@@ -340,7 +350,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       points:[[fire.point[0]-view.width*34/1400,fire.point[1]]],afterTime:(skip.endTime-fight.startTime)/1000});
   }
   drawings.sort((a,b)=>a.afterTime-b.afterTime);
-  return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption,inferredPlacements,movementHypotheses,...(neighborRadius?{neighborHypotheses}:{}),dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
+  return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption:[assumption,relicWarning].filter(Boolean).join(' ')||null,...(skippedRelics.length?{skippedRelics}:{}),inferredPlacements,movementHypotheses,...(neighborRadius?{neighborHypotheses}:{}),dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
     difficulty: fight.difficultyLevel,
     duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,movementTrail:buildMovementTrail(log,trajectories,dungeon),deathSkips,deathSkipEncounters,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
     replacement:Object.fromEntries(['ghorn','witch'].map(k=>[k,{active:affixes[k].active===true}])),

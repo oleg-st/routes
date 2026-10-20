@@ -37,6 +37,42 @@ test('Single-layer imports draw invisibility between the recorded positions inst
    assert.ok(Math.hypot(...drawing.points[0].map((v,i)=>v-drawing.points[1][i]))>1);
  }
 });
+test('Ambiguous relic floors omit only the marker, preserve matched enemies and report endpoint diagnostics',async()=>{
+  const catalog=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
+  const dungeon=correctDungeon(JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.SandTomb'));
+  const boss=dungeon.enemies.find(p=>catalog.get(p.id).isBoss);
+  const resources=p=>({x:p.x,y:p.y,hitPoints:100,maxHitPoints:100});
+  const input={complete:true,reportCode:'example',fight:{...fight,name:dungeon.name,startTime:0,endTime:10000,dungeonPulls:[{id:1,startTime:4000,endTime:9000}]},
+    actors:[{id:1,type:'Player'},{id:2,type:'NPC',subType:'Boss',gameID:catalog.get(boss.id).gameId}],events:[
+      // Y4W8HvtykGhVqrC9/1: these X/Y coordinates fit both Interior and Sanctum.
+      {fight:5,timestamp:0,type:'mapchange',mapName:''},
+      {fight:5,timestamp:1000,type:'cast',sourceID:1,abilityGameID:1506,sourceResources:resources({x:7048.25,y:49158.25})},
+      {fight:5,timestamp:1000,type:'applydebuff',targetID:1,abilityGameID:1002176,targetResources:resources({x:4113,y:48253})},
+      // A separately projectable relic must still be retained.
+      {fight:5,timestamp:2000,type:'cast',sourceID:1,abilityGameID:1506,sourceResources:resources({x:-19863,y:-8512})},
+      {fight:5,timestamp:2000,type:'applydebuff',targetID:1,abilityGameID:1002176,targetResources:resources({x:-18000,y:-8500})},
+      {...event,timestamp:4000,targetResources:resources({x:boss.worldPosition.y,y:boss.worldPosition.x})}
+    ]};
+  const options={dungeon,catalog,presets:{},dungeonData:'custom'};
+  const result=await matchLiveLog(input,options);
+  const baseline=await matchLiveLog({...input,events:input.events.slice(-1)},options);
+  assert.deepEqual(result.groups,baseline.groups);
+  assert.deepEqual(result.variants.map(v=>v.pulls),baseline.variants.map(v=>v.pulls));
+  assert.equal(result.partial,undefined);
+  assert.equal(result.drawings.length,1);
+  assert.equal(result.drawings[0].afterTime,2);
+  assert.equal(result.skippedRelics.length,1);
+  assert.equal(result.skippedRelics[0].kind,'portal');
+  assert.deepEqual(result.skippedRelics[0].endpoints.map(e=>e.point),[null,null]);
+  assert.deepEqual(result.skippedRelics[0].endpoints[0].world,{x:49158.25,y:7048.25});
+  assert.match(result.assumption,/1 relic marker was omitted/);
+  const named=structuredClone(input);named.events[0].mapName='Interior';
+  const resolved=await matchLiveLog(named,options);
+  assert.equal(resolved.drawings.length,2);
+  assert.equal(resolved.skippedRelics,undefined);
+  assert.equal(resolved.assumption,null);
+});
+
 test('Live import selects one fight and one filtered stream; pages keep equal-time events and compact payloads',async()=>{
   const calls=[],progress=[];
   const result=await loadLog(url,{token:'memory-only',onProgress:text=>progress.push(text),fetcher:async(endpoint,options)=>{

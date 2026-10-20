@@ -34,7 +34,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
     movement?.(movementVisible);
     closeDialog();
     if(!state.complete){draw();return;}
-    try{await commit();hide();if(fixture.partial)onError(fixture.assumption);}catch(error){draw();throw error;}
+    try{await commit();hide();if(fixture.partial||fixture.skippedRelics?.length)onError(fixture.assumption);}catch(error){draw();throw error;}
   }
   function draw(){
     const s=session.state();panel.hidden=false;
@@ -68,7 +68,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
     if(trail)trail.onchange=()=>{movementVisible=trail.checked;movement?.(movementVisible);};
     const back=panel.querySelector('[data-log-back]');if(back)back.onclick=invoke(async()=>{session.back();highlight([]);await preview(fixture,session.state());draw();});
     panel.querySelector('[data-log-cancel]').onclick=invoke(async()=>{await cancel();hide();});
-    const retry=panel.querySelector('[data-log-retry]');if(retry)retry.onclick=invoke(async()=>{await commit();hide();});
+    const retry=panel.querySelector('[data-log-retry]');if(retry)retry.onclick=invoke(async()=>{await commit();hide();if(fixture.partial||fixture.skippedRelics?.length)onError(fixture.assumption);});
     // The panel must be laid out first: it changes the map's visible height.
     if(!s.complete&&s.options.length)frame?.([...new Set(ids([...s.pulls.at(-1).groups,...s.options.flatMap(o=>o.groups)]))]);
   }
