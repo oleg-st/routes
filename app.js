@@ -52,6 +52,7 @@ let roomSession=null,roomUI,cursorUI,roomTransition=false,roomResume=null;
 let hoveredPack=null;
 let enemyMarkerCenters=new Map();
 let enemyMarkerLayoutKey='';
+let mapRenderDeferred=false,mapRenderTimer;
 let logImportUI,logPreview=null,logHighlights=new Set(),logChickenPreview=new Set();
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
 let modifierHighlightKey='';
@@ -237,6 +238,7 @@ function chooseFloor(index){
   $$('[data-floor]').forEach((e,i)=>e.classList.toggle('active',i===index));fitMap();
 }
 function fitMap(){
+  clearTimeout(mapRenderTimer);mapRenderDeferred=false;
   baseView={x:0,y:0,w:mapLayer.width,h:mapLayer.height};view={...baseView};
   if(matchMedia('(max-width:760px)').matches){
     const start=mapStart(dungeon,mapLayer)||[view.w/2,view.h/2];
@@ -250,7 +252,8 @@ function mapMarkerRadius(unit){
   // SVG fits both axes. A tall focus frame can be height-limited even when
   // its narrow viewBox width suggests a much larger zoom.
   const baseUnit=Math.max(baseView.w/Math.max(bounds.width,1),baseView.h/Math.max(bounds.height,1));
-  return enemyMarkerRadius(Number($('#marker-size').value),baseUnit/unit,$('#show-mob-icons').checked)*unit;
+  const mobileScale=matchMedia('(max-width:760px)').matches?1/3:1;
+  return enemyMarkerRadius(Number($('#marker-size').value),baseUnit/unit,$('#show-mob-icons').checked)*unit*mobileScale;
 }
 function render(){
   hideChickenTooltip();
@@ -459,6 +462,9 @@ function renderMap(){
   if(!mapLayer||!view)return;
   $('#enemy-menu').hidden=true;$('#tooltip').hidden=true;
   $('#map').setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);
+  // During a pinch, transform the existing scene with the map. Rebuilding its
+  // markers on every move makes collision avoidance shuffle them under fingers.
+  if(mapRenderDeferred){cursorUI?.refresh();return;}
   const showIcons=$('#show-mob-icons').checked;
   const unit=scale(),radius=mapMarkerRadius(unit),owners=assigned();
   // Lay out every placement, even when filtered, so selection and search do not
@@ -1039,7 +1045,13 @@ function bind(){
     if(!touches.delete(e.pointerId))return false;
     const handled=touchGesture;
     touchFrame=gestureFrame();
-    if(!touches.size){touchGesture=false;map.classList.remove('dragging');}
+    if(!touches.size){
+      touchGesture=false;map.classList.remove('dragging');
+      if(mapRenderDeferred){
+        clearTimeout(mapRenderTimer);
+        mapRenderTimer=setTimeout(()=>{mapRenderDeferred=false;renderMap();},180);
+      }
+    }
     if(handled)suppressClick=true;
     if(map.hasPointerCapture(e.pointerId))map.releasePointerCapture(e.pointerId);
     return handled;
@@ -1049,12 +1061,14 @@ function bind(){
     if(e.button!==0&&e.button!==2)return;
     $('#enemy-menu').hidden=true;hideHover();
     if(e.pointerType==='touch'){
+      clearTimeout(mapRenderTimer);
       touches.set(e.pointerId,{clientX:e.clientX,clientY:e.clientY});
       map.setPointerCapture(e.pointerId);
       if(touches.size>1){
         // A second finger cancels any pending selection/drawing edit.
         touchGesture=true;drag=null;draft=[];suppressClick=true;
-        touchFrame=gestureFrame();map.classList.add('dragging');renderMap();return;
+        touchFrame=gestureFrame();map.classList.add('dragging');renderMap();
+        mapRenderDeferred=true;return;
       }
     }
     suppressClick=false;
