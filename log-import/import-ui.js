@@ -131,7 +131,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
         expand.classList.toggle('primary',recommendSearch);
         load.classList.toggle('primary',!recommendSearch);
         expand.textContent='Find missing mobs';
-        expand.title='Look for matching mobs in packs near confirmed packs pulled earlier. Newly found packs do not extend the search. Nearby packs may not have been pulled.';
+        expand.title='Look near confirmed packs and retry with a larger approach radius, up to 3000. Newly found packs do not extend the neighbor search. Review the additional packs.';
         proceed.hidden=busy||!sameLog||!live.canContinue?.();proceed.disabled=busy;
         dismiss.hidden=busy||!sameLog||!(live.canFindMissing?.()||live.canContinue?.());dismiss.disabled=busy;
         diagnosticActions.hidden=[expand,proceed,download,dismiss].every(button=>button.hidden);

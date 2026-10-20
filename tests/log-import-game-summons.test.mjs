@@ -5,6 +5,7 @@ import {classifyGameSummons} from '../log-import/game-summons.js';
 import {classifySummons} from '../log-import/summon-evidence.js';
 import {gameSummonRules,gameSummonBuild} from '../data/game-summon-rules.js';
 import {matchLiveLog} from '../log-import/live-matcher.js';
+import {analyzeRouteEvents} from '../log-import/live-analysis.js';
 
 const parent={key:'1:1',actorID:1,instance:1,gameID:331,firstTime:0,deaths:[]};
 const child={key:'2:1',actorID:2,instance:1,gameID:324,firstTime:15000,firstPosition:{x:4000,y:0,t:15000},nearest:[{distance:5000}]};
@@ -62,6 +63,54 @@ test('Eggbearer death requires a complete 2..3 Spiderling wave and fresh corpse 
     [corpse,...children.map(c=>({...c,firstPosition:{...c.firstPosition,t:16000}}))],
     [{...corpse,gameID:268},...children],
     [corpse,...children.map(c=>({...c,nearest:[{distance:500}]}))]])assert.deepEqual(run(rows),[]);
+});
+
+function overlappingShatters(){
+  const corpses=[0,423].map((x,i)=>({...parent,key:`1:${i+1}`,instance:i+1,gameID:160,
+    positions:[{x,y:0,t:10000+i*67}],deaths:[{timestamp:10000+i*67}]}));
+  // Two children fit either corpse, while two others fit only each parent.
+  const children=[-173,0,174,249,423,596].map((x,i)=>({...child,key:`2:${i+1}`,instance:i+1,gameID:161,
+    firstTime:10700,firstPosition:{x,y:200,t:10700}}));
+  return {fightID:5,actors:[],rows:[...corpses,...children],events:[]};
+}
+
+test('Overlapping Shatters retain all six summons without inventing individual parentage',()=>{
+  const args=overlappingShatters(),result=classifyGameSummons(args);
+  assert.equal(result.length,6);
+  assert.deepEqual(result.filter(r=>r.sources).map(r=>r.key),['2:3','2:4']);
+  for(const r of result.filter(r=>r.sources)){
+    assert.equal(r.sourceKey,undefined);
+    assert.deepEqual(r.sources.map(s=>s.sourceKey),['1:1','1:2']);
+  }
+  const staticChild={...args.rows[2],key:'static',nearest:[{distance:0}]};
+  assert.equal(classifyGameSummons({...args,rows:[...args.rows,staticChild]}).length,6);
+  args.rows[0].deaths.push({...args.rows[0].deaths[0]});
+  assert.equal(classifyGameSummons(args).length,6,'duplicate deaths do not add capacity');
+});
+
+test('Overlapping death waves reject incomplete, excessive and impossible per-parent counts',()=>{
+  const args=overlappingShatters();
+  assert.deepEqual(classifyGameSummons({...args,rows:args.rows.slice(0,-1)}),[]);
+  assert.deepEqual(classifyGameSummons({...args,rows:[...args.rows,{...args.rows[4],key:'extra'}]}),[]);
+  // Six total is insufficient: four children can only belong to the left
+  // corpse, one fits both, and only one is exclusive to the right corpse.
+  const impossible=structuredClone(args);
+  [-173,-150,-100,-50,174,596].forEach((x,i)=>impossible.rows[i+2].firstPosition.x=x);
+  assert.deepEqual(classifyGameSummons(impossible),[]);
+  const stale=structuredClone(args);stale.rows[0].positions[0].t=8000;
+  assert.deepEqual(classifyGameSummons(stale),[]);
+});
+
+const shatterRun='private/logs/route-import-Hmd6QrcxDn8YWkGq-2.json';
+test('Peak replay identifies twelve spawned Shardlings and retains all thirteen Zealots',
+  {skip:!fs.existsSync(shatterRun)},()=>{
+  const saved=JSON.parse(fs.readFileSync(shatterRun)),catalog=new Map(saved.matching.catalog.map(e=>[e.id,e]));
+  const {npcRows:rows}=analyzeRouteEvents(saved.log,saved.matching.dungeon,catalog);
+  const summons=classifySummons({fightID:saved.log.fight.id,actors:saved.log.actors,rows,events:saved.log.events});
+  const keys=new Set(summons.map(s=>s.key));
+  assert.equal(rows.filter(r=>r.gameID===161&&keys.has(r.key)).length,12);
+  assert.equal(rows.filter(r=>r.gameID===161&&!keys.has(r.key)).length,10);
+  assert.equal(rows.filter(r=>r.gameID===333&&!keys.has(r.key)).length,13);
 });
 
 test('Generated identities distinguish spawned NPCs from buff targets and transformations',()=>{

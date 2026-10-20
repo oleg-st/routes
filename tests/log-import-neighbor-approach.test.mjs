@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createNeighborApproach} from '../log-import/neighbor-approach.js';
 import {matchLiveLog} from '../log-import/live-matcher.js';
 import {createLiveImport} from '../log-import/live-import.js';
+import fs from 'node:fs';
 
 const placement=(id,x,extra={})=>({id,placementId:id,packId:id,worldPosition:{x,y:0},...extra});
 const pack=(id,x,extra={})=>({id,placements:[placement(id,x,extra)]});
@@ -95,6 +96,8 @@ test('Recovery lists missing mobs by pull, searches once, retains additions and 
     const before=requests.length,result=await live.continueImport(url);
     assert.equal(requests.length,before,'reuse the prepared partial route');assert.equal(apiCalls,2);
     assert.equal(result.partial.matched,2);assert.equal(result.partial.skipped.length,1);
+    assert.equal(result.matching.aggroRadius,3000,'partial recovery uses the last searched radius');
+    assert.match(result.assumption,/Approach radius increased from 1500 to 3000/);
     assert.deepEqual(Object.values(result.groups).flatMap(g=>g.enemies).sort(),['a','b']);
     assert.equal(live.canContinue(),false);assert.equal(result.expandedSearch.maxRadius,6000);
     live.cancelImport();assert.equal(live.diagnostics(),null);assert.equal(live.missingEnemies(),null);
@@ -102,4 +105,67 @@ test('Recovery lists missing mobs by pull, searches once, retains additions and 
     await assert.rejects(live.continueImport(url),/Import this log first/);
     live.disconnect();assert.equal(live.missingEnemies(),null);assert.equal(live.canFindMissing(),false);
   }finally{globalThis.document=previousDocument;globalThis.Worker=previousWorker;}
+});
+
+test('Find missing retries approach radius without anchored neighbors and records the recovery assumption',async t=>{
+  const dungeon={id:'recovery-test',name:'Recovery test',mapImages:[],enemies:[placement('a',0)]};
+  const catalog=[{id:'a',gameId:123,name:'Enemy'}];
+  const log={complete:true,reportCode:'c4nFLaThdAxtVpYv',fight:{id:5,name:dungeon.name,startTime:0,endTime:1000,dungeonPulls:[{id:1,startTime:0,endTime:1000}]},
+    actors:[{id:1,type:'Player'},{id:2,type:'NPC',gameID:123}],events:[
+      {type:'damage',timestamp:100,fight:5,sourceID:2,targetID:1,
+        sourceResources:{x:0,y:500,hitPoints:100,maxHitPoints:100},
+        targetResources:{x:0,y:1850,hitPoints:100,maxHitPoints:100}},
+    ]};
+  const previousDocument=globalThis.document,previousWorker=globalThis.Worker,requests=[];
+  globalThis.document={baseURI:'http://localhost/'};
+  globalThis.Worker=class{
+    terminate(){this.stopped=true;}
+    postMessage({log,options}){
+      requests.push(options);
+      matchLiveLog(log,options).then(result=>{if(!this.stopped)this.onmessage({data:{result}});},
+        error=>{if(!this.stopped)this.onmessage({data:{error:error.message,diagnostics:error.diagnostics}});});
+    }
+  };
+  t.mock.method(globalThis,'fetch',async()=>({ok:true,json:async()=>({access_token:'mock',token_type:'Bearer'})}));
+  let apiCalls=0;
+  const url=`https://www.fellowshiplogs.com/reports/${log.reportCode}?fight=5`;
+  const fetcher=async(_,request)=>{
+    apiCalls++;const q=JSON.parse(request.body).query;
+    const report=q.includes('RouteImportMetadata')?{fights:[log.fight],masterData:{actors:log.actors}}:{events:{data:log.events,nextPageTimestamp:null}};
+    return {ok:true,json:async()=>({data:{reportData:{report}}})};
+  };
+  const live=createLiveImport({data:{dungeons:[dungeon],enemies:catalog,'modifier-placements':{dungeons:{}}},
+    dungeonData:()=>'custom',persist:async()=>{},storage:{},location:{},callback:{callback:{code:'mock',verifier:'mock'},pending:{url,dungeonData:'custom'}}});
+  try{
+    await live.resume();
+    await assert.rejects(live.load(url,{fetcher}),/Could not match/);
+    assert.ok(requests.every(r=>!r.adaptiveRadius),'normal loading never expands the radius');
+    const result=await live.expandSearch(url);
+    assert.equal(apiCalls,2,'recovery reuses downloaded events');
+    assert.equal(result.partial,undefined);assert.equal(result.matching.aggroRadius,1900);
+    assert.deepEqual(result.matching.radiusAttempts.map(r=>r.radius),[1500,1600,1700,1800,1900]);
+    assert.match(result.assumption,/Approach radius increased from 1500 to 1900/);
+    assert.equal(result.expandedSearch.matching.aggroRadius,1900);
+    assert.deepEqual(live.missingEnemies(),[]);assert.equal(live.canFindMissing(),false);
+  }finally{globalThis.document=previousDocument;globalThis.Worker=previousWorker;}
+});
+
+const peakRun='private/logs/route-import-Hmd6QrcxDn8YWkGq-2.json';
+test('Find missing settings recover both confirmed G24 Zealots in Peak fight 2',
+  {skip:!fs.existsSync(peakRun)},async()=>{
+  const saved=JSON.parse(fs.readFileSync(peakRun)),catalog=new Map(saved.matching.catalog.map(e=>[e.id,e]));
+  const options={...saved.matching,catalog};
+  await assert.rejects(matchLiveLog(saved.log,options),e=>e.diagnostics?.aggroRadius===1500);
+  const result=await matchLiveLog(saved.log,{...options,neighborRadius:6000,adaptiveRadius:true});
+  assert.equal(result.matching.aggroRadius,1900);
+  assert.equal(result.partial,undefined);assert.deepEqual(result.inferredPlacements,[]);
+  assert.equal(result.variants.length,8);
+  const byID=new Map(saved.matching.dungeon.enemies.map(p=>[p.placementId,p]));
+  for(const variant of result.variants){
+    const ids=variant.pulls.flatMap(p=>p.groups).flatMap(id=>result.groups[id].enemies);
+    const count=gameID=>ids.filter(id=>catalog.get(byID.get(id)?.id)?.gameId===gameID).length;
+    assert.equal(count(333),13);assert.equal(count(161),10);
+    const pack=variant.pulls[1].groups.map(id=>result.groups[id]).find(g=>g.label==='G24');
+    assert.equal(pack.enemies.length,5);assert.equal(pack.empowered.length,1);
+  }
 });

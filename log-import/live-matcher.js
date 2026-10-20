@@ -98,7 +98,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   let gapApproach;
   for(let radius=config.aggroRadius;radius<=maximum;radius+=step){
     signal?.throwIfAborted();
-    onProgress(neighborRadius?'Searching near confirmed pulled packs…':`Matching packs with approach radius ${radius}…`);await yieldUI();
+    onProgress(neighborRadius?`Searching near confirmed pulled packs with approach radius ${radius}…`:`Matching packs with approach radius ${radius}…`);await yieldUI();
     try{
       let result;
       try{result=await matchAtRadius({...config,aggroRadius:radius});}

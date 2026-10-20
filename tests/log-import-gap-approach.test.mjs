@@ -73,6 +73,37 @@ test('Turnaround heading and the gap cannot cross death, invisibility, portals o
   assert.equal(turnCheck({packs:[{...turningPack,placements:[{...turningPack.placements[0],dormant:true,gameGuid:'test'}]}]})('souls',29988,1500),null);
 });
 
+// Run 14 has a longer gap than run 20. The incoming heading approaches G35
+// diagonally, so its straight continuation misses the pack entirely.
+const detouringPlayer={...turningPlayer,positions:[
+  {t:10353,x:5984,y:8383,hp:100,eventType:'heal'},
+  {t:10721,x:5979,y:7846,hp:100,eventType:'heal'},
+  {t:18233,x:6897,y:6041,hp:100,eventType:'applybuff'},
+]};
+const detourCheck=options=>turnCheck({trajectories:[detouringPlayer],...options});
+
+test('A directed detour accounts for a turn within a gap at the observed speed',()=>{
+  const hit=detourCheck()('souls',31126,1500);
+  assert.equal(hit.model,'detour');assert.equal(hit.distance,1500);
+  assert.ok(hit.time>10721&&hit.time<18233);
+  assert.ok(hit.pathDistance<=hit.speed*hit.gapMs/1000);
+  assert.equal(detourCheck()('souls',12000,1500),null,'cannot arrive after first engagement');
+  const slow=structuredClone(detouringPlayer);slow.positions[0].y=7900;
+  assert.equal(detourCheck({trajectories:[slow]})('souls',31126,1500),null,'must return at the recorded speed');
+  const away=structuredClone(detouringPlayer);away.positions[0].y=7309;
+  assert.equal(detourCheck({trajectories:[away]})('souls',31126,1500),null,'heading must approach the pack');
+  const stale=structuredClone(detouringPlayer);stale.positions[0].t=8000;
+  assert.equal(detourCheck({trajectories:[stale]})('souls',31126,1500),null);
+  assert.equal(detourCheck({trajectories:[{...detouringPlayer,type:'NPC'}]})('souls',31126,1500),null);
+  for(const timestamp of [10500,15000])for(const options of [
+    {trajectories:[{...detouringPlayer,deaths:[{timestamp}]}]},
+    {events:[{type:'mapchange',timestamp}]},
+    {events:[{type:'applydebuff',targetID:3,abilityGameID:1002176,timestamp}]},
+    {invisibility:[{playerID:3,start:{time:timestamp},end:{time:timestamp+100}}]},
+  ])assert.equal(detourCheck(options)('souls',31126,1500),null);
+  assert.equal(detourCheck({packs:[{...turningPack,placements:[{...turningPack.placements[0],buried:true}]}]})('souls',31126,1500),null);
+});
+
 test('Turnaround evidence matches a whole three-enemy pack without inventing members',async()=>{
   const dungeon={id:'turn-test',name:'Turn',mapImages:[],enemies:[0,1,2].map(i=>({
     id:'soul',placementId:`soul-${i}`,packId:'souls',worldPosition:{x:4606.552+i*50,y:11102.34},
@@ -93,8 +124,9 @@ test('Turnaround evidence matches a whole three-enemy pack without inventing mem
   for(const g of groups)assert.equal(result.variants[0].passage[g.id],null);
 });
 
-const savedRun='private/logs/new2/route-import-Hmd6QrcxDn8YWkGq-20.json';
-test('Sailor Abyss imports all 88 enemies, including G35 in the first pull', {skip:!fs.existsSync(savedRun)},async()=>{
+const savedRun=['private/logs/route-import-Hmd6QrcxDn8YWkGq-20.json',
+  'private/logs/new2/route-import-Hmd6QrcxDn8YWkGq-20.json'].find(p=>fs.existsSync(p));
+test('Sailor Abyss imports all 88 enemies, including G35 in the first pull', {skip:!savedRun},async()=>{
   const saved=JSON.parse(fs.readFileSync(savedRun)),options={...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e]))};
   const result=await matchLiveLog(saved.log,options);
   assert.equal(result.matching.aggroRadius,1500);assert.equal(result.partial,undefined);
@@ -105,6 +137,25 @@ test('Sailor Abyss imports all 88 enemies, including G35 in the first pull', {sk
   assert.equal(souls.enemies.length,3);
   assert.ok(result.movementHypotheses.some(h=>h.pack==='G35'&&h.key==='3:1'&&h.model==='turnaround'));
   assert.equal(variant.passage[souls.id],null,'inferred contact is never observed aggro evidence');
+  assert.match(result.assumption,/actual path is unknown/);
+});
+
+const detourRun='private/logs/route-import-Hmd6QrcxDn8YWkGq-14.json';
+test('Sailor Abyss run 14 retains all 86 enemies and three G35 souls in every candidate',
+  {skip:!fs.existsSync(detourRun)},async()=>{
+  const saved=JSON.parse(fs.readFileSync(detourRun)),catalog=new Map(saved.matching.catalog.map(e=>[e.id,e]));
+  const result=await matchLiveLog(saved.log,{...saved.matching,catalog});
+  assert.equal(result.matching.aggroRadius,1500);assert.equal(result.partial,undefined);
+  assert.deepEqual(result.inferredPlacements,[]);
+  const souls=saved.matching.dungeon.enemies.filter(p=>p.packId==='pack-game-7e0e99d0a409b6a38b4b1cd2').map(p=>p.placementId);
+  assert.equal(souls.length,3);assert.ok(result.variants.length>0);
+  for(const variant of result.variants){
+    const ids=variant.pulls.flatMap(p=>p.groups).flatMap(id=>result.groups[id].enemies);
+    assert.equal(ids.length,86);
+    const first=variant.pulls[0].groups.flatMap(id=>result.groups[id].enemies);
+    assert.ok(souls.every(id=>first.includes(id)));
+  }
+  assert.ok(result.movementHypotheses.some(h=>h.pack==='G35'&&h.model==='detour'));
   assert.match(result.assumption,/actual path is unknown/);
 });
 test('A unique gap-based route completes automatically while retaining hypothesis evidence',async()=>{

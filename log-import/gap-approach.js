@@ -35,6 +35,23 @@ function turnaround(s,target,time,radius){
     model:'turnaround',speed:speed*1000,pathDistance};
 }
 
+// A heading toward a pack can change inside a gap: a straight ray need not
+// intersect its aggro circle. Bound the excursion by the freshly observed
+// speed, the first event deadline and the return to the next recorded point.
+// This remains a reviewable movement hypothesis, not a sampled aggro witness.
+function detour(s,target,time,radius){
+  if(!s.incoming)return null;
+  const vx=target.b.x-target.a.x,vy=target.b.y-target.a.y,length=vx*vx+vy*vy;
+  const fraction=length?clamp(((s.a.x-target.a.x)*vx+(s.a.y-target.a.y)*vy)/length):0;
+  const destination=at(target.a,target.b,fraction),dx=destination.x-s.a.x,dy=destination.y-s.a.y;
+  const distance=Math.hypot(dx,dy),{speed}=s.incoming;
+  if(distance<=radius||dx*s.incoming.dx+dy*s.incoming.dy<=0)return null;
+  const outward=distance-radius,point=at(s.a,destination,outward/distance);
+  const contactTime=s.start+outward/speed,pathDistance=outward+Math.hypot(point.x-s.b.x,point.y-s.b.y);
+  if(contactTime>Math.min(time,s.end)||pathDistance>speed*(s.end-s.start))return null;
+  return {distance:radius,time:contactTime,model:'detour',speed:speed*1000,pathDistance};
+}
+
 // A plausible crossing or turnaround, never an observed position or proof of
 // aggro. Only used when ordinary evidence cannot produce a complete route.
 export function createGapApproach({packs,trajectories,events=[],invisibility=[],maxGapMs=15000,maxSpeed=3000}){
@@ -79,7 +96,8 @@ export function createGapApproach({packs,trajectories,events=[],invisibility=[],
         for(const target of targets){
           if(![target.a,target.b].every(p=>Number.isFinite(p?.x)&&Number.isFinite(p?.y)))continue;
           const hit=closest(s.a,b,target.a,target.b),crossing=s.start+(end-s.start)*hit.fraction;
-          const evidence=hit.distance<=radius&&!(s.source==='engaged enemy'&&crossing>=time)?{...hit,time:crossing}:turnaround(s,target,time,radius);
+          const evidence=hit.distance<=radius&&!(s.source==='engaged enemy'&&crossing>=time)?{...hit,time:crossing}:
+            turnaround(s,target,time,radius)??detour(s,target,time,radius);
           if(!evidence)continue;
           if(!best||evidence.distance<best.distance)best={...evidence,key:s.key,source:s.source,start:s.start,end:s.end,patrol:target.patrol,gapMs:s.end-s.start};
         }

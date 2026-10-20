@@ -3,6 +3,7 @@ import {parseReportURL} from './report-url.js';
 import {loadLog,loadReportFights} from './live-api.js';
 import {runLogMatching} from './matcher-client.js';
 import {correctDungeon} from '../data/placement-corrections.js';
+import {matchingConfig} from './matching-config.js';
 const pendingKey='fellowship-route-import-pending';
 
 // Called at app startup, before any navigation or room connection. The code is
@@ -25,7 +26,10 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
   const canContinue=()=>Boolean(diagnostics?.log.complete&&diagnostics.matching&&!diagnostics.recovery&&!diagnostics.expandedSearch?.matching&&['no-compatible-route','unknown-chicken-target','matching-limit','matching-timeout'].includes(diagnostics.details?.code));
   const canFindMissing=()=>Boolean(diagnostics?.log.complete&&diagnostics.matching&&!diagnostics.recovery&&!diagnostics.expandedSearch&&diagnostics.details?.code==='no-compatible-route');
   const markExpanded=(result,search)=>({...result,expandedSearch:search,assumption:[
-    `Additional search near confirmed pulled packs (radius ${search.maxRadius}). Nearby packs may not have been pulled.`,result.assumption].filter(Boolean).join(' ')});
+    `Additional search near confirmed pulled packs (radius ${search.maxRadius}). Nearby packs may not have been pulled.`,
+    result.matching.aggroRadius>matchingConfig.aggroRadius?
+      `Approach radius increased from ${matchingConfig.aggroRadius} to ${result.matching.aggroRadius} for this recovery. Review the additional packs.`:null,
+    result.assumption].filter(Boolean).join(' ')});
   async function prepareRecovery(saved,options,neighborRadius=0){
     try{
       const result=await runLogMatching(saved.log,{...options,...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e])),allowPartial:true,neighborRadius});
@@ -48,7 +52,7 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
       if(dungeonData()!==saved.matching.dungeonData)throw new Error('Dungeon data changed. Import the log again.');
       try{
         const result=await runLogMatching(saved.log,{...options,...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e])),
-          neighborRadius:maxRadius});
+          neighborRadius:maxRadius,adaptiveRadius:true});
         options?.signal?.throwIfAborted();
         saved.expandedSearch={maxRadius,matching:result.matching,neighborHypotheses:result.neighborHypotheses};
         saved.recoveryPreview={matched:Object.values(result.groups).flatMap(g=>g.enemies).length,skipped:[]};
@@ -56,7 +60,8 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
       }catch(error){
         if(options?.signal?.aborted)throw error;
         saved.expandedSearch={maxRadius,error:error.message,details:error.diagnostics};
-        await prepareRecovery(saved,options,maxRadius);
+        const config={...matchingConfig,...options?.config,aggroRadius:error.diagnostics?.aggroRadius??options?.config?.aggroRadius??matchingConfig.aggroRadius};
+        await prepareRecovery(saved,{...options,config},maxRadius);
         return null;
       }
     },

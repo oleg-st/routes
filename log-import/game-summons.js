@@ -35,7 +35,7 @@ export function classifyGameSummons({fightID,actors,rows,events,rules=gameSummon
   }
   // Duplicate pages/casts cannot inflate waves or manufacture ambiguity.
   const unique=[...new Map(triggers.map(t=>[`${t.rule.id}:${t.sourceKey}:${t.time}`,t])).values()];
-  const waves=new Map();
+  const waves=new Map(),fixedDeathCandidates=new Map();
   for(const row of rows){
     const possible=unique.filter(t=>eligible(row,t.rule)&&row.key!==t.sourceKey&&row.firstTime>=t.time&&row.firstTime-t.time<=t.rule.windowMs&&
       (!t.rule.maxDistance||(fresh(row.firstPosition)&&Math.abs(row.firstPosition.t-row.firstTime)<=3000&&
@@ -43,15 +43,66 @@ export function classifyGameSummons({fightID,actors,rows,events,rules=gameSummon
         Math.hypot(row.firstPosition.x-t.position.x,row.firstPosition.y-t.position.y)<=t.rule.maxDistance))&&
       (t.rule.trigger!=='death'||row.firstPosition.t>=t.time&&row.firstPosition.t-t.time<=t.rule.windowMs&&
         Math.abs(row.firstPosition.t-row.firstTime)<=1000));
-    // Repeated casts of one parent are fine. Two plausible parents are not.
+    // Fixed-size death waves can overlap. Keep every eligible child in the
+    // joint count instead of dropping ambiguous children before counting.
+    if(possible.length&&possible.every(t=>t.rule.trigger==='death'&&
+      Number.isInteger(t.rule.minCount)&&t.rule.minCount>0&&t.rule.minCount===t.rule.maxCount)){
+      fixedDeathCandidates.set(row,possible);continue;
+    }
+    // Repeated casts of one parent are fine. Two plausible casters are not.
     if(new Set(possible.map(t=>t.sourceKey)).size!==1)continue;
     const trigger=possible.toSorted((a,b)=>b.time-a.time)[0];
     if(!waves.has(trigger))waves.set(trigger,[]);waves.get(trigger).push(row);
   }
-  return [...waves].flatMap(([t,members])=>{
+  return [...classifyFixedDeathWaves(fixedDeathCandidates),...[...waves].flatMap(([t,members])=>{
     if(t.rule.trigger==='death'&&(members.length<t.rule.minCount||members.length>t.rule.maxCount))return [];
     return members.map(row=>({key:row.key,classification:'probable-summon',exclude:true,
       basis:`game-data-${t.rule.trigger}-spawn`,rule:t.rule.id,sourceID:t.sourceID,sourceKey:t.sourceKey,
       abilityGameID:t.rule.abilityGameID,time:t.time,delayMs:row.firstTime-t.time}));
-  });
+  })];
+}
+
+function classifyFixedDeathWaves(candidates){
+  const byTrigger=new Map();
+  for(const [row,triggers]of candidates)for(const t of triggers){
+    if(!byTrigger.has(t))byTrigger.set(t,[]);
+    byTrigger.get(t).push(row);
+  }
+  const visited=new Set(),result=[];
+  for(const start of candidates.keys()){
+    if(visited.has(start))continue;
+    const members=new Set([start]),triggers=new Set();
+    for(const row of members){
+      visited.add(row);
+      for(const t of candidates.get(row)){
+        triggers.add(t);
+        for(const child of byTrigger.get(t))members.add(child);
+      }
+    }
+    // Different mechanics or repeated death records for one parent do not
+    // establish independent waves. Require all expected children, with a
+    // feasible assignment to the individual corpses' count and geometry.
+    const ts=[...triggers];
+    if(new Set(ts.map(t=>t.rule.id)).size!==1||new Set(ts.map(t=>t.sourceKey)).size!==ts.length)continue;
+    const slots=ts.flatMap(t=>Array.from({length:t.rule.minCount},()=>t));
+    if(slots.length!==members.size)continue;
+    const assigned=new Map();
+    const place=(row,seen)=>{
+      for(let i=0;i<slots.length;i++){
+        if(seen.has(i)||!candidates.get(row).includes(slots[i]))continue;
+        seen.add(i);
+        if(!assigned.has(i)||place(assigned.get(i),seen)){assigned.set(i,row);return true;}
+      }
+      return false;
+    };
+    if(![...members].every(row=>place(row,new Set())))continue;
+    for(const row of members){
+      const possible=candidates.get(row),t=possible[0];
+      result.push({key:row.key,classification:'probable-summon',exclude:true,
+        basis:'game-data-death-spawn',rule:t.rule.id,abilityGameID:t.rule.abilityGameID,
+        ...(possible.length===1?{sourceID:t.sourceID,sourceKey:t.sourceKey,time:t.time,delayMs:row.firstTime-t.time}:
+          {sources:possible.map(p=>({sourceID:p.sourceID,sourceKey:p.sourceKey,time:p.time,delayMs:row.firstTime-p.time}))})});
+    }
+  }
+  return result;
 }
