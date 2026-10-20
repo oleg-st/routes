@@ -85,7 +85,7 @@ try{
   const chickenMarker=page.locator(`#markers > g[data-placement="${chickenTarget.placementId}"]`);
   await chickenMarker.dispatchEvent('click');
   const routeHPBefore=await page.locator('#route-health .health-value').getAttribute('title');
-  await chickenMarker.press('Shift+F10');await page.getByRole('menuitem',{name:'Add Chicken',exact:true}).click();
+  await chickenMarker.press('Shift+F10');await page.getByRole('menuitemcheckbox',{name:'Chicken',exact:true}).click();
   assert.notEqual(await page.locator('#route-health .health-value').getAttribute('title'),routeHPBefore);
   await chickenMarker.press('Shift+F10');await page.getByRole('menuitem',{name:'Info',exact:true}).click();
   assert.equal(await page.locator('#inspector .health-value').getAttribute('title'),'1,555,786 HP','Medium Chicken matches report c4nFLaThdAxtVpYv fight 5');

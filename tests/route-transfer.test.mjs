@@ -8,6 +8,8 @@ import {correctDungeon} from '../data/placement-corrections.js';
 import {mapViews} from '../map-views.js';
 import {modifierAvailable} from '../game-scoring.js';
 import {routeDictionary} from '../data/route-dictionary.js';
+import {difficultyOptions} from '../difficulty.js';
+import {hasRouteChanges} from '../route-model.js';
 
 const read=name=>JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`,import.meta.url)));
 const dungeons=read('dungeons').map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
@@ -15,6 +17,25 @@ const presets=read('modifier-placements');
 const content=route=>JSON.parse(JSON.stringify(route,(key,value)=>key==='id'?undefined:value));
 const pack=(payload,prefix='R3.')=>prefix+deflateRawSync(JSON.stringify(payload)).toString('base64url');
 const unpack=text=>JSON.parse(inflateRawSync(Buffer.from(text.slice(3),'base64url')));
+
+test('Priority targets survive JSON and compact exports with and without difficulty',async()=>{
+  for(const dungeon of dungeons){
+    for(const difficulty of [undefined,difficultyOptions(dungeon.id)[0]?.value]){
+      const route=newRoute(dungeon,'test'),saved=structuredClone(route);
+      if(difficulty!==undefined)route.difficulty=difficulty;
+      route.priorityTargets=dungeon.enemies.slice(0,4).map(p=>p.placementId).reverse();
+      assert.ok(hasRouteChanges(route,saved));
+      const validated=validateRoute(route,dungeons,enemies);
+      assert.deepEqual(validated.priorityTargets,route.priorityTargets);
+      const encoded=await encodeRoute(route,dungeon),copy=await decodeRoute(encoded,dungeons,enemies);
+      assert.deepEqual(copy.priorityTargets,route.priorityTargets);
+      assert.equal(copy.difficulty,difficulty);
+      assert.equal(await encodeRoute(copy,dungeon),encoded);
+      assert.ok(!hasRouteChanges({...route,priorityTargets:[...route.priorityTargets].reverse()},route));
+      assert.throws(()=>validateRoute({...route,priorityTargets:['foreign']},dungeons,enemies),/Invalid priority/);
+    }
+  }
+});
 
 test('Compact routes preserve all content in every dungeon, with hundredth-pixel coordinates and Unicode',async()=>{
   let oldSize=0,newSize=0;

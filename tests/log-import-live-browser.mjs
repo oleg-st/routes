@@ -25,6 +25,7 @@ try{
   const events=[{type:'damage',timestamp:200,fight:5,sourceID:1,targetID:2,targetInstance:1,sourceResources:{x:boss.worldPosition.y,y:boss.worldPosition.x,hitPoints:100,maxHitPoints:100},targetResources:{x:boss.worldPosition.y,y:boss.worldPosition.x,hitPoints:90,maxHitPoints:100}}];
   browser=await chromium.launch({channel:'msedge',headless:true});
   const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],requests=[];
+  page.setDefaultTimeout(20000);
   page.on('pageerror',e=>errors.push(e.message));
   const origin=`http://127.0.0.1:${server.address().port}`;
   await page.addInitScript(({code})=>{
@@ -63,7 +64,7 @@ try{
   assert.equal(await page.locator('#pull-count').textContent(),'1');assert.equal(requests.length,3);
   assert.equal(await page.locator('#difficulty').inputValue(),'75');
   assert.equal(await page.locator('#difficulty option:checked').textContent(),'E55');
-  assert.ok(await page.locator('#route-health').isVisible());assert.ok(await page.locator('#empowered').isDisabled());
+  assert.ok(await page.locator('#route-health').isVisible());assert.ok(await page.locator('#empowered').isEnabled());
   assert.equal(await page.evaluate(()=>JSON.stringify([Object.entries(localStorage),Object.entries(sessionStorage)]).includes('mock-memory-token')),false);
   await page.locator('#import-log-button').click();await page.locator('#log-fight').waitFor();
   assert.equal(await page.locator('#log-fight').inputValue(),'5');
@@ -145,5 +146,26 @@ try{
   const recovered=JSON.parse(fs.readFileSync(await (await recoveredDownload).path(),'utf8'));
   assert.equal(recovered.recovery.matched,1);assert.equal(recovered.recovery.skipped.length,1);
   await page.locator('#log-url').fill(`https://www.fellowshiplogs.com/reports/${code}`);assert.equal(await diagnosticsButton.isHidden(),true);
+  // A real focused pack passes through the worker, import preview, save and reload.
+  const priority=read('tests/fixtures/priority-arsonist.json');
+  const storm=correctDungeon(read('data/dungeons.json').find(d=>d.name===priority.log.fight.name),'custom');
+  Object.assign(fight,priority.log.fight,{id:5,modifiers:[]});
+  actors.splice(0,actors.length,...priority.log.actors);
+  events.splice(0,events.length,...priority.log.events.map(e=>{
+    const placement=storm.enemies.find(p=>p.placementId===priority.group.placements[`${e.targetID}:${e.targetInstance??1}`]);
+    return {...e,fight:5,...(e.targetResources?{targetResources:{...e.targetResources,x:placement.worldPosition.y,y:placement.worldPosition.x},
+      sourceResources:{hitPoints:100,maxHitPoints:100,x:placement.worldPosition.y,y:placement.worldPosition.x}}:{})};
+  }));
+  await page.locator('#log-url').fill(`https://www.fellowshiplogs.com/reports/${code}?fight=5`);await page.locator('#log-load').click();
+  await page.waitForFunction(()=>document.querySelector('#route-name')?.value==='Stormwatch · #5'&&!document.querySelector('#route-name').disabled);
+  const target=priority.group.placements['61:3'];
+  const marker=page.locator(`#markers > g[data-placement="${target}"]`);
+  assert.equal(await page.locator('#markers .priority-target-ring').count(),1);
+  assert.equal(await marker.locator('.priority-target-ring').count(),1);
+  await marker.press('Shift+F10');assert.equal(await page.getByRole('menuitemcheckbox',{name:'Priority target'}).getAttribute('aria-checked'),'true');
+  await page.keyboard.press('Escape');await page.locator('#save-route').click();
+  await page.waitForFunction(()=>document.querySelector('#save-route').disabled);
+  await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
+  assert.equal(await marker.locator('.priority-target-ring').count(),1);
   assert.deepEqual(errors,[]);console.log('Live import: direct fight URLs, summary-only fight list, latest default, selected fight import, labels, PKCE, worker and cancel passed (mocked API).');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

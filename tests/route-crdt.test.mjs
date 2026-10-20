@@ -38,6 +38,27 @@ function assertUnchanged(doc, fn, pattern) {
   assert.equal(doc.canonical(), before); assert.deepEqual(doc.version(), version);
 }
 
+test('Priority targets persist, merge per mob, undo, clear and leave scoring unchanged', t => {
+  const a=seed(t),b=peer(t,a),beforeScore=scoreRoute(a.snapshot(),dungeon,enemies);
+  a.execute({type:'set-priority-target',mobId:mobs[0],priority:true});
+  a.undo();assert.deepEqual(a.snapshot().priorityTargets,[]);
+  a.redo();assert.deepEqual(a.snapshot().priorityTargets,[mobs[0]]);
+  b.execute({type:'set-priority-target',mobId:boss,priority:true});
+  sync(a,b);
+  const expected=[mobs[0],boss].sort();
+  assert.deepEqual(a.snapshot().priorityTargets,expected);
+  assert.deepEqual(scoreRoute(a.snapshot(),dungeon,enemies),beforeScore);
+  assert.deepEqual(peer(t,a).snapshot().priorityTargets,expected);
+  const copy=createRouteDocument(a.snapshot(),options);t.after(()=>copy.dispose());
+  assert.deepEqual(copy.snapshot().priorityTargets,expected);
+  assertUnchanged(a,()=>a.execute({type:'set-priority-target',mobId:'unknown',priority:true}),/Unknown enemy/);
+  assertUnchanged(a,()=>a.execute({type:'set-priority-target',mobId:mobs[0],priority:'yes'}),/boolean/i);
+  a.execute({type:'set-priority-target',mobId:mobs[0],priority:false});sync(a,b);
+  assert.deepEqual(a.snapshot().priorityTargets,[boss]);
+  a.execute({type:'clear-route'});assert.deepEqual(a.snapshot().priorityTargets,[]);
+  a.undo();assert.deepEqual(a.snapshot().priorityTargets,[boss]);
+});
+
 test('Split pull insertion and reassignment sync and undo as one action',t=>{
   const original=seed(t);
   original.execute({type:'assign-mobs',pullId:'pull-1',mobIds:mobs,toggle:false});

@@ -23,6 +23,8 @@ export const eventsQuery=`query RouteImportEvents($code:String!,$fights:[Int]!,$
 const pick=(value,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(value,k)).map(k=>[k,value[k]]));
 export function compactRouteEvent(event){
   const result=pick(event,['timestamp','type','fight','sourceID','sourceInstance','targetID','targetInstance','attackerID','attackerInstance','abilityGameID','extraAbilityGameID','encounterID','mapName','fake']);
+  // Preserve actual damage for priority-target research; older diagnostics lack it.
+  if(event.type==='damage')for(const field of ['amount','overkill'])if(Number.isFinite(event[field]))result[field]=event[field];
   if(positionEventTypes.includes(event.type)&&!routeEffectIDs.includes(event.abilityGameID))result.positionOnly=true;
   for(const side of ['source','target','attacker'])if(event[side+'Resources'])result[side+'Resources']=pick(event[side+'Resources'],['x','y','hitPoints','maxHitPoints']);
   return result;

@@ -51,7 +51,7 @@ test('Live import selects one fight and one filtered stream; pages keep equal-ti
   }});
   assert.equal(calls.length,3);assert.equal(result.events.length,2);assert.equal(result.complete,true);
   assert.match(progress[1],/page 1 \(20%\)$/);assert.match(progress[2],/page 2 \(100%\)$/);
-  assert.deepEqual(result.actors,actors);assert.equal(result.events[0].amount,undefined);assert.equal(result.events[0].sourceResources.mana,undefined);
+  assert.deepEqual(result.actors,actors);assert.equal(result.events[0].amount,123456);assert.equal(result.events[1].amount,10);assert.equal(result.events[0].sourceResources.mana,undefined);
 });
 test('Live loader rejects partial/invalid pagination, API errors, missing actors and expired login',async()=>{
   for(const bad of [{data:[event]},{data:[event],nextPageTimestamp:100},{data:[{...event,targetID:77}],nextPageTimestamp:null}]){

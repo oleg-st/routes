@@ -10,6 +10,7 @@ const commandFields = {
   'update-pull': ['pullId', 'patch'], 'delete-pull': ['pullId'],
   'move-pull': ['pullId', 'beforeId', 'afterId'], 'assign-mobs': ['pullId', 'mobIds', 'toggle'],
   'set-meta': ['patch'], 'set-excluded': ['mobId', 'excluded'], 'set-modifier': ['kind', 'patch'],
+  'set-priority-target': ['mobId', 'priority'],
   'add-drawing': ['id', 'mapId', 'kind', 'color', 'width', 'icon', 'text', 'points', 'pointIds'],
   'update-drawing': ['drawingId', 'patch'], 'delete-drawing': ['drawingId'],
   'insert-point': ['drawingId', 'id', 'position', 'beforeId', 'afterId'],
@@ -155,6 +156,10 @@ function prepare(doc, c, context) {
       invariant(!context.bosses.has(c.mobId), 'Bosses cannot be excluded.');
       return () => doc.getMap('excluded').set(c.mobId, c.excluded);
     }
+    case 'set-priority-target': {
+      context.mob(id(c.mobId), doc); boolean(c.priority);
+      return () => doc.getMap('priorityTargets').set(c.mobId, c.priority);
+    }
     case 'set-modifier': {
       invariant(MODIFIERS.includes(c.kind), 'Invalid modifier.');
       const empowered = c.kind === 'empowered';
@@ -188,6 +193,7 @@ function prepare(doc, c, context) {
           row.set('replacement', replacement);
           doc.getMap('assignments').set(`modifier:${c.kind}`, null);
           doc.getMap('excluded').set(`modifier:${c.kind}`, false);
+          doc.getMap('priorityTargets').set(`modifier:${c.kind}`, false);
           if (!replacement.packId) row.set('active', false);
         }
         if ('active' in patch) row.set('active', patch.active);
@@ -292,6 +298,7 @@ function prepare(doc, c, context) {
       for (const key of doc.getMap('colors').keys()) doc.getMap('colors').delete(key);
       for (const key of doc.getMap('assignments').keys()) doc.getMap('assignments').set(key, null);
       writeMembership(doc.getMap('excluded'), []);
+      writeMembership(doc.getMap('priorityTargets'), []);
       if(meta.get('difficulty')===undefined)meta.set('shadow', false);
       for (const kind of meta.get('difficulty')===undefined?MODIFIERS:[]) {
         const row = doc.getMap('modifiers').ensureMergeableMap(kind); row.set('active', false);

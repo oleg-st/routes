@@ -11,6 +11,8 @@ const bundle=await build({stdin:{contents:`
   window.ui=createLogImportUI({panel:document.querySelector('#panel'),
     showDialog:(title,html)=>{dialog.innerHTML=html;dialog.showModal();},closeDialog:()=>dialog.close(),
     live:{connected:()=>true,load:async()=>{if(window.failure)throw new Error('No complete route');return window.extraFixture??logFixtures.find(f=>f.id===window.example&&f.dungeonData==='custom');},
+      priorityTargets:async state=>{if(!state.complete)throw new Error('Priority ran before all packs were chosen');
+        window.result.priorityCalls=(window.result.priorityCalls??0)+1;window.result.priorityInput=state;return ['focused-mob'];},
       diagnostics:()=>window.failure?.diagnostics,missingEnemies:()=>window.failure?.skipped,cancelImport:()=>{window.failure=null;},
       canFindMissing:()=>Boolean(window.failure&&!window.failure.searched),canContinue:()=>Boolean(window.failure&&!window.failure.done),
       expandSearch:async()=>{window.failure.searched=true;window.failure.skipped=window.failure.skipped.filter(r=>r.pull===2);return null;},
@@ -168,5 +170,20 @@ try{
   assert.equal(await page.evaluate(()=>window.result.saved),true);
   assert.deepEqual((await page.evaluate(()=>window.result.preview)).pulls[0].groups,['normal','other']);
   assert.deepEqual(errors,[]);
-  console.log('Log import UI: choices, recovery by pull, search tooltip and automatic expanded import passed.');
+  await page.evaluate(()=>{
+    window.result={};window.extraFixture={live:true,title:'Deferred priority',fightID:1,reportCode:'example',
+      groups:{first:{label:'G1',enemies:['focused-mob']},a:{label:'G2',enemies:['a']},b:{label:'G3',enemies:['b']}},
+      variants:['a','b'].map(id=>({pulls:[{groups:['first']},{groups:[id]}],priorityAssignments:[[{id:'first',mobKeys:['11:1']}]]}))};
+    window.ui.open();
+  });await submit();
+  assert.equal(await page.evaluate(()=>window.result.priorityCalls??0),0);
+  assert.equal(await page.evaluate(()=>window.result.preview.pullIndex),1);
+  assert.deepEqual(await page.evaluate(()=>window.result.preview.priorityTargets),[]);
+  await page.locator('[data-log-choice="a"]').click();
+  assert.equal(await page.evaluate(()=>window.result.priorityCalls),1);
+  assert.equal(await page.evaluate(()=>window.result.saved),true);
+  assert.deepEqual(await page.evaluate(()=>window.result.priorityInput.pulls.map(p=>p.groups)),[['first'],['a']]);
+  assert.deepEqual(await page.evaluate(()=>window.result.preview.priorityTargets),['focused-mob']);
+  assert.deepEqual(errors,[]);
+  console.log('Log import UI: choices, recovery by pull, search tooltip, expanded import and priority after the full route choice passed.');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

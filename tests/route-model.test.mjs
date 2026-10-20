@@ -12,10 +12,12 @@ test('Clearing removes all route content, preserves identity, and reloads with z
   const r=newRoute(d,'test'),id=r.id;r.name='My route';r.shadow=true;
   r.pulls.push(newPull(1));r.pulls[0].enemies=[lost.placementId];r.pulls[0].note='Plan';
   r.excluded=[lost.placementId];r.modifiers.empowered={active:true,enemies:[lost.placementId]};
+  r.priorityTargets=[lost.placementId];
   r.drawings=['line','portal','invis','note'].map(kind=>({kind,points:[[10,20],[30,40]]}));
   clearRoute(r);
   assert.equal(r.id,id);assert.equal(r.name,'My route');assert.equal(r.dungeonId,d.id);
   assert.deepEqual(r.pulls,[]);assert.deepEqual(r.drawings,[]);assert.deepEqual(r.excluded,[]);
+  assert.deepEqual(r.priorityTargets,[]);
   assert.equal(r.shadow,false);assert.ok(Object.values(r.modifiers).every(m=>!m.active));
   const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons,enemies);
   assert.equal(loaded.pulls.length,0);assert.equal(scoreRoute(loaded,d,enemies).score,0);

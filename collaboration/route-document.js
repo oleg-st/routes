@@ -144,7 +144,7 @@ function wrap(doc, identity, options) {
 // Called once by the owner creating/migrating a route. Other participants restore its snapshot.
 export function createRouteDocument(route, options = {}) {
   const participantRole = role(options.role ?? 'player'); assertPlayer(participantRole);
-  record(route, ['version', 'id', 'buildId', 'dungeonId', 'name', 'shadow', 'modifiers', 'pulls', 'drawings', 'excluded', 'markers','difficulty']);
+  record(route, ['version', 'id', 'buildId', 'dungeonId', 'name', 'shadow', 'modifiers', 'pulls', 'drawings', 'excluded', 'priorityTargets', 'markers','difficulty']);
   route = restrictRouteModifiers(structuredClone(route));
   invariant(route.version === undefined || route.version === 2, 'Migrate legacy routes before creating a CRDT.');
   const identity = checkIdentity({schemaVersion: SCHEMA_VERSION, routeId: route.id ?? uuid(), documentId: uuid(),
@@ -170,6 +170,7 @@ export function createRouteDocument(route, options = {}) {
     for (const drawing of route.drawings ?? []) execute({...drawing, type: 'add-drawing'});
     for (const marker of route.markers ?? []) execute({...marker, type: 'add-marker'});
     for (const mobId of route.excluded ?? []) execute({type: 'set-excluded', mobId, excluded: true});
+    for (const mobId of route.priorityTargets ?? []) execute({type: 'set-priority-target', mobId, priority: true});
     // Loading a route preserves its saved affixes and assignments; only a user
     // choosing a difficulty should apply that difficulty's defaults.
     if(route.difficulty!==undefined)doc.getMap('meta').set('difficulty',context.difficulty(route.difficulty));

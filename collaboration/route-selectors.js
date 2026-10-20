@@ -46,7 +46,8 @@ export function selectRoute(doc, identity) {
   const route={version: 2, id: identity.routeId, buildId: identity.buildId, dungeonId: identity.dungeonId,
     ...(meta.get('difficulty')===undefined?{}:{difficulty:meta.get('difficulty')}),
     name: meta.get('name'), shadow: meta.get('shadow') === true && modifierAvailable(identity.dungeonId,'shadow'), modifiers, pulls, drawings: visibleDrawings, markers,
-    excluded: members(doc.getMap('excluded')).filter(availableMob)};
+    excluded: members(doc.getMap('excluded')).filter(availableMob),
+    priorityTargets: members(doc.getMap('priorityTargets')).filter(availableMob)};
   if(route.difficulty!==undefined)checkDifficulty(identity.dungeonId,route.difficulty);
   return meta.get('manualAffixes')===true?route:applyDifficulty(route);
 }
