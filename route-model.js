@@ -315,12 +315,16 @@ export function validateRoute(value,dungeons,enemies){
 // regenerated on import. Sorted dataset indexes replace long placement/pack IDs;
 // a dataset fingerprint identifies legacy R1/R2 dictionaries. R3 uses permanent
 // append-only pack compositions and placement indexes across grouping changes.
+// R4 stores differences between successive member tokens in each list.
 const PREFIX='R1.',LIMIT=3_000_000;
 const tooLarge=()=>new Error('Route is too large (maximum 3 MB).');
 const invalid=()=>new Error('Invalid compact route.');
 const trim=row=>{while(row.at(-1)===null)row.pop();return row;};
 const optionalList=list=>list?.length?list:null;
 const colorCode=color=>COLORS.includes(color)?COLORS.indexOf(color):color;
+// Export at 0.01 map-pixel precision without changing the editable route.
+// Keep valid coordinates just inside the import limit from rounding outside it.
+const compactPoint=point=>point.map(n=>{const rounded=Math.round(n*100)/100;return Math.abs(rounded)<100000?rounded:n;});
 function readColor(value,fallback){
   if(value==null)return fallback;
   if(Number.isInteger(value)&&COLORS[value])return COLORS[value];
@@ -358,6 +362,16 @@ function itemAt(list,index){if(!Number.isInteger(index)||index<0||index>=list.le
 function tuple(value,max){if(!Array.isArray(value)||value.length>max)throw invalid();return value;}
 function list(value){if(value==null)return [];if(!Array.isArray(value))throw invalid();return value;}
 function flag(value){if(value!=null&&value!==1)throw invalid();return value===1;}
+function memberDeltas(values,decode=false){
+  let previous=0;
+  return list(values).map(value=>{
+    if(!Number.isSafeInteger(value))throw invalid();
+    const result=decode?previous+value:value-previous;
+    if(!Number.isSafeInteger(result))throw invalid();
+    previous=decode?result:value;
+    return result;
+  });
+}
 
 export async function encodeRoute(route,dungeon){
   route=structuredClone(route);
@@ -371,7 +385,7 @@ export async function encodeRoute(route,dungeon){
     p.color===pullColor(i)?null:colorCode(p.color),p.note||null,p.customName?1:null,
   ]));
   const drawings=route.drawings.map(d=>trim([
-    d.mapId,['line','portal','invis','note'].indexOf(d.kind),d.points,
+    d.mapId,['line','portal','invis','note'].indexOf(d.kind),d.points.map(compactPoint),
     d.color===COLORS[0]?null:colorCode(d.color),d.text||null,d.width??null,d.kind==='note'?(d.icon??null):null,
   ]));
   const modifiers=['empowered','ghorn','witch'].map(kind=>{
@@ -383,9 +397,13 @@ export async function encodeRoute(route,dungeon){
       if(exact>=0)packIndex=exact;
     }
     if(packIndex===-1)throw new Error('Replacement pack is not registered.');
+    // R3 already restores these members from the permanent pack composition.
+    // Omit only exact matches, including order; custom subsets stay explicit.
+    const inherited=packIndex==null?null:permanent?.packs[packIndex]?.members;
+    const redundant=inherited&&m.replacedEnemies?.length===inherited.length&&inherited.every((index,i)=>permanent.placements[index]===m.replacedEnemies[i]);
     const row=kind==='empowered'?[m.active?1:null,optionalList(ids(m.enemies))]:[
       m.active?1:null,packIndex,
-      m.replacedEnemies===undefined?null:ids(m.replacedEnemies),
+      m.replacedEnemies===undefined||redundant?null:ids(m.replacedEnemies),
     ];
     return trim(row).length?row:null;
   });
@@ -393,14 +411,30 @@ export async function encodeRoute(route,dungeon){
     route.dungeonId.replace(/^Level\.ID\./,''),route.buildId,permanent?'m1':fingerprint,route.name,pulls,
     optionalList(drawings),optionalList(ids(route.excluded)),optionalList(trim(modifiers)),route.shadow?1:null,
   ]);
-  if(extended){while(payload.length<9)payload.push(null);payload.push((route.markers||[]).map(m=>[m.mapId,m.position,colorCode(m.color),m.icon,m.label]));}
+  if(extended){while(payload.length<9)payload.push(null);payload.push((route.markers||[]).map(m=>[m.mapId,compactPoint(m.position),colorCode(m.color),m.icon,m.label]));}
   if(route.difficulty!==undefined)payload.push(route.difficulty);
   const bytes=new TextEncoder().encode(JSON.stringify(payload));
   if(bytes.length>LIMIT)throw tooLarge();
-  return (permanent?'R3.':extended?'R2.':PREFIX)+base64url(await transform(bytes,CompressionStream));
+  let prefix=permanent?'R3.':extended?'R2.':PREFIX;
+  let compressed=await transform(bytes,CompressionStream);
+  if(permanent){
+    // Keep R3 when deltas do not help (e.g. already compact whole-pack lists).
+    for(const pull of payload[4])pull[0]=memberDeltas(pull[0]);
+    if(payload[6]!=null)payload[6]=memberDeltas(payload[6]);
+    for(const [i,modifier] of (payload[7]??[]).entries()){
+      const slot=i===0?1:2;
+      if(modifier?.[slot]!=null)modifier[slot]=memberDeltas(modifier[slot]);
+    }
+    const deltaBytes=new TextEncoder().encode(JSON.stringify(payload));
+    if(deltaBytes.length<=LIMIT){
+      const candidate=await transform(deltaBytes,CompressionStream);
+      if(candidate.length<compressed.length){compressed=candidate;prefix='R4.';}
+    }
+  }
+  return prefix+base64url(compressed);
 }
 
-async function expandRoute(payload,dungeons,extended=false,mapped=false){
+async function expandRoute(payload,dungeons,extended=false,mapped=false,deltas=false){
   const [id,buildId,fingerprint,name,pulls,drawings,excluded,mods,shadow,markers,difficulty]=tuple(payload,extended?11:9);
   const dungeon=dungeons.find(d=>d.id===`Level.ID.${id}`);
   if(!dungeon)throw new Error('This dungeon is not available in the current dataset.');
@@ -409,7 +443,7 @@ async function expandRoute(payload,dungeons,extended=false,mapped=false){
   if(mapped){if(fingerprint!=='m1'||!permanent)throw new Error('Unknown route mapping.');}
   else if(legacy){placements=legacy.placements.map(i=>permanent.placements[i]);packs=legacy.packs.map(i=>permanent.packs[i].id);}
   else if(fingerprint!==expected)throw new Error('This route uses a different enemy dataset. Import cancelled to avoid selecting incorrect enemies.');
-  const ids=values=>mapped?decodeMembers(permanent,values):list(values).map(index=>itemAt(placements,index));
+  const ids=values=>mapped?decodeMembers(permanent,deltas?memberDeltas(values,true):values):list(values).map(index=>itemAt(placements,index));
   if(!Array.isArray(pulls)||pulls.length>(extended?10000:500))throw invalid();
   const modifiers={};
   tuple(mods??[],3).forEach((row,i)=>{
@@ -442,13 +476,13 @@ export async function decodeRoute(text,dungeons,enemies,loadDungeon){
   if(!text)throw new Error('Paste a route string first.');
   if(text.length>27_000_000)throw tooLarge();
   if(text.startsWith('#route='))text=decodeURIComponent(text.slice(7));
-  else if(!/^R[123]\./.test(text)){
+  else if(!/^R[1234]\./.test(text)){
     let url;try{url=new URL(text);}catch{throw new Error('Paste a valid route string or Share link.');}
     if(!url.hash.startsWith('#route='))throw new Error('This link does not contain a route.');
     text=decodeURIComponent(url.hash.slice(7));
   }
   if(new TextEncoder().encode(text).length>LIMIT)throw tooLarge();
-  if(!/^R[123]\./.test(text))throw invalid();
+  if(!/^R[1234]\./.test(text))throw invalid();
   const encoded=text.slice(PREFIX.length);
   if(!/^[A-Za-z0-9_-]+$/.test(encoded))throw invalid();
   let bytes;
@@ -458,7 +492,7 @@ export async function decodeRoute(text,dungeons,enemies,loadDungeon){
   const payload=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(decoded));
   if(!Array.isArray(payload))throw invalid();
   if(loadDungeon)await loadDungeon(`Level.ID.${payload[0]}`);
-  const mapped=text.startsWith('R3.');
-  const value=await expandRoute(payload,dungeons,text.startsWith('R2.')||mapped&&payload.length>9,mapped);
+  const deltas=text.startsWith('R4.'),mapped=text.startsWith('R3.')||deltas;
+  const value=await expandRoute(payload,dungeons,text.startsWith('R2.')||mapped&&payload.length>9,mapped,deltas);
   return validateRoute(value,dungeons,enemies);
 }

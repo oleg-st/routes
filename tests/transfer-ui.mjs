@@ -44,7 +44,7 @@ try{
     const imported=await exported();
     assert.deepEqual(content(imported),content(source));
     const link=await copied(page,'#share'),shared=new URL(link);
-    assert.ok(shared.hash.startsWith('#route=R3.'));
+    assert.match(shared.hash,/^#route=R[34]\./);
     assert.deepEqual(content(await decode(link)),content(imported));
     // A new tab must reconstruct the route solely from the link, without stored drafts.
     const other=await context.newPage();await other.goto(link);await other.locator('#map-loading').waitFor({state:'hidden'});
@@ -70,15 +70,26 @@ try{
     assert.equal((await decode(await page.locator('#copy-route-text').inputValue())).name,changed.name);
     assert.equal(await page.locator('#copy-route-text').evaluate(el=>el.selectionEnd-el.selectionStart===el.value.length),true);
     await page.locator('#close-dialog').click();
-    await page.locator('#share').click();await page.locator('#copy-route-text').waitFor();assert.ok((await page.locator('#copy-route-text').inputValue()).includes('#route=R3.'));
+    await page.locator('#share').click();await page.locator('#copy-route-text').waitFor();assert.match(await page.locator('#copy-route-text').inputValue(),/#route=R[34]\./);
+    await page.locator('#close-dialog').click();
+    await paste(fs.readFileSync('tests/fixtures/compact-route-r3.txt','utf8'));
+    assert.equal(await page.locator('#dialog').evaluate(el=>el.open),false);
+    await page.locator('#export').click();await page.locator('#copy-route-text').waitFor();
+    const compact=await page.locator('#copy-route-text').inputValue();assert.match(compact,/^R4\./);
+    await page.locator('#close-dialog').click();
+    await paste(compact);assert.equal(await page.locator('#dialog').evaluate(el=>el.open),false);
+    const compactTab=await context.newPage();await compactTab.goto(url+'#route='+compact);
+    await compactTab.waitForFunction(()=>document.querySelector('#route-name')?.value==='Empyrean Sands · #5');
+    assert.deepEqual(content(await decode(await copied(compactTab,'#export'))),content(await decode(compact)));
+    await compactTab.close();
     assert.deepEqual(errors,[]);await context.close();
     console.log(`Export, Import, Share, hash loading and clipboard fallback passed: ${url}`);
   }
   const context=await browser.newContext({permissions:['clipboard-read','clipboard-write']}),page=await context.newPage();
   await page.goto(origin);await page.locator('#map-loading').waitFor({state:'hidden'});await page.locator('#export').click();
-  await page.waitForFunction(async()=>(await navigator.clipboard.readText()).startsWith('R3.'));
+  await page.waitForFunction(async()=>/^R[34]\./.test(await navigator.clipboard.readText()));
   assert.equal((await decode(await page.evaluate(()=>navigator.clipboard.readText()))).version,2);
   await page.locator('#share').click();
-  await page.waitForFunction(async()=>(await navigator.clipboard.readText()).includes('#route=R3.'));
+  await page.waitForFunction(async()=>/#route=R[34]\./.test(await navigator.clipboard.readText()));
   await context.close();console.log('Native clipboard Export and Share passed.');
 }finally{await browser?.close();server.kill();}
