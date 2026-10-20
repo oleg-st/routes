@@ -50,9 +50,21 @@ try{
     await touch('touchStart',pair(35));
     const frozenMarker=await page.locator('#markers > g').first().elementHandle();
     const frozenGeometry=await frozenMarker.innerHTML();
-    for(const gap of [45,60,80])await touch('touchMove',pair(gap));
+    const markerState=node=>{
+      const ring=node.querySelector('.mob-ring'),matrix=ring.getScreenCTM();
+      const center=new DOMPoint(ring.cx.baseVal.value,ring.cy.baseVal.value)
+        .matrixTransform(matrix).matrixTransform(document.querySelector('#map').getScreenCTM().inverse());
+      return {radius:ring.r.baseVal.value*matrix.a,center:[center.x,center.y]};
+    };
+    const originalMarker=await frozenMarker.evaluate(markerState);
+    for(const gap of [45,60,80]){
+      await touch('touchMove',pair(gap));
+      const current=await frozenMarker.evaluate(markerState);
+      near(current.center,originalMarker.center,'icon center stays fixed while its size changes');
+      assert.ok(Math.abs(current.radius-originalMarker.radius*Math.sqrt(initial.w/(await view()).w))<.01,'live icon size follows the regular zoom curve');
+    }
     assert.ok(await frozenMarker.evaluate(node=>node.isConnected),'pinch reuses the existing marker scene');
-    assert.equal(await frozenMarker.innerHTML(),frozenGeometry,'marker positions and geometry stay fixed in map coordinates');
+    assert.equal(await frozenMarker.innerHTML(),frozenGeometry,'live resizing reuses portrait and ring nodes');
     const enlarged=await view();
     assert.ok(enlarged.w<initial.w*.5,'spreading fingers zooms in');
     near(await mapPoint(cx,cy),anchor,'pinch stays anchored between fingers');
@@ -60,6 +72,7 @@ try{
     near(await mapPoint(cx+20,cy+25),anchor,'two fingers also pan');
     await touch('touchMove',pair(35,20,25));
     assert.ok(Math.abs((await view()).w-initial.w)<.05,'pinching fingers zooms back out');
+    assert.ok(Math.abs((await frozenMarker.evaluate(markerState)).radius-originalMarker.radius)<.01,'icons shrink back immediately during zoom-out');
     // Lifting one finger continues panning without clicking or editing.
     await touch('touchEnd',[[2,cx+55,cy+25]]);
     const beforePan=await view();
@@ -82,8 +95,11 @@ try{
     await touch('touchMove',pair(50));
     await page.waitForTimeout(250);
     assert.ok(await resumedMarker.evaluate(node=>node.isConnected),'no delayed relayout while the next gesture is active');
+    const radiusBeforeSettle=(await resumedMarker.evaluate(markerState)).radius;
     await touch('touchEnd',[]);
     await page.waitForFunction(node=>!node.isConnected,resumedMarker);
+    const radiusAfterSettle=await page.locator('#markers > g').first().evaluate(markerState);
+    assert.ok(Math.abs(radiusAfterSettle.radius-radiusBeforeSettle)<.01,'settling changes layout without a jump in icon size');
     // OS interruption must not leave stale pointers or a stuck gesture.
     await touch('touchStart',pair(35));await touch('touchCancel',[]);
     await page.locator('[data-tool=select]').click();
@@ -93,5 +109,5 @@ try{
     assert.equal(await map.evaluate(node=>node.classList.contains('dragging')),false);
     assert.deepEqual(errors,[]);await context.close();
   }
-  console.log('Mobile map passed in server and local modes: smaller icons, frozen pinch layout, delayed settle, gesture restart, anchored pan, drawing safety and cancellation.');
+  console.log('Mobile map passed in server and local modes: live icon resizing with fixed centers, delayed layout without size jumps, gesture restart, anchored pan, drawing safety and cancellation.');
 }finally{await browser?.close();server.kill();}

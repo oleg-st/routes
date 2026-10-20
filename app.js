@@ -53,6 +53,7 @@ let hoveredPack=null;
 let enemyMarkerCenters=new Map();
 let enemyMarkerLayoutKey='';
 let mapRenderDeferred=false,mapRenderTimer;
+let markerScaleFrame,renderedMarkerRadius=0,markerScaleFactor=1,markerScaleTargets=[];
 let logImportUI,logPreview=null,logHighlights=new Set(),logChickenPreview=new Set();
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
 let modifierHighlightKey='';
@@ -458,15 +459,32 @@ function renderMapStart(unit){
     svg('text',{x:0,y:28,'text-anchor':'middle','font-family':'Segoe UI,sans-serif','font-size':11,'font-weight':800,'letter-spacing':1,fill:'#e3fff0',stroke:'#12231b','stroke-width':3,'stroke-linejoin':'round','paint-order':'stroke'},'START'));
   root.append(marker);
 }
+function resizeMapMarkers(){
+  markerScaleFrame=null;
+  if(!renderedMarkerRadius)return;
+  const factor=mapMarkerRadius(scale())/renderedMarkerRadius;
+  if(factor===markerScaleFactor)return;
+  markerScaleFactor=factor;
+  // Scale each existing portrait and its rings about its frozen map position.
+  // One transform per group avoids rebuilding SVG nodes or running the solver.
+  for(const {group,x,y} of markerScaleTargets){
+    group.setAttribute('transform',`matrix(${factor} 0 0 ${factor} ${x*(1-factor)} ${y*(1-factor)})`);
+  }
+}
 function renderMap(){
   if(!mapLayer||!view)return;
   $('#enemy-menu').hidden=true;$('#tooltip').hidden=true;
   $('#map').setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);
-  // During a pinch, transform the existing scene with the map. Rebuilding its
-  // markers on every move makes collision avoidance shuffle them under fingers.
-  if(mapRenderDeferred){cursorUI?.refresh();return;}
+  // Resize at most once per frame during a pinch; collision avoidance waits
+  // until the gesture ends so marker centers never shuffle under fingers.
+  if(mapRenderDeferred){
+    if(markerScaleFrame==null)markerScaleFrame=requestAnimationFrame(resizeMapMarkers);
+    cursorUI?.refresh();return;
+  }
+  cancelAnimationFrame(markerScaleFrame);markerScaleFrame=null;
   const showIcons=$('#show-mob-icons').checked;
   const unit=scale(),radius=mapMarkerRadius(unit),owners=assigned();
+  renderedMarkerRadius=radius;markerScaleFactor=1;markerScaleTargets=[];
   // Lay out every placement, even when filtered, so selection and search do not
   // make neighbors jump. Recompute from source points at the current zoom.
   const layoutMarkers=currentPositions().map(p=>{
@@ -531,6 +549,7 @@ function renderMap(){
       const badge=svg('g',{['data-'+status.kind+'-badge']:p.placementId,'data-placement':p.placementId,opacity:matchesSearch(p)?1:.14,style:'cursor:pointer'});
       badge.append(svg('title',{},`${enemy.name} · ${status.name}`),svg('circle',{cx:bx,cy:by,r:br+2*unit,fill:'#1a1005',stroke:'#ffbb25','stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('image',{href:status.icon,x:bx-br,y:by-br,width:br*2,height:br*2,'clip-path':'url(#mob-portrait-clip)',preserveAspectRatio:'xMidYMid slice','pointer-events':'none'}));
       $('#status-badges').append(badge);
+      markerScaleTargets.push({group:badge,x,y});
     }
     group.append(svg('circle',{cx:x,cy:y,r:r+unit*(enemy?.isBoss?2:.75),fill:enemy?.isBoss?'#10161bcc':'#10161b99'}));
     group.append(svg('circle',{cx:x,cy:y,r,fill:own?color:'#263640'}));
@@ -543,6 +562,7 @@ function renderMap(){
     group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(enemy?.isBoss?' boss-ring':'')+(own?' assigned-ring':'')+(chicken?' chicken-ring':'')}));
     appendEnemyFocus(group);
     markerRoot.append(group);
+    markerScaleTargets.push({group,x,y});
   }
   setHoveredPack(hoveredPack);
   renderModifierHighlight();
