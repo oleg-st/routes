@@ -32,6 +32,12 @@ try{
     const baseRadius=enemyMarkerRadius(Number(await page.locator('#marker-size').inputValue()),3,true);
     assert.ok(Math.abs(Math.min(...screenRadii.filter(r=>!r.boss).map(r=>r.radius))-baseRadius*enemyMarkerScale({baseHealth:0})/3)<.01,'mobile mob icons are three times smaller');
     assert.ok(screenRadii.filter(r=>r.boss).every(r=>Math.abs(r.radius-baseRadius*enemyMarkerScale({isBoss:true})/3)<.01),'boss icons are also three times smaller');
+    const startState=()=>page.evaluate(()=>{
+      const ring=document.querySelector('#map-start circle'),boss=document.querySelector('#markers .boss-ring');
+      return {radius:ring.r.baseVal.value*ring.getScreenCTM().a,bossRadius:boss.r.baseVal.value*boss.getScreenCTM().a};
+    });
+    const initialStart=await startState();
+    assert.ok(initialStart.radius<=10&&initialStart.radius<=initialStart.bossRadius/2+.01,'mobile start flag is compact and smaller than bosses');
     const client=await context.newCDPSession(page);
     const touch=async(type,points)=>{
       await client.send('Input.dispatchTouchEvent',{
@@ -107,6 +113,21 @@ try{
     await touch('touchStart',[[1,cx,cy]]);await touch('touchMove',[[1,cx+25,cy+20]]);await touch('touchEnd',[]);
     assert.notEqual((await view()).x,beforeSingle.x,'single-finger pan recovers after cancellation');
     assert.equal(await map.evaluate(node=>node.classList.contains('dragging')),false);
+    // At distant zoom the entrance shrinks live and does not grow back on settle.
+    await touch('touchStart',pair(80));
+    const startHandle=await page.locator('#map-start > g').elementHandle();
+    for(const gap of [40,20,5]){
+      await touch('touchMove',pair(gap));
+      const currentStart=await startState();
+      assert.ok(currentStart.radius<=10.01&&currentStart.radius<=currentStart.bossRadius/2+.01,'flag stays smaller than a boss during zoom-out');
+      assert.ok(await startHandle.evaluate(node=>node.isConnected),'flag resizes without replacing its nodes');
+    }
+    assert.ok((await view()).w>=imageWidth,'test reaches distant overview zoom');
+    const distantStart=await startState();
+    assert.ok(distantStart.radius<initialStart.radius/2,'flag shrinks substantially at distant zoom');
+    await touch('touchEnd',[]);
+    await page.waitForFunction(node=>!node.isConnected,startHandle);
+    assert.ok(Math.abs((await startState()).radius-distantStart.radius)<.01,'start flag size is stable after delayed layout');
     assert.deepEqual(errors,[]);await context.close();
   }
   console.log('Mobile map passed in server and local modes: live icon resizing with fixed centers, delayed layout without size jumps, gesture restart, anchored pan, drawing safety and cancellation.');

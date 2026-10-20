@@ -54,6 +54,7 @@ let enemyMarkerCenters=new Map();
 let enemyMarkerLayoutKey='';
 let mapRenderDeferred=false,mapRenderTimer;
 let markerScaleFrame,renderedMarkerRadius=0,markerScaleFactor=1,markerScaleTargets=[];
+let startMarker=null;
 let logImportUI,logPreview=null,logHighlights=new Set(),logChickenPreview=new Set();
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
 let modifierHighlightKey='';
@@ -450,7 +451,7 @@ function renderCampfires(){
   }
 }
 function renderMapStart(unit){
-  const root=$('#map-start');root.replaceChildren();
+  const root=$('#map-start');root.replaceChildren();startMarker=null;
   const point=mapStart(dungeon,mapLayer);if(!point)return;
   const [x,y]=point,marker=svg('g',{transform:`translate(${x} ${y}) scale(${unit})`,role:'img','aria-label':'Dungeon start'});
   marker.append(svg('title',{},'Dungeon start'),
@@ -458,11 +459,21 @@ function renderMapStart(unit){
     svg('path',{d:'M -4 8 V -8 M -4 -7 H 7 L 4 -3 L 7 1 H -4',fill:'none',stroke:'#c8f7df','stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round'}),
     svg('text',{x:0,y:28,'text-anchor':'middle','font-family':'Segoe UI,sans-serif','font-size':11,'font-weight':800,'letter-spacing':1,fill:'#e3fff0',stroke:'#12231b','stroke-width':3,'stroke-linejoin':'round','paint-order':'stroke'},'START'));
   root.append(marker);
+  startMarker={group:marker,x,y};resizeMapStart(unit);
+}
+function resizeMapStart(unit){
+  if(!startMarker)return;
+  // On phones the entrance stays smaller than a boss even at overview zoom.
+  // Scale the flag and its label together, with a 10 px radius ceiling.
+  const size=matchMedia('(max-width:760px)').matches?Math.min(10*unit,mapMarkerRadius(unit)*1.5)/14:unit;
+  const {group,x,y}=startMarker;
+  group.setAttribute('transform',`translate(${x} ${y}) scale(${size})`);
 }
 function resizeMapMarkers(){
   markerScaleFrame=null;
   if(!renderedMarkerRadius)return;
-  const factor=mapMarkerRadius(scale())/renderedMarkerRadius;
+  const unit=scale();resizeMapStart(unit);
+  const factor=mapMarkerRadius(unit)/renderedMarkerRadius;
   if(factor===markerScaleFactor)return;
   markerScaleFactor=factor;
   // Scale each existing portrait and its rings about its frozen map position.
