@@ -171,19 +171,20 @@ try{
   assert.deepEqual((await page.evaluate(()=>window.result.preview)).pulls[0].groups,['normal','other']);
   assert.deepEqual(errors,[]);
   await page.evaluate(()=>{
-    window.result={};window.extraFixture={live:true,title:'Deferred priority',fightID:1,reportCode:'example',
+    window.result={};window.extraFixture={live:true,title:'Import without inferred priority',fightID:1,reportCode:'example',
       groups:{first:{label:'G1',enemies:['focused-mob']},a:{label:'G2',enemies:['a']},b:{label:'G3',enemies:['b']}},
       variants:['a','b'].map(id=>({pulls:[{groups:['first']},{groups:[id]}],priorityAssignments:[[{id:'first',mobKeys:['11:1']}]]}))};
     window.ui.open();
   });await submit();
   assert.equal(await page.evaluate(()=>window.result.priorityCalls??0),0);
   assert.equal(await page.evaluate(()=>window.result.preview.pullIndex),1);
-  assert.deepEqual(await page.evaluate(()=>window.result.preview.priorityTargets),[]);
+  assert.equal(await page.evaluate(()=>Object.hasOwn(window.result.preview,'priorityTargets')),false);
   await page.locator('[data-log-choice="a"]').click();
-  assert.equal(await page.evaluate(()=>window.result.priorityCalls),1);
+  assert.equal(await page.evaluate(()=>window.result.priorityCalls??0),0);
   assert.equal(await page.evaluate(()=>window.result.saved),true);
-  assert.deepEqual(await page.evaluate(()=>window.result.priorityInput.pulls.map(p=>p.groups)),[['first'],['a']]);
-  assert.deepEqual(await page.evaluate(()=>window.result.preview.priorityTargets),['focused-mob']);
+  assert.deepEqual(await page.evaluate(()=>window.result.preview.pulls.map(p=>p.groups)),[['first'],['a']]);
+  assert.equal(await page.evaluate(()=>Object.hasOwn(window.result.preview,'priorityTargets')),false);
+  assert.equal(await page.evaluate(()=>Object.hasOwn(window.result.preview,'priorityAssignments')),false);
   assert.deepEqual(errors,[]);
-  console.log('Log import UI: choices, recovery by pull, search tooltip, expanded import and priority after the full route choice passed.');
+  console.log('Log import UI: choices, recovery by pull, search tooltip, expanded import and no automatic priority passed.');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

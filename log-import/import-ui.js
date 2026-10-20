@@ -30,7 +30,6 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
   function hide(){highlight([]);panel.hidden=true;panel.replaceChildren();session=null;}
   async function advance(){
     const state=session.state();
-    if(state.complete&&fixture.live&&live.priorityTargets)state.priorityTargets=await live.priorityTargets(state);
     await preview(fixture,state);
     movement?.(movementVisible);
     closeDialog();

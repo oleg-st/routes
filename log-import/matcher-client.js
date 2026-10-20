@@ -2,9 +2,6 @@
 export function runLogMatching(log,{signal,onProgress,...options}){
   return runWorker({log,options},{signal,onProgress});
 }
-export function runPriorityDetection(log,state,options={}){
-  return runWorker({task:'priority',log,state},options);
-}
 function runWorker(data,{signal,onProgress}){
   return new Promise((resolve,reject)=>{
     signal?.throwIfAborted();

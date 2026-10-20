@@ -146,23 +146,15 @@ try{
   const recovered=JSON.parse(fs.readFileSync(await (await recoveredDownload).path(),'utf8'));
   assert.equal(recovered.recovery.matched,1);assert.equal(recovered.recovery.skipped.length,1);
   await page.locator('#log-url').fill(`https://www.fellowshiplogs.com/reports/${code}`);assert.equal(await diagnosticsButton.isHidden(),true);
-  // A real focused pack passes through the worker, import preview, save and reload.
-  const priority=read('tests/fixtures/priority-arsonist.json');
-  const storm=correctDungeon(read('data/dungeons.json').find(d=>d.name===priority.log.fight.name),'custom');
-  Object.assign(fight,priority.log.fight,{id:5,modifiers:[]});
-  actors.splice(0,actors.length,...priority.log.actors);
-  events.splice(0,events.length,...priority.log.events.map(e=>{
-    const placement=storm.enemies.find(p=>p.placementId===priority.group.placements[`${e.targetID}:${e.targetInstance??1}`]);
-    return {...e,fight:5,...(e.targetResources?{targetResources:{...e.targetResources,x:placement.worldPosition.y,y:placement.worldPosition.x},
-      sourceResources:{hitPoints:100,maxHitPoints:100,x:placement.worldPosition.y,y:placement.worldPosition.x}}:{})};
-  }));
-  await page.locator('#log-url').fill(`https://www.fellowshiplogs.com/reports/${code}?fight=5`);await page.locator('#log-load').click();
-  await page.waitForFunction(()=>document.querySelector('#route-name')?.value==='Stormwatch · #5'&&!document.querySelector('#route-name').disabled);
-  const target=priority.group.placements['61:3'];
-  const marker=page.locator(`#markers > g[data-placement="${target}"]`);
-  assert.equal(await page.locator('#markers .priority-target-ring').count(),1);
+  // Log import leaves priorities empty; manual selection still saves and reloads.
+  await page.locator('#dialog').evaluate(d=>d.close());
+  const marker=page.locator('#markers > g[data-placement="'+boss.placementId+'"]');
+  assert.equal(await page.locator('#markers .priority-target-ring').count(),0);
+  await marker.press('Shift+F10');
+  const priorityItem=page.getByRole('menuitemcheckbox',{name:'Priority target'});
+  assert.equal(await priorityItem.getAttribute('aria-checked'),'false');
+  await priorityItem.click();
   assert.equal(await marker.locator('.priority-target-ring').count(),1);
-  await marker.press('Shift+F10');assert.equal(await page.getByRole('menuitemcheckbox',{name:'Priority target'}).getAttribute('aria-checked'),'true');
   await page.keyboard.press('Escape');await page.locator('#save-route').click();
   await page.waitForFunction(()=>document.querySelector('#save-route').disabled);
   await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});

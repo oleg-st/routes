@@ -22,11 +22,10 @@ export function createReviewSession(fixture){
         options.sort((a,b)=>evidenceTier(a)-evidenceTier(b)||(a.proximity?.maxDistance??Infinity)-(b.proximity?.maxDistance??Infinity));
         if(options[0]?.proximity&&options.slice(1).every(o=>o.proximity&&o.proximity.minDistance>options[0].proximity.maxDistance))options[0].closestToPath=true;
         if(candidates.some(v=>v.pulls[index].groups.length===common.length))options.push({id:'finish-pull',groups:[],label:'No more packs in this pull'});
-        return {pulls,pullIndex:index,options,complete:false,remaining:candidates.length,canBack:history.length>0,priorityTargets:[]};
+        return {pulls,pullIndex:index,options,complete:false,remaining:candidates.length,canBack:history.length>0};
       }
     }
-    return {pulls,pullIndex:pulls.length-1,options:[],complete:true,remaining:candidates.length,canBack:history.length>0,
-      priorityTargets:[],priorityAssignments:candidates.flatMap(v=>v.priorityAssignments??[])};
+    return {pulls,pullIndex:pulls.length-1,options:[],complete:true,remaining:candidates.length,canBack:history.length>0};
   }
   return {state,choose(id){
     const s=state(),choice=s.options.find(o=>o.id===id);

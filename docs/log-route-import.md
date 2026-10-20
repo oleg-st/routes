@@ -2,83 +2,9 @@
 
 Research date: 2026-10-16. Status: browser-side URL importer implemented; authenticated live API verification pending user login.
 
-## Priority target research and import (2026-10-20)
+## Priority targets
 
-Priority analysis starts only after the user has selected every pack in the entire route (or matching yields one complete route without choices). The matcher retains NPC-to-placement assignments without running the detector. After review completes, a separate worker analyzes all selected packs using the full log; it never ranks, filters or splits pack/route candidates. Multiple NPC mappings for the same selected route remain possible: only agreed priority placements are marked. Regression replay of `route-import-c4nFLaThdAxtVpYv-5.json` retains three routes: G31 is common and appears once, while the first choice remains G25/G44. Choosing G25 completes review; G44 retains the G35/G36 choice and detection waits for it. The previous inclusion of priority in pack identity had split G31 into two false choices, each indirectly selecting a different whole route.
-
-Full replay of `route-import-c4nFLaThdAxtVpYv-12.json` after this change produces one Stormwatch route with six pulls and one priority: G42 Ashen Arsonist (`61:3`, placement `placement-b7e2caa5423cd961d09230c4121b3f2fb5e89a9c066cbe7806a25546f5297743`). Both the saved matching dataset and current custom dungeon data yield this result. No user choice is needed for that run, so detection begins immediately after its unique complete route is known.
-
-Priority is inferred separately for each matched multi-mob pack. The clock starts at the target's first positive party-damage event, including when its pack joins an already running pull. A short kill is allowed. The initial window is the first five seconds, or the entire lifetime for a faster kill. A strong finish after an unfocused opening does not qualify.
-
-The provisional thresholds in `log-import/priority-targets.js` require at least 55% of pack damage and three times the damage to the largest competing target over this lifetime; the initial window needs 55% and a twofold lead. Damage contributes only while another pack member has entered combat and is still alive. At least two contributing players must support the focus, including in the opening. The target must retain its lead through the end and in at least 80% of damaged five-second windows. Another pack member already engaged by the target's death must survive at least another 1.5 seconds. Passive position samples do not establish combat; a recorded attack or cast can establish it without received party damage. Remaining HP and HP-sample availability do not affect detection; HP is retained only in research reports. These are conservative evidence filters, not measured detection accuracy.
-
-`MAX_PRIORITY_TARGETS_PER_PACK = 1` caps automatically detected targets. If multiple targets qualify, keep the earliest qualifying focus rather than a larger cleanup burst later. The cap does not restrict manual flags. Boss packs, inferred or partial pack matching and missing damage values are excluded. Damage from party-owned pets is attributed to their owners; hostile damage is excluded. Fellowship's `amount` is already effective damage, excluding overkill and absorbs, so `overkill` must not be subtracted again. API encounter segments are never treated as individual packs and their boundaries do not invalidate a target. Brull + Drazhul in Urrak is a checked two-boss control; Godfall Titan + Vaerith Vorn is also a multi-boss pack in the catalogue, but the saved Godfall diagnostics lack damage amounts.
-
-Review replay found false focus when matched pack members appeared in disjoint combat windows. In Sands / 5, choosing G44 previously marked G31 Husk `34:10`, which died at 188.049 seconds, against Husk `34:21`, first observed at 269.561 seconds. In four Urrak research mappings, G93 Ruins Lasher `11:5` died at 230.949 seconds before its alternative `32:11` appeared at 235.791 seconds. Checking combat overlap removes these marks and retains Stormwatch G42 Arsonist; Sands / 7 remains unmarked. Route alternatives and review choices are unchanged. Regression tests cover disjoint encounters, future survivors, passive samples, outgoing casts, solo damage before an alternative engages, and effective killing-blow damage with a separate overkill field.
-
-Four full event exports were initially checked using the existing pack-assignment hypotheses and the original three-second opening window:
-
-| Report / fight | Example | Time from run start | Evidence / result |
-| --- | --- | --- | --- |
-| `c4nFLaThdAxtVpYv` / 12, Stormwatch | G42 Ashen Arsonist, `61:3` | 482.266–516.228 s | Accepted: 64.8% initially, 62.8% overall, 3.20× the next target; Xavian and Elarion support the opening. The two Cutthroats retain 59.3% and 64.0% HP. |
-| Same run | G23 Stormscreamer, `59:1` | 17.374–49.566 s | Rejected: 53.7% overall and 5.06× the next target look promising, but the focus begins late and is mostly one player's damage. |
-| Same run | G5 Executioner, `63:2` | 377.874–407.994 s | Rejected: 60.6% overall, but no initial party focus; surviving siblings are already at 21–40% HP. |
-| `c4nFLaThdAxtVpYv` / 5, Sands | G45 Acolyte of Sinnari, `37:3` | 30.764–85.363 s | Rejected: 48.1% overall, 5.45× runner-up, but no sustained focus from the opening. |
-| `rgTQYB9dqPzjJFha` / 7, Sands | G17 Gravebreaker Brute, `51:2` | 270.615–295.898 s | Rejected: 56.8% overall, 2.54× runner-up; siblings have only 21–26% HP left. |
-| `JLhT1y4Fa3n9Xjx8` / 6, Urrak | G95 Brull + Drazhul | Boss encounter | Excluded; damage is roughly 52% / 48%, with deaths only 2.373 s apart. |
-
-The observed candidate is a hypothesis for review, not a manually confirmed label. The first Stormwatch mapping has one variant; other research mappings retain multiple alternatives. `scripts/analyze-log-priority.mjs` compares all supplied assignment variants and reports placement and classification stability. It accepts a raw probe or downloaded diagnostics plus pack-matching evidence. Historical diagnostics without `amount` are explicitly unavailable; damage is not approximated from hit counts or HP changes. New downloads retain `amount` and `overkill` only for damage events, so this research no longer needs an unfiltered full export.
-
-Live matching carries `priorityAssignments` as detection inputs, with no detected flags in pack or route candidates. The completed review passes only the selected route's assignments to `detectSelectedRoutePriority`; preview/commit then copies its result into the route's saved flags. Tests require no detection while any pull remains unresolved and verify that the final choice still analyzes packs from earlier pulls. Synthetic tests also cover a three-second focused kill in a newly added pack, late bursts, balanced AoE, single-player focus, pets, missing damage values, independence from low/missing/stale sibling HP, boss packs and the per-pack cap. A minimal real-damage fixture retains exact timestamps and amounts for Stormwatch G42 without player names or unrelated event payloads.
-
-### Sequential check of the downloaded Stormwatch diagnostics, before HP-gate removal
-
-`private/logs/route-import-c4nFLaThdAxtVpYv-12.json` identifies the same report, fight, start and end as the earlier full Stormwatch export. It includes 154,919 events and 92,411 damage events, all with amounts. Of 94 matched placement identities, Stormscreamer `59:3` is Chickenized and excluded before this analysis, leaving 93 killed ordinary/boss identities. The research adapter excludes original Chicken targets just as live matching does.
-
-With the HP threshold explicitly placed last, the current rules produce:
-
-| Step | Dropped at this step | Remaining mobs |
-| --- | ---: | ---: |
-| Multi-mob packs | 5 | 88 |
-| Boss-pack exclusion | 0 | 88 |
-| Completeness and pull-boundary checks | 15 | 73 |
-| Initial damage share and lead | 64 | 9 |
-| Overall damage share >=55% | 7 | 2 |
-| Overall lead >=3x | 1 | 1 |
-| Sustained and final focus | 0 | 1 |
-| Party contribution, including opening | 0 | 1 |
-| At most one target per pack | 0 | 1 |
-| Living alternative and fresh HP sample | 0 | 1 |
-| **Survivor HP >=50%, last** | **0** | **1** |
-
-All 15 completeness/boundary exclusions in this run are caused by the current `crosses-trash-pull-boundary` guard, not by missing damage or incomplete data. The nine opening candidates are G10 Facestabber `57:1`, G14 Shinchopper `58:13`, G13 Facestabber `57:9`, G16 Shinchopper `58:27`, G23 Shinchopper `58:3`, G22 Mancatcher `53:1`, G31 Shinchopper `58:29`, G42 Ashen Arsonist `61:3`, and G44 Raging Pillager `64:3`.
-
-Seven fail overall damage share. G10 Facestabber still has 56.9% overall, but only a 1.32x lead over its competing target, so the 3x rule removes it. G42 Arsonist passes all remaining rules. The 50% HP threshold therefore has no incremental effect on this run; this does not establish whether it helps on other logs. The offline report's `funnel.stages` retains every removed and surviving identity at each step. The per-pack limit is recomputed before the final HP check, rather than reusing the detector's already-filtered candidate flags. Production thresholds are unchanged by this diagnostic check.
-
-### User review and removal of the HP gate
-
-The user reviewed the Stormwatch candidates on 2026-10-20: Facestabber, Shinchopper and Mancatcher are not normally focused. Raging Pillager may be killed early because it becomes stronger when other mobs die, but early kill order alone is not strong focus evidence. Ashen Arsonist is a good priority candidate because its dangerous cast can one-shot if not interrupted. These are user-supplied qualitative controls, not a per-type blacklist or blanket confirmation of every instance.
-
-Following this review, the 50% survivor-HP threshold and the fresh-HP-sample requirement were removed from live detection and the current sequential report. Low sibling HP, missing HP and stale HP now leave a valid focus intact. The living-alternative check (another mob survives at least 1.5 seconds), all damage/focus thresholds and the one-target-per-pack cap remain. The preceding sequential table is a historical before-removal comparison, where HP rejected zero; subsequent reports use the updated rules.
-
-### Removing the API pull-boundary gate
-
-The user then requested removing the pull-boundary exclusion: a new pack can join an ongoing fight and one of its mobs can immediately become the focused target. API segmentation is no longer read by the priority detector. Each mob keeps its own first-positive-damage-to-death window, independent of segment starts and ends or earlier source casts. The remaining damage, party contribution, living-alternative and per-pack-limit checks still apply. A regression test moves API boundaries before the new pack's first hit and inside its three-second focused kill and requires identical detection results.
-
-Replaying the four research logs after this change leaves the final result unchanged: only Stormwatch G42 Ashen Arsonist qualifies. In Stormwatch, all 88 mobs in eligible multi-mob packs now reach the opening test instead of 73; ten pass that test instead of nine. The newly admitted opening candidate is G17 Facestabber `57:11` (71.0% initial damage share), which then fails the overall-share rule with 29.2%. In the portal Sands run, two additional opening candidates (G43 Tombguard Reaver `49:1` and G32 Sandsworn Husk `48:4`) also fail overall share. Urrak and original Sands gain no opening candidates. The current Stormwatch funnel is 93 → 88 → 10 → 2 → 1, with all later focus, party, survivor and cap checks retaining that one target.
-
-### Five-second opening window
-
-At the user's request, `initialWindowMs` was changed from 3000 to 5000; all other thresholds remain unchanged. A target killed sooner still uses its entire damage lifetime. The research report's opening-stage label now reads the configured window instead of hardcoding three seconds. The real Arsonist fixture verifies the five-second aggregate: 59.2% initial share instead of 64.8%, with two supporting players and the same 62.8% lifetime share.
-
-| Run | Opening candidates, 3 seconds | Opening candidates, 5 seconds | Final candidates |
-| --- | ---: | ---: | --- |
-| Stormwatch, `c4nFLaThdAxtVpYv` / 12 | 10 | 5 | G42 Ashen Arsonist |
-| Urrak, `JLhT1y4Fa3n9Xjx8` / 6 | 4 | 3 | None |
-| Portal Sands, `rgTQYB9dqPzjJFha` / 7 | 5 | 6 | None |
-| Original Sands, `c4nFLaThdAxtVpYv` / 5 | 8 | 4 | None |
-
-Stormwatch's current funnel is 93 → 88 → 5 → 2 → 1. The five opening candidates are G10 Facestabber, G23 Shinchopper, G22 Mancatcher, G42 Ashen Arsonist and G44 Raging Pillager. The final result across all four runs is unchanged.
+Log import does not infer priority targets. Select them manually in the enemy context menu. Manual flags remain saved, synchronized and exported with the route. The retired detectors, fixtures and research are kept locally in `private/priority/`, outside the public build.
 
 ## Live URL import (current)
 
@@ -86,7 +12,7 @@ Stormwatch's current funnel is 93 → 88 → 5 → 2 → 1. The five opening can
 
 A link with a numeric `fight` imports that run directly. A report-only link first requests lightweight fight summaries (no actors/events), lists newest first and preselects the last run by start time. The user chooses a run and clicks Import before any event download. Labels include `#ID · Clear/Wipe · dungeon · league level · duration`; successful runs use the official completion time, failed runs use elapsed fight time. The current five-level league encoding maps raw 75 to Eternal 55, as verified against the supplied report and screenshot. The Dungeon data hint is omitted from the dialog; matching still uses the selected dataset.
 
-The loader requests selected-fight metadata, minimal actor identity fields, and **one paginated filtered event stream**. No introspection, equipment, talents, ability catalogue, report title or duplicated enemy/friendly stream. Damage/casts provide enemy identities, movement and HP; damage amounts and overkill support priority detection. Healing provides player positions; initial debuffs preserve pre-movement NPC coordinates. Relic/empowered effects, deaths, summons, map changes and boss boundaries are retained. Opaque event JSON cannot be field-projected by GraphQL, so unrelated amounts and resource bars are discarded immediately after receipt. There is no automatic fallback to an unfiltered full export.
+The loader requests selected-fight metadata, minimal actor identity fields, and **one paginated filtered event stream**. No introspection, equipment, talents, ability catalogue, report title or duplicated enemy/friendly stream. Damage/casts provide enemy identities, movement and HP; damage amounts and overkill are retained in replayable diagnostics. Healing provides player positions; initial debuffs preserve pre-movement NPC coordinates. Relic/empowered effects, deaths, summons, map changes and boss boundaries are retained. Opaque event JSON cannot be field-projected by GraphQL, so unrelated amounts and resource bars are discarded immediately after receipt. There is no automatic fallback to an unfiltered full export.
 
 Offline comparison of this selection against the saved exports: Stormwatch 124,993/160,318 events, same 1 candidate and 5 intended pulls; Urrak 136,239/185,351 events, same 8 custom candidates and 2 pulls; portal Sands 71,557/99,205 events, same 2 conditional candidates, 8 pulls and 1 portal. These figures compare one stream; the old downloader fetched it twice. Original Sands' older export omits actor 41 (second Chicken's original target), so the generic matcher correctly stops instead of substituting the research assignment. Fresh metadata should include cast-only targets; this needs real API verification.
 

@@ -269,23 +269,15 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const aggroEvidence=createAggroEvidence(packs,observations.map(p=>({...p,
     confirmedSource:rows.some(r=>r.key===p.key&&anchor(r)&&!skippedKeys.has(r.key))})),{buriedRadius:config.buriedRadius});
   const empoweredKeys=new Set([...affixes.empowered.confirmedInstances.map(r=>r.key),...health.filter(r=>r.empoweredCandidate).map(r=>r.key)]);
-  // Retain NPC assignments for detection after the user selects the full route.
-  // No priority analysis runs while pack choices are still being constructed.
   for(const [index,candidate] of candidates.entries()){
     if(index%100===0){await yieldUI();signal?.throwIfAborted();}
     const proximity={},aggro={};
     const pulls=pullSegments.map(p=>({id:`segment-${p.id}`,start:(p.startTime-fight.startTime)/1000,end:(p.endTime-fight.startTime)/1000,groups:[]}));
     const packAssignments=Map.groupBy(candidate.routeAssignments,a=>packByPlacement.get(a.placementId));
-    const priorityAssignments=[...packAssignments].map(([pack,as])=>({id:pack.id,
-      mobKeys:as.filter(a=>!a.inferred&&!chickenKeys.has(a.key)).map(a=>a.key),
-      placements:Object.fromEntries(as.map(a=>[a.key,a.placementId])),
-      incomplete:Boolean(partial)||as.some(a=>a.inferred),boss:pack.placements.some(p=>catalog.get(p.id)?.isBoss)
-    }));
     for(const [pack,as]of packAssignments){
       const members=as.map(a=>a.placementId).sort(),excluded=as.filter(a=>chickenKeys.has(a.key)).map(a=>a.placementId).sort(),empowered=as.filter(a=>empoweredKeys.has(a.key)).map(a=>a.placementId).sort();
       const time=Math.min(...as.map(a=>first.get(a.key)??a.firstTime));
       const segment=engagementSegmentIndex(pullSegments,time);
-      // Inferred priority cannot turn an otherwise common pack into a choice.
       const identity=JSON.stringify([members,excluded,empowered]);
       let id=groupByIdentity.get(identity);
       if(!id){id=`group-${groupByIdentity.size}`;groupByIdentity.set(identity,id);groups[id]={id,label:pack.number,enemies:members,excluded,empowered};}
@@ -308,9 +300,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       duplicate.proximity[id]=combineProximity([duplicate.proximity[id],proximity[id]]);
       duplicate.aggro[id]=combineAggroEvidence([duplicate.aggro[id],aggro[id]]);
     }
-      duplicate.priorityAssignments.push(priorityAssignments);
     }
-    else{const variant={pulls,proximity,aggro,priorityAssignments:[priorityAssignments]};variants.push(variant);variantByPulls.set(routeKey,variant);}
+    else{const variant={pulls,proximity,aggro};variants.push(variant);variantByPulls.set(routeKey,variant);}
   }
   const kept=variants[0].pulls.map((_,i)=>i).filter(i=>variants.some(v=>v.pulls[i].groups.length));
   for(const v of variants)v.pulls=kept.map((i,n)=>({...v.pulls[i],label:`Pull ${n+1}`}));

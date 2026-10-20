@@ -1,7 +1,7 @@
 import {beginAuthorization,consumeCallback,exchangeCode} from './oauth.js';
 import {parseReportURL} from './report-url.js';
 import {loadLog,loadReportFights} from './live-api.js';
-import {runLogMatching,runPriorityDetection} from './matcher-client.js';
+import {runLogMatching} from './matcher-client.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 const pendingKey='fellowship-route-import-pending';
 
@@ -39,11 +39,6 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
     disconnect(){token=null;diagnostics=null;recoveryResult=null;},
     cancelImport(){diagnostics=null;recoveryResult=null;},
     diagnostics:()=>diagnostics,
-    async priorityTargets(state){
-      if(!state.complete)throw new Error('Select all route packs before detecting priority targets.');
-      if(!diagnostics?.log)throw new Error('The imported log is no longer available. Import it again.');
-      return runPriorityDetection(diagnostics.log,state);
-    },
     canContinue,
     canFindMissing,
     missingEnemies:()=>diagnostics?.recoveryPreview?.skipped??null,

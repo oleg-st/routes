@@ -811,8 +811,7 @@ function logPreviewRoute(fixture,state,id){
     return {...newPull(i),id:`log-pull-${i}`,enemies:members,note:`Log ${p.id}.${inferred.length||fixture.partial||fixture.expandedSearch?' '+fixture.assumption:''}`};
   });
   next.excluded=groups.flatMap(g=>g.excluded);
-  const selectedMembers=new Set(next.pulls.flatMap(p=>p.enemies));
-  next.priorityTargets=[...new Set(state.priorityTargets??groups.flatMap(g=>g.priorityTargets??[]))].filter(id=>selectedMembers.has(id));
+  next.priorityTargets=[];
   next.drawings=fixture.drawings.filter(d=>state.complete||d.afterTime<=(state.pulls.at(-2)?.end??-Infinity)).map(({afterTime,...d})=>d);
   return {next,target};
 }
