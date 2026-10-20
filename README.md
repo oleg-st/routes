@@ -4,7 +4,7 @@ Dungeon route planner for Fellowship.
 
 [https://olegfellow.dev](https://olegfellow.dev)
 
-![Empyrean Sands route with pulls and route statistics](docs/screenshot.png)
+![Empyrean Sands route with pulls and route statistics](docs/screenshot.webp)
 
 - Maps and dungeon data sourced directly from the game.
 - Route Together: plan routes with your team in real time.
