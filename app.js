@@ -346,7 +346,7 @@ function showPullTooltip(anchor){
   tip.dataset.pull=pull.id;
   tip.innerHTML=`<strong>${esc(pull.name)}</strong><div class="tip-score">${pct(score.percent)} · ${members.length} ${members.length===1?'mob':'mobs'}${showHealth()?' · '+hp(health.mobs):''}</div>${showHealth()&&health.shadow?'<div class="tip-shadow-health">Emissary '+hp(health.shadow)+'</div>':''}${rows.length?`<ul class="tip-pack">${rows.map(({p,count,ids,empowered,chicken})=>{
     const enemy=enemies.get(p.id),icon=availableImage(enemy);
-    return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify(ids))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}${count>1?` ×${count}`:''}</span><span class="tip-pack-status">${empowered?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${chicken?`<img src="${chickenIcon}" alt="Chicken" title="Chicken">`:''}<span class="tip-pack-percent">${pct(positionsPercent(ids.map(id=>positions.get(id))))}</span>${showHealth()?hp(positionsHealth(ids.map(id=>positions.get(id)),enemies,route)):''}</span></button></li>`;
+    return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify(ids))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}${count>1?` ×${count}`:''}</span><span class="tip-pack-status">${empowered?`<img src="${empoweredIcon}" alt="Empowered" title="Empowered">`:''}${chicken?`<img src="${chickenIcon}" alt="Chicken" title="Chicken">`:''}<span class="tip-pack-percent">${pct(positionsPercent(ids.map(id=>positions.get(id))))}</span></span></button></li>`;
   }).join('')}</ul>`:'<div class="muted">No mobs in this pull.</div>'}`;
   positionSidebarTooltip(tip,anchor);
 }

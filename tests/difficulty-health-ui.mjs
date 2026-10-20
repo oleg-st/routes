@@ -48,6 +48,7 @@ try{
   assert.equal(await page.locator('#tooltip .tip-pack-heading .health-value').count(),1);
   assert.equal(await page.locator('#tooltip li .health-value').count(),0);
   await page.locator('.pull-card').first().hover();await page.locator('#pull-tooltip').waitFor({state:'visible'});assert.ok(await page.locator('#pull-tooltip .health-value').count()>0);
+  assert.equal(await page.locator('#pull-tooltip li .health-value').count(),0);
   await page.locator('#layers').click();await page.locator('#show-hp').check();await page.locator('#layers').click();
   assert.ok(await page.locator('#pack-health text').count()>0);assert.ok(await page.locator('.pull-mob-count .health-value').count()>0);
   await page.locator('#layers').click();await page.locator('#show-hp').uncheck();await page.locator('#layers').click();
@@ -90,7 +91,8 @@ try{
   assert.equal(await page.locator('#inspector .health-value').getAttribute('title'),'1,555,786 HP','Medium Chicken matches report c4nFLaThdAxtVpYv fight 5');
   await page.locator('.close-inspector').click();
   await page.locator('.pull-card').first().hover();await page.locator('#pull-tooltip').waitFor({state:'visible'});
-  assert.ok(await page.locator('#pull-tooltip .health-value[title="1,555,786 HP"]').count()>0);
+  assert.ok(await page.locator('#pull-tooltip .tip-score .health-value').count()>0);
+  assert.equal(await page.locator('#pull-tooltip li .health-value').count(),0);
   await page.mouse.move(0,0);
   await page.locator('#dungeon').selectOption('Level.ID.SandTomb');await page.waitForFunction(()=>document.querySelector('#difficulty option:nth-child(2)')?.textContent==='Normal');
   assert.deepEqual(await page.locator('#difficulty option').allTextContents(),['Not selected','Normal','Hard','Nightmare']);
