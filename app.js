@@ -496,7 +496,7 @@ function renderMap(){
   }
   const visiblePacks=new Set(visible.map(p=>p.packId));
   for(const {packId,points} of mapPatrols(currentPositions().filter(p=>visiblePacks.has(p.packId)),mapLayer)){
-    $('#patrols').append(svg('polyline',{'data-pack':packId,class:'patrol-path',points:points.map(xy=>xy.join(',')).join(' '),fill:'none',stroke:'#ffffff','stroke-width':1.8,'stroke-dasharray':'5 4','vector-effect':'non-scaling-stroke',opacity:.85}));
+    $('#patrols').append(svg('polyline',{'data-pack':packId,class:'patrol-path',points:points.map(xy=>xy.join(',')).join(' '),fill:'none',stroke:'#ded8cc','stroke-width':1.8,'stroke-dasharray':'5 4','vector-effect':'non-scaling-stroke',opacity:.65}));
   }
   for(const p of sorted){
     const enemy=enemies.get(p.id),own=owners.get(p.placementId),chicken=!enemy?.isBoss&&(route.excluded.includes(p.placementId)||logPreview&&logChickenPreview.has(p.placementId)),[x,y]=markerCoordinates(p),r=radius*enemyMarkerScale(enemy);
