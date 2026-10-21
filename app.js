@@ -340,12 +340,12 @@ function positionSidebarTooltip(tip,anchor){
   tip.style.left=Math.max(8,Math.min(rect.left-width-8>=8?rect.left-width-8:rect.left,window.innerWidth-width-8))+'px';
   tip.style.top=Math.max(8,Math.min(rect.left-width-8>=8?rect.top:rect.bottom+8,window.innerHeight-height-8))+'px';
 }
-let pullTooltipTimer;
-function hidePullTooltip(){clearTimeout(pullTooltipTimer);$('#pull-tooltip').hidden=true;}
-function deferHidePullTooltip(){clearTimeout(pullTooltipTimer);pullTooltipTimer=setTimeout(hidePullTooltip,120);}
-function showPullTooltip(anchor){
+let pullTooltipTimer,pullTooltipTouch=false;
+function hidePullTooltip(){clearTimeout(pullTooltipTimer);pullTooltipTouch=false;$('#pull-tooltip').hidden=true;}
+function deferHidePullTooltip(){clearTimeout(pullTooltipTimer);if(!pullTooltipTouch)pullTooltipTimer=setTimeout(hidePullTooltip,120);}
+function showPullTooltip(anchor,{touch=false}={}){
   const pull=route.pulls.find(p=>p.id===anchor.dataset.pull);if(!pull)return;
-  clearTimeout(pullTooltipTimer);hideChickenTooltip();hideHover();
+  clearTimeout(pullTooltipTimer);pullTooltipTouch=touch;hideChickenTooltip();hideHover();
   const members=pull.enemies.map(id=>positions.get(id)).filter(Boolean),rows=[],ordinary=new Map();
   for(const p of members){
     const empowered=isEmpowered(p),chicken=route.excluded.includes(p.placementId),priority=route.priorityTargets.includes(p.placementId);
@@ -958,6 +958,7 @@ function toggleRouteModifier(kind){
   change(commands);
 }
 function bind(){
+  for(const event of ['contextmenu','dragstart'])$('.map-controls').addEventListener(event,e=>e.preventDefault());
   const pullList=$('#pulls'),pullTip=$('#pull-tooltip');
   let pullTouch=null,pullHoldTimer=null,pullTouchInput=false,suppressPullClick=false;
   const cancelPullHold=()=>{clearTimeout(pullHoldTimer);pullHoldTimer=null;};
@@ -970,11 +971,11 @@ function bind(){
     pullHoldTimer=setTimeout(()=>{
       pullHoldTimer=null;
       if(!pullTouch||!card.isConnected)return;
-      suppressPullClick=true;showPullTooltip(card);
+      suppressPullClick=true;showPullTooltip(card,{touch:true});
     },500);
   });
   pullList.addEventListener('pointermove',e=>{
-    if(pullTouch?.id===e.pointerId&&Math.hypot(e.clientX-pullTouch.x,e.clientY-pullTouch.y)>8){cancelPullHold();pullTouch=null;hidePullTooltip();}
+    if(!suppressPullClick&&pullTouch?.id===e.pointerId&&Math.hypot(e.clientX-pullTouch.x,e.clientY-pullTouch.y)>8){cancelPullHold();pullTouch=null;hidePullTooltip();}
   });
   const endPullTouch=e=>{if(pullTouch?.id===e.pointerId){cancelPullHold();pullTouch=null;}};
   document.addEventListener('pointerup',endPullTouch);
@@ -999,12 +1000,11 @@ function bind(){
     });
     list.addEventListener('focusin',highlightRow);
   }
-  pullList.addEventListener('pointerover',e=>{if(e.pointerType==='touch')return;const card=e.target.closest('[data-pull]');if(e.target.closest('button')){hidePullTooltip();return;}if(card&&(pullTip.hidden||pullTip.dataset.pull!==card.dataset.pull))showPullTooltip(card);});
+  pullList.addEventListener('pointerover',e=>{if(e.pointerType==='touch'||pullTooltipTouch)return;const card=e.target.closest('[data-pull]');if(e.target.closest('button')){hidePullTooltip();return;}if(card&&(pullTip.hidden||pullTip.dataset.pull!==card.dataset.pull))showPullTooltip(card);});
   pullList.addEventListener('pointerout',e=>{if(e.pointerType==='touch')return;const card=e.target.closest('[data-pull]');if(card&&!card.contains(e.relatedTarget))deferHidePullTooltip();});
   pullList.addEventListener('focusin',e=>{if(!pullTouchInput&&e.target.matches('.pull-card'))showPullTooltip(e.target);});
   pullList.addEventListener('focusout',deferHidePullTooltip);
   pullList.addEventListener('scroll',()=>{cancelPullHold();pullTouch=null;hidePullTooltip();});
-  pullList.addEventListener('dragstart',hidePullTooltip);
   pullList.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea'))e.preventDefault();});
   pullTip.addEventListener('pointerenter',()=>clearTimeout(pullTooltipTimer));
   pullTip.addEventListener('pointerleave',deferHidePullTooltip);
@@ -1093,7 +1093,7 @@ function bind(){
 
   $('#pulls').onkeydown=e=>{if(e.target.matches('.pull-card')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();activePull=e.target.dataset.pull;render();}};
   let draggedPull;
-  $('#pulls').ondragstart=e=>{if(pullTouchInput||e.target.closest('textarea,input,button')){e.preventDefault();return;}draggedPull=e.target.closest('[data-pull]')?.dataset.pull;e.dataTransfer.effectAllowed='move';};
+  $('#pulls').ondragstart=e=>{if(pullTouchInput||e.target.closest('textarea,input,button')){e.preventDefault();return;}hidePullTooltip();draggedPull=e.target.closest('[data-pull]')?.dataset.pull;e.dataTransfer.effectAllowed='move';};
   $('#pulls').ondragover=e=>e.preventDefault();$('#pulls').ondrop=e=>{e.preventDefault();const target=e.target.closest('[data-pull]')?.dataset.pull;if(!target||!draggedPull||target===draggedPull)return;movePullTo(draggedPull,route.pulls.findIndex(p=>p.id===target));draggedPull=null;};
   const map=$('#map');
   const touches=new Map();

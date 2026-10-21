@@ -175,7 +175,15 @@ try{
     assert.equal(await page.locator('#pull-tooltip').isHidden(),true,'touching a pull does not immediately show the hint');
     await page.waitForTimeout(600);
     assert.equal(await page.locator('#pull-tooltip').isVisible(),true,'holding a pull shows its hint');
+    // A touch hold can also trigger native drag/focus/leave events. None of
+    // those should dismiss a hint that the user has explicitly opened.
+    await card.dispatchEvent('dragstart');
+    assert.equal(await page.locator('#pull-tooltip').isVisible(),true,'a prevented native touch drag keeps the hint open');
     await touch('touchEnd',[]);
+    await card.dispatchEvent('focusout');
+    await page.locator('#pull-tooltip').dispatchEvent('pointerleave',{pointerType:'touch'});
+    await page.waitForTimeout(200);
+    assert.equal(await page.locator('#pull-tooltip').isVisible(),true,'focus and pointer changes after release keep the hint open');
     assert.equal(await second.evaluate(node=>node.classList.contains('selected')),true,'releasing a hold does not switch pulls');
     await card.locator('.pull-name').tap();
     assert.equal(await card.evaluate(node=>node.classList.contains('selected')),true,'the next short tap still switches immediately');
@@ -183,8 +191,13 @@ try{
     await touch('touchStart',[[1,px,py]]);await touch('touchMove',[[1,px,py-20]]);await page.waitForTimeout(600);
     assert.equal(await page.locator('#pull-tooltip').isHidden(),true,'scrolling cancels the pull hint');
     await touch('touchEnd',[]);
-    for(const selector of ['#map image','.pull-card .pull-name']){
+    for(const selector of ['#map image','.pull-card .pull-name','.map-controls img']){
       assert.equal(await page.locator(selector).first().evaluate(node=>getComputedStyle(node).webkitUserSelect),'none','Safari selection is disabled on hold targets');
+    }
+    const toolbarImage=page.locator('[data-tool=portal] img');
+    assert.equal(await toolbarImage.evaluate(node=>getComputedStyle(node).webkitUserDrag),'none','toolbar images cannot start native dragging');
+    for(const type of ['contextmenu','dragstart']){
+      assert.equal(await toolbarImage.evaluate((node,type)=>!node.dispatchEvent(new Event(type,{bubbles:true,cancelable:true})),type),true,`toolbar suppresses native ${type}`);
     }
     assert.equal(await card.evaluate(node=>!node.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true}))),true,'pull holds suppress the browser menu');
     assert.deepEqual(errors,[]);await context.close();
