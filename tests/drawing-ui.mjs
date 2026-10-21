@@ -23,10 +23,16 @@ try{
     await page.getByRole('button',{name:'Thick',exact:true}).click();
     await click(280,240);await move(500,290);
     assert.equal(await page.locator('#draft .annotation-line').count(),1);
+    const arrowFill=selector=>page.locator(selector).evaluate(line=>{
+      const id=line.getAttribute('marker-end').slice(5,-1);
+      return document.getElementById(id)?.querySelector('path').getAttribute('fill');
+    });
+    assert.equal(await arrowFill('#draft .annotation-line'),'#9000ff','draft arrowhead has an explicit matching color for Safari');
     assert.equal(await drawings.count(),0);
     await click(500,290);
     assert.equal(await drawings.count(),1);
     assert.equal(await stroke().getAttribute('stroke'),'#9000ff');
+    assert.equal(await arrowFill('#drawings .annotation-line'),'#9000ff','saved arrowhead keeps its own color');
     assert.equal(await stroke().getAttribute('stroke-width'),'5');
     assert.equal((await stroke().getAttribute('points')).split(' ').length,2);
     const original=await stroke().getAttribute('points');

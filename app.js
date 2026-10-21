@@ -646,8 +646,14 @@ function drawAnnotation(d,root,unit){
     const text=d.text||d.label||'';if(text.trim())g.append(svg('title',{},text));
   }else{
     const points=d.points.map(p=>p.join(',')).join(' ');
+    let arrowhead='none';
+    if(d.kind==='line'&&d.points.length>=2){
+      // Explicit fill also works in Safari versions without context-stroke.
+      const id=`arrowhead-${root.id}-${root.childElementCount}`,defs=svg('defs'),marker=svg('marker',{id,viewBox:'0 0 10 10',refX:10,refY:5,markerWidth:6,markerHeight:6,orient:'auto-start-reverse'});
+      marker.append(svg('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:color}));defs.append(marker);g.append(defs);arrowhead=`url(#${id})`;
+    }
     if(!isDraft)g.append(svg('polyline',{points,fill:'none',stroke:'transparent','stroke-width':Math.max(16,width*6),'vector-effect':'non-scaling-stroke','pointer-events':'stroke','stroke-linecap':'round'}));
-    g.append(svg('polyline',{class:'annotation-line',points,fill:'none',stroke:color,'stroke-width':width,'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':d.kind==='invis'?'7 6':d.kind==='portal'?'3 7':'none','marker-end':d.kind==='line'&&d.points.length>=2?'url(#arrowhead)':'none'}));
+    g.append(svg('polyline',{class:'annotation-line',points,fill:'none',stroke:color,'stroke-width':width,'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':d.kind==='invis'?'7 6':d.kind==='portal'?'3 7':'none','marker-end':arrowhead}));
     if(d.kind==='line'&&!isDraft)for(const [i,[x,y]]of d.points.entries())g.append(svg('circle',{class:'arrow-handle','data-endpoint':i,cx:x,cy:y,r:6*unit,fill:color,stroke:'#fff','stroke-width':1.5,'vector-effect':'non-scaling-stroke'}));
     if(relicIcons[d.kind])for(const [i,[x,y]] of d.points.entries()){
       const endpoint=svg('g',isDraft?{}:{class:'annotation-handle','data-endpoint':i});
@@ -953,6 +959,28 @@ function toggleRouteModifier(kind){
 }
 function bind(){
   const pullList=$('#pulls'),pullTip=$('#pull-tooltip');
+  let pullTouch=null,pullHoldTimer=null,pullTouchInput=false,suppressPullClick=false;
+  const cancelPullHold=()=>{clearTimeout(pullHoldTimer);pullHoldTimer=null;};
+  pullList.addEventListener('pointerdown',e=>{
+    cancelPullHold();pullTouch=null;suppressPullClick=false;pullTouchInput=e.pointerType==='touch';
+    if(!pullTouchInput)return;
+    hidePullTooltip();
+    const card=e.target.closest('[data-pull]');if(!card||e.target.closest('button,input,textarea'))return;
+    pullTouch={id:e.pointerId,x:e.clientX,y:e.clientY,card};
+    pullHoldTimer=setTimeout(()=>{
+      pullHoldTimer=null;
+      if(!pullTouch||!card.isConnected)return;
+      suppressPullClick=true;showPullTooltip(card);
+    },500);
+  });
+  pullList.addEventListener('pointermove',e=>{
+    if(pullTouch?.id===e.pointerId&&Math.hypot(e.clientX-pullTouch.x,e.clientY-pullTouch.y)>8){cancelPullHold();pullTouch=null;hidePullTooltip();}
+  });
+  const endPullTouch=e=>{if(pullTouch?.id===e.pointerId){cancelPullHold();pullTouch=null;}};
+  document.addEventListener('pointerup',endPullTouch);
+  document.addEventListener('pointercancel',endPullTouch);
+  document.addEventListener('keydown',()=>{pullTouchInput=false;});
+  document.addEventListener('pointerdown',e=>{if(!e.target.closest('.pull-card,#pull-tooltip')){cancelPullHold();pullTouch=null;hidePullTooltip();}});
   for(const list of [pullTip,$('#chicken-tooltip'),$('#search-results')]){
     const highlightRow=e=>{
       const button=e.target.closest('[data-focus-enemies],[data-search-id]');
@@ -971,12 +999,13 @@ function bind(){
     });
     list.addEventListener('focusin',highlightRow);
   }
-  pullList.addEventListener('pointerover',e=>{const card=e.target.closest('[data-pull]');if(e.target.closest('button')){hidePullTooltip();return;}if(card&&(pullTip.hidden||pullTip.dataset.pull!==card.dataset.pull))showPullTooltip(card);});
-  pullList.addEventListener('pointerout',e=>{const card=e.target.closest('[data-pull]');if(card&&!card.contains(e.relatedTarget))deferHidePullTooltip();});
-  pullList.addEventListener('focusin',e=>{if(e.target.matches('.pull-card'))showPullTooltip(e.target);});
+  pullList.addEventListener('pointerover',e=>{if(e.pointerType==='touch')return;const card=e.target.closest('[data-pull]');if(e.target.closest('button')){hidePullTooltip();return;}if(card&&(pullTip.hidden||pullTip.dataset.pull!==card.dataset.pull))showPullTooltip(card);});
+  pullList.addEventListener('pointerout',e=>{if(e.pointerType==='touch')return;const card=e.target.closest('[data-pull]');if(card&&!card.contains(e.relatedTarget))deferHidePullTooltip();});
+  pullList.addEventListener('focusin',e=>{if(!pullTouchInput&&e.target.matches('.pull-card'))showPullTooltip(e.target);});
   pullList.addEventListener('focusout',deferHidePullTooltip);
-  pullList.addEventListener('scroll',hidePullTooltip);
+  pullList.addEventListener('scroll',()=>{cancelPullHold();pullTouch=null;hidePullTooltip();});
   pullList.addEventListener('dragstart',hidePullTooltip);
+  pullList.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea'))e.preventDefault();});
   pullTip.addEventListener('pointerenter',()=>clearTimeout(pullTooltipTimer));
   pullTip.addEventListener('pointerleave',deferHidePullTooltip);
   document.addEventListener('keydown',e=>{if(e.key==='Escape')hidePullTooltip();});
@@ -1042,6 +1071,7 @@ function bind(){
   $('#search').oninput=search;$('#clear-search').onclick=()=>{$('#search').value='';search();};
   $('#search-results').onclick=e=>{const b=e.target.closest('[data-search-id]');if(b){focusEnemies([b.dataset.searchId]);renderInspector(b.dataset.searchId);$('#search-results').hidden=true;}};
   $('#pulls').onclick=e=>{
+    if(suppressPullClick){suppressPullClick=false;e.preventDefault();return;}
     if(e.target.closest('textarea'))return;
     const card=e.target.closest('[data-pull]');if(!card)return;const id=card.dataset.pull;const action=e.target.closest('[data-action]')?.dataset.action;
     if(!action){activePull=id;render();return;}
@@ -1063,17 +1093,19 @@ function bind(){
 
   $('#pulls').onkeydown=e=>{if(e.target.matches('.pull-card')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();activePull=e.target.dataset.pull;render();}};
   let draggedPull;
-  $('#pulls').ondragstart=e=>{if(e.target.closest('textarea,input,button')){e.preventDefault();return;}draggedPull=e.target.closest('[data-pull]')?.dataset.pull;e.dataTransfer.effectAllowed='move';};
+  $('#pulls').ondragstart=e=>{if(pullTouchInput||e.target.closest('textarea,input,button')){e.preventDefault();return;}draggedPull=e.target.closest('[data-pull]')?.dataset.pull;e.dataTransfer.effectAllowed='move';};
   $('#pulls').ondragover=e=>e.preventDefault();$('#pulls').ondrop=e=>{e.preventDefault();const target=e.target.closest('[data-pull]')?.dataset.pull;if(!target||!draggedPull||target===draggedPull)return;movePullTo(draggedPull,route.pulls.findIndex(p=>p.id===target));draggedPull=null;};
   const map=$('#map');
   const touches=new Map();
-  let touchGesture=false,touchFrame=null;
+  let touchGesture=false,touchFrame=null,longPressTimer=null;
+  const cancelLongPress=()=>{clearTimeout(longPressTimer);longPressTimer=null;};
   const gestureFrame=()=>{
     const [a,b=a]=[...touches.values()];
     return a?{clientX:(a.clientX+b.clientX)/2,clientY:(a.clientY+b.clientY)/2,distance:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}:null;
   };
   const endTouch=e=>{
     if(!touches.delete(e.pointerId))return false;
+    cancelLongPress();
     const handled=touchGesture;
     touchFrame=gestureFrame();
     if(!touches.size){
@@ -1090,6 +1122,7 @@ function bind(){
   map.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1.12:1/1.12,point(e));},{passive:false});
   map.addEventListener('pointerdown',e=>{
     if(e.button!==0&&e.button!==2)return;
+    cancelLongPress();
     $('#enemy-menu').hidden=true;hideHover();
     if(e.pointerType==='touch'){
       clearTimeout(mapRenderTimer);
@@ -1112,6 +1145,15 @@ function bind(){
       drag.offset=drawingOnMap(drawing,mapLayer,dungeon).points[drag.endpoint].map((v,i)=>v-drag.start[i]);
     }
     map.setPointerCapture(e.pointerId);if(drag.pan)map.classList.add('dragging');
+    if(e.pointerType==='touch'&&(drag.target||drag.drawing)){
+      const state=drag,anchor={clientX:e.clientX,clientY:e.clientY};
+      longPressTimer=setTimeout(()=>{
+        longPressTimer=null;
+        if(drag!==state||state.moved||touches.size!==1)return;
+        drag=null;suppressClick=true;map.classList.remove('dragging');hideHover();
+        if(state.drawing)showDrawingMenu(state.drawing,anchor,state.vertex);else showEnemyMenu(state.target,anchor);
+      },500);
+    }
   });
   map.addEventListener('pointermove',e=>{
     if(touches.has(e.pointerId)){
@@ -1122,9 +1164,10 @@ function bind(){
         zoom(factor,anchor,anchor.map((v,i)=>v-destination[i]));
         touchFrame=next;return;
       }
+      if(!drag)return;
     }
     if(drag){
-      if(Math.hypot(e.clientX-drag.client[0],e.clientY-drag.client[1])>4)drag.moved=true;
+      if(Math.hypot(e.clientX-drag.client[0],e.clientY-drag.client[1])>4){drag.moved=true;cancelLongPress();}
       if(drag.split&&drag.moved){drag.end=point(e);renderSplitDraft([drag.start,drag.end]);}
       else if(drag.edit&&drag.moved){const pos=draggedDrawingPoint(e,drag);if(pos){drag.edit.points[drag.endpoint]=pos;renderMap();}}
       else if(drag.pan&&drag.moved){const now=point(e);view.x+=drag.start[0]-now[0];view.y+=drag.start[1]-now[1];$('#map').setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);cursorUI?.refresh();$('#tooltip').hidden=true;}

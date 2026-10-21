@@ -52,6 +52,40 @@ try{
     },[x,y]);
     const near=(actual,expected,message)=>actual.forEach((n,i)=>assert.ok(Math.abs(n-expected[i])<.02,`${message}: ${actual} vs ${expected}`));
     const selected=await page.locator('#markers .assigned-ring').count();
+    const mob=await page.locator('#markers > g').evaluateAll(nodes=>{
+      for(const node of nodes){
+        if(node.querySelector('.boss-ring'))continue;
+        const r=node.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
+        if(document.elementFromPoint(x,y)?.closest('[data-placement]')===node)return {id:node.dataset.placement,x,y};
+      }
+    });
+    assert.ok(mob,'a non-boss mob is reachable on the mobile map');
+    const hold=async(x,y)=>{await touch('touchStart',[[1,x,y]]);await page.waitForTimeout(600);};
+    await hold(mob.x,mob.y);
+    assert.equal(await page.getByRole('menuitemcheckbox',{name:'Chicken',exact:true}).isVisible(),true,'holding a mob opens its actions');
+    await touch('touchEnd',[]);
+    assert.equal(await page.locator('#markers .assigned-ring').count(),selected,'releasing a hold does not assign the mob');
+    await page.getByRole('menuitemcheckbox',{name:'Chicken',exact:true}).tap();
+    assert.equal(await page.locator(`[data-placement="${mob.id}"] .chicken-ring`).count(),1,'the touch menu can make a chicken');
+    await page.locator('#undo').click();
+    // Release, movement, cancellation and a second finger must all disarm the hold.
+    await touch('touchStart',[[1,mob.x,mob.y]]);await touch('touchCancel',[]);await page.waitForTimeout(600);
+    assert.equal(await page.locator('#enemy-menu').isHidden(),true,'cancelled touch does not open a menu');
+    await touch('touchStart',[[1,mob.x,mob.y]]);await touch('touchMove',[[1,mob.x+20,mob.y+15]]);await page.waitForTimeout(600);
+    assert.equal(await page.locator('#enemy-menu').isHidden(),true,'panning does not open a menu');
+    await touch('touchMove',[[1,mob.x,mob.y]]);await touch('touchEnd',[]);
+    await touch('touchStart',[[1,mob.x,mob.y]]);await touch('touchStart',[[1,mob.x,mob.y],[2,mob.x+35,mob.y]]);await page.waitForTimeout(600);
+    assert.equal(await page.locator('#enemy-menu').isHidden(),true,'a second finger cancels the menu hold');
+    await touch('touchEnd',[]);await page.waitForTimeout(250);
+    // Portal endpoints keep their drag gesture and also expose deletion on hold.
+    await page.locator('[data-tool=portal]').tap();
+    await page.touchscreen.tap(cx-55,cy);await page.touchscreen.tap(cx+55,cy);
+    assert.equal(await page.locator('#drawings > g').count(),1);
+    const portalPoints=await page.locator('#drawings .annotation-line').getAttribute('points');
+    await hold(cx-55,cy);await touch('touchEnd',[]);
+    assert.equal(await page.locator('#drawings .annotation-line').getAttribute('points'),portalPoints,'holding an endpoint does not move it');
+    await page.getByRole('menuitem',{name:'Delete portal',exact:true}).tap();
+    assert.equal(await page.locator('#drawings > g').count(),0,'a portal can be deleted by touch');
     const anchor=await mapPoint(cx,cy);
     await touch('touchStart',pair(35));
     const frozenMarker=await page.locator('#markers > g').first().elementHandle();
@@ -128,7 +162,32 @@ try{
     await touch('touchEnd',[]);
     await page.waitForFunction(node=>!node.isConnected,startHandle);
     assert.ok(Math.abs((await startState()).radius-distantStart.radius)<.01,'start flag size is stable after delayed layout');
+    await page.locator('#add-pull').tap();
+    const card=page.locator('.pull-card').first(),second=page.locator('.pull-card').nth(1);
+    await card.locator('.pull-name').tap();
+    assert.equal(await card.evaluate(node=>node.classList.contains('selected')),true,'one short tap selects a different pull');
+    assert.equal(await page.locator('#pull-tooltip').isHidden(),true,'a short tap does not open the hint');
+    await second.locator('.pull-name').tap();
+    assert.equal(await second.evaluate(node=>node.classList.contains('selected')),true,'one tap switches back to the second pull');
+    await card.scrollIntoViewIfNeeded();
+    const cardBox=await card.locator('.pull-name').boundingBox(),px=cardBox.x+cardBox.width/2,py=cardBox.y+cardBox.height/2;
+    await touch('touchStart',[[1,px,py]]);
+    assert.equal(await page.locator('#pull-tooltip').isHidden(),true,'touching a pull does not immediately show the hint');
+    await page.waitForTimeout(600);
+    assert.equal(await page.locator('#pull-tooltip').isVisible(),true,'holding a pull shows its hint');
+    await touch('touchEnd',[]);
+    assert.equal(await second.evaluate(node=>node.classList.contains('selected')),true,'releasing a hold does not switch pulls');
+    await card.locator('.pull-name').tap();
+    assert.equal(await card.evaluate(node=>node.classList.contains('selected')),true,'the next short tap still switches immediately');
+    assert.equal(await page.locator('#pull-tooltip').isHidden(),true,'switching pulls dismisses the hint');
+    await touch('touchStart',[[1,px,py]]);await touch('touchMove',[[1,px,py-20]]);await page.waitForTimeout(600);
+    assert.equal(await page.locator('#pull-tooltip').isHidden(),true,'scrolling cancels the pull hint');
+    await touch('touchEnd',[]);
+    for(const selector of ['#map image','.pull-card .pull-name']){
+      assert.equal(await page.locator(selector).first().evaluate(node=>getComputedStyle(node).webkitUserSelect),'none','Safari selection is disabled on hold targets');
+    }
+    assert.equal(await card.evaluate(node=>!node.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true}))),true,'pull holds suppress the browser menu');
     assert.deepEqual(errors,[]);await context.close();
   }
-  console.log('Mobile map passed in server and local modes: live icon resizing with fixed centers, delayed layout without size jumps, gesture restart, anchored pan, drawing safety and cancellation.');
+  console.log('Mobile map passed in server and local modes: single-tap pull selection, hold hints and context actions, gesture cancellation, live icon resizing, anchored pan and drawing safety.');
 }finally{await browser?.close();server.kill();}

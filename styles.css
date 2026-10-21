@@ -85,6 +85,10 @@
 
 @media(max-width:760px){.topbar{height:104px;padding:7px 12px;display:grid;grid-template-columns:28px minmax(0,1fr) max-content;grid-template-rows:42px 32px;gap:6px 10px}.topbar .brand{grid-column:1;grid-row:1}.dungeon-picker{grid-column:2;grid-row:1;min-width:0}.dungeon-picker select{width:100%;max-width:100%;text-overflow:ellipsis}.difficulty-picker{grid-column:3;grid-row:1}.header-actions{grid-column:1/-1;grid-row:2;justify-content:flex-end;gap:4px}.header-actions button{white-space:nowrap;font-size:10px;padding:5px 7px}.topbar #room-avatars{display:none}#workspace{height:calc(100dvh - 104px)}}
 
+/* Keep touch holds inside the planner instead of Safari's selection/image callout. */
+#map,#map *,.pull-card,.pull-card *,.pull-tooltip,.pull-tooltip *{ -webkit-user-select:none;user-select:none;-webkit-touch-callout:none }
+.pull-card input,.pull-card textarea{ -webkit-user-select:text;user-select:text;-webkit-touch-callout:default }
+
 /* Compact route summary and map controls leave the sidebar to the pull list. */
 .sidebar{gap:8px}
 .progress-card{padding:3px 0 0;flex-shrink:0}
