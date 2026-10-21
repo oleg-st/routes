@@ -25,6 +25,20 @@ function network(){const endpoints=new Map();let serial=0,drop=()=>false;const s
 async function until(fn){for(let i=0;i<200;i++){if(fn())return;await new Promise(r=>setTimeout(r,5));}assert.ok(fn(),'Timed out waiting for room state');}
 async function member(t,net,config={}){const session=await createRoomSession({code:'ABCDEFGH2345',storage:storage(),resolveOptions,transportFactory:net.factory,intervalMs:0,cursorIntervalMs:0,...config});t.after(()=>session.leave());await session.start();return session;}
 
+test('TURN fallback notice survives synchronization and clears after successful reconnect',async t=>{
+  const net=network(),factory=net.factory;let turnUnavailable=true;
+  net.factory=async callbacks=>({...await factory(callbacks),turnUnavailable});
+  const host=await member(t,net,{initialPacket:seed()}),guest=await member(t,net);
+  await until(()=>[host,guest].every(s=>s.state().syncStatus==='synced'));
+  assert.equal(guest.state().turnUnavailable,true);assert.equal(guest.state().error,undefined);
+  host.document.execute({type:'set-meta',patch:{name:'Still working without TURN'}});
+  await until(()=>guest.document.snapshot().name==='Still working without TURN');
+  assert.equal(guest.state().turnUnavailable,true);
+  turnUnavailable=false;await guest.reconnect();
+  await until(()=>[host,guest].every(s=>s.state().syncStatus==='synced'));
+  assert.equal(guest.state().turnUnavailable,false);assert.equal(host.state().turnUnavailable,true);
+});
+
 test('Joining and switching rooms wait for the selected dungeon geometry',async t=>{
   const net=network(),loaded=new Set(),waiting=new Map();
   const resolve=i=>({dungeon:dungeons.find(d=>d.id===i.dungeonId),enemies,role:'player'});
