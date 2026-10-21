@@ -4,6 +4,7 @@ import {loadLog,loadReportFights} from './live-api.js';
 import {runLogMatching} from './matcher-client.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 import {matchingConfig} from './matching-config.js';
+import {recoverableMatchingProblems,routeImportIssues} from './import-issues.js';
 const pendingKey='fellowship-route-import-pending';
 
 // Called at app startup, before any navigation or room connection. The code is
@@ -21,22 +22,32 @@ export function captureLogCallback(location,history,storage){
   }
   return result;
 }
-export function createLiveImport({data,dungeonData,persist,callback,storage=sessionStorage,location=window.location}){
+export function createLiveImport({data,dungeonData,persist,callback,storage=sessionStorage,location=window.location,matchLog=runLogMatching}){
   let token=null,diagnostics=null,recoveryResult=null;
-  const canContinue=()=>Boolean(diagnostics?.log.complete&&diagnostics.matching&&!diagnostics.recovery&&!diagnostics.expandedSearch?.matching&&['no-compatible-route','unknown-chicken-target','matching-limit','matching-timeout'].includes(diagnostics.details?.code));
+  const canContinue=()=>Boolean(recoveryResult);
   const canFindMissing=()=>Boolean(diagnostics?.log.complete&&diagnostics.matching&&!diagnostics.recovery&&!diagnostics.expandedSearch&&diagnostics.details?.code==='no-compatible-route');
   const markExpanded=(result,search)=>({...result,expandedSearch:search,assumption:[
     `Additional search near confirmed pulled packs (radius ${search.maxRadius}). Nearby packs may not have been pulled.`,
     result.matching.aggroRadius>matchingConfig.aggroRadius?
       `Approach radius increased from ${matchingConfig.aggroRadius} to ${result.matching.aggroRadius} for this recovery. Review the additional packs.`:null,
     result.assumption].filter(Boolean).join(' ')});
+  function prepareResult(saved,result,code){
+    saved.importIssues=routeImportIssues(result,code);
+    saved.skippedRelics=result.skippedRelics;
+    saved.recoveryPreview=result.partial;
+    recoveryResult=saved.importIssues.length?result:null;
+    return recoveryResult?null:result;
+  }
   async function prepareRecovery(saved,options,neighborRadius=0){
+    recoveryResult=null;
     try{
-      const result=await runLogMatching(saved.log,{...options,...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e])),allowPartial:true,neighborRadius});
+      const result=await matchLog(saved.log,{...options,...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e])),allowPartial:true,neighborRadius});
       options?.signal?.throwIfAborted();
-      recoveryResult=neighborRadius?markExpanded(result,saved.expandedSearch):result;
-      saved.recoveryPreview=result.partial;
-    }catch(error){if(options?.signal?.aborted)throw error;}
+      prepareResult(saved,neighborRadius?markExpanded(result,saved.expandedSearch):result,saved.expandedSearch?.details?.code??saved.details?.code);
+    }catch(error){
+      if(options?.signal?.aborted)throw error;
+      saved.recoveryError=error.message;
+    }
   }
   return {
     connected:()=>Boolean(token),
@@ -45,24 +56,25 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
     diagnostics:()=>diagnostics,
     canContinue,
     canFindMissing,
+    issues:()=>canContinue()?diagnostics.importIssues:[],
     missingEnemies:()=>diagnostics?.recoveryPreview?.skipped??null,
     async expandSearch(url,options){
       const selection=parseReportURL(url),saved=diagnostics,maxRadius=6000;
       if(!canFindMissing()||selection.reportCode!==saved.log.reportCode||selection.fightID!==saved.log.fight.id)throw new Error('Import this log first before searching for missing enemies.');
       if(dungeonData()!==saved.matching.dungeonData)throw new Error('Dungeon data changed. Import the log again.');
+      recoveryResult=null;
       try{
-        const result=await runLogMatching(saved.log,{...options,...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e])),
+        const result=await matchLog(saved.log,{...options,...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e])),
           neighborRadius:maxRadius,adaptiveRadius:true});
         options?.signal?.throwIfAborted();
         saved.expandedSearch={maxRadius,matching:result.matching,neighborHypotheses:result.neighborHypotheses};
-        saved.skippedRelics=result.skippedRelics;
-        saved.recoveryPreview={matched:Object.values(result.groups).flatMap(g=>g.enemies).length,skipped:[]};
-        return markExpanded(result,saved.expandedSearch);
+        return prepareResult(saved,markExpanded(result,saved.expandedSearch));
       }catch(error){
         if(options?.signal?.aborted)throw error;
         saved.expandedSearch={maxRadius,error:error.message,details:error.diagnostics};
         const config={...matchingConfig,...options?.config,aggroRadius:error.diagnostics?.aggroRadius??options?.config?.aggroRadius??matchingConfig.aggroRadius};
-        await prepareRecovery(saved,{...options,config},maxRadius);
+        if(recoverableMatchingProblems[error.diagnostics?.code])await prepareRecovery(saved,{...options,config},maxRadius);
+        if(!canContinue())throw error;
         return null;
       }
     },
@@ -70,8 +82,9 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
       const selection=parseReportURL(url),saved=diagnostics;
       if(!canContinue()||selection.reportCode!==saved.log.reportCode||selection.fightID!==saved.log.fight.id)throw new Error('Import this log first before continuing after an error.');
       if(dungeonData()!==saved.matching.dungeonData)throw new Error('Dungeon data changed. Import the log again.');
-      const result=recoveryResult??await runLogMatching(saved.log,{...options,...saved.matching,catalog:new Map(saved.matching.catalog.map(e=>[e.id,e])),allowPartial:true});
-      options?.signal?.throwIfAborted();saved.recovery=result.partial;saved.skippedRelics=result.skippedRelics;
+      options?.signal?.throwIfAborted();
+      const result=recoveryResult;
+      saved.recovery=result.partial;saved.acceptedIssues=saved.importIssues;recoveryResult=null;
       return result;
     },
     async connect(url,{signal}={}){
@@ -108,17 +121,18 @@ export function createLiveImport({data,dungeonData,persist,callback,storage=sess
         options?.signal?.throwIfAborted();
         loadedLog=log;
         matchingOptions={dungeon,dungeonData:mode,catalog:data.enemies,presets:data['modifier-placements'].dungeons[dungeon.id]};
-        const result=await runLogMatching(log,{...options,...matchingOptions,catalog:new Map(data.enemies.map(e=>[e.id,e]))});
+        const result=await matchLog(log,{...options,...matchingOptions,catalog:new Map(data.enemies.map(e=>[e.id,e]))});
         options?.signal?.throwIfAborted();
         diagnostics={version:1,buildId:data.manifest?.buildId,log:loadedLog,matching:matchingOptions,...(result.skippedRelics?{skippedRelics:result.skippedRelics}:{})};
-        return result;
+        return prepareResult(diagnostics,result);
       }catch(error){
         if(error.status===401)token=null;
         // Only compact game events and matching inputs; never credentials, API
         // responses, browser storage or OAuth parameters. Keep the last import in memory.
         if(loadedLog&&!options?.signal?.aborted){
           diagnostics={version:1,buildId:data.manifest?.buildId,error:error.message,details:error.diagnostics,log:loadedLog,matching:matchingOptions};
-          if(canContinue())await prepareRecovery(diagnostics,options);
+          if(recoverableMatchingProblems[error.diagnostics?.code])await prepareRecovery(diagnostics,options);
+          if(canContinue())return null;
         }
         throw error;
       }

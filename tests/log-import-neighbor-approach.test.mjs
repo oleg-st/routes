@@ -84,7 +84,7 @@ test('Recovery lists missing mobs by pull, searches once, retains additions and 
     dungeonData:()=>mode,persist:async()=>{},storage:{},location:{},callback:{callback:{code:'mock',verifier:'mock'},pending:{url,dungeonData:'custom'}}});
   try{
     await live.resume();
-    await assert.rejects(live.load(url,{fetcher}),/Could not match/);
+    assert.equal(await live.load(url,{fetcher}),null);
     assert.deepEqual(live.missingEnemies().map(r=>[r.name,r.pull]),[['B',1],['C',2]]);
     assert.equal(live.canFindMissing(),true);assert.equal(apiCalls,2);
     await assert.rejects(live.expandSearch(url.replace('fight=5','fight=6')),/Import this log first/);
@@ -146,7 +146,7 @@ test('Find missing retries approach radius without anchored neighbors and record
     assert.deepEqual(result.matching.radiusAttempts.map(r=>r.radius),[1500,1600,1700,1800,1900]);
     assert.match(result.assumption,/Approach radius increased from 1500 to 1900/);
     assert.equal(result.expandedSearch.matching.aggroRadius,1900);
-    assert.deepEqual(live.missingEnemies(),[]);assert.equal(live.canFindMissing(),false);
+    assert.equal(live.missingEnemies(),null);assert.equal(live.canFindMissing(),false);
   }finally{globalThis.document=previousDocument;globalThis.Worker=previousWorker;}
 });
 

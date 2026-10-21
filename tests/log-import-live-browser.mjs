@@ -124,7 +124,9 @@ try{
   events.push({...events[0],timestamp:300,targetInstance:2});
   await page.locator('#log-load').click();
   const diagnosticsButton=page.getByRole('button',{name:'Download import diagnostics'});await diagnosticsButton.waitFor();
-  assert.match(await page.locator('#log-live-error').textContent(),/unmatched mobs/);
+  assert.match(await page.locator('#log-import-issues').textContent(),/complete packs.*1 observation will be omitted/);
+  assert.equal(await page.locator('#log-live-error').isHidden(),true);
+  assert.equal(await page.locator('#log-continue').textContent(),'Skip issues and import');
   assert.match(await page.locator('#log-missing-enemies').textContent(),/Pull 1/);
   assert.equal(await page.locator('#route-name').inputValue(),'Empyrean Sands · #6');
   const downloaded=page.waitForEvent('download');await diagnosticsButton.click();const download=await downloaded;
@@ -159,5 +161,42 @@ try{
   await page.waitForFunction(()=>document.querySelector('#save-route').disabled);
   await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
   assert.equal(await marker.locator('.priority-target-ring').count(),1);
+  // Relic-only and combined matching/relic problems use the same acceptance gate.
+  const xul=correctDungeon(read('data/dungeons.json').find(d=>d.id==='Level.ID.SandTomb'));
+  const xulBoss=xul.enemies.find(p=>cat.get(p.id).isBoss);
+  fight.name=xul.name;actors[1].gameID=cat.get(xulBoss.id).gameId;
+  const resources=(x,y)=>({x,y,hitPoints:100,maxHitPoints:100});
+  events.splice(0,events.length,
+    {fight:5,type:'mapchange',timestamp:100,mapName:''},
+    {fight:5,type:'cast',timestamp:1000,sourceID:1,abilityGameID:1506,sourceResources:resources(7048.25,49158.25)},
+    {fight:5,type:'applydebuff',timestamp:1000,targetID:1,abilityGameID:1002176,targetResources:resources(4113,48253)},
+    {fight:5,type:'damage',timestamp:3000,sourceID:1,targetID:2,targetInstance:1,
+      sourceResources:resources(xulBoss.worldPosition.y,xulBoss.worldPosition.x),targetResources:resources(xulBoss.worldPosition.y,xulBoss.worldPosition.x)});
+  await page.evaluate(()=>sessionStorage.removeItem('live-test-seeded'));
+  await page.goto(origin+prefix+'?code=mock-code&state=test-state');
+  await page.locator('#log-continue').waitFor();
+  assert.equal(await page.locator('#dialog').evaluate(d=>d.open),true);
+  assert.equal(await page.locator('#route-name').inputValue(),'Empyrean Sands · #5','relic warnings must not replace the current route');
+  assert.equal(await page.locator('#log-import-issues li').count(),1);
+  assert.match(await page.locator('#log-import-issues').textContent(),/1 portal marker.*will be omitted/);
+  const relicDownload=page.waitForEvent('download');await diagnosticsButton.click();
+  const relicDiagnostic=JSON.parse(fs.readFileSync(await (await relicDownload).path(),'utf8'));
+  assert.equal(relicDiagnostic.skippedRelics.length,1);
+  assert.equal(relicDiagnostic.importIssues[0].code,'unplaced-portal');
+  assert.equal(relicDiagnostic.acceptedIssues,undefined);
+  const beforeRelicAcceptance=requests.length;
+  await page.getByRole('button',{name:'Skip issues and import',exact:true}).click();
+  await page.waitForFunction(()=>!document.querySelector('#dialog').open);
+  assert.equal(requests.length,beforeRelicAcceptance);
+  assert.equal(await page.locator('#route-name').inputValue(),xul.name+' · #5');
+  events.push({...events.at(-1),timestamp:4000,targetInstance:2});
+  await page.locator('#import-log-button').click();await page.locator('#log-load').click();
+  await page.locator('#log-continue').waitFor();
+  assert.equal(await page.locator('#log-import-issues li').count(),3,'matching failure, partial route and portal problem are all shown');
+  assert.match(await page.locator('#log-import-issues').textContent(),/complete packs.*observation will be omitted.*portal marker/);
+  await page.screenshot({path:'tmp/log-import-combined-issues.png'});
+  await page.locator('#log-dismiss').click();
+  assert.equal(await page.locator('#log-continue').isHidden(),true);
+  assert.equal(await page.locator('#log-import-issues').isHidden(),true);
   assert.deepEqual(errors,[]);console.log('Live import: direct fight URLs, summary-only fight list, latest default, selected fight import, labels, PKCE, worker and cancel passed (mocked API).');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

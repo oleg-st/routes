@@ -6,17 +6,20 @@ import {chromium} from 'playwright';
 const bundle=await build({stdin:{contents:`
   import {createLogImportUI} from './log-import/import-ui.js';
   import {logFixtures} from './tests/fixtures/log-review.js';
+  import {routeImportIssues} from './log-import/import-issues.js';
   window.result={};window.example='JLhT1y4Fa3n9Xjx8-6';
   const dialog=document.querySelector('dialog');
   window.ui=createLogImportUI({panel:document.querySelector('#panel'),
     showDialog:(title,html)=>{dialog.innerHTML=html;dialog.showModal();},closeDialog:()=>dialog.close(),
-    live:{connected:()=>true,load:async()=>{if(window.failure)throw new Error('No complete route');return window.extraFixture??logFixtures.find(f=>f.id===window.example&&f.dungeonData==='custom');},
+    live:{connected:()=>true,load:async()=>{if(window.failure)throw new Error('No complete route');const result=window.extraFixture??logFixtures.find(f=>f.id===window.example&&f.dungeonData==='custom');if(routeImportIssues(result).length){window.pending=result;return null;}return result;},
       priorityTargets:async state=>{if(!state.complete)throw new Error('Priority ran before all packs were chosen');
         window.result.priorityCalls=(window.result.priorityCalls??0)+1;window.result.priorityInput=state;return ['focused-mob'];},
-      diagnostics:()=>window.failure?.diagnostics,missingEnemies:()=>window.failure?.skipped,cancelImport:()=>{window.failure=null;},
-      canFindMissing:()=>Boolean(window.failure&&!window.failure.searched),canContinue:()=>Boolean(window.failure&&!window.failure.done),
+      diagnostics:()=>window.failure?.diagnostics??(window.pending?{log:{reportCode:'JLhT1y4Fa3n9Xjx8',fight:{id:6}}}:null),missingEnemies:()=>window.failure?.skipped,
+      issues:()=>window.pending?routeImportIssues(window.pending):window.failure&&!window.failure.done?[{message:'Some enemies could not be matched and will be omitted.'}]:[],
+      cancelImport:()=>{window.failure=null;window.pending=null;},
+      canFindMissing:()=>Boolean(window.failure&&!window.failure.searched),canContinue:()=>Boolean(window.pending||window.failure&&!window.failure.done),
       expandSearch:async()=>{window.failure.searched=true;window.failure.skipped=window.failure.skipped.filter(r=>r.pull===2);return null;},
-      continueImport:async()=>{window.failure.done=true;return window.extraFixture;}},
+      continueImport:async()=>{if(window.pending){const result=window.pending;window.pending=null;return result;}window.failure.done=true;return window.extraFixture;}},
     preview:async(fixture,state)=>{window.result.preview=state;},commit:async()=>{window.result.saved=true;},cancel:async()=>{window.result.cancelled=true;},
     movement:visible=>{window.result.movement=visible;},
     frame:ids=>{window.result.frame=ids;},
@@ -45,8 +48,20 @@ try{
       skippedRelics:[{kind:'portal'}],assumption:'1 relic marker was omitted. Add the missing portal manually.'};
     window.ui.open();
   });await submit();
+  assert.equal(await page.evaluate(()=>window.result.saved),false);
+  assert.equal(await page.locator('dialog').evaluate(d=>d.open),true);
+  assert.match(await page.locator('#log-import-issues').textContent(),/1 portal marker.*will be omitted/);
+  await page.locator('#log-url').fill('https://www.fellowshiplogs.com/reports/JLhT1y4Fa3n9Xjx8?fight=7');
+  assert.equal(await page.locator('#log-continue').isHidden(),true);
+  assert.equal(await page.locator('#log-import-issues').isHidden(),true);
+  await submit();
+  await page.locator('#log-dismiss').click();
+  assert.equal(await page.evaluate(()=>window.result.saved),false);
+  assert.equal(await page.locator('#log-import-issues').isHidden(),true);
+  await submit();
+  await page.getByRole('button',{name:'Skip issues and import',exact:true}).click();
   assert.equal(await page.evaluate(()=>window.result.saved),true);
-  assert.match(await page.evaluate(()=>window.result.warning),/1 relic marker was omitted/);
+  assert.equal(await page.evaluate(()=>window.result.warning),undefined);
   assert.equal(await page.locator('#panel').isHidden(),true);
   await page.evaluate(()=>{delete window.extraFixture;window.captureWarnings=false;});
   await page.evaluate(()=>{window.result.saved=false;window.example='rgTQYB9dqPzjJFha-7';window.ui.open();});await submit();
@@ -138,7 +153,7 @@ try{
   assert.equal(await page.locator('#log-missing-enemies').textContent(),'Pull 2Soul ×1');
   assert.equal(await page.locator('#log-expand').isHidden(),true);
   assert.equal(await page.getByRole('button',{name:'Download import diagnostics'}).isVisible(),true);
-  await page.getByRole('button',{name:'Import without missing mobs'}).click();
+  await page.getByRole('button',{name:'Skip issues and import',exact:true}).click();
   assert.equal(await page.evaluate(()=>window.result.saved),true);assert.deepEqual(errors,[]);
   // Reduced ty6T7RgJADPpZWcH-16 scenario: G24 has identical members and
   // proximity, but only two of the three routes Chickenize one of its wolves.

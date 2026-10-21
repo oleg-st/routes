@@ -34,7 +34,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
     movement?.(movementVisible);
     closeDialog();
     if(!state.complete){draw();return;}
-    try{await commit();hide();if(fixture.partial||fixture.skippedRelics?.length)onError(fixture.assumption);}catch(error){draw();throw error;}
+    try{await commit();hide();}catch(error){draw();throw error;}
   }
   function draw(){
     const s=session.state();panel.hidden=false;
@@ -68,7 +68,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
     if(trail)trail.onchange=()=>{movementVisible=trail.checked;movement?.(movementVisible);};
     const back=panel.querySelector('[data-log-back]');if(back)back.onclick=invoke(async()=>{session.back();highlight([]);await preview(fixture,session.state());draw();});
     panel.querySelector('[data-log-cancel]').onclick=invoke(async()=>{await cancel();hide();});
-    const retry=panel.querySelector('[data-log-retry]');if(retry)retry.onclick=invoke(async()=>{await commit();hide();if(fixture.partial||fixture.skippedRelics?.length)onError(fixture.assumption);});
+    const retry=panel.querySelector('[data-log-retry]');if(retry)retry.onclick=invoke(async()=>{await commit();hide();});
     // The panel must be laid out first: it changes the map's visible height.
     if(!s.complete&&s.options.length)frame?.([...new Set(ids([...s.pulls.at(-1).groups,...s.options.flatMap(o=>o.groups)]))]);
   }
@@ -93,10 +93,11 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
       const diagnosticActions=document.createElement('div');diagnosticActions.className='log-review-actions';form.append(diagnosticActions);
       const download=document.createElement('button');download.type='button';download.textContent='Download import diagnostics';download.hidden=true;diagnosticActions.append(download);
       const expand=document.createElement('button');expand.id='log-expand';expand.type='button';expand.hidden=true;diagnosticActions.append(expand);
-      const proceed=document.createElement('button');proceed.id='log-continue';proceed.type='button';proceed.textContent='Import without missing mobs';proceed.hidden=true;
+      const proceed=document.createElement('button');proceed.id='log-continue';proceed.type='button';proceed.textContent='Skip issues and import';proceed.hidden=true;
       const dismiss=document.createElement('button');dismiss.id='log-dismiss';dismiss.type='button';dismiss.textContent='Cancel import';dismiss.hidden=true;
       diagnosticActions.append(expand,proceed,download,dismiss);
       const missing=document.createElement('div');missing.id='log-missing-enemies';missing.hidden=true;diagnosticActions.before(missing);
+      const problems=document.createElement('div');problems.id='log-import-issues';problems.setAttribute('role','alert');problems.hidden=true;missing.before(problems);
       download.onclick=()=>{
         const diagnostic=live.diagnostics?.();if(!diagnostic)return;
         const url=URL.createObjectURL(new Blob([JSON.stringify(diagnostic)],{type:'application/json'}));
@@ -127,22 +128,26 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
         try{const selected=parseReportURL(selectedURL()),saved=live.diagnostics?.();sameLog=selected.reportCode===saved?.log.reportCode&&selected.fightID===saved?.log.fight.id;}catch{}
         download.hidden=busy||!sameLog;
         const recommendSearch=Boolean(sameLog&&live.canFindMissing?.());
+        const canContinue=Boolean(sameLog&&live.canContinue?.());
         expand.hidden=busy||!recommendSearch;expand.disabled=busy;
         expand.classList.toggle('primary',recommendSearch);
-        load.classList.toggle('primary',!recommendSearch);
+        load.classList.toggle('primary',!recommendSearch&&!canContinue);
+        proceed.classList.toggle('primary',!recommendSearch&&canContinue);
         expand.textContent='Find missing mobs';
         expand.title='Look near confirmed packs and retry with a larger approach radius, up to 3000. Newly found packs do not extend the neighbor search. Review the additional packs.';
-        proceed.hidden=busy||!sameLog||!live.canContinue?.();proceed.disabled=busy;
+        proceed.hidden=busy||!canContinue;proceed.disabled=busy;
         dismiss.hidden=busy||!sameLog||!(live.canFindMissing?.()||live.canContinue?.());dismiss.disabled=busy;
         diagnosticActions.hidden=[expand,proceed,download,dismiss].every(button=>button.hidden);
+        const issues=sameLog?live.issues?.()??[]:[];
+        problems.hidden=busy||!issues.length;
+        problems.innerHTML=issues.length?`<p>The route can be imported with these problems:</p><ul>${issues.map(issue=>`<li>${esc(issue.message)}</li>`).join('')}</ul>`:'';
         const skipped=sameLog?live.missingEnemies?.():null;
         missing.hidden=busy||!skipped?.length;
         missing.innerHTML=skipped?.length?[...Map.groupBy(skipped,r=>r.pull??1)].sort(([a],[b])=>a-b).map(([pull,rows])=>
           `<p><strong>Pull ${esc(pull)}</strong><br>${[...Map.groupBy(rows,r=>r.name)].map(([name,rs])=>`${esc(name)} ×${rs.length}`).join('<br>')}</p>`).join(''):'';
       }
       function showFailure(message){
-        const skipped=live.missingEnemies?.();
-        error.textContent=skipped?.length?'This run contains unmatched mobs.':message;error.hidden=false;
+        error.textContent=message;error.hidden=Boolean(live.issues?.().length);
       }
       input.oninput=()=>{report=null;select.replaceChildren();field.hidden=true;status.textContent='';error.hidden=true;download.hidden=true;remember();controls();};
       another.onclick=()=>{input.value='';input.oninput();input.focus();};
@@ -175,7 +180,7 @@ export function createLogImportUI({panel,showDialog,closeDialog,preview,commit,c
           const options={signal:controller.signal,onProgress:text=>status.textContent=text,
             fightSummary:report?.fights.find(f=>f.id===lastFightID)};
           const result=await (mode==='expand'?live.expandSearch(selectedURL(),options):mode==='recover'?live.continueImport(selectedURL(),options):live.load(selectedURL(),options));
-          if(!result){status.textContent='Additional search finished. The mobs below still could not be matched.';showFailure('Could not match complete packs. You can import the matched mobs.');return;}
+          if(!result){status.textContent='Review the problems below, then choose Skip issues and import to continue.';return;}
           controller.signal.throwIfAborted();fixture=result;
           session=createReviewSession(fixture);await advance();
         }catch(e){
