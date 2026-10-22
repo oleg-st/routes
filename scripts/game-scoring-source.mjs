@@ -43,6 +43,8 @@ export function gameScoringRules(s,semantics={}){
  const shadowLordsByDungeon=Object.fromEntries(s.read('dungeons').playable.map(d=>[d.id,Math.trunc(s.scalable(d.info.LevelType.endsWith('::Adventure')?orb.NumLordsToSpawn_Adventure:orb.NumLordsToSpawn_Dungeon))]));
  assert.ok(shadowOrbsPerLord>0&&Object.values(shadowLordsByDungeon).every(n=>n>0));
  const polymorph=defaults('GA_RelicPower_PolymorphTargetWithSharedCharges');
+ const chickenLimitsByDungeon=Object.fromEntries(s.read('dungeons').playable.map(d=>[d.id,s.scalable(d.info.LevelType.endsWith('::Adventure')?polymorph.MaximumChargeCount_Adventure:polymorph.MaximumChargeCount_Dungeon)]));
+ assert.ok(Object.values(chickenLimitsByDungeon).every(n=>Number.isInteger(n)&&n>0),'Missing Polymorph shared charge limits');
  const markerHealthThresholds={medium:s.scalable(polymorph.HealthThresholdMedium),large:s.scalable(polymorph.HealthThresholdLarge)};
  const thresholdOverride=semantics.polymorphLargeThresholdOverride;
  if(thresholdOverride){
@@ -65,5 +67,5 @@ export function gameScoringRules(s,semantics={}){
   assert.ok(baseHealth>0,'Missing Polymorph chicken HP: '+size);
   return [size,{id:npcCatalogId(npc),baseHealth}];
  }));
- return {empoweredScoreMultiplier:s.scalable(score.ModifierMagnitude.ScalableFloatMagnitude),empoweredHealthBonus:s.scalable(magnitude.Coefficient),modifierDifficultyCap:cap,difficultyHealthScales,shadowOrbsPerLord,shadowLordsByDungeon,modifierAvailabilityByDungeon:gameModifierAvailability(s),markerHealthThresholds,markerDefaultBaseHealth,polymorphChickens,...(thresholdOverride?{polymorphLargeThresholdOverride:thresholdOverride}:{})};
+ return {empoweredScoreMultiplier:s.scalable(score.ModifierMagnitude.ScalableFloatMagnitude),empoweredHealthBonus:s.scalable(magnitude.Coefficient),modifierDifficultyCap:cap,difficultyHealthScales,shadowOrbsPerLord,shadowLordsByDungeon,modifierAvailabilityByDungeon:gameModifierAvailability(s),chickenLimitsByDungeon,markerHealthThresholds,markerDefaultBaseHealth,polymorphChickens,...(thresholdOverride?{polymorphLargeThresholdOverride:thresholdOverride}:{})};
 }
