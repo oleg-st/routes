@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import {spawn} from 'node:child_process';
 import {build} from 'esbuild';
 import {chromium} from 'playwright';
-const bundle=await build({stdin:{contents:"export * from './collaboration/route-storage.js';export * from './collaboration/route-library.js';export * from './collaboration/route-document.js';export * from './route-model.js';",resolveDir:process.cwd()},bundle:true,format:'iife',globalName:'RT',write:false,alias:{'loro-crdt':'loro-crdt/base64'}});
+const bundle=await build({stdin:{contents:"export * from './collaboration/route-storage.js';export * from './collaboration/route-document.js';export * from './route-model.js';",resolveDir:process.cwd()},bundle:true,format:'iife',globalName:'RT',write:false,alias:{'loro-crdt':'loro-crdt/base64'}});
 const read=name=>JSON.parse(fs.readFileSync(`data/${name}.json`));
 const dungeons=read('dungeons'),enemies=read('enemies'),dungeon=dungeons.find(d=>d.mapImages.length===1),presets=read('modifier-placements');
 const server=spawn(process.execPath,['scripts/server.mjs'],{env:{...process.env,PORT:'0'},stdio:['ignore','pipe','pipe']});
@@ -24,16 +24,16 @@ try{
     window.check=(value,message)=>{if(!value)throw Error(message);};
   },{dungeon,dungeons,enemies,presets});
   const result=await page.evaluate(async()=>{
-    const storage=await RT.openRouteStorage({name:'storage-test',channel:null}),route=RT.newRoute(options.dungeon,'test','Route 12');
+    const storage=await RT.openRouteStorage({name:'storage-test',channel:null}),route=RT.newRoute(options.dungeon,options.dungeon.routeBuildId??'test','Route 12');
     route.drawings=[{id:'note',mapId:options.dungeon.mapImages[0].id,kind:'note',color:'#abcdef',points:[[10,20]],text:'Old note'}];
     const legacy={drafts:{[route.dungeonId]:route},saved:[{...route,name:'Older bookmark'}],lastDungeon:route.dungeonId};
-    check((await RT.migrateLegacyLibrary(storage,legacy,migration)).length===0,'Migration errors');
-    const initial=await storage.load(route.id),doc=RT.restoreRouteDocument(initial,options),identity=doc.identity;
-    check(doc.snapshot().name==='Route 12','Draft must win over bookmark');check((await storage.library()).saved[0].name==='Older bookmark','Keep bookmark baseline');
+    const doc=RT.createRouteDocument(route,options),identity=doc.identity;
+    await storage.write(doc.exportSnapshot());await storage.setDraft(route.dungeonId,route.id);await storage.saveBookmark({...route,name:'Saved bookmark'});
+    const initial=await storage.load(route.id);
+    check((await storage.library()).saved[0].name==='Saved bookmark','Keep bookmark baseline');
     doc.execute({type:'set-meta',patch:{name:'After migration'}});await storage.write(doc.exportUpdate());
-    await RT.migrateLegacyLibrary(storage,legacy,migration);
-    const reload=RT.restoreRouteDocument(await storage.load(route.id),options);check(reload.snapshot().name==='After migration','Migration ran twice');check(reload.identity.documentId===identity.documentId,'Migration changed lineage');reload.dispose();
-    check(await storage.nextName()==='Route 13','Name counter');
+    const reload=RT.restoreRouteDocument(await storage.load(route.id),options);check(reload.snapshot().name==='After migration','Stored update missing');check(reload.identity.documentId===identity.documentId,'Reload changed lineage');reload.dispose();
+    check(await storage.nextName(13)==='Route 13','Name counter');
     const stale=RT.restoreRouteDocument(initial,options);
     const caughtUp=new Promise(resolve=>{const stop=stale.subscribe(()=>{if(stale.snapshot().name==='After migration'){stop();resolve();}});});
     const staleBinding=storage.bind(stale);await caughtUp;await staleBinding.dispose();stale.dispose();
@@ -55,12 +55,12 @@ try{
     const recovered=RT.restoreRouteDocument(await storage.load(route.id),options);check(recovered.snapshot().name==='Retry me','Retry lost update');
     check(recovered.peerId!==doc.peerId&&recovered.identity.documentId===doc.identity.documentId,'Restore must keep lineage and use a fresh peer');
     await binding.dispose();for(const d of [doc,peer,combined,spectator,recovered])d.dispose();storage.close();
-    // Original localStorage remains intact through the app migration.
+    // Old localStorage remains untouched and must not be loaded by this build.
     localStorage.setItem('fellowship-atlas-v1',JSON.stringify(legacy));return {routeId:route.id,legacy:JSON.stringify(legacy)};
   });
-  console.log('IndexedDB: atomic migration, compaction, spectator writes, quota failure/retry and fresh peer IDs passed.');
+  console.log('IndexedDB: snapshots, compaction, spectator writes, quota failure/retry and fresh peer IDs passed.');
   await page.goto(origin);await page.locator('#map-loading').waitFor({state:'hidden'});
-  assert.equal(await page.locator('#route-name').inputValue(),'Route 12');
+  assert.equal(await page.locator('#route-name').inputValue(),'Route 1');
   assert.equal(await page.evaluate(()=>localStorage.getItem('fellowship-atlas-v1')),result.legacy);
   const other=await context.newPage();other.on('pageerror',e=>errors.push(e.message));await other.goto(origin);await other.locator('#map-loading').waitFor({state:'hidden'});
   await Promise.all([page.locator('#add-pull').click(),selectAffix(other,'shadow')]);
@@ -78,6 +78,6 @@ try{
   await page.locator('#close-dialog').click();await page.locator('[data-action=rename]').click();assert.equal(await page.locator('#edit-pull-note').inputValue(),'Remote note');await page.locator('#close-dialog').click();
   await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});assert.equal(await page.locator('#shadow').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#undo').isDisabled(),true);
   await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
-  assert.deepEqual(errors,[]);console.log('Editor: legacy migration, two-tab convergence, local-only Undo and refresh passed.');
+  assert.deepEqual(errors,[]);console.log('Editor: old library ignored, two-tab convergence, local-only Undo and refresh passed.');
   await context.close();
 }finally{await browser?.close();server.kill();}

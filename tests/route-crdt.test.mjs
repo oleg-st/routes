@@ -1,22 +1,49 @@
+const CURRENT_BUILD=JSON.parse(fs.readFileSync(new URL('../data/manifest.json',import.meta.url))).buildId;
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createRouteDocument, restoreRouteDocument} from '../collaboration/route-document.js';
 import {migrateRoute} from '../collaboration/route-migration.js';
 import {COMMAND_TYPES} from '../collaboration/route-commands.js';
-import {newRoute, newPull, movePull, validateRoute, scoreRoute, encodeRoute, decodeRoute} from '../route-model.js';
+import {newRoute, newPull, movePull, validateRoute, scoreRoute, encodeRoute, decodeRoute,applyModifierPresets} from '../route-model.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 import {mapViews} from '../map-views.js';
 import {numberedAnnotations} from '../marker-symbols.js';
 const read = name => JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`, import.meta.url)));
 const dungeons = read('dungeons').map(correctDungeon), enemies = new Map(read('enemies').map(e => [e.id, e]));
-const dungeon = dungeons.find(d => d.name === "Sailor's Abyss"), mapId = mapViews(dungeon)[0].id;
+const dungeon = dungeons.find(d => d.id==='Level.ID.UrrakMarkets'), mapId = mapViews(dungeon)[0].id;
 const options = {dungeon, enemies, role: 'player'};
 const mobs = dungeon.enemies.filter(p => !enemies.get(p.id)?.isBoss).slice(0, 8).map(p => p.placementId);
 const boss = dungeon.enemies.find(p => enemies.get(p.id)?.isBoss).placementId;
+test('Both Wraithtide witches retain independent assignments, flags, undo and saved transfers',async t=>{
+  const dungeon=dungeons.find(d=>d.id==='Level.ID.PirateRaid'),presets=read('modifier-placements');
+  const route=newRoute(dungeon,dungeon.routeBuildId);applyModifierPresets(route,dungeon,presets);
+  const options={dungeon,enemies,role:'player'},doc=createRouteDocument(route,options);t.after(()=>doc.dispose());
+  doc.execute({type:'set-modifier',kind:'witch',patch:{active:true}});
+  const spawns=presets.dungeons[dungeon.id].witch.spawns;
+  assert.equal(spawns.length,2);assert.equal(spawns.filter(s=>!s.replacedEnemies.length).length,1);
+  const pullId=route.pulls[0].id;
+  for(const spawn of spawns){
+    doc.execute({type:'assign-mobs',pullId,mobIds:[spawn.placementId],toggle:true});
+    assert.ok(doc.snapshot().pulls[0].enemies.includes(spawn.placementId));
+  }
+  assert.equal(scoreRoute(doc.snapshot(),dungeon,enemies).score,40);
+  const second=spawns[1].placementId;
+  doc.execute({type:'set-priority-target',mobId:second,priority:true});
+  doc.execute({type:'set-excluded',mobId:second,excluded:true});
+  assert.ok(doc.snapshot().priorityTargets.includes(second));assert.ok(doc.snapshot().excluded.includes(second));
+  assert.equal(scoreRoute(doc.snapshot(),dungeon,enemies).score,20);
+  doc.undo();assert.equal(scoreRoute(doc.snapshot(),dungeon,enemies).score,40);
+  const restored=restoreRouteDocument(doc.exportSnapshot(),options);t.after(()=>restored.dispose());
+  const json=validateRoute(doc.snapshot(),dungeons,enemies),compact=await decodeRoute(await encodeRoute(json,dungeon),dungeons,enemies);
+  for(const result of [restored.snapshot(),json,compact]){
+    assert.deepEqual(result.pulls[0].enemies.toSorted(),spawns.map(s=>s.placementId).toSorted());
+    assert.ok(result.priorityTargets.includes(second));assert.equal(scoreRoute(result,dungeon,enemies).score,40);
+  }
+});
 const clone = (doc, role = 'player') => restoreRouteDocument(doc.exportSnapshot(), {...options, role});
 function seed(t, count = 3) {
-  const doc = createRouteDocument({id: 'test-route', dungeonId: dungeon.id, buildId: 'test', name: 'Route'}, options);
+  const doc = createRouteDocument({id: 'test-route', dungeonId: dungeon.id, buildId:CURRENT_BUILD, name: 'Route'}, options);
   for (let i = 0; i < count; i++) doc.execute({type: 'add-pull', id: `pull-${i}`});
   t.after(() => doc.dispose());
   return doc;
@@ -153,7 +180,7 @@ test('One mob has one assignment; independent pull fields and route fields survi
 });
 
 test('Legacy colors, manual names, scoring and compact view remain compatible with solo moves', t => {
-  const route = newRoute(dungeon, 'test'); route.pulls.push(newPull(1), newPull(2));
+  const route = newRoute(dungeon,dungeon.routeBuildId??'test'); route.pulls.push(newPull(1), newPull(2));
   route.pulls[1].name = 'Boss'; route.pulls[1].customName = true; route.pulls[1].enemies = [mobs[0]];
   route.drawings = [{id: 'saved-note', kind: 'note', mapId, color: '#abcdef', text: 'Привет 🧭', points: [[1, 2]]}];
   const a = migrateRoute(route, {dungeons, enemies}); t.after(() => a.dispose());
@@ -234,7 +261,7 @@ test('Spectator rejects every command without local operations but receives and 
     assertUnchanged(b, () => b.execute({type}), /Spectators/);
   }
   assert.throws(() => createRouteDocument({dungeonId: dungeon.id}, {...options, role: 'spectator'}), /Spectators/);
-  assert.throws(() => migrateRoute(newRoute(dungeon, 'test'), {dungeons, enemies, role: 'spectator'}), /Spectators/);
+  assert.throws(() => migrateRoute(newRoute(dungeon,dungeon.routeBuildId??'test'), {dungeons, enemies, role: 'spectator'}), /Spectators/);
   a.execute({type: 'set-meta', patch: {name: 'Visible to spectator'}});
   b.import(a.exportUpdate(b.version()));
   assert.equal(a.canonical(), b.canonical()); assert.equal(local.length, 0); assert.ok(changes.length);
@@ -268,9 +295,9 @@ test('Malformed commands and Unicode boundaries fail atomically, metadata and UI
 });
 
 test('Foreign identities, schemas, independently initialized JSON copies and corrupt bytes are rejected', t => {
-  const a = seed(t), b = createRouteDocument({id: 'foreign', dungeonId: dungeon.id}, options);
+  const a = seed(t), b = createRouteDocument({id: 'foreign', dungeonId: dungeon.id,buildId:dungeon.routeBuildId}, options);
   t.after(() => b.dispose());
-  const independent = createRouteDocument({id: a.identity.routeId, dungeonId: dungeon.id}, options);
+  const independent = createRouteDocument({id: a.identity.routeId, dungeonId: dungeon.id,buildId:dungeon.routeBuildId}, options);
   t.after(() => independent.dispose());
   assertUnchanged(a, () => a.import(b.exportSnapshot()), /Different/);
   assertUnchanged(a, () => a.import(independent.exportUpdate()), /Different/);
@@ -311,9 +338,9 @@ test('Offline edits merge with stale snapshots and late peers restore all entity
 });
 
 test('Concurrent replacement choices have a deterministic non-overlapping visible result', t => {
-  const dungeon = dungeons.find(d=>d.id==='Level.ID.DemonicRitual'), options={dungeon,enemies,role:'player'};
+  const dungeon = dungeons.find(d=>d.id==='Level.ID.UrrakMarkets'), options={dungeon,enemies,role:'player'};
   const packId = dungeon.enemies.find(p => !enemies.get(p.id)?.isBoss).packId;
-  const a = createRouteDocument(newRoute(dungeon,'test'),options), b = restoreRouteDocument(a.exportSnapshot(),options);
+  const a = createRouteDocument(newRoute(dungeon,dungeon.routeBuildId??'test'),options), b = restoreRouteDocument(a.exportSnapshot(),options);
   t.after(()=>{a.dispose();b.dispose();});
   a.execute({type: 'set-modifier', kind: 'ghorn', patch: {packId, active: true}});
   b.execute({type: 'set-modifier', kind: 'witch', patch: {packId, active: true}});
@@ -394,7 +421,7 @@ test('Spectator is the restore default, dispose releases subscriptions and rejec
 });
 
 test('Initial route normalization retains manual names and assigns missing pull IDs', t => {
-  const doc = createRouteDocument({dungeonId: dungeon.id, pulls: [{name: 'Boss', enemies: [mobs[0]]}]}, options);
+  const doc = createRouteDocument({dungeonId: dungeon.id,buildId:dungeon.routeBuildId, pulls: [{name: 'Boss', enemies: [mobs[0]]}]}, options);
   t.after(() => doc.dispose());
   assert.equal(doc.snapshot().pulls[0].name, 'Boss');
   assert.ok(doc.snapshot().pulls[0].id); assert.deepEqual(doc.snapshot().pulls[0].enemies, [mobs[0]]);
@@ -403,7 +430,7 @@ test('Initial route normalization retains manual names and assigns missing pull 
 });
 test('Migration covers real routes and modifier presets in every dungeon without changing scores', t => {
   for (const dungeon of dungeons) {
-    const legacy = newRoute(dungeon, 'test');
+    const legacy = newRoute(dungeon,dungeon.routeBuildId??'test');
     legacy.pulls[0].enemies = dungeon.enemies.map(p => p.placementId);
     const doc = migrateRoute(legacy, {dungeons, enemies, presets: read('modifier-placements')});
     t.after(() => doc.dispose());

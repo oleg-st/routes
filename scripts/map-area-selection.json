@@ -1,0 +1,271 @@
+{
+  "buildId": "26122410",
+  "notes": [
+    "Local display regions retained after native bounds, calibration and texture hashes were verified unchanged.",
+    "Wraithtide nested regions use explicit Ship, Jungle, Lower, Upper priority. Jungle includes the new sea-level spawns. These are planner presentation rules, not a claim about runtime map selection."
+  ],
+  "dungeons": {
+    "Level.ID.DesertDunes": [
+      {
+        "id": "Level.ID.DesertDunes:T_Map_DesertDunes_Start",
+        "bounds": [
+          {
+            "x": -24000,
+            "y": -45000,
+            "z": -1000
+          },
+          {
+            "x": -3000,
+            "y": -20000,
+            "z": 5000
+          }
+        ],
+        "calibration": {
+          "sx": 60000,
+          "sy": -30000,
+          "ox": -66023.73000000001,
+          "oy": 1058.1319999999996
+        }
+      },
+      {
+        "id": "Level.ID.DesertDunes:T_Map_DesertDunes_End",
+        "bounds": [
+          {
+            "x": -15000,
+            "y": -20000,
+            "z": -2000
+          },
+          {
+            "x": 28000,
+            "y": 20000,
+            "z": 5000
+          }
+        ],
+        "calibration": {
+          "sx": 106000,
+          "sy": -53000,
+          "ox": -54754.624,
+          "oy": 31236.739999999998
+        }
+      }
+    ],
+    "Level.ID.MoorCastle": [
+      {
+        "id": "Level.ID.MoorCastle:T_Map_MC_Global_01",
+        "bounds": [
+          {
+            "x": -35000,
+            "y": -50000,
+            "z": -2000
+          },
+          {
+            "x": 60000,
+            "y": 50000,
+            "z": 6000
+          }
+        ],
+        "calibration": {
+          "sx": 108000,
+          "sy": -54000,
+          "ox": -54763.02576,
+          "oy": 18654.884
+        }
+      },
+      {
+        "id": "Level.ID.MoorCastle:T_Map_MC_Chamber_01",
+        "bounds": [
+          {
+            "x": -35000,
+            "y": -50000,
+            "z": -10000
+          },
+          {
+            "x": 60000,
+            "y": 50000,
+            "z": -2000
+          }
+        ],
+        "calibration": {
+          "sx": 50000,
+          "sy": -25000,
+          "ox": -20686.826699999998,
+          "oy": 376.4830000000002
+        }
+      }
+    ],
+    "Level.ID.NightPatrol": [
+      {
+        "id": "Level.ID.NightPatrol:T_Map_NightPatrol",
+        "bounds": [
+          {
+            "x": -30000,
+            "y": 16000,
+            "z": 11000
+          },
+          {
+            "x": -6000,
+            "y": 35000,
+            "z": 15000
+          }
+        ],
+        "calibration": {
+          "sx": 62000,
+          "sy": -31000,
+          "ox": -36.53299999999945,
+          "oy": -4798.296999999999
+        }
+      },
+      {
+        "id": "Level.ID.NightPatrol:T_Map_Nightpatrol_02",
+        "bounds": [
+          {
+            "x": -6000,
+            "y": 10000,
+            "z": 11000
+          },
+          {
+            "x": 10000,
+            "y": 30000,
+            "z": 15000
+          }
+        ],
+        "calibration": {
+          "sx": 58000,
+          "sy": -29000,
+          "ox": -6391.41,
+          "oy": 17876.5535
+        }
+      }
+    ],
+    "Level.ID.PirateRaid": [
+      {
+        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Ship",
+        "bounds": [
+          {
+            "x": -40000,
+            "y": -13000,
+            "z": 1300
+          },
+          {
+            "x": -25000,
+            "y": -5000,
+            "z": 2600
+          }
+        ],
+        "calibration": {
+          "sx": 36000,
+          "sy": -18000,
+          "ox": -27781.931,
+          "oy": -20733.592
+        }
+      },
+      {
+        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_JungleArea",
+        "bounds": [
+          {
+            "x": -40000,
+            "y": -16000,
+            "z": 0
+          },
+          {
+            "x": -13000,
+            "y": 9000,
+            "z": 5000
+          }
+        ],
+        "calibration": {
+          "sx": 58000,
+          "sy": -29000,
+          "ox": -35749.3267,
+          "oy": -11125.559000000001
+        }
+      },
+      {
+        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Lower",
+        "bounds": [
+          {
+            "x": -15000,
+            "y": -3000,
+            "z": 0
+          },
+          {
+            "x": 11000,
+            "y": 15000,
+            "z": 3000
+          }
+        ],
+        "calibration": {
+          "sx": 78000,
+          "sy": -39000,
+          "ox": -27423.851000000002,
+          "oy": 19947.28967
+        }
+      },
+      {
+        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Upper",
+        "bounds": [
+          {
+            "x": -13000,
+            "y": -18000,
+            "z": 2200
+          },
+          {
+            "x": 20000,
+            "y": 10000,
+            "z": 5000
+          }
+        ],
+        "calibration": {
+          "sx": 74000,
+          "sy": -37000,
+          "ox": -46378.007,
+          "oy": 17738.9541
+        }
+      }
+    ],
+    "Level.ID.SpiderForest": [
+      {
+        "id": "Level.ID.SpiderForest:T_Map_SF_01",
+        "bounds": [
+          {
+            "x": -50000,
+            "y": -50000,
+            "z": -50000
+          },
+          {
+            "x": 45000,
+            "y": 50000,
+            "z": 50000
+          }
+        ],
+        "calibration": {
+          "sx": 114000,
+          "sy": -57000,
+          "ox": -64228.321299999996,
+          "oy": 41369.6455
+        }
+      },
+      {
+        "id": "Level.ID.SpiderForest:T_Map_SF_Lair",
+        "bounds": [
+          {
+            "x": 45000,
+            "y": -50000,
+            "z": -50000
+          },
+          {
+            "x": 50000,
+            "y": 50000,
+            "z": 50000
+          }
+        ],
+        "calibration": {
+          "sx": 22000,
+          "sy": -11000,
+          "ox": -18228.3213,
+          "oy": 47891.223
+        }
+      }
+    ]
+  }
+}

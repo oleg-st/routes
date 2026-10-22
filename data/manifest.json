@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "buildId": "25647984",
+  "buildId": "26122410",
   "source": "installed-game",
   "data": {
-    "enemies": 136,
-    "dungeons": 15,
+    "enemies": 119,
+    "dungeons": 10,
     "heroes": 11,
-    "abilities": 814
+    "abilities": 676
   },
-  "sourceManifestSha256": "f60ac921828a55fddbdab2cc553efcf92e50809cbadc9841e37c159ff29f60c9"
+  "sourceManifestSha256": "6e1724368e1d39582e6681c65641ededdc6bac85616fde2448cc98ef3cb72d1b"
 }

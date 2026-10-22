@@ -14,7 +14,7 @@ test('KillScore applies effects before native ceiling and respects excluded acto
  for(const name of ['Lost Soul','Heskyr Brood','Stalking Grim','Gravescythe','Renamed'])assert.equal(gameKillScore({name,dungeonScore:3},true),9);
 });
 test('Orb boundaries use rounded percentages for 60 and 90 orb dungeons',()=>{
- const adventure={id:'Level.ID.DesertDunes',requiredScore:100},dungeon={id:'Level.ID.SandTomb',requiredScore:100};
+ const adventure={id:'Level.ID.DesertDunes',requiredScore:100},dungeon={id:'Level.ID.FrozenKingdom',requiredScore:100};
  assert.equal(shadowTarget(adventure),60);assert.equal(shadowTarget(dungeon),90);
  assert.equal(shadowTarget({...dungeon,name:'Renamed'}),90);
  assert.equal(orbCount(0,adventure),0);assert.equal(orbCount(1.4999,adventure),0);assert.equal(orbCount(1.5,adventure),1);
@@ -35,43 +35,34 @@ test('Orb totals agree with sequential Blueprint thresholds throughout every dun
  }
 });
 test('Emissary deaths do not feed orbs, while ordinary kill score is retained',()=>{
- const d={id:'Level.ID.DesertDunes',requiredScore:100,enemies:[{id:'emissary',placementId:'s'},{id:'mob',placementId:'m'}]},r=newRoute(d,'test');
+ const d={id:'Level.ID.DesertDunes',requiredScore:100,enemies:[{id:'emissary',placementId:'s'},{id:'mob',placementId:'m'}]},r=newRoute(d,d.routeBuildId??'test');
  const catalog=new Map([['emissary',{dungeonScore:1,shadowOrbEligible:false}],['mob',{dungeonScore:3}]]);
  r.pulls[0].enemies=['s','m'];const score=scorePull(r.pulls[0],d,catalog,r);
  assert.equal(score.score,4);assert.equal(score.orbScore,3);
 });
-test('Empowered adds capped HP while ordinary HP continues scaling',()=>{
+test('New health curve is sampled by level, including its sparse zero tail',()=>{
  assert.equal(rules.modifierDifficultyCap,62);
- assert.equal(difficultyHealthScale(0),1);assert.equal(difficultyHealthScale(62),172.32);
- const enemy={baseHealth:100};
- assert.equal(enemyHealth(enemy,{empowered:true,difficulty:62}),34464);
- const above=enemyHealth(enemy,{empowered:true,difficulty:75});
- assert.equal(above,100*(250.61+172.32));
- assert.ok(above<2*enemyHealth(enemy,{difficulty:75}));
- assert.equal(enemyHealth({baseHealth:null}),null);
- assert.throws(()=>difficultyHealthScale(1.5),/integer/);
-});
-test('Observed same-type HP contrasts support the cap on both sides of difficulty 62',()=>{
- // Independent log observations; small differences include captured attribute
- // precision/runtime effects. No expected value is derived from the model.
- const observations=[{difficulty:48,normal:1117881,empowered:2235674},{difficulty:75,normal:2458985,empowered:4149656},{difficulty:75,normal:1747503,empowered:2949086}];
- for(const r of observations){const predicted=enemyHealth({baseHealth:1},{empowered:true,difficulty:r.difficulty})/enemyHealth({baseHealth:1},{difficulty:r.difficulty});assert.ok(Math.abs(predicted/(r.empowered/r.normal)-1)<.00005);}
+ assert.equal(difficultyHealthScale(0),1);assert.equal(difficultyHealthScale(21),32.5);assert.equal(difficultyHealthScale(52),351.49);
+ assert.equal(rules.difficultyHealthScales.length,151);
+ for(const difficulty of [53,62,100,150,151,999])assert.equal(difficultyHealthScale(difficulty),0);
+ assert.equal(enemyHealth({baseHealth:100},{empowered:true,difficulty:21}),6500);
+ assert.equal(enemyHealth({baseHealth:null}),null);assert.throws(()=>difficultyHealthScale(1.5),/integer/);
 });
 
-test('Stone Skin adds capped base HP independently of Empowered; Ultimatum scales ordinary HP',()=>{
- const enemy={baseHealth:100};
- const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-8,`${actual} != ${expected}`);
- near(enemyHealth(enemy,{difficulty:62,stoneskin:true}),100*172.32*1.3+1);
- near(enemyHealth(enemy,{difficulty:75,stoneskin:true}),100*250.61+100*172.32*.3+1);
- near(enemyHealth(enemy,{difficulty:75,empowered:true,stoneskin:true}),100*250.61+100*172.32*1.3+1);
- near(enemyHealth(enemy,{difficulty:75,ultimatum:true}),100*250.61*1.1);
- assert.equal(enemyHealth({baseHealth:null},{stoneskin:true,ultimatum:true}),null);
+
+test('Stone Skin and Empowered add base HP independently; Ultimatum scales ordinary HP',()=>{
+ const e={baseHealth:100},near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8);
+ near(enemyHealth(e,{difficulty:21,stoneskin:true}),3250*1.3+1);
+ near(enemyHealth(e,{difficulty:52,stoneskin:true}),35149*1.3+1);
+ near(enemyHealth(e,{difficulty:52,empowered:true,stoneskin:true}),35149*2.3+1);
+ near(enemyHealth(e,{difficulty:52,ultimatum:true}),35149*1.1);
+ assert.equal(enemyHealth({baseHealth:null},{stoneskin:true}),null);
 });
 test('Efficiency uses the same capped-health formula when difficulty is supplied',()=>{
- const enemy={baseHealth:100,dungeonScore:1},d={requiredScore:10,enemies:[{id:'a',placementId:'a',packId:'p'}]},r=newRoute(d,'test');r.modifiers.empowered={active:true,enemies:['a']};
- const result=dungeonPackEfficiencies(d,new Map([['a',enemy]]),r,{difficulty:75});
- assert.equal(result.totalHealth,25061);
- assert.ok(Math.abs(result.values.get('p')-.3/(1+172.32/250.61))<1e-12);
+ const enemy={baseHealth:100,dungeonScore:1},d={requiredScore:10,enemies:[{id:'a',placementId:'a',packId:'p'}]},r=newRoute(d,d.routeBuildId??'test');r.modifiers.empowered={active:true,enemies:['a']};
+ const result=dungeonPackEfficiencies(d,new Map([['a',enemy]]),r,{difficulty:21});
+ assert.equal(result.totalHealth,3250);
+ assert.ok(Math.abs(result.values.get('p')-.3/2)<1e-12);
 });
 test('Runtime and published inputs no longer contain historical shadow-reference data',()=>{
  assert.ok(!dataNames.includes('shadow-reference'));assert.ok(!fs.existsSync('data/shadow-reference.json'));

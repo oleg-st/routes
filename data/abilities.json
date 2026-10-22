@@ -288,70 +288,6 @@
     "descriptionTokens": []
   },
   {
-    "id": "GA_BlackmistShadowMinion_Cast",
-    "parentId": "vv-blackmistshadow",
-    "name": "Devouring Darkness",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistShadow/RunePuzzle/GA_BlackmistShadowMinion_Cast.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_BlackmistShadowMinion_OnDeathExplosion",
-    "parentId": "vv-blackmistshadow",
-    "name": "False Rune Explosion",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistShadow/RunePuzzle/GA_BlackmistShadowMinion_OnDeathExplosion.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_BossVikingMystic_RuneMinion_Cast",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Devouring Darkness",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic_RuneMinion/GA_BossVikingMystic_RuneMinion_Cast.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_BossVikingMystic_RuneMinion_OnDeathExplosion",
-    "parentId": "vv-bossvikingmystic",
-    "name": "False Rune Explosion",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic_RuneMinion/GA_BossVikingMystic_RuneMinion_OnDeathExplosion.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_Bowguy_AoeProjectileDamage",
     "parentId": "bowguy",
     "name": "Multishot",
@@ -360,7 +296,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/AoeProjectileDamage/GA_Bowguy_AoeProjectileDamage.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/AoeProjectileDamage/GA_Bowguy_AoeProjectileDamage.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -518,7 +454,7 @@
     "castInterruptibility": "never",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/CastedBouncyProjectileDamage/GA_Bowguy_CastedBouncyProjectileDamage.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/CastedBouncyProjectileDamage/GA_Bowguy_CastedBouncyProjectileDamage.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -534,7 +470,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/CastedProjectileDamage/GA_Bowguy_CastedProjectileDamage.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/CastedProjectileDamage/GA_Bowguy_CastedProjectileDamage.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -692,7 +628,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/CastedProjectileHeavyDamage/GA_Bowguy_CastedProjectileHeavyDamage.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/CastedProjectileHeavyDamage/GA_Bowguy_CastedProjectileHeavyDamage.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -991,7 +927,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/ChanneledMultiProjectileDebuff/GA_Bowguy_ChanneledMultiProjectileDebuff.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/ChanneledMultiProjectileDebuff/GA_Bowguy_ChanneledMultiProjectileDebuff.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": 2
@@ -1431,7 +1367,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/ChargedMoveWithDirection/GA_Bowguy_ChargedMoveWithDirection.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/ChargedMoveWithDirection/GA_Bowguy_ChargedMoveWithDirection.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1447,7 +1383,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/DurationalAoeDamage/GA_Bowguy_DurationalAoeDamage.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/DurationalAoeDamage/GA_Bowguy_DurationalAoeDamage.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1463,7 +1399,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/InstantMarkTarget/GA_Bowguy_InstantMarkTarget.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/InstantMarkTarget/GA_Bowguy_InstantMarkTarget.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1621,7 +1557,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/InstantSingleInterrupt/GA_Bowguy_InstantSingleInterrupt.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/InstantSingleInterrupt/GA_Bowguy_InstantSingleInterrupt.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1637,7 +1573,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/InstantMarkTarget/GA_Bowguy_Passive_InstantMarkTarget_Monitor.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/InstantMarkTarget/GA_Bowguy_Passive_InstantMarkTarget_Monitor.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1653,7 +1589,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/ProcHasteBuff/GA_Bowguy_ProcHasteBuff.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/ProcHasteBuff/GA_Bowguy_ProcHasteBuff.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1669,7 +1605,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/RangedAutoAttack/GA_Bowguy_RangedAutoAttack.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/RangedAutoAttack/GA_Bowguy_RangedAutoAttack.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1685,7 +1621,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/ReducedCostCooldownRecoveryBuff/GA_Bowguy_ReducedCostCooldownRecoveryBuff.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/ReducedCostCooldownRecoveryBuff/GA_Bowguy_ReducedCostCooldownRecoveryBuff.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1701,7 +1637,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/SelfBuffForAoeProjectile/GA_Bowguy_SelfBuffForAoeProjectile.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/SelfBuffForAoeProjectile/GA_Bowguy_SelfBuffForAoeProjectile.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1717,7 +1653,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/SelfDefenceBuff/GA_Bowguy_SelfDefenceBuff.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/SelfDefenceBuff/GA_Bowguy_SelfDefenceBuff.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1733,7 +1669,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/SingleProjectileDamage/GA_Bowguy_SingleProjectileDamage.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/SingleProjectileDamage/GA_Bowguy_SingleProjectileDamage.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -1891,7 +1827,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/TargetedAoeDamage/GA_Bowguy_TargetedAoeDamage.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/TargetedAoeDamage/GA_Bowguy_TargetedAoeDamage.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -2190,7 +2126,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/Heroes/BowGuy/TargetedAoePull/GA_Bowguy_TargetedAoePull.uasset",
+    "sourcePath": "fellowship/Content/Abilities/Heroes/Bowguy/TargetedAoePull/GA_Bowguy_TargetedAoePull.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -3269,310 +3205,6 @@
     "descriptionTokens": []
   },
   {
-    "id": "GA_DR_BossCultLeader_Beam",
-    "parentId": "dr-bosscultleader",
-    "name": "(CUT) Demonic Infusion",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossCultLeader/NewBeam/GA_DR_BossCultLeader_Beam.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": 30
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossCultLeader_ChosenForSacrifice",
-    "parentId": "dr-bosscultleader",
-    "name": "Ez'Rath's Chosen",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossCultLeader/NewAbilities/GA_DR_BossCultLeader_ChosenForSacrifice.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossCultLeader_Defile",
-    "parentId": "dr-bosscultleader",
-    "name": "Dark Malice",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossCultLeader/NewAbilities/GA_DR_BossCultLeader_Defile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossCultLeader_FinaleRotatingCrossAbility",
-    "parentId": "dr-bosscultleader",
-    "name": "Abyssal Nexus",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossCultLeader/NewAbilities/GA_DR_BossCultLeader_FinaleRotatingCrossAbility.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossCultLeader_Grip",
-    "parentId": "dr-bosscultleader",
-    "name": "Wicked Hook",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossCultLeader/GripAbility/GA_DR_BossCultLeader_Grip.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossCultLeader_MeleeAutoAttack",
-    "parentId": "dr-bosscultleader",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossCultLeader/GA_DR_BossCultLeader_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossCultLeader_ResizingAoeCircles",
-    "parentId": "dr-bosscultleader",
-    "name": "(CUT) Ritual of Flame",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossCultLeader/GA_DR_BossCultLeader_ResizingAoeCircles.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossDemonPlant_MeleeAutoAttack",
-    "parentId": "dr-bossdemonplant",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossDemonPlant/MeleeAutoAttack/GA_DR_BossDemonPlant_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossDemonPlant_ProjectileSpray",
-    "parentId": "dr-bossdemonplant",
-    "name": "Legion of Vun'Kahr",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossDemonPlant/ProjectileSpray/GA_DR_BossDemonPlant_ProjectileSpray.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossDemonPlant_SpawnVine",
-    "parentId": "dr-bossdemonplant",
-    "name": "Raise Terrorvines",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossDemonPlant/SpawnVine/GA_DR_BossDemonPlant_SpawnVine.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossDemonPlant_TankSlamAoe",
-    "parentId": "dr-bossdemonplant",
-    "name": "Fangroot Snap",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossDemonPlant/TankSlamAoe/GA_DR_BossDemonPlant_TankSlamAoe.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossDemonPlant_WakeUpAdds",
-    "parentId": "dr-bossdemonplant",
-    "name": "Thornmother’s Slumber",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossDemonPlant/WakeUpAdds/GA_DR_BossDemonPlant_WakeUpAdds.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossGateWizard_AbsorbDamagePulse",
-    "parentId": "dr-bossgatewizard",
-    "name": "Blood Burst",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossGateWizard/AbsorbDamagePulse/GA_DR_BossGateWizard_AbsorbDamagePulse.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossGateWizard_FirePillar",
-    "parentId": "dr-bossgatewizard",
-    "name": "Sacrificial Pyre",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossGateWizard/FirePillar/GA_DR_BossGateWizard_FirePillar.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossGateWizard_Football",
-    "parentId": "dr-bossgatewizard",
-    "name": "Siphon Blood",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossGateWizard/Football/GA_DR_BossGateWizard_Football.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossGateWizard_FootballHitPulse",
-    "parentId": "dr-bossgatewizard",
-    "name": "Blood Burst",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossGateWizard/FootballHitPulse/GA_DR_BossGateWizard_FootballHitPulse.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossGateWizard_MeleeAutoAttack",
-    "parentId": "dr-bossgatewizard",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossGateWizard/MeleeAutoAttack/GA_DR_BossGateWizard_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossGateWizard_SafeDangerZones",
-    "parentId": "dr-bossgatewizard",
-    "name": "Pentagram",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossGateWizard/SafeDangerZones/GA_DR_BossGateWizard_SafeDangerZones.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_BossGateWizard_TankDot",
-    "parentId": "dr-bossgatewizard",
-    "name": "Hemorrhaging Strike",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/BossGateWizard/TankDot/GA_DR_BossGateWizard_TankDot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_DR_CultistCaster_CastedRangedProjectileDOT",
     "parentId": "dr-cultistcaster",
     "name": "Wither",
@@ -3822,38 +3454,6 @@
     "liveStatus": "live",
     "images": [],
     "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/Mancatcher/GA_DR_Mancatcher_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_Ritualist_OnDeathAbility",
-    "parentId": "dr-bosscultleader",
-    "name": "Demon Eruption",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/Ritualist/GA_DR_Ritualist_OnDeathAbility.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_DR_Ritualist_ResizeAoeCirclesWalk",
-    "parentId": "dr-bosscultleader",
-    "name": "(CUT) Sacrificial Offering",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/DemonicRitual/Ritualist/GA_DR_Ritualist_ResizeAoeCirclesWalk.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -7014,118 +6614,6 @@
     "descriptionTokens": []
   },
   {
-    "id": "GA_IC_BossMagistrate_BigStun",
-    "parentId": "ic-bossmagistrate",
-    "name": "Big Stun",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/BossMagistrate/BigStun/GA_IC_BossMagistrate_BigStun.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_IC_BossMagistrate_FrigidMist",
-    "parentId": "ic-bossmagistrate",
-    "name": "Frigid Mists",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "always",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/BossMagistrate/FrigidMist/GA_IC_BossMagistrate_FrigidMist.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_IC_BossMagistrate_Frostbolt",
-    "parentId": "ic-bossmagistrate",
-    "name": "Icy Death",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "always",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/BossMagistrate/Frostbolt/GA_IC_BossMagistrate_Frostbolt.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_IC_BossMagistrate_IceSpikes",
-    "parentId": "ic-bossmagistrate",
-    "name": "Glacial Spikes",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/BossMagistrate/IceSpikes/GA_IC_BossMagistrate_IceSpikes.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_IC_BossMagistrate_KnockbackCone",
-    "parentId": "ic-bossmagistrate",
-    "name": "Howling Blast",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/BossMagistrate/KnockbackCone/GA_IC_BossMagistrate_KnockbackCone.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_IC_BossMagistrate_MeleeAutoAttack",
-    "parentId": "ic-bossmagistrate",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/BossMagistrate/MeleeAutoAttack/GA_IC_BossMagistrate_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_IC_BossMagistrate_Redemption",
-    "parentId": "ic-bossmagistrate",
-    "name": "Splintering Ice",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/BossMagistrate/Redemption/GA_IC_BossMagistrate_Redemption.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_IC_GlacialSprite_AutoAttackMelee",
     "parentId": "ic-glacialsprite",
     "name": "Attack",
@@ -7192,13 +6680,29 @@
   {
     "id": "GA_IC_GreaterIceElemental_EarthStomp",
     "parentId": "ic-greatericeelemental",
-    "name": "Frozen Stomp",
+    "name": "(OLD) Frozen Stomp",
     "description": null,
     "baseCooldownSeconds": null,
     "castInterruptibility": "never",
     "liveStatus": "live",
     "images": [],
     "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/GreaterIceElemental/EarthStomp/GA_IC_GreaterIceElemental_EarthStomp.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_IC_GreaterIceElemental_FrozenStomp",
+    "parentId": "ic-greatericeelemental",
+    "name": "Frozen Stomp",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/GreaterIceElemental/FrozenStomp/GA_IC_GreaterIceElemental_FrozenStomp.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -7279,22 +6783,6 @@
     "liveStatus": "live",
     "images": [],
     "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/Healer/GA_IC_Healer_TwoTargetDot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_IC_Lookout_MeleeAutoAttack",
-    "parentId": "ic-lookout",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/IceCave/Lookout/GA_IC_Lookout_MeleeAutoAttack.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -20762,374 +20250,6 @@
     ]
   },
   {
-    "id": "GA_MF_BlightedMorningGlory_DotProjectile",
-    "parentId": "mf-blightedmorningglory",
-    "name": "Blighted Ichor",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BlightedMorningGlory/DotProjectile/GA_MF_BlightedMorningGlory_DotProjectile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BlightedMorningGlory_MeleeAutoAttack",
-    "parentId": "mf-blightedmorningglory",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BlightedMorningGlory/MeleeAutoAttack/GA_MF_BlightedMorningGlory_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BlightedMorningGlory_OnDeathHeal",
-    "parentId": "mf-blightedmorningglory",
-    "name": "Glory",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BlightedMorningGlory/OnDeathHeal/GA_MF_BlightedMorningGlory_OnDeathHeal.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_ChanneledNova",
-    "parentId": "mf-bossnecrolord",
-    "name": "Umbral Eruption",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/ChanneledNova/GA_MF_BossNecrolord_ChanneledNova.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_DispellableSoakDot",
-    "parentId": "mf-bossnecrolord",
-    "name": "Corrupting Shot",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/DispellableSoakDot/GA_MF_BossNecrolord_DispellableSoakDot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_DispellableSoakDot_Monitor",
-    "parentId": "mf-bossnecrolord",
-    "name": "Corrupting Shot",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/DispellableSoakDot/GA_MF_BossNecrolord_DispellableSoakDot_Monitor.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_MeleeAutoAttack",
-    "parentId": "mf-bossnecrolord",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/MeleeAutoAttack/GA_MF_BossNecrolord_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_MultiShot",
-    "parentId": "mf-bossnecrolord",
-    "name": "Crystal Volley",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/MultiShot/GA_MF_BossNecrolord_MultiShot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_RangedAutoAttack",
-    "parentId": "mf-bossnecrolord",
-    "name": "Shoot",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/RangedAutoAttack/GA_MF_BossNecrolord_RangedAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_ShootDeer",
-    "parentId": "mf-bossnecrolord",
-    "name": "KillShot",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/ShootDeer/GA_MF_BossNecrolord_ShootDeer.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_SpreadingDot",
-    "parentId": "mf-bossnecrolord",
-    "name": "(CUT) Spreading Corruption",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/SpreadingDot/GA_MF_BossNecrolord_SpreadingDot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossNecrolord_SummonCrystal",
-    "parentId": "mf-bossnecrolord",
-    "name": "(CUT) Pulsing Bloodstone",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/SummonCrystal/GA_MF_BossNecrolord_SummonCrystal.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossUnicorn_Charge",
-    "parentId": "mf-bossunicorn",
-    "name": "Panicked Charge",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossUnicorn/Charge/GA_MF_BossUnicorn_Charge.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossUnicorn_Charge_Cooldown",
-    "parentId": "mf-bossunicorn",
-    "name": "Charge",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossUnicorn/Charge/GA_MF_BossUnicorn_Charge_Cooldown.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_BossUnicorn_MeleeAutoAttack",
-    "parentId": "mf-bossunicorn",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossUnicorn/MeleeAutoAttack/GA_MF_BossUnicorn_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_DawnstoneGuardian_DamageReflect",
-    "parentId": "mf-dawnstoneguardian",
-    "name": "Bloodstone Erruption",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/DawnstoneGuardian/DamageReflect/GA_MF_DawnstoneGuardian_DamageReflect.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_DawnstoneGuardian_MeleeAutoAttack",
-    "parentId": "mf-dawnstoneguardian",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/DawnstoneGuardian/MeleeAutoAttack/GA_MF_DawnstoneGuardian_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_DawnstoneGuardian_Spikes",
-    "parentId": "mf-dawnstoneguardian",
-    "name": "Earthcore Upheaval",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/DawnstoneGuardian/Spikes/GA_MF_DawnstoneGuardian_Spikes.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_FoulTotemic_CastProjectile",
-    "parentId": "mf-foultotemic",
-    "name": "Shadow Lob",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/FoulTotemic/CastProjectile/GA_MF_FoulTotemic_CastProjectile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_FoulTotemic_Heal",
-    "parentId": "mf-foultotemic",
-    "name": "Restoration",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/FoulTotemic/Heal/GA_MF_FoulTotemic_Heal.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_FoulTotemic_MeleeAutoAttack",
-    "parentId": "mf-foultotemic",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/FoulTotemic/MeleeAutoAttack/GA_MF_FoulTotemic_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_FoulTotemic_SummonTotem",
-    "parentId": "mf-foultotemic",
-    "name": "Bloodstone Totem",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/FoulTotemic/SummonTotem/GA_MF_FoulTotemic_SummonTotem.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_MF_FoulTotemic_SummonTraps",
-    "parentId": "mf-foultotemic",
-    "name": "Corrupted Prayer",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/FoulTotemic/SummonTraps/GA_MF_FoulTotemic_SummonTraps.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_MF_MangyBrute_MeleeAutoAttack",
     "parentId": "mf-mangybrute",
     "name": "Attack",
@@ -23870,6 +22990,518 @@
     "descriptionTokens": []
   },
   {
+    "id": "GA_NF_BossFeralist_AutoAttackMelee",
+    "parentId": "nf-bossferalist",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/BossFeralist/GA_NF_BossFeralist_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_BossFeralist_BreakArenaSlice",
+    "parentId": "nf-bossferalist",
+    "name": "Rage of the Ursine",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/BossFeralist/BreakArenaSlice/GA_NF_BossFeralist_BreakArenaSlice.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_BossFeralist_ChanneledAttack",
+    "parentId": "nf-bossferalist",
+    "name": "Fang and Claw",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/BossFeralist/ChaneledAttack/GA_NF_BossFeralist_ChanneledAttack.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_BossFeralist_Charge",
+    "parentId": "nf-bossferalist",
+    "name": "Charge of the Horned God",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/BossFeralist/Charge/GA_NF_BossFeralist_Charge.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_BossFeralist_MultiJump",
+    "parentId": "nf-bossferalist",
+    "name": "Soulrending Pounce",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/BossFeralist/MultiJump/GA_NF_BossFeralist_MultiJump.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": 0
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_BossFeralist_Spin",
+    "parentId": "nf-bossferalist",
+    "name": "Eagle's Tempest",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/BossFeralist/Spin/GA_NF_BossFeralist_Spin.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidElementalist_AutoAttackMelee",
+    "parentId": "nf-druidelementalist",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidElementalist/GA_NF_DruidElementalist_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidElementalist_CastProjectile",
+    "parentId": "nf-druidelementalist",
+    "name": "Storm Blast",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidElementalist/GA_NF_DruidElementalist_CastProjectile.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidElementalist_ChainLightning",
+    "parentId": "nf-druidelementalist",
+    "name": "Chain Lightning",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidElementalist/GA_NF_DruidElementalist_ChainLightning.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidElementalist_GroundProjectileSpike",
+    "parentId": "nf-druidelementalist",
+    "name": "Rock-a-Mole",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidElementalist/GroundProjectileSpike/GA_NF_DruidElementalist_GroundProjectileSpike.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidElementalist_PlacedAoe",
+    "parentId": "nf-druidelementalist",
+    "name": "Howling Tempest",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidElementalist/EruptionAndPlacedSlowAoE/GA_NF_DruidElementalist_PlacedAoe.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidFeralist_AutoAttackMelee",
+    "parentId": "nf-druidferalist",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidFeralist/GA_NF_DruidFeralist_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidFeralist_ChanneledAttack",
+    "parentId": "nf-druidferalist",
+    "name": "Bear's Might",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "always",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidFeralist/ChaneledAttack/GA_NF_DruidFeralist_ChanneledAttack.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidFeralist_Charge",
+    "parentId": "nf-druidferalist",
+    "name": "Charge of the Stag",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidFeralist/Charge/GA_NF_DruidFeralist_Charge.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidFeralist_Spin",
+    "parentId": "nf-druidferalist",
+    "name": "Eagle's Fury",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidFeralist/Spin/GA_NF_DruidFeralist_Spin.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidGuardian_AutoAttackMelee",
+    "parentId": "nf-druidguardian",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidGuardian/GA_NF_DruidGuardian_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidGuardian_CastProjectile",
+    "parentId": "nf-druidguardian",
+    "name": "Verdant Spear",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidGuardian/CastedProjectile/GA_NF_DruidGuardian_CastProjectile.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidGuardian_MultiCone",
+    "parentId": "nf-druidguardian",
+    "name": "Sweeping Strike",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidGuardian/MultiCone/GA_NF_DruidGuardian_MultiCone.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidProtector_AutoAttack",
+    "parentId": "nf-druidprotector",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidProtector/GA_NF_DruidProtector_AutoAttack.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidScout_AutoAttackMelee",
+    "parentId": "nf-druidscout",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidScout/GA_NF_DruidScout_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidScout_AutoAttackRanged",
+    "parentId": "nf-druidscout",
+    "name": "Shoot",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidScout/GA_NF_DruidScout_AutoAttackRanged.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidScout_JumpCone",
+    "parentId": "nf-druidscout",
+    "name": "Pounce",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidScout/JumpCone/GA_NF_DruidScout_JumpCone.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidScout_LineAttack",
+    "parentId": "nf-druidscout",
+    "name": "Barrage of Arrows",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidScout/LineAttack/GA_NF_DruidScout_LineAttack.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidWildspeaker_AutoAttackMelee",
+    "parentId": "nf-druidwildspeaker",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidWildspeaker/GA_NF_DruidWildspeaker_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidWildspeaker_CastDebuff",
+    "parentId": "nf-druidwildspeaker",
+    "name": "Corrosive Poison",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidWildspeaker/CastDebuff/GA_NF_DruidWildspeaker_CastDebuff.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidWildspeaker_CastProjectile",
+    "parentId": "nf-druidwildspeaker",
+    "name": "Wicked Bolt",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidWildspeaker/GA_NF_DruidWildspeaker_CastProjectile.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidWildspeaker_Mines",
+    "parentId": "nf-druidwildspeaker",
+    "name": "Toxic Thicket",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidWildspeaker/Mines/GA_NF_DruidWildspeaker_Mines.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_DruidWildspeaker_RootAOEs",
+    "parentId": "nf-druidwildspeaker",
+    "name": "Ensnaring Roots",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/DruidWildspeaker/Root/GA_NF_DruidWildspeaker_RootAOEs.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_ForestBoar_AutoAttackMelee",
+    "parentId": "nf-forestboar",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/ForestBoar/GA_NF_ForestBoar_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_ForestBoar_Charge",
+    "parentId": "nf-forestboar",
+    "name": "Rampant Charge",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/ForestBoar/GA_NF_ForestBoar_Charge.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_WoodlandBear_MeleeAutoAttack",
+    "parentId": "nf-woodlandbear",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/WoodlandBear/GA_NF_WoodlandBear_MeleeAutoAttack.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_NF_WoodlandBear_Stomp",
+    "parentId": "nf-woodlandbear",
+    "name": "Primal Stomp",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/NordicForest/WoodlandBear/Stomp/GA_NF_WoodlandBear_Stomp.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
     "id": "GA_NP_BossHellcaller_CastedRangedProjectile",
     "parentId": "np-bosshellcaller",
     "name": "Charged Bolt",
@@ -23878,7 +23510,7 @@
     "castInterruptibility": "always",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/GA_NP_BossHellcaller_CastedRangedProjectile.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/GA_NP_BossHellcaller_CastedRangedProjectile.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -23894,7 +23526,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/ChainLightning/GA_NP_BossHellcaller_ChainLightning.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/ChainLightning/GA_NP_BossHellcaller_ChainLightning.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -23910,7 +23542,7 @@
     "castInterruptibility": "never",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/GA_NP_BossHellcaller_GrowingCircleCast.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/GA_NP_BossHellcaller_GrowingCircleCast.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -23926,7 +23558,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/GA_NP_BossHellcaller_MeleeAutoAttack.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/GA_NP_BossHellcaller_MeleeAutoAttack.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -23942,7 +23574,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/PeriodicDamageAura/GA_NP_BossHellcaller_PeriodicDamage.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/PeriodicDamageAura/GA_NP_BossHellcaller_PeriodicDamage.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -23958,7 +23590,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/Retreat/GA_NP_BossHellcaller_Retreat.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/Retreat/GA_NP_BossHellcaller_Retreat.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -23974,7 +23606,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/SoakDebuff/GA_NP_BossHellcaller_SoakDebuff.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/SoakDebuff/GA_NP_BossHellcaller_SoakDebuff.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -23990,7 +23622,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/Summon/GA_NP_BossHellcaller_Summon.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/Summon/GA_NP_BossHellcaller_Summon.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -24006,7 +23638,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellCaller/TankSlamCone/GA_NP_BossHellcaller_TankSlamCone.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/BossHellcaller/TankSlamCone/GA_NP_BossHellcaller_TankSlamCone.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -24167,86 +23799,6 @@
     "liveStatus": "live",
     "images": [],
     "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/ShinChopper/MeleeAutoAttack/GA_NP_Shinchopper_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_NP_Stormscreamer_CastedAoeProjectile",
-    "parentId": "np-stormscreamer",
-    "name": "Ball Lightning",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "always",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/StormScreamer/CastedAoeProjectile/GA_NP_Stormscreamer_CastedAoeProjectile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_NP_Stormscreamer_CastProjectile",
-    "parentId": "np-stormscreamer",
-    "name": "Crackling Bolt",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/StormScreamer/CastProjectile/GA_NP_Stormscreamer_CastProjectile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_NP_Stormscreamer_MeleeAutoAttack",
-    "parentId": "np-stormscreamer",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/StormScreamer/MeleeAutoAttack/GA_NP_Stormscreamer_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_NP_Stormscreamer_PeriodicDamage",
-    "parentId": "np-stormscreamer",
-    "name": "Sky Zapper",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/StormScreamer/PeriodicDamage/GA_NP_Stormscreamer_PeriodicDamage.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_NP_Stormscreamer_PeriodicDamage_Granted",
-    "parentId": "np-stormscreamer",
-    "name": "Sky Zapper",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/NightPatrol/StormScreamer/PeriodicDamage/GA_NP_Stormscreamer_PeriodicDamage_Granted.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -24686,22 +24238,6 @@
     "descriptionTokens": []
   },
   {
-    "id": "GA_PR_BossPirateCaptain_Spin",
-    "parentId": "pr-bosspiratecaptain",
-    "name": "Soulpowder Cyclone",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/PirateRaid/BossPirateCaptain/Spin/GA_PR_BossPirateCaptain_Spin.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_PR_BossPirateCaptain_Split",
     "parentId": "pr-bosspiratecaptain",
     "name": "Captain's Orders!",
@@ -24902,7 +24438,7 @@
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/PirateRaid/CannonPirate/cannon/GA_PR_CannonPirate_Cannon.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/PirateRaid/CannonPirate/Cannon/GA_PR_CannonPirate_Cannon.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -27238,182 +26774,6 @@
     ]
   },
   {
-    "id": "GA_SG_BossSiren_Bleed",
-    "parentId": "sg-bosssiren",
-    "name": "Bleed",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/Bleed/GA_SG_BossSiren_Bleed.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_BossSiren_Bubble",
-    "parentId": "sg-bosssiren",
-    "name": "Undertow",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/Bubble/GA_SG_BossSiren_Bubble.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_BossSiren_Bubble_Granted",
-    "parentId": "sg-bosssiren",
-    "name": "Watery Grave",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/Bubble/GA_SG_BossSiren_Bubble_Granted.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_BossSiren_Interrupt",
-    "parentId": "sg-bosssiren",
-    "name": "Deafening Screech",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/Interrupt/GA_SG_BossSiren_Interrupt.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_BossSiren_MastTether",
-    "parentId": "sg-bosssiren",
-    "name": "Tether to Mast",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/MastTether/GA_SG_BossSiren_MastTether.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_BossSiren_MeleeAutoAttack",
-    "parentId": "sg-bosssiren",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/MeleeAutoAttack/GA_SG_BossSiren_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_BossSiren_TankSlamAndLink",
-    "parentId": "sg-bosssiren",
-    "name": "Binding Strike",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/TankSlamAndLink/GA_SG_BossSiren_TankSlamAndLink.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_BossSiren_WalkOverEdge",
-    "parentId": "sg-bosssiren",
-    "name": "Siren's Song",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/WalkOverEdge/GA_SG_BossSiren_WalkOverEdge.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_BossSiren_Wave",
-    "parentId": "sg-bosssiren",
-    "name": "Necrotic Wave",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/BossSiren/Wave/GA_SG_BossSiren_Wave.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_CoralLasher_InitiateRangedAttack",
-    "parentId": "sg-corallasher",
-    "name": "Witchreef Toxin",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/CoralLasher/GA_SG_CoralLasher_InitiateRangedAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_SG_CoralLasher_MeleeAutoAttack",
-    "parentId": "sg-corallasher",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/ShipGraveyard/CoralLasher/GA_SG_CoralLasher_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_SG_DrownedSailor_AutoAttack",
     "parentId": "sg-drownedsailor",
     "name": "Attack",
@@ -28070,6 +27430,102 @@
     "descriptionTokens": []
   },
   {
+    "id": "GA_SJ_DruidSpiritualist_AutoAttackMelee",
+    "parentId": "sj-druidspiritualist",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SpiritJungle/DruidSpiritualist/GA_SJ_DruidSpiritualist_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_SJ_DruidSpiritualist_CastProjectile",
+    "parentId": "sj-druidspiritualist",
+    "name": "Spiritual Surge",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SpiritJungle/DruidSpiritualist/GA_SJ_DruidSpiritualist_CastProjectile.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_SJ_DruidSpiritualist_InstantAoEBuff",
+    "parentId": "sj-druidspiritualist",
+    "name": "Blessing of the Bear",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SpiritJungle/DruidSpiritualist/InstantAoEBuff/GA_SJ_DruidSpiritualist_InstantAoEBuff.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_SJ_DruidSpiritualist_Stampede",
+    "parentId": "sj-druidspiritualist",
+    "name": "Wild Stampede",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SpiritJungle/DruidSpiritualist/Stampede/GA_SJ_DruidSpiritualist_Stampede.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_SJ_JungleRaptor_AutoAttackMelee",
+    "parentId": "sj-jungleraptor",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SpiritJungle/JungleRaptor/GA_SJ_JungleRaptor_AutoAttackMelee.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_SJ_JungleRaptor_Jump",
+    "parentId": "sj-jungleraptor",
+    "name": "Pestering Lunge",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SpiritJungle/JungleRaptor/Jump/GA_SJ_JungleRaptor_Jump.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
     "id": "GA_SP_BossMarcass_BloodRain",
     "parentId": "sp-bossmarcass",
     "name": "Rain of Blood",
@@ -28319,630 +27775,6 @@
     "liveStatus": "live",
     "images": [],
     "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BigBloodElemental/SpawnBlood/GA_ST_BigBloodElemental_SpawnBlood.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BloodOrb_BuffBoss",
-    "parentId": "st-bossarbiter",
-    "name": "Sanguine Might",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BloodOrb/GA_ST_BloodOrb_BuffBoss.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BloodOrb_SharedHealth",
-    "parentId": "st-bossarbiter",
-    "name": "Shared Health",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BloodOrb/GA_ST_BloodOrb_SharedHealth.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_ArenaProjectiles",
-    "parentId": "st-bossarbiter",
-    "name": "Marching Vessels",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/ArenaProjectiles/GA_ST_BossArbiter_ArenaProjectiles.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_BeamIllusions",
-    "parentId": "st-bossarbiter",
-    "name": "Sinister Vessels",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/BeamIllusions/GA_ST_BossArbiter_BeamIllusions.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_ChannelTruesighter",
-    "parentId": "st-bossarbiter",
-    "name": "Tormenting Visions",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/ChannelTruesighter/GA_ST_BossArbiter_ChannelTruesighter.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_CircleIllusions",
-    "parentId": "st-bossarbiter",
-    "name": "Hungering Vessels",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/CircleIllusions/GA_ST_BossArbiter_CircleIllusions.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_GiveTruesight_Interact",
-    "parentId": "st-bossarbiter",
-    "name": "Drinking",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/GiveTruesight/GA_ST_BossArbiter_GiveTruesight_Interact.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_GiveTruesight_Passive",
-    "parentId": "st-bossarbiter",
-    "name": "Truesight Corruption",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/GiveTruesight/GA_ST_BossArbiter_GiveTruesight_Passive.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_LavaFloor",
-    "parentId": "st-bossarbiter",
-    "name": "Arena Paths",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/LavaFloor/GA_ST_BossArbiter_LavaFloor.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_Maze",
-    "parentId": "st-bossarbiter",
-    "name": "One True Path",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/Maze/GA_ST_BossArbiter_Maze.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_MazeNuke",
-    "parentId": "st-bossarbiter",
-    "name": "Repent",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/MazeNuke/GA_ST_BossArbiter_MazeNuke.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_MeleeAutoAttack",
-    "parentId": "st-bossarbiter",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/MeleeAutoAttack/GA_ST_BossArbiter_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_RandomImpactsAoe",
-    "parentId": "st-bossarbiter",
-    "name": "Apotheosis",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/RandomImpactsAoe/GA_ST_BossArbiter_RandomImpactsAoe.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_Runes",
-    "parentId": "st-bossarbiter",
-    "name": "Blood Sermon",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/Runes/GA_ST_BossArbiter_Runes.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_SingleEnemyEnrage",
-    "parentId": "st-bossarbiter",
-    "name": "Prevailing Arrogance",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/SingleEnemyEnrage/GA_ST_BossArbiter_SingleEnemyEnrage.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_SpawnOrbs",
-    "parentId": "st-bossarbiter",
-    "name": "Blood Orbs",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/SpawnOrbs/GA_ST_BossArbiter_SpawnOrbs.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiter_TankSlam",
-    "parentId": "st-bossarbiter",
-    "name": "Contrite",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/TankSlam/GA_ST_BossArbiter_TankSlam.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiterIllusion_CastBeam",
-    "parentId": "st-bossarbiter",
-    "name": "Eradication",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiterIllusion/GA_ST_BossArbiterIllusion_CastBeam.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossArbiterIllusion_Circle",
-    "parentId": "st-bossarbiter",
-    "name": "Gorging Pool",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiterIllusion/Circle/GA_ST_BossArbiterIllusion_Circle.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_AbsorbAdds",
-    "parentId": "st-bossdefenseeye",
-    "name": "Draw Blood",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/AbsorbAdds/GA_ST_BossDefenseEye_AbsorbAdds.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": 40
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_ApplyDelayedAoePlacementDebuffToAll",
-    "parentId": "st-bossdefenseeye",
-    "name": "Vein Seeds",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/PlayerAoePlacement/GA_ST_BossDefenseEye_ApplyDelayedAoePlacementDebuffToAll.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_Beams",
-    "parentId": "st-bossdefenseeye",
-    "name": "Judgement",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/Beams/GA_ST_BossDefenseEye_Beams.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_CastSpawnBloodCreation",
-    "parentId": "st-bossdefenseeye",
-    "name": "Summon Creations",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/SpawnBloodCreations/GA_ST_BossDefenseEye_CastSpawnBloodCreation.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_Passive_ShootProjectilesAndAoePlacement",
-    "parentId": "st-bossdefenseeye",
-    "name": "Vein Sprout",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/PlayerAoePlacement/GA_ST_BossDefenseEye_Passive_ShootProjectilesAndAoePlacement.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_PlatformAoEDamage",
-    "parentId": "st-bossdefenseeye",
-    "name": "Vein Constriction",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/PlatformAoEDamage/GA_ST_BossDefenseEye_PlatformAoEDamage.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_RotatingCross",
-    "parentId": "st-bossdefenseeye",
-    "name": "Annihilation Protocol",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/Cross/GA_ST_BossDefenseEye_RotatingCross.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_SearchLight",
-    "parentId": "st-bossdefenseeye",
-    "name": "Scan",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/SearchLight/GA_ST_BossDefenseEye_SearchLight.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossDefenseEye_SpawnAdds",
-    "parentId": "st-bossdefenseeye",
-    "name": "Palace Response Unit",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/SpawnAdds/GA_ST_BossDefenseEye_SpawnAdds.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGateKeeper_AuraHealingReduction_PassiveAbility",
-    "parentId": "st-bossgatekeeper",
-    "name": "Edict of Frailty",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Auras/HealingReduction/GA_ST_BossGateKeeper_AuraHealingReduction_PassiveAbility.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGateKeeper_AuraProximityDamage",
-    "parentId": "st-bossgatekeeper",
-    "name": "Edict of Isolation",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Auras/ProximityDamage/GA_ST_BossGateKeeper_AuraProximityDamage.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGateKeeper_AuraSlow_PassiveAbility",
-    "parentId": "st-bossgatekeeper",
-    "name": "Edict of Burden",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Auras/Slow/GA_ST_BossGateKeeper_AuraSlow_PassiveAbility.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGateKeeper_CastAura",
-    "parentId": "st-bossgatekeeper",
-    "name": "Gatekeeper's Edict",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Auras/GA_ST_BossGateKeeper_CastAura.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGatekeeper_Conduit_Circle_Passive",
-    "parentId": "st-bossgatekeeper",
-    "name": "Conduit of the Bleeding Gaze",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Conduits/Circle/GA_ST_BossGatekeeper_Conduit_Circle_Passive.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGatekeeper_Conduit_Square_Passive",
-    "parentId": "st-bossgatekeeper",
-    "name": "Conduit of the Burning Circle",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Conduits/Square/GA_ST_BossGatekeeper_Conduit_Square_Passive.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGatekeeper_Conduit_Triangle_Passive",
-    "parentId": "st-bossgatekeeper",
-    "name": "Conduit of Striking Shadows",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Conduits/Triangle/GA_ST_BossGatekeeper_Conduit_Triangle_Passive.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGatekeeper_MeleeAutoAttack",
-    "parentId": "st-bossgatekeeper",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/MeleeAutoAttack/GA_ST_BossGatekeeper_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGatekeeper_MultiCastedMeleeStrike",
-    "parentId": "st-bossgatekeeper",
-    "name": "Exsanguinating Strike",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/MultiCastedMeleeStrike/GA_ST_BossGatekeeper_MultiCastedMeleeStrike.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGatekeeper_PullAndCastedAoe",
-    "parentId": "st-bossgatekeeper",
-    "name": "Gatekeeper's Judgment",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/PullAndCastedAoe/GA_ST_BossGatekeeper_PullAndCastedAoe.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_ST_BossGatekeeper_TankCone",
-    "parentId": "st-bossgatekeeper",
-    "name": "Nullification",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/TankCone/GA_ST_BossGatekeeper_TankCone.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -33038,7 +31870,7 @@
     "id": "GA_Vigor_SingleTargetAbsorb",
     "parentId": "vigor",
     "name": "Luminous Barrier",
-    "description": "Apply a shield to target ally that absorbs up to <rt.heal>{LuminousAbsorb}</> damage. <rt.absorb>Luminous Barrier</> lasts for up to <rt.bold>12 seconds</>.\r\n\r\nDamage absorbed by <rt.absorb>Luminous Barrier</> is <rt.heal>reduced by {LuminousDmgRed}</>.\r\n\r\n<rt.effect>RESIDUAL LUMINOSITY</>\r\nWhen <rt.absorb>Luminous Barrier</> expires or is removed from a player, they gain <rt.effect>Residual Luminosity</> for <rt.bold>15 seconds</>, <rt.heal>reducing all damage taken by 15%</>.\r\n\r\n<rt.effect>GRAND DESIGN</>\r\n<rt.bold>Hold down the ability button</> until a cast bar is displayed to cast this ability on up to 4 targets at 60% power. Requires <rt.mana>2 Radiant Runes</>. \r\n\r\n<rt.greyitalic>Vigour inscribes a rune of protection onto an ally, causing light to be woven around them into a barrier of divine energy. The barrier stops all forms of attack, whether forged by steel or conjured by magic.</>",
+    "description": "Apply a shield to target ally that absorbs up to <rt.heal>{LuminousAbsorb}</> damage. <rt.absorb>Luminous Barrier</> lasts for up to <rt.bold>12 seconds</>.\r\n\r\nDamage absorbed by <rt.absorb>Luminous Barrier</> is <rt.heal>reduced by {LuminousDmgRed}</>.\r\n\r\n<rt.effect>RESIDUAL LUMINOSITY</>\r\nWhen <rt.absorb>Luminous Barrier</> expires or is removed from a player, they gain <rt.effect>Residual Luminosity</> for <rt.bold>15 seconds</>, <rt.heal>reducing all damage taken by 5%</>.\r\n\r\n<rt.effect>GRAND DESIGN</>\r\n<rt.bold>Hold down the ability button</> until a cast bar is displayed to cast this ability on up to 4 targets at 60% power. Requires <rt.mana>2 Radiant Runes</>. \r\n\r\n<rt.greyitalic>Vigour inscribes a rune of protection onto an ally, causing light to be woven around them into a barrier of divine energy. The barrier stops all forms of attack, whether forged by steel or conjured by magic.</>",
     "baseCooldownSeconds": 20,
     "castInterruptibility": "always",
     "liveStatus": "live",
@@ -34247,134 +33079,6 @@
     ]
   },
   {
-    "id": "GA_VV_BlackburnMystic_CastProjectile",
-    "parentId": "vv-blackburnmystic",
-    "name": "Frost Bolt",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackburnMystic/CastProjectile/GA_VV_BlackburnMystic_CastProjectile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackburnMystic_Heal",
-    "parentId": "vv-blackburnmystic",
-    "name": "Invigorate",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackburnMystic/Heal/GA_VV_BlackburnMystic_Heal.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackburnMystic_MeleeAutoAttack",
-    "parentId": "vv-blackburnmystic",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackburnMystic/GA_VV_BlackburnMystic_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackburnMystic_RotatingOrb",
-    "parentId": "vv-blackburnmystic",
-    "name": "Eye of Ul'morgat",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackburnMystic/RotatingOrb/GA_VV_BlackburnMystic_RotatingOrb.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackburnSlaver_CastedMeleeKnockback",
-    "parentId": "vv-blackburnslaver",
-    "name": "(CUT) Backhand",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackburnSlaver/GA_VV_BlackburnSlaver_CastedMeleeKnockback.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackburnSlaver_ChainShot",
-    "parentId": "vv-blackburnslaver",
-    "name": "Shackle Chuck",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackburnSlaver/ChainShot/GA_VV_BlackburnSlaver_ChainShot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackburnSlaver_MeleeAutoAttack",
-    "parentId": "vv-blackburnslaver",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackburnSlaver/GA_VV_BlackburnSlaver_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackburnSlaver_ProximityChain",
-    "parentId": "vv-blackburnslaver",
-    "name": "Barbed Chain",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "always",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackburnSlaver/GA_VV_BlackburnSlaver_ProximityChain.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_VV_BlackmistCutthroat_Backstab",
     "parentId": "vv-blackmistcutthroat",
     "name": "Backstab",
@@ -34439,710 +33143,6 @@
     "descriptionTokens": []
   },
   {
-    "id": "GA_VV_BlackmistShadow_MagicSlam",
-    "parentId": "vv-blackmistshadow",
-    "name": "Shadow Slam",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistShadow/MagicSlam/GA_VV_BlackmistShadow_MagicSlam.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackmistShadow_MeleeAutoAttack",
-    "parentId": "vv-blackmistshadow",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistShadow/GA_VV_BlackmistShadow_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackmistShadow_RunePuzzle",
-    "parentId": "vv-blackmistshadow",
-    "name": "Dark Ritual",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "never",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistShadow/RunePuzzle/GA_VV_BlackmistShadow_RunePuzzle.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackmistWhisperer_AoeDebuff",
-    "parentId": "vv-blackmistwhisperer",
-    "name": "Blinding Fear",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistWhisperer/AoeDebuff/GA_VV_BlackmistWhisperer_AoeDebuff.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackmistWhisperer_CastProjectile",
-    "parentId": "vv-blackmistwhisperer",
-    "name": "Shadow Bolt",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistWhisperer/CastProjectile/GA_VV_BlackmistWhisperer_CastProjectile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackmistWhisperer_MeleeAutoAttack",
-    "parentId": "vv-blackmistwhisperer",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistWhisperer/GA_VV_BlackmistWhisperer_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BlackmistWhisperer_Silence",
-    "parentId": "vv-blackmistwhisperer",
-    "name": "Silence",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BlackmistWhisperer/Silence/GA_VV_BlackmistWhisperer_Silence.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_AutoAttack",
-    "parentId": "vv-bosschilgar",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_AutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_IceSpike",
-    "parentId": "vv-bosschilgar",
-    "name": "Grasping Pillar",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/IceSpike/GA_VV_BossChilgar_IceSpike.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_LinearProjectiles",
-    "parentId": "vv-bosschilgar",
-    "name": "Freezing Flood",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_LinearProjectiles.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_Shared_Orb_Explode",
-    "parentId": "vv-bosschilgar",
-    "name": "(CUT) Tidal Explosion",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_Shared_Orb_Explode.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_Shared_Orb_MoveToBoss",
-    "parentId": "vv-bosschilgar",
-    "name": "(CUT) Move to Body",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_Shared_Orb_MoveToBoss.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_Shared_Orb_PulsingDamage",
-    "parentId": "vv-bosschilgar",
-    "name": "(CUT) Tidal Pulse",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_Shared_Orb_PulsingDamage.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_SpawnAdds",
-    "parentId": "vv-bosschilgar",
-    "name": "Tidal Presence",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_SpawnAdds.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_SwirlProjectile",
-    "parentId": "vv-bosschilgar",
-    "name": "Arctic Winds",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_SwirlProjectile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossChilgar_TankSoakAoe",
-    "parentId": "vv-bosschilgar",
-    "name": "Glacial Slam",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_TankSoakAoe.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_CastDotAura",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Burning Aura",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/DotAura/GA_VV_BossFrostTroll_CastDotAura.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_CastStationaryDot",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Freezing Aura",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/StationaryDot/GA_VV_BossFrostTroll_CastStationaryDot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_ChangeAura",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Elemental Shift",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/ChangeAura/GA_VV_BossFrostTroll_ChangeAura.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_DotAuraPassive",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Burning",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/DotAura/GA_VV_BossFrostTroll_DotAuraPassive.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_IceTomb",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Ice Tomb",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/IceTomb/GA_VV_BossFrostTroll_IceTomb.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_MeleeAutoAttack",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/MeleeAutoAttack/GA_VV_BossFrostTroll_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_SingleTargetDot",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Frost Bite",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/SingleTargetDot/GA_VV_BossFrostTroll_SingleTargetDot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_StationaryDotPassive",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Freezing",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/StationaryDot/GA_VV_BossFrostTroll_StationaryDotPassive.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossFrostTroll_Stomp",
-    "parentId": "vv-bossfrosttroll",
-    "name": "Blazing Slam",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossFrostTroll/Stomp/GA_VV_BossFrostTroll_Stomp.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonFire_CastDotAura",
-    "parentId": "vv-bosskaldursonfire",
-    "name": "Burning Aura",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonFire/DotAura/GA_VV_BossKaldursonFire_CastDotAura.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonFire_DotAuraPassive",
-    "parentId": "vv-bosskaldursonfire",
-    "name": "Burning Aura",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonFire/DotAura/GA_VV_BossKaldursonFire_DotAuraPassive.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonFire_MeleeAutoAttack",
-    "parentId": "vv-bosskaldursonfire",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonFire/MeleeAutoAttack/GA_VV_BossKaldursonFire_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonFire_Stomp",
-    "parentId": "vv-bosskaldursonfire",
-    "name": "Blazing Slam",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonFire/Stomp/GA_VV_BossKaldursonFire_Stomp.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonIce_CastStationaryDot",
-    "parentId": "vv-bosskaldursonice",
-    "name": "Freezing Aura",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonIce/StationaryDot/GA_VV_BossKaldursonIce_CastStationaryDot.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonIce_IceSpikes",
-    "parentId": "vv-bosskaldursonice",
-    "name": "Ice Spikes",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonIce/IceSpikes/GA_VV_BossKaldursonIce_IceSpikes.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonIce_IceTomb",
-    "parentId": "vv-bosskaldursonice",
-    "name": "Ice Tomb",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonIce/IceTomb/GA_VV_BossKaldursonIce_IceTomb.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonIce_MeleeAutoAttack",
-    "parentId": "vv-bosskaldursonice",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonIce/MeleeAutoAttack/GA_VV_BossKaldursonIce_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonIce_SlowAura",
-    "parentId": "vv-bosskaldursonice",
-    "name": "Freezing Aura",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonIce/SlowAura/GA_VV_BossKaldursonIce_SlowAura.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossKaldursonIce_StationaryDotPassive",
-    "parentId": "vv-bosskaldursonice",
-    "name": "Freezing Aura",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossKaldursonIce/StationaryDot/GA_VV_BossKaldursonIce_StationaryDotPassive.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_ChanneledAoeDamage",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Channel Ritual",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/ChanneledAoeDamage/GA_VV_BossVikingMystic_ChanneledAoeDamage.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_ChanneledAoeDamageWithLines",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Channel Ritual",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/ChanneledAoeDamage/GA_VV_BossVikingMystic_ChanneledAoeDamageWithLines.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_CrossLines",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Shadow Conduit",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/CrossLines/GA_VV_BossVikingMystic_CrossLines.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_GoBackToPhase1",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Ritual's End",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/GA_VV_BossVikingMystic_GoBackToPhase1.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_MeleeAutoAttack",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/GA_VV_BossVikingMystic_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_RunePuzzle",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Darkness Falls",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/GA_VV_BossVikingMystic_RunePuzzle.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_StartPhase2",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Dark Ritual",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/GA_VV_BossVikingMystic_StartPhase2.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_TankNuke",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Abyssal Offering",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/GA_VV_BossVikingMystic_TankNuke.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_BossVikingMystic_TeleportAttack",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Revelation",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/GA_VV_BossVikingMystic_TeleportAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_VV_ColdbrineFiend_CastBigProjectile",
     "parentId": "vv-coldbrinefiend",
     "name": "Icy Annihilation",
@@ -35191,70 +33191,6 @@
     "descriptionTokens": []
   },
   {
-    "id": "GA_VV_CravenHiisi_AttachedAttack",
-    "parentId": "vv-cravenhiisi",
-    "name": "Bonk Noggin",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/CravenHiisi/GA_VV_CravenHiisi_AttachedAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_CravenHiisi_Bleed",
-    "parentId": "vv-cravenhiisi",
-    "name": "Craven Wound",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/CravenHiisi/GA_VV_CravenHiisi_Bleed.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_CravenHiisi_JumpAttack",
-    "parentId": "vv-cravenhiisi",
-    "name": "Jump 'n Bonk",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/CravenHiisi/GA_VV_CravenHiisi_JumpAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_CravenHiisi_MeleeAutoAttack",
-    "parentId": "vv-cravenhiisi",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/CravenHiisi/GA_VV_CravenHiisi_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
     "id": "GA_VV_FrenziedLooter_MeleeAutoAttack",
     "parentId": "vv-frenziedlooter",
     "name": "Attack",
@@ -35280,102 +33216,6 @@
     "liveStatus": "live",
     "images": [],
     "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/IcebitePillager/GA_VV_IcebitePillager_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_IcebiteReaver_HasteBuff",
-    "parentId": "vv-icebitereaver",
-    "name": "Frostbitten Strength",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/IcebiteReaver/HasteBuff/GA_VV_IcebiteReaver_HasteBuff.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_IcebiteReaver_MeleeAutoAttack",
-    "parentId": "vv-icebitereaver",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/IcebiteReaver/GA_VV_IcebiteReaver_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_IcebiteReaver_Slam",
-    "parentId": "vv-icebitereaver",
-    "name": "Glacial Sunder",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/IcebiteReaver/Slam/GA_VV_IcebiteReaver_Slam.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_SootstainedArsonist_Cone",
-    "parentId": "vv-sootstainedarsonist",
-    "name": "Flame Blast",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/SootstainedArsonist/Cone/GA_VV_SootstainedArsonist_Cone.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_SootstainedArsonist_LobProjectile",
-    "parentId": "vv-sootstainedarsonist",
-    "name": "Big Oogha Flame",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/SootstainedArsonist/LobProjectile/GA_VV_SootstainedArsonist_LobProjectile.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "GA_VV_SootstainedArsonist_MeleeAutoAttack",
-    "parentId": "vv-sootstainedarsonist",
-    "name": "Attack",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/SootstainedArsonist/GA_VV_SootstainedArsonist_MeleeAutoAttack.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -38157,7 +35997,7 @@
     "id": "GA_Warmaster_Passive_Talent_BouncyProjectile_FirstHitAoeDamageDebuff",
     "parentId": "warmaster",
     "name": "Razor Crash",
-    "description": "The first hit of your <rt.absorb>Shield Throw</> triggers explosion of metal, <rt.warning>dealing damage equal to 40% of the hit that triggered it</> to the target and up to 7 additional nearby enemies.\r\n\r\n<rt.effect>Razor Shrapnel</> applies <rt.effect>Agonizing Wound</> to targets, reducing the damage they deal to you by 20% for 5 seconds.",
+    "description": "The first hit of your <rt.absorb>Shield Throw</> triggers explosion of metal, <rt.warning>dealing damage equal to 40% of the hit that triggered it</> to the target and up to 11 additional nearby enemies.\r\n\r\n<rt.effect>Razor Shrapnel</> applies <rt.effect>Agonizing Wound</> to targets, reducing the damage they deal to you by 20% for 5 seconds.",
     "baseCooldownSeconds": null,
     "castInterruptibility": "unknown",
     "liveStatus": "live",
@@ -38392,15 +36232,15 @@
     "descriptionTokens": []
   },
   {
-    "id": "mf-bossnecrolord:GA_MF_BossNecrolord_DeathCast",
-    "parentId": "mf-bossnecrolord",
-    "name": "Godrot Eclipse",
+    "id": "nf-bossferalist:GA_PR_BossPirateCaptain_Spin",
+    "parentId": "nf-bossferalist",
+    "name": "Soulpowder Cyclone",
     "description": null,
     "baseCooldownSeconds": null,
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/DeathCast/GA_MF_BossNecrolord_DeathCast.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/PirateRaid/BossPirateCaptain/Spin/GA_PR_BossPirateCaptain_Spin.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -38408,15 +36248,15 @@
     "descriptionTokens": []
   },
   {
-    "id": "mf-bossnecrolord:GA_MF_BossNecrolord_SummonTotem",
-    "parentId": "mf-bossnecrolord",
-    "name": "Bloodstone Totem",
+    "id": "nf-druidferalist:GA_PR_BossPirateCaptain_Spin",
+    "parentId": "nf-druidferalist",
+    "name": "Soulpowder Cyclone",
     "description": null,
     "baseCooldownSeconds": null,
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/SummonTotem/GA_MF_BossNecrolord_SummonTotem.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/PirateRaid/BossPirateCaptain/Spin/GA_PR_BossPirateCaptain_Spin.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -38424,31 +36264,15 @@
     "descriptionTokens": []
   },
   {
-    "id": "mf-bossunicorn:GA_MF_BossNecrolord_DeathCast",
-    "parentId": "mf-bossunicorn",
-    "name": "Godrot Eclipse",
+    "id": "pr-bosspiratecaptain:GA_PR_BossPirateCaptain_Spin",
+    "parentId": "pr-bosspiratecaptain",
+    "name": "Soulpowder Cyclone",
     "description": null,
     "baseCooldownSeconds": null,
     "castInterruptibility": "unknown",
     "liveStatus": "live",
     "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/DeathCast/GA_MF_BossNecrolord_DeathCast.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "mf-bossunicorn:GA_MF_BossNecrolord_SummonTotem",
-    "parentId": "mf-bossunicorn",
-    "name": "Bloodstone Totem",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/MythicForest/BossNecrolord/SummonTotem/GA_MF_BossNecrolord_SummonTotem.uasset",
+    "sourcePath": "fellowship/Content/Abilities/NPC/PirateRaid/BossPirateCaptain/Spin/GA_PR_BossPirateCaptain_Spin.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null
@@ -38481,38 +36305,6 @@
     "liveStatus": "live",
     "images": [],
     "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BigBloodElemental/MeleeAutoAttack/GA_ST_BigBloodElemental_MeleeAutoAttack.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "vv-blackmistwhisperer:GA_VV_BossVikingMystic_TransferableDebuff",
-    "parentId": "vv-blackmistwhisperer",
-    "name": "Blinding Fear",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/GA_VV_BossVikingMystic_TransferableDebuff.uasset",
-    "actionProfile": {
-      "castTimeSeconds": null,
-      "channelTimeSeconds": null
-    },
-    "descriptionTokens": []
-  },
-  {
-    "id": "vv-bossvikingmystic:GA_VV_BossVikingMystic_TransferableDebuff",
-    "parentId": "vv-bossvikingmystic",
-    "name": "Blinding Fear",
-    "description": null,
-    "baseCooldownSeconds": null,
-    "castInterruptibility": "unknown",
-    "liveStatus": "live",
-    "images": [],
-    "sourcePath": "fellowship/Content/Abilities/NPC/VikingVillage/BossVikingMystic/GA_VV_BossVikingMystic_TransferableDebuff.uasset",
     "actionProfile": {
       "castTimeSeconds": null,
       "channelTimeSeconds": null

@@ -1,3 +1,4 @@
+const CURRENT_BUILD=JSON.parse(fs.readFileSync(new URL('../data/manifest.json',import.meta.url))).buildId;
 import test from 'node:test';
 import {PROTOCOL_VERSION} from '../collaboration/room-protocol.js';
 import {connectionConfig} from '../collaboration/connection-config.js';
@@ -8,8 +9,8 @@ import {createRoomSession} from '../collaboration/room-manager.js';
 import {decodeMessage,encodeMessage,envelope,newRoomCode,roomCode,displayCode,MAX_BYTES} from '../collaboration/room-protocol.js';
 const dungeons=JSON.parse(fs.readFileSync('data/dungeons.json')),enemies=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
 const dungeon=dungeons.find(d=>d.mapImages.length===1),options={dungeon,enemies,role:'player'};
-const resolveOptions=i=>{assert.equal(i.dungeonId,dungeon.id);assert.equal(i.buildId,'test');return options;};
-function seed(){const doc=createRouteDocument({name:'Room route',buildId:'test',dungeonId:dungeon.id},options);doc.execute({type:'add-pull',id:'first'});const packet=doc.exportSnapshot();doc.dispose();return packet;}
+const resolveOptions=i=>{assert.equal(i.dungeonId,dungeon.id);assert.equal(i.buildId,CURRENT_BUILD);return options;};
+function seed(){const doc=createRouteDocument({name:'Room route',buildId:CURRENT_BUILD,dungeonId:dungeon.id},options);doc.execute({type:'add-pull',id:'first'});const packet=doc.exportSnapshot();doc.dispose();return packet;}
 function storage(){const packets=new Map(),rooms=new Map();return {
   async load(id){return packets.get(id);},async loadRoom(id){return rooms.get(id);},async saveRoom(id,value){rooms.set(id,structuredClone(value));},
   bind(doc){packets.set(doc.identity.routeId,doc.exportSnapshot());const stop=doc.subscribeUpdates(()=>packets.set(doc.identity.routeId,doc.exportSnapshot()));return {async flush(){},async dispose(){stop();}};},
@@ -40,7 +41,7 @@ test('Joining and switching rooms wait for the selected dungeon geometry',async 
   waiting.get(dungeon.id)();await until(()=>guest.document);
   assert.equal(guest.document.canonical(),host.document.canonical());
   const other=dungeons.find(d=>d.id!==dungeon.id);
-  const next=createRouteDocument({name:'Other dungeon',buildId:'test',dungeonId:other.id},{dungeon:other,enemies,role:'player'});
+  const next=createRouteDocument({name:'Other dungeon',buildId:CURRENT_BUILD,dungeonId:other.id},{dungeon:other,enemies,role:'player'});
   const packet=next.exportSnapshot();next.dispose();
   await host.switchDocument(packet);
   await until(()=>waiting.has(other.id));assert.equal(guest.document.identity.dungeonId,dungeon.id);
@@ -183,8 +184,8 @@ test('Cursors are transient, bound to the peer and suppressed for spectators',as
   await host.leave();assert.equal(guest.cursors().length,0);assert.equal(viewer.cursors().length,0);
 });
 
-function dungeonSwitchOptions(identity){assert.equal(identity.buildId,'test');return {dungeon:dungeons.find(d=>d.id===identity.dungeonId),enemies,role:'player'};}
-function nextDungeonPacket(){const target=dungeons.find(d=>d.id!==dungeon.id),doc=createRouteDocument({name:'Another dungeon',buildId:'test',dungeonId:target.id},{dungeon:target,enemies,role:'player'});doc.execute({type:'add-pull',id:'new-first'});const packet=doc.exportSnapshot();doc.dispose();return packet;}
+function dungeonSwitchOptions(identity){assert.equal(identity.buildId,CURRENT_BUILD);return {dungeon:dungeons.find(d=>d.id===identity.dungeonId),enemies,role:'player'};}
+function nextDungeonPacket(){const target=dungeons.find(d=>d.id!==dungeon.id),doc=createRouteDocument({name:'Another dungeon',buildId:CURRENT_BUILD,dungeonId:target.id},{dungeon:target,enemies,role:'player'});doc.execute({type:'add-pull',id:'new-first'});const packet=doc.exportSnapshot();doc.dispose();return packet;}
 test('Only the creator switches dungeons; sessions persist, spectators follow, old routes and edits are isolated',async t=>{
   const net=network(),hostStore=storage(),guestStore=storage(),archives=[],host=await member(t,net,{initialPacket:seed(),storage:hostStore,resolveOptions:dungeonSwitchOptions,onArchive:async view=>archives.push(view)}),guest=await member(t,net,{storage:guestStore,resolveOptions:dungeonSwitchOptions}),viewer=await member(t,net,{role:'spectator',resolveOptions:dungeonSwitchOptions});
   await until(()=>guest.document&&viewer.document&&host.state().connected===2);

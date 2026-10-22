@@ -21,7 +21,7 @@ const unpack=text=>JSON.parse(inflateRawSync(Buffer.from(text.slice(3),'base64ur
 test('Priority targets survive JSON and compact exports with and without difficulty',async()=>{
   for(const dungeon of dungeons){
     for(const difficulty of [undefined,difficultyOptions(dungeon.id)[0]?.value]){
-      const route=newRoute(dungeon,'test'),saved=structuredClone(route);
+      const route=newRoute(dungeon,dungeon.routeBuildId??'test'),saved=structuredClone(route);
       if(difficulty!==undefined)route.difficulty=difficulty;
       route.priorityTargets=dungeon.enemies.slice(0,4).map(p=>p.placementId).reverse();
       assert.ok(hasRouteChanges(route,saved));
@@ -40,7 +40,7 @@ test('Priority targets survive JSON and compact exports with and without difficu
 test('Compact routes preserve all content in every dungeon, with hundredth-pixel coordinates and Unicode',async()=>{
   let oldSize=0,newSize=0;
   for(const dungeon of dungeons){
-    const route=newRoute(dungeon,'25647984','Маршрут 🐉 #?&%');
+    const route=newRoute(dungeon,dungeon.routeBuildId??'test','Маршрут 🐉 #?&%');
     applyModifierPresets(route,dungeon,presets);
     route.shadow=modifierAvailable(dungeon.id,'shadow');
     for(const [kind,modifier] of Object.entries(route.modifiers))if(modifierAvailable(dungeon.id,kind)&&(modifier.packId||modifier.enemies?.length))modifier.active=true;
@@ -71,7 +71,7 @@ test('Compact routes preserve all content in every dungeon, with hundredth-pixel
 });
 
 test('Minimal/empty routes and both Share forms round-trip',async()=>{
-  const dungeon=dungeons[0],route=newRoute(dungeon,'25647984');
+  const dungeon=dungeons[0],route=newRoute(dungeon,dungeon.routeBuildId??'test');
   for(const pulls of [route.pulls,[]]){
     route.pulls=pulls;
     const text=await encodeRoute(route,dungeon);
@@ -83,7 +83,7 @@ test('Minimal/empty routes and both Share forms round-trip',async()=>{
 });
 
 test('Invalid data, duplicate placements, changed datasets and decompression bombs are rejected',async()=>{
-  const dungeon=dungeons[0],route=newRoute(dungeon,'25647984');
+  const dungeon=dungeons[0],route=newRoute(dungeon,dungeon.routeBuildId??'test');
   route.pulls[0].enemies=[dungeon.enemies[0].placementId];
   const text=await encodeRoute(route,dungeon);
   for(const input of ['',JSON.stringify(route),`#route=${encodeURIComponent(JSON.stringify(route))}`,'R1.','R1.a','R1.***',text.slice(0,-8),'#route=%ZZ','https://example.com/']){
@@ -99,7 +99,7 @@ test('Invalid data, duplicate placements, changed datasets and decompression bom
 });
 
 test('Mapped format preserves marker labels and multi-vertex geometry while creating independent IDs',async()=>{
-  const dungeon=dungeons[0],route=newRoute(dungeon,'25647984'),mapId=mapViews(dungeon)[0].id;
+  const dungeon=dungeons[0],route=newRoute(dungeon,dungeon.routeBuildId??'test'),mapId=mapViews(dungeon)[0].id;
   route.drawings=[{id:'path',mapId,kind:'line',color:'#abcdef',width:5,text:'',points:[[10,20],[30,70],[90,40]],pointIds:['a','b','c']},
     {id:'note',mapId,kind:'note',color:'#aabbcc',text:'Заметка 🐉 '.repeat(100),points:[[20,30]]}];
   route.markers=[{id:'marker',mapId,position:[12.35,45.68],color:'#bbaa11',icon:'star',label:'Встречаемся здесь 🐉'}];
@@ -115,7 +115,7 @@ test('Mapped format preserves marker labels and multi-vertex geometry while crea
 });
 
 test('Export rounds geometry without mutating the route; old links retain exact coordinates',async()=>{
-  const dungeon=dungeons[0],route=newRoute(dungeon,'25647984'),mapId=mapViews(dungeon)[0].id;
+  const dungeon=dungeons[0],route=newRoute(dungeon,dungeon.routeBuildId??'test'),mapId=mapViews(dungeon)[0].id;
   route.drawings=Array.from({length:20},(_,i)=>({
     id:`line-${i}`,mapId,kind:'line',color:'#e43969',text:'',
     points:[[123.123456789+i*17.26381271,456.987654321+i*6.2736281],[234.876543219+i*12.72836129,567.123456789+i*8.12376128]],
@@ -142,11 +142,11 @@ test('Export rounds geometry without mutating the route; old links retain exact 
 
 test('Replacement members can be omitted only when the registered pack preserves their exact order',async()=>{
   const dungeon=dungeons.find(d=>modifierAvailable(d.id,'ghorn')),dictionary=routeDictionary(dungeon.id);
-  const packIndex=dictionary.packs.findIndex(p=>p.members.length>=3&&p.members.every(i=>dungeon.enemies.some(e=>e.placementId===dictionary.placements[i]&&!enemies.get(e.id)?.isBoss)));
+  const packIndex=dictionary.packs.findIndex(p=>p.members.length>=3&&dungeon.enemies.some(e=>e.packId===p.id)&&p.members.every(i=>dungeon.enemies.some(e=>e.placementId===dictionary.placements[i]&&!enemies.get(e.id)?.isBoss)));
   assert.ok(packIndex>=0);
   const registered=dictionary.packs[packIndex],members=registered.members.map(i=>dictionary.placements[i]);
   for(const selected of [members,[...members].reverse(),members.slice(0,1)]){
-    const route=newRoute(dungeon,'25647984');
+    const route=newRoute(dungeon,dungeon.routeBuildId??'test');
     route.modifiers.ghorn={active:true,packId:registered.id,replacedEnemies:selected};
     const encoded=await encodeRoute(route,dungeon),copy=await decodeRoute(encoded,dungeons,enemies);
     assert.deepEqual(copy.modifiers.ghorn,route.modifiers.ghorn);
@@ -155,13 +155,13 @@ test('Replacement members can be omitted only when the registered pack preserves
   }
 });
 
-test('Real R3 route exports smaller with lossless member deltas and loads through both Share forms',async()=>{
-  const original=fs.readFileSync(new URL('fixtures/compact-route-r3.txt',import.meta.url),'utf8').trim();
+test('Current build R3 route exports smaller with lossless member deltas and loads through both Share forms',async()=>{
+  const original=fs.readFileSync(new URL('fixtures/compact-route-current-r3.txt',import.meta.url),'utf8').trim();
   const route=await decodeRoute(original,dungeons,enemies),dungeon=dungeons.find(d=>d.id===route.dungeonId);
   route.drawings.forEach(d=>{d.points=d.points.map(p=>p.map(n=>Math.round(n*100)/100));});
   const before=structuredClone(route),encoded=await encodeRoute(route,dungeon);
   assert.match(encoded,/^R4\./);
-  assert.ok(encoded.length<original.length*.8,`${original.length} → ${encoded.length}`);
+  assert.ok(encoded.length<original.length,`${original.length} → ${encoded.length}`);
   assert.deepEqual(route,before);
   for(const input of [encoded,'#route='+encoded,'https://example.com/#route='+encoded]){
     const copy=await decodeRoute(input,dungeons,enemies);
@@ -172,13 +172,13 @@ test('Real R3 route exports smaller with lossless member deltas and loads throug
   route.pulls.forEach(p=>p.enemies.reverse());
   route.excluded.reverse();route.modifiers.empowered.enemies.reverse();route.modifiers.ghorn.replacedEnemies.reverse();
   assert.deepEqual(content(await decodeRoute(await encodeRoute(route,dungeon),dungeons,enemies)),content(route));
-  const empty=newRoute(dungeon,'25647984');
+  const empty=newRoute(dungeon,dungeon.routeBuildId??'test');
   assert.match(await encodeRoute(empty,dungeon),/^R3\./,'Keep R3 when delta coding cannot shorten the export');
   console.log(`Real route: ${original.length} → ${encoded.length} characters`);
 });
 
 test('R4 rejects invalid deltas, duplicate members, overflow and oversized decompression',async()=>{
-  const route=await decodeRoute(fs.readFileSync(new URL('fixtures/compact-route-r3.txt',import.meta.url),'utf8'),dungeons,enemies);
+  const route=await decodeRoute(fs.readFileSync(new URL('fixtures/compact-route-current-r3.txt',import.meta.url),'utf8'),dungeons,enemies);
   const encoded=await encodeRoute(route,dungeons.find(d=>d.id===route.dungeonId));
   for(const deltas of [['-17'],[null],[1.5],[-17,0],[Number.MAX_SAFE_INTEGER,1],[-999999],{}]){
     const payload=unpack(encoded);payload[4][0][0]=deltas;

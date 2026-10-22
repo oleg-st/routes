@@ -1,46 +1,6 @@
 // Generated from installed-game PlayerStart actors; flag = party spawn centroid.
-export const mapStartBuildId="25647984";
+export const mapStartBuildId="26122410";
 export const mapStarts={
-  "Level.ID.DemonicRitual": {
-    "worldPosition": {
-      "x": -10488.18725,
-      "y": 12389.914249999998,
-      "z": 2652.1323
-    },
-    "mapImageId": "Level.ID.DemonicRitual:T_Map_Demonicritual_Start",
-    "mapPosition": {
-      "x": 0.6771749508928572,
-      "y": 0.5889793089285714
-    },
-    "sources": [
-      "/Game/dungeons/DemonicRitual/DemonicRitual.1740",
-      "/Game/dungeons/DemonicRitual/DemonicRitual.1741",
-      "/Game/dungeons/DemonicRitual/DemonicRitual.1742",
-      "/Game/dungeons/DemonicRitual/DemonicRitual.1743"
-    ],
-    "spawnPoints": [
-      {
-        "x": -10505.627,
-        "y": 12323.148,
-        "z": 2652.1323
-      },
-      {
-        "x": -10469.26,
-        "y": 12463.648,
-        "z": 2652.1323
-      },
-      {
-        "x": -10540.224,
-        "y": 12187.042,
-        "z": 2652.1323
-      },
-      {
-        "x": -10437.638,
-        "y": 12585.819,
-        "z": 2652.1323
-      }
-    ]
-  },
   "Level.ID.DesertDunes": {
     "worldPosition": {
       "x": -19960.4785,
@@ -53,10 +13,10 @@ export const mapStarts={
       "y": 0.7006203500000001
     },
     "sources": [
-      "/Game/dungeons/DesertDunes/DesertDunes.1674",
-      "/Game/dungeons/DesertDunes/DesertDunes.1675",
-      "/Game/dungeons/DesertDunes/DesertDunes.1676",
-      "/Game/dungeons/DesertDunes/DesertDunes.1677"
+      "/Game/dungeons/DesertDunes/DesertDunes.1668",
+      "/Game/dungeons/DesertDunes/DesertDunes.1669",
+      "/Game/dungeons/DesertDunes/DesertDunes.1670",
+      "/Game/dungeons/DesertDunes/DesertDunes.1671"
     ],
     "spawnPoints": [
       {
@@ -93,10 +53,10 @@ export const mapStarts={
       "y": 0.8783097962962965
     },
     "sources": [
-      "/Game/dungeons/ElfMines/ElfMines.1293",
-      "/Game/dungeons/ElfMines/ElfMines.1294",
-      "/Game/dungeons/ElfMines/ElfMines.1295",
-      "/Game/dungeons/ElfMines/ElfMines.1296"
+      "/Game/dungeons/ElfMines/ElfMines.1281",
+      "/Game/dungeons/ElfMines/ElfMines.1282",
+      "/Game/dungeons/ElfMines/ElfMines.1283",
+      "/Game/dungeons/ElfMines/ElfMines.1284"
     ],
     "spawnPoints": [
       {
@@ -133,10 +93,10 @@ export const mapStarts={
       "y": 0.9070671113207547
     },
     "sources": [
-      "/Game/dungeons/FrozenKingdom/FrozenKingdom.1647",
-      "/Game/dungeons/FrozenKingdom/FrozenKingdom.1648",
-      "/Game/dungeons/FrozenKingdom/FrozenKingdom.1649",
-      "/Game/dungeons/FrozenKingdom/FrozenKingdom.1650"
+      "/Game/dungeons/FrozenKingdom/FrozenKingdom.1531",
+      "/Game/dungeons/FrozenKingdom/FrozenKingdom.1532",
+      "/Game/dungeons/FrozenKingdom/FrozenKingdom.1533",
+      "/Game/dungeons/FrozenKingdom/FrozenKingdom.1534"
     ],
     "spawnPoints": [
       {
@@ -161,46 +121,6 @@ export const mapStarts={
       }
     ]
   },
-  "Level.ID.IceCave": {
-    "worldPosition": {
-      "x": 10803.66325,
-      "y": -5716.309799999999,
-      "z": 1424.5389
-    },
-    "mapImageId": "Level.ID.IceCave:T_Map_IceCave_StartArea",
-    "mapPosition": {
-      "x": 0.4442491229508197,
-      "y": 0.8290737950819674
-    },
-    "sources": [
-      "/Game/dungeons/IceCave/IceCave.1103",
-      "/Game/dungeons/IceCave/IceCave.1104",
-      "/Game/dungeons/IceCave/IceCave.1105",
-      "/Game/dungeons/IceCave/IceCave.1106"
-    ],
-    "spawnPoints": [
-      {
-        "x": 10766.822,
-        "y": -5682.505,
-        "z": 1424.3188
-      },
-      {
-        "x": 10693.142,
-        "y": -5614.8945,
-        "z": 1424.2589
-      },
-      {
-        "x": 10840.504,
-        "y": -5750.1147,
-        "z": 1424.3165
-      },
-      {
-        "x": 10914.185,
-        "y": -5817.725,
-        "z": 1425.2614
-      }
-    ]
-  },
   "Level.ID.MoorCastle": {
     "worldPosition": {
       "x": -34331.159,
@@ -213,10 +133,10 @@ export const mapStarts={
       "y": 0.9812230185185185
     },
     "sources": [
-      "/MoorCastle/Levels/MoorCastle.319",
-      "/MoorCastle/Levels/MoorCastle.320",
-      "/MoorCastle/Levels/MoorCastle.321",
-      "/MoorCastle/Levels/MoorCastle.322"
+      "/MoorCastle/Levels/MoorCastle.329",
+      "/MoorCastle/Levels/MoorCastle.330",
+      "/MoorCastle/Levels/MoorCastle.331",
+      "/MoorCastle/Levels/MoorCastle.332"
     ],
     "spawnPoints": [
       {
@@ -241,46 +161,6 @@ export const mapStarts={
       }
     ]
   },
-  "Level.ID.MythicForest": {
-    "worldPosition": {
-      "x": -22350.6195,
-      "y": 22078.279,
-      "z": 1667.684925
-    },
-    "mapImageId": "Level.ID.MythicForest:T_Map_MythicForest_Global",
-    "mapPosition": {
-      "x": 0.6254399374999999,
-      "y": 0.8596521270833334
-    },
-    "sources": [
-      "/Game/dungeons/MythicForest/MythicForest.1541",
-      "/Game/dungeons/MythicForest/MythicForest.1542",
-      "/Game/dungeons/MythicForest/MythicForest.1543",
-      "/Game/dungeons/MythicForest/MythicForest.1544"
-    ],
-    "spawnPoints": [
-      {
-        "x": -22312.057,
-        "y": 22110.105,
-        "z": 1666.0077
-      },
-      {
-        "x": -22234.932,
-        "y": 22173.758,
-        "z": 1665.1139
-      },
-      {
-        "x": -22389.182,
-        "y": 22046.453,
-        "z": 1668.7324
-      },
-      {
-        "x": -22466.307,
-        "y": 21982.8,
-        "z": 1670.8857
-      }
-    ]
-  },
   "Level.ID.NightPatrol": {
     "worldPosition": {
       "x": -32293.612500000003,
@@ -293,10 +173,10 @@ export const mapStarts={
       "y": 0.8869456612903227
     },
     "sources": [
-      "/Game/dungeons/NightPatrol/NightPatrol.841",
-      "/Game/dungeons/NightPatrol/NightPatrol.842",
-      "/Game/dungeons/NightPatrol/NightPatrol.843",
-      "/Game/dungeons/NightPatrol/NightPatrol.844"
+      "/Game/dungeons/NightPatrol/NightPatrol.1243",
+      "/Game/dungeons/NightPatrol/NightPatrol.1244",
+      "/Game/dungeons/NightPatrol/NightPatrol.1245",
+      "/Game/dungeons/NightPatrol/NightPatrol.1246"
     ],
     "spawnPoints": [
       {
@@ -333,10 +213,10 @@ export const mapStarts={
       "y": 0.866343062051282
     },
     "sources": [
-      "/Game/dungeons/PirateRaid/PirateRaid.2703",
-      "/Game/dungeons/PirateRaid/PirateRaid.2704",
-      "/Game/dungeons/PirateRaid/PirateRaid.2705",
-      "/Game/dungeons/PirateRaid/PirateRaid.2706"
+      "/Game/dungeons/PirateRaid/PirateRaid.2679",
+      "/Game/dungeons/PirateRaid/PirateRaid.2680",
+      "/Game/dungeons/PirateRaid/PirateRaid.2681",
+      "/Game/dungeons/PirateRaid/PirateRaid.2682"
     ],
     "spawnPoints": [
       {
@@ -361,86 +241,6 @@ export const mapStarts={
       }
     ]
   },
-  "Level.ID.SandTomb": {
-    "worldPosition": {
-      "x": -10204.55975,
-      "y": -20600.2955,
-      "z": -457.25742
-    },
-    "mapImageId": "Level.ID.SandTomb:T_ST_Map_Exterior_01",
-    "mapPosition": {
-      "x": 0.29125412500000003,
-      "y": 0.9364088544117647
-    },
-    "sources": [
-      "/SandTomb/Levels/SandTomb.550",
-      "/SandTomb/Levels/SandTomb.551",
-      "/SandTomb/Levels/SandTomb.552",
-      "/SandTomb/Levels/SandTomb.553"
-    ],
-    "spawnPoints": [
-      {
-        "x": -10239.915,
-        "y": -20564.941,
-        "z": -457.25742
-      },
-      {
-        "x": -10310.626,
-        "y": -20494.23,
-        "z": -457.25742
-      },
-      {
-        "x": -10169.204,
-        "y": -20635.65,
-        "z": -457.25742
-      },
-      {
-        "x": -10098.494,
-        "y": -20706.361,
-        "z": -457.25742
-      }
-    ]
-  },
-  "Level.ID.ShipGraveyard": {
-    "worldPosition": {
-      "x": 15056.308,
-      "y": 8165.134625000001,
-      "z": 464.0833375
-    },
-    "mapImageId": "Level.ID.ShipGraveyard:T_Map_ShipGraveyard_01",
-    "mapPosition": {
-      "x": 0.5397986615625,
-      "y": 0.04786951499999995
-    },
-    "sources": [
-      "/Game/dungeons/ShipGraveyard/ShipGraveyard.2359",
-      "/Game/dungeons/ShipGraveyard/ShipGraveyard.2360",
-      "/Game/dungeons/ShipGraveyard/ShipGraveyard.2361",
-      "/Game/dungeons/ShipGraveyard/ShipGraveyard.2362"
-    ],
-    "spawnPoints": [
-      {
-        "x": 15079.726,
-        "y": 8120.957,
-        "z": 464.08334
-      },
-      {
-        "x": 15127.77,
-        "y": 8033.2495,
-        "z": 464.08334
-      },
-      {
-        "x": 15032.487,
-        "y": 8209.097,
-        "z": 464.08337
-      },
-      {
-        "x": 14985.249,
-        "y": 8297.235,
-        "z": 464.0833
-      }
-    ]
-  },
   "Level.ID.SnowPeak": {
     "worldPosition": {
       "x": -20430.192000000003,
@@ -453,10 +253,10 @@ export const mapStarts={
       "y": 0.862400328888889
     },
     "sources": [
-      "/SnowPeak/Levels/SnowPeak.209",
-      "/SnowPeak/Levels/SnowPeak.210",
-      "/SnowPeak/Levels/SnowPeak.211",
-      "/SnowPeak/Levels/SnowPeak.212"
+      "/SnowPeak/Levels/SnowPeak.225",
+      "/SnowPeak/Levels/SnowPeak.226",
+      "/SnowPeak/Levels/SnowPeak.227",
+      "/SnowPeak/Levels/SnowPeak.228"
     ],
     "spawnPoints": [
       {
@@ -493,10 +293,10 @@ export const mapStarts={
       "y": 0.9750063333333333
     },
     "sources": [
-      "/Game/dungeons/SpiderForest/SpiderForest.1375",
-      "/Game/dungeons/SpiderForest/SpiderForest.1376",
-      "/Game/dungeons/SpiderForest/SpiderForest.1377",
-      "/Game/dungeons/SpiderForest/SpiderForest.1378"
+      "/Game/dungeons/SpiderForest/SpiderForest.922",
+      "/Game/dungeons/SpiderForest/SpiderForest.923",
+      "/Game/dungeons/SpiderForest/SpiderForest.924",
+      "/Game/dungeons/SpiderForest/SpiderForest.925"
     ],
     "spawnPoints": [
       {
@@ -521,11 +321,51 @@ export const mapStarts={
       }
     ]
   },
+  "Level.ID.TreeVillage": {
+    "worldPosition": {
+      "x": -22540.17375,
+      "y": 3768.7947750000003,
+      "z": 4982.887925
+    },
+    "mapImageId": "Level.ID.TreeVillage:T_TreeVillage_Global",
+    "mapPosition": {
+      "x": 0.46089258468750005,
+      "y": 0.9421898537500001
+    },
+    "sources": [
+      "/TreeVillage/Levels/TreeVillage.807",
+      "/TreeVillage/Levels/TreeVillage.808",
+      "/TreeVillage/Levels/TreeVillage.809",
+      "/TreeVillage/Levels/TreeVillage.810"
+    ],
+    "spawnPoints": [
+      {
+        "x": -22565.715,
+        "y": 3811.7815,
+        "z": 4982.888
+      },
+      {
+        "x": -22617.482,
+        "y": 3897.3386,
+        "z": 4982.8877
+      },
+      {
+        "x": -22514.633,
+        "y": 3725.808,
+        "z": 4982.888
+      },
+      {
+        "x": -22462.865,
+        "y": 3640.251,
+        "z": 4982.888
+      }
+    ]
+  },
   "Level.ID.UrrakMarkets": {
     "worldPosition": {
       "x": -16144.18375,
       "y": 2347.7234,
-      "z": 3977.6318
+      "z": 3597.9055
     },
     "mapImageId": "Level.ID.UrrakMarkets:T_Map_UrrakMarkets_Global",
     "mapPosition": {
@@ -533,71 +373,31 @@ export const mapStarts={
       "y": 0.9332446443181818
     },
     "sources": [
-      "/Game/dungeons/UrrakMarkets/UrrakMarkets.2862",
-      "/Game/dungeons/UrrakMarkets/UrrakMarkets.2863",
-      "/Game/dungeons/UrrakMarkets/UrrakMarkets.2864",
-      "/Game/dungeons/UrrakMarkets/UrrakMarkets.2865"
+      "/Game/dungeons/UrrakMarkets/UrrakMarkets.2548",
+      "/Game/dungeons/UrrakMarkets/UrrakMarkets.2549",
+      "/Game/dungeons/UrrakMarkets/UrrakMarkets.2550",
+      "/Game/dungeons/UrrakMarkets/UrrakMarkets.2551"
     ],
     "spawnPoints": [
       {
         "x": -16105.092,
         "y": 2378.8975,
-        "z": 3977.6318
+        "z": 3597.9055
       },
       {
         "x": -16026.908,
         "y": 2441.2456,
-        "z": 3977.6318
+        "z": 3597.9055
       },
       {
         "x": -16183.275,
         "y": 2316.5493,
-        "z": 3977.6318
+        "z": 3597.9055
       },
       {
         "x": -16261.46,
         "y": 2254.2012,
-        "z": 3977.6318
-      }
-    ]
-  },
-  "Level.ID.VikingVillageAttack": {
-    "worldPosition": {
-      "x": 22648.164,
-      "y": 22614.265499999998,
-      "z": 3510.077175
-    },
-    "mapImageId": "Level.ID.VikingVillageAttack:T_Map_VV_Market",
-    "mapPosition": {
-      "x": 0.5946053499999999,
-      "y": 0.14637628571428576
-    },
-    "sources": [
-      "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.1706",
-      "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.1707",
-      "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.1708",
-      "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.1709"
-    ],
-    "spawnPoints": [
-      {
-        "x": 22729.01,
-        "y": 22573.652,
-        "z": 3511.8208
-      },
-      {
-        "x": 22873.738,
-        "y": 22500.945,
-        "z": 3516.5225
-      },
-      {
-        "x": 22587.746,
-        "y": 22644.617,
-        "z": 3506.9404
-      },
-      {
-        "x": 22402.162,
-        "y": 22737.848,
-        "z": 3505.025
+        "z": 3597.9055
       }
     ]
   }

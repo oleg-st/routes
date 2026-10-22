@@ -3,31 +3,35 @@ import {drawingMap} from '../map-views.js';
 import {hasCustomPullName} from '../route-model.js';
 import {modifierAvailable,restrictRouteModifiers} from '../game-scoring.js';
 import {checkDifficulty} from '../difficulty.js';
-import {historicPack,replacementMembers} from '../data/route-dictionary.js';
+import {replacementMembers} from '../data/route-dictionary.js';
+import {assertRouteBuild} from '../route-build.js';
+import {modifierPlacementIds,nativeModifierSpawns} from '../data/modifier-spawns.js';
 import {SCHEMA_VERSION, MODIFIERS, invariant, record, id, string, role, assertPlayer, uuid, canonical} from './route-schema.js';
 import {executeCommand} from './route-commands.js';
 import {selectRoute, canonicalRoute} from './route-selectors.js';
 
 function makeContext(identity, {dungeon, enemies}) {
   invariant(dungeon?.id === identity.dungeonId && enemies instanceof Map, 'Matching dungeon and enemy catalogue required.');
+  assertRouteBuild(identity,dungeon);
   const placements = new Map(dungeon.enemies.map(p => [p.placementId, p]));
   const bosses = new Set(dungeon.enemies.filter(p => enemies.get(p.id)?.isBoss).map(p => p.placementId));
   return {
     bosses,
     dungeonId:dungeon.id,
+    modifierIds:kind=>modifierPlacementIds(dungeon.id,kind),
+    modifierSpawns(kind,members){const spawns=nativeModifierSpawns(dungeon.id,kind,new Set(members));return spawns.length?spawns:[{placementId:'modifier:'+kind,replacedEnemies:members}];},
     difficulty(value){return checkDifficulty(dungeon.id,value);},
     modifier(kind) {invariant(modifierAvailable(dungeon.id,kind),'Modifier unavailable in this dungeon.');},
     map(key) {invariant(drawingMap(dungeon, key), 'Unknown map.');},
     originalMob(key) {invariant(placements.has(key), 'Unknown enemy placement.');},
     mob(key, doc) {
       if (placements.has(key)) return;
-      invariant(['modifier:ghorn', 'modifier:witch'].includes(key) &&
-        doc.getMap('modifiers').get(key.slice(9))?.get('replacement')?.packId, 'Unknown enemy placement.');
+      invariant(modifierPlacementIds(dungeon.id).includes(key) &&
+        doc.getMap('modifiers').get(key.split(':')[1])?.get('replacement')?.packId, 'Unknown enemy placement.');
     },
     pack(key, members) {
       const pack = dungeon.enemies.filter(p => p.packId === key);
-      const archived=historicPack(dungeon,key);
-      invariant(pack.length||archived?.length,'Choose a non-boss pack.');
+      invariant(pack.length,'Choose a non-boss pack.');
       const selected=replacementMembers(dungeon,key,members);
       invariant(selected.length&&selected.every(id=>placements.has(id)&&!bosses.has(id)), 'Choose a non-boss pack.');
       if (members !== undefined) invariant(members.length && members.every(member => placements.has(member) && !bosses.has(member)), 'Invalid replacement enemies.');

@@ -1,9 +1,10 @@
 import {drawingMap} from './map-views.js';
-import {migrateCombinedDrawing} from './data/combined-maps.js';
-import {placementAliases,correctDungeon} from './data/placement-corrections.js';
-import {routeDictionary,historicPack,replacementMembers,encodeMembers,decodeMembers} from './data/route-dictionary.js';
+import {correctDungeon} from './data/placement-corrections.js';
+import {routeDictionary,replacementMembers,encodeMembers,decodeMembers} from './data/route-dictionary.js';
+import {assertRouteBuild} from './route-build.js';
 import {modifierStats} from './data/game-modifier-stats.js';
 import {modifierPositions} from './data/game-modifier-positions.js';
+import {modifierPlacementIds,nativeModifierSpawns} from './data/modifier-spawns.js';
 import {shadowBaseHealth} from './data/game-difficulty.js';
 import {checkDifficulty,difficultyHealthModifiers} from './difficulty.js';
 import {modifierAvailable,restrictRouteModifiers,polymorphChicken} from './game-scoring.js';
@@ -50,15 +51,19 @@ export function applyModifierPresets(route,dungeon,presets){
   for(const kind of ['ghorn','witch']){
     const preset=row[kind],active=route.modifiers[kind].active;
     route.modifiers[kind]=preset?{active,packId:preset.packId,replacedEnemies:[...preset.replacedEnemies]}:{active:false,packId:null};
-    if(!preset){for(const pull of route.pulls)pull.enemies=pull.enemies.filter(id=>id!==modifierId(kind));route.excluded=route.excluded.filter(id=>id!==modifierId(kind));route.priorityTargets=(route.priorityTargets||[]).filter(id=>id!==modifierId(kind));}
+    if(!preset){const ids=new Set(modifierPlacementIds(dungeon.id,kind));for(const pull of route.pulls)pull.enemies=pull.enemies.filter(id=>!ids.has(id));route.excluded=route.excluded.filter(id=>!ids.has(id));route.priorityTargets=(route.priorityTargets||[]).filter(id=>!ids.has(id));}
   }
 }
 export function toggleModifier(route,kind){
   if(!modifierAvailable(route.dungeonId,kind))return;
   const mod=route.modifiers[kind];mod.active=!mod.active;
-  if(kind!=='empowered'&&mod.active&&!route.pulls.some(p=>p.enemies.includes(modifierId(kind)))){
-    const pull=route.pulls.find(p=>p.enemies.some(id=>mod.replacedEnemies?.includes(id)));
-    if(pull)assignEnemies(route,pull.id,[modifierId(kind)],{toggle:false});
+  if(kind!=='empowered'&&mod.active){
+    const spawns=nativeModifierSpawns(route.dungeonId,kind,new Set(mod.replacedEnemies??[]));
+    for(const spawn of spawns.length?spawns:[{placementId:modifierId(kind),replacedEnemies:mod.replacedEnemies??[]}]){
+      if(route.pulls.some(p=>p.enemies.includes(spawn.placementId)))continue;
+      const pull=route.pulls.find(p=>p.enemies.some(id=>spawn.replacedEnemies.includes(id)));
+      if(pull)assignEnemies(route,pull.id,[spawn.placementId],{toggle:false});
+    }
   }
 }
 export function clearRoute(route){route.pulls=[];route.drawings=[];route.excluded=[];route.priorityTargets=[];route.shadow=false;route.modifiers=defaultModifiers();}
@@ -85,6 +90,11 @@ export function effectivePositions(route,dungeon){
   for(const kind of ['ghorn','witch']){
     const mod=route.modifiers?.[kind];if(!mod?.active||!mod.packId)continue;
     const members=new Set(replacementMembers(dungeon,mod.packId,mod.replacedEnemies));
+    const spawns=nativeModifierSpawns(dungeon.id,kind,members);
+    if(spawns.length){
+      for(const spawn of spawns)result.push({id:modifierId(kind),placementId:spawn.placementId,packId:spawn.placementId,modifier:kind,worldPosition:spawn.worldPosition,mapImageId:spawn.mapImageId,mapPosition:spawn.mapPosition});
+      continue;
+    }
     const pack=dungeon.enemies.filter(p=>members.has(p.placementId)),first=pack.find(p=>p.mapPosition);
     const mapped=pack.filter(p=>p.mapPosition&&p.mapImageId===first?.mapImageId);
     if(!pack.length)continue;
@@ -163,9 +173,10 @@ export function setReplacement(route,kind,packId,dungeon,enemies){
   if(route.modifiers[other].packId===packId)throw new Error('This pack already has a replacement.');
   route.modifiers[kind]={active:true,packId,replacedEnemies:pack.map(p=>p.placementId)};
   // A changed replacement is deliberately unassigned until selected on the map.
-  for(const p of route.pulls)p.enemies=p.enemies.filter(id=>id!==modifierId(kind));
-  route.excluded=route.excluded.filter(id=>id!==modifierId(kind));
-  route.priorityTargets=(route.priorityTargets||[]).filter(id=>id!==modifierId(kind));
+  const ids=new Set(modifierPlacementIds(dungeon.id,kind));
+  for(const p of route.pulls)p.enemies=p.enemies.filter(id=>!ids.has(id));
+  route.excluded=route.excluded.filter(id=>!ids.has(id));
+  route.priorityTargets=(route.priorityTargets||[]).filter(id=>!ids.has(id));
 }
 export function shadowTimeline(route,dungeon,enemies){
   let cumulative=0,previous=0;
@@ -173,8 +184,8 @@ export function shadowTimeline(route,dungeon,enemies){
 }
 export function scorePull(pull,dungeon,enemies,route){
   const positions=new Map(effectivePositions(route,dungeon).map(e=>[e.placementId,e]));
-  const inactive=new Set([...replacedIds(route,dungeon),...['ghorn','witch'].filter(k=>!route.modifiers?.[k]?.active).map(modifierId)]);
-  const aliases=placementAliases[dungeon.id]||{},canonical=id=>aliases[id]||id;
+  const inactive=new Set([...replacedIds(route,dungeon),...['ghorn','witch'].filter(k=>!route.modifiers?.[k]?.active).flatMap(k=>modifierPlacementIds(dungeon.id,k))]);
+  const canonical=id=>id;
   const excluded=new Set(route.excluded.map(canonical));
   let score=0,orbScore=0,unknown=0,bosses=0,count=0;
   for(const id of new Set(pull.enemies.map(canonical))){
@@ -238,12 +249,11 @@ export function validateRoute(value,dungeons,enemies){
   if(!value||![1,2,3].includes(value.version))throw new Error('Unsupported format. Use a route JSON file from this planner (version 1, 2 or 3).');
   const dungeon=dungeons.find(d=>d.id===value.dungeonId);
   if(!dungeon)throw new Error('This dungeon is not available in the current dataset.');
+  assertRouteBuild(value,dungeon);
   if(value.difficulty!==undefined)checkDifficulty(dungeon.id,value.difficulty);
   if(!Array.isArray(value.pulls)||value.pulls.length>(value.version===3?10000:500))throw new Error('Invalid pull list.');
-  const aliases=placementAliases[dungeon.id]||{},canonical=id=>aliases[id]||id;
-  // Keep retired references round-trippable. They remain unknown in scoring,
-  // so an old route cannot silently gain credit for a removed actor.
-  const original=new Set([...dungeon.enemies.map(e=>e.placementId),...(dungeon.retiredPlacementIds??[])]),known=new Set([...original,...['ghorn','witch'].map(modifierId)]),seen=new Set(),rawSeen=new Set(),pullIds=new Set();
+  const canonical=id=>id;
+  const original=new Set(dungeon.enemies.map(e=>e.placementId)),known=new Set([...original,...modifierPlacementIds(dungeon.id)]),seen=new Set(),rawSeen=new Set(),pullIds=new Set();
   const modifiers=defaultModifiers();
   if(value.modifiers!==undefined){
     if(!value.modifiers||typeof value.modifiers!=='object')throw new Error('Invalid modifiers.');
@@ -254,7 +264,7 @@ export function validateRoute(value,dungeons,enemies){
       if(m.packId!==null&&typeof m.packId!=='string')throw new Error('Invalid replacement pack.');
       if(m.active&&!m.packId)throw new Error('Choose a replacement pack.');
       if(!m.packId&&m.replacedEnemies!==undefined)throw new Error('A replacement needs a pack.');
-      if(m.packId&&!historicPack(dungeon,m.packId)&&!dungeon.enemies.some(p=>p.packId===m.packId))throw new Error('Invalid replacement pack.');
+      if(m.packId&&!dungeon.enemies.some(p=>p.packId===m.packId))throw new Error('Invalid replacement pack.');
       if(m.replacedEnemies!==undefined&&!Array.isArray(m.replacedEnemies))throw new Error('Invalid replacement enemies.');
       const members=m.packId?replacementMembers(dungeon,m.packId,m.replacedEnemies):[];
       if(m.packId&&(!members.length||!members.every(id=>original.has(canonical(id)))))throw new Error('Invalid replacement pack.');
@@ -264,7 +274,7 @@ export function validateRoute(value,dungeons,enemies){
     }
     if(modifiers.ghorn.replacedEnemies?.some(id=>modifiers.witch.replacedEnemies?.includes(id)))throw new Error('Replacement enemies must be different.');
   }
-  for(const k of ['ghorn','witch'])if(!modifiers[k].packId)known.delete(modifierId(k));
+  for(const k of ['ghorn','witch'])if(!modifiers[k].packId)for(const id of modifierPlacementIds(dungeon.id,k))known.delete(id);
   const text=(v,max=200)=>{if(value.version===3&&typeof v==='string'&&v.length>max)throw new Error('Route text is too long.');return typeof v==='string'?v.slice(0,max):'';};
   const pulls=value.pulls.map((p,i)=>{
     if(!p||!Array.isArray(p.enemies))throw new Error('Invalid pull.');
@@ -273,7 +283,7 @@ export function validateRoute(value,dungeons,enemies){
       if(rawSeen.has(rawId))throw new Error('An enemy is assigned to multiple pulls. Import cancelled.');
       rawSeen.add(rawId);const id=canonical(rawId);
       if(!known.has(id))throw new Error('The route contains enemy placements from another dataset. Import cancelled.');
-      if(seen.has(id))continue; // Distinct legacy aliases refer to one encounter.
+      if(seen.has(id))continue;
       seen.add(id);ids.push(id);
     }
     const id=text(p.id)||uid();if(pullIds.has(id))throw new Error('Duplicate pull ID.');pullIds.add(id);
@@ -286,7 +296,6 @@ export function validateRoute(value,dungeons,enemies){
   const drawings=(value.drawings||[]).slice(0,value.version===3?10000:500).map(d=>{
     if(!d||!Array.isArray(d.points)||d.points.length<1||d.points.length>5000)throw new Error('Invalid drawing.');
     if(!d.points.every(p=>Array.isArray(p)&&p.length===2&&p.every(n=>Number.isFinite(n)&&Math.abs(n)<100000)))throw new Error('Invalid drawing coordinates.');
-    d=migrateCombinedDrawing(d,dungeon);
     if(!drawingMap(dungeon,d.mapId)||!d.points.every(p=>p.every(n=>Number.isFinite(n)&&Math.abs(n)<100000)))throw new Error('Invalid drawing.');
     if(['portal','invis'].includes(d.kind)&&d.points.length!==2)throw new Error('Portal and invisibility paths need two endpoints.');
     const kind=['line','portal','invis','note'].includes(d.kind)?d.kind:'line';
@@ -300,7 +309,7 @@ export function validateRoute(value,dungeons,enemies){
   if(value.markers!==undefined&&(!Array.isArray(value.markers)||value.markers.length>(value.version===3?10000:500)))throw new Error('Invalid markers.');
   const markers=(value.markers||[]).map(m=>{
     if(!m||!Array.isArray(m.position)||m.position.length!==2||!m.position.every(n=>Number.isFinite(n)&&Math.abs(n)<100000))throw new Error('Invalid marker position.');
-    const projected=migrateCombinedDrawing({mapId:m.mapId,points:[m.position]},dungeon);
+    const projected={mapId:m.mapId,points:[m.position]};
     if(!drawingMap(dungeon,projected.mapId))throw new Error('Invalid marker map.');
     const id=text(m.id)||uid();if(markerIds.has(id))throw new Error('Duplicate marker ID.');markerIds.add(id);
     return {id,mapId:projected.mapId,position:projected.points[0],color:/^#[0-9a-f]{6}$/i.test(m.color)?m.color:COLORS[0],icon:text(m.icon,50)||'pin',label:text(m.label,value.version===3?1_000_000:4000)};
@@ -308,7 +317,7 @@ export function validateRoute(value,dungeons,enemies){
   if(value.excluded!==undefined&&(!Array.isArray(value.excluded)||!value.excluded.every(id=>known.has(canonical(id)))))throw new Error('Invalid excluded enemies.');
   if(value.priorityTargets!==undefined&&(!Array.isArray(value.priorityTargets)||!value.priorityTargets.every(id=>known.has(canonical(id)))))throw new Error('Invalid priority targets.');
   const bossIds=new Set(dungeon.enemies.filter(p=>enemies?.get(p.id)?.isBoss).map(p=>p.placementId));
-  for(const kind of ['ghorn','witch'])if(enemies?.get(modifierId(kind))?.isBoss)bossIds.add(modifierId(kind));
+  for(const kind of ['ghorn','witch'])if(enemies?.get(modifierId(kind))?.isBoss)for(const id of modifierPlacementIds(dungeon.id,kind))bossIds.add(id);
   return restrictRouteModifiers({version:2,id:text(value.id)||uid(),buildId:text(value.buildId),dungeonId:dungeon.id,...(value.difficulty===undefined?{}:{difficulty:value.difficulty}),name:englishDefaultLabel(text(value.name))||'Imported route',shadow:value.shadow===true,modifiers,pulls,drawings,...(markers.length?{markers}:{}),excluded:[...new Set((value.excluded||[]).map(canonical))].filter(id=>!bossIds.has(id)),priorityTargets:[...new Set((value.priorityTargets||[]).map(canonical))]});
 }
 
@@ -353,7 +362,7 @@ async function transform(bytes,Stream){
   return output;
 }
 async function dictionary(dungeon){
-  const placements=[...new Set([...dungeon.enemies.map(e=>e.placementId),'modifier:ghorn','modifier:witch'])].sort();
+  const placements=[...new Set([...dungeon.enemies.map(e=>e.placementId),...modifierPlacementIds(dungeon.id)])].sort();
   const packs=[...new Set(dungeon.enemies.map(e=>e.packId).filter(Boolean))].sort();
   const bytes=new TextEncoder().encode(JSON.stringify([placements,packs]));
   const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes));
@@ -376,6 +385,7 @@ function memberDeltas(values,decode=false){
 }
 
 export async function encodeRoute(route,dungeon){
+  assertRouteBuild(route,dungeon);
   route=structuredClone(route);
   const extended=Boolean(route.priorityTargets?.length||route.difficulty!==undefined||route.markers?.length||route.pulls.length>500||route.drawings.length>500||route.pulls.some(p=>p.note?.length>4000)||route.drawings.some(d=>d.icon||d.kind==='line'&&d.points.length>2||d.text?.length>500));
   if(extended)validateRoute({...route,version:3},[dungeon]); // Reject oversized content; never silently truncate a CRDT view.
@@ -443,10 +453,10 @@ async function expandRoute(payload,dungeons,extended=false,mapped=false,deltas=f
   const [id,buildId,fingerprint,name,pulls,drawings,excluded,mods,shadow,markers,difficulty,priorityTargets]=tuple(payload,extended?12:9);
   const dungeon=dungeons.find(d=>d.id===`Level.ID.${id}`);
   if(!dungeon)throw new Error('This dungeon is not available in the current dataset.');
+  assertRouteBuild({buildId},dungeon);
   let {placements,packs,fingerprint:expected}=await dictionary(dungeon);
-  const permanent=routeDictionary(dungeon.id),legacy=permanent?.legacy.find(row=>row.fingerprint===fingerprint);
+  const permanent=routeDictionary(dungeon.id);
   if(mapped){if(fingerprint!=='m1'||!permanent)throw new Error('Unknown route mapping.');}
-  else if(legacy){placements=legacy.placements.map(i=>permanent.placements[i]);packs=legacy.packs.map(i=>permanent.packs[i].id);}
   else if(fingerprint!==expected)throw new Error('This route uses a different enemy dataset. Import cancelled to avoid selecting incorrect enemies.');
   const ids=values=>mapped?decodeMembers(permanent,deltas?memberDeltas(values,true):values):list(values).map(index=>itemAt(placements,index));
   if(!Array.isArray(pulls)||pulls.length>(extended?10000:500))throw invalid();
@@ -456,7 +466,7 @@ async function expandRoute(payload,dungeons,extended=false,mapped=false,deltas=f
     const [active,value,replaced]=tuple(row,i===0?2:3);
     if(i===0)modifiers.empowered={active:flag(active),enemies:ids(value)};
     else {
-      const registered=value==null?null:mapped?itemAt(permanent.packs,value):legacy?permanent.packs[itemAt(legacy.packs,value)]:null;
+      const registered=value==null?null:mapped?itemAt(permanent.packs,value):null;
       modifiers[['empowered','ghorn','witch'][i]]={active:flag(active),packId:value==null?null:registered?.id??itemAt(packs,value),
         ...(replaced!=null?{replacedEnemies:ids(replaced)}:registered?{replacedEnemies:registered.members.map(i=>permanent.placements[i])}:{})};
     }

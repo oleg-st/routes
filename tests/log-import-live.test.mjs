@@ -39,12 +39,16 @@ test('Single-layer imports draw invisibility between the recorded positions inst
 });
 test('Ambiguous relic floors omit only the marker, preserve matched enemies and report endpoint diagnostics',async()=>{
   const catalog=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
-  const dungeon=correctDungeon(JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.SandTomb'));
+  const dungeon=structuredClone(correctDungeon(JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.DesertDunes')));
+    dungeon.id='test-ambiguous-floors';
+    dungeon.mapImages=['Interior','Sanctum'].map((name,i)=>({id:name,name,path:'test.avif',width:1000,height:1000,
+      gameFrame:{bounds:[{x:i?40000:-100000,y:i?0:-100000,z:-100000},{x:100000,y:100000,z:100000}],calibration:{ox:-100000,oy:-100000,sx:200000,sy:200000}}}));
+    dungeon.enemies=dungeon.enemies.map(p=>({...p,mapImageId:'Interior'}));
   const boss=dungeon.enemies.find(p=>catalog.get(p.id).isBoss);
   const resources=p=>({x:p.x,y:p.y,hitPoints:100,maxHitPoints:100});
   const input={complete:true,reportCode:'example',fight:{...fight,name:dungeon.name,startTime:0,endTime:10000,dungeonPulls:[{id:1,startTime:4000,endTime:9000}]},
     actors:[{id:1,type:'Player'},{id:2,type:'NPC',subType:'Boss',gameID:catalog.get(boss.id).gameId}],events:[
-      // Y4W8HvtykGhVqrC9/1: these X/Y coordinates fit both Interior and Sanctum.
+      // Both synthetic floors contain these coordinates.
       {fight:5,timestamp:0,type:'mapchange',mapName:''},
       {fight:5,timestamp:1000,type:'cast',sourceID:1,abilityGameID:1506,sourceResources:resources({x:7048.25,y:49158.25})},
       {fight:5,timestamp:1000,type:'applydebuff',targetID:1,abilityGameID:1002176,targetResources:resources({x:4113,y:48253})},

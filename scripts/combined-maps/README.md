@@ -4,6 +4,42 @@ These recipes generate the UI's **Full map** (formerly Combined). The Method com
 
 Each module is the complete stitching recipe for one dungeon. The shared renderer is `../prepare-combined-maps.mjs`; its image inputs are textures from our installed-game export, resolved through `data/game-image-sources.json`. A recipe may opt into Full map coordinate metadata; no Method background image is read.
 
+For visual authoring, run `npm run maps:editor` and open `http://127.0.0.1:4180`. It loads fresh exported map layers before a public rebuild, supports moving/scaling, tracing contours, undo/redo and exporting an independent recipe. Save drafts under `private/combined-map-drafts/`, then run `npm run maps -- --recipe=private/combined-map-drafts/IceCave.mjs --preview` to generate a private SVG without changing published maps. See [the patch workflow](../GAME-PATCHES.md) for review and registration steps.
+
+## Первая версия полноценного редактора — разбор рецептов, 2026-10-21
+
+Это требования к следующей версии, а не описание уже готового UI. Текущий редактор умеет только перенос, масштаб, порядок слоёв, контур и жёсткие вырезы. Его `model.mjs::draftRecipe` и сохранение в `map-editor-server.mjs` отбрасывают большинство возможностей рабочего формата. Существующий сложный рецепт пока нельзя безопасно открыть и сохранить через этот упрощённый формат.
+
+### Что показали существующие карты
+
+- **Wyrmheart (`wyrmheart.mjs`)**: два слоя, отдельные контуры игровой области и окружения, вырезы и разная мягкость переходов. `seamFeather: 2`, `contextSeamFeather: 9/14`, `context.feather: 15` показывают, что дороге и окружающему лесу нужны разные края. Дополнительно используются локальная заливка `textureFills`, перенесённый фрагмент гор `decorations`, фон из образца `backgroundTexture` и общая рамка `frame`.
+- **Drakheim (`drakheim.mjs`)**: три слоя с фактическими масштабами изображения около 4.00, 3.79 и 3.08; порядок переднего плана `[0,2,1]`; у церковного слоя три выреза. Есть отдельный `terrainOutline`, общий фон и рамка. Остаток двойной стены/снежного шва исправлен внешней растровой заплаткой `canvasRepairs` — одно размытие маски не исправляет противоречащий рисунок.
+- **Regath (`regath.mjs`)**: два слоя с фактическими масштабами около 7.52 и 4.29. Это полезный контроль совмещения фрагментов с заметно разным масштабом.
+
+У этих рецептов `referenceFrame: 'Full'`: поля `at/scale/join` не определяют итоговое изображение. Для разбора брать `artworkTransform`, а для координат — отдельную калибровку/`coordinateTransform`. Нельзя импортировать только `scale` и ожидать воспроизведения готовой карты.
+
+### Пять рабочих инструментов
+
+| Задача | Управление в редакторе | Возможности формата и необходимое дополнение |
+| --- | --- | --- |
+| 1. Совместить 2+ карты | Перетаскивание, масштаб за углы с сохранением пропорций, точный ввод, порядок слоёв, скрытие/блокировка слоя, прозрачность только выбранного слоя. Две пары общих ориентиров для подгонки масштаба и смещения без вращения; показывать остаточную ошибку. | `at`, `scale`, `join`, `offset`; для сложных существующих рецептов отдельно сохранить `artworkTransform` и координатную привязку. Изменение декора не должно незаметно двигать мобов. |
+| 2. Убрать перекрывающиеся куски | Прямоугольное и полигональное выделение; редактирование вершин существующего контура; список вырезов с выбором/удалением; восстановление скрытого участка. Маска сохраняется отдельно от исходной картинки. | `outline`, `terrainOutline`, `exclude`, `context.outline`, `context.exclude`. Дать простой выбор «карта», «окружение», «оба»; не заставлять пользователя разбираться в SVG. |
+| 3. Обработать стык | Мягкость края отдельно для игровой части и окружения; управляемый размер перехода. «Заплатка из карты»: выбрать чистый фрагмент, положить на шов, изменить размер и смягчить края; можно вернуть под стык часть нижнего слоя. Просмотр без выделений и сравнение до/после. | `seamFeather`, `contextSeamFeather`, `context.feather`, `restore`, `overlays`/`decorations`. В v1 мягкость вырезов общая для слоя; отдельная мягкость каждого выреза потребует расширения формата. Внешние `canvasRepairs` сохранять при загрузке, не заменять автоматически размитием. |
+| 4. Сделать общую рамку | Задать границы итогового холста и отступ от карты; включить/выключить рамку; выбрать слой-источник орнамента; настроить толщину полос, размер углов и мягкость. Старые рамки исходных слоёв убирать масками. | `frame.corner`, `frame.edge`, `frame.featherCorners` уже есть. Сейчас рендерер всегда берёт рамку из `source-0` и рисует её; выбор источника, отключение и управляемые размеры/отступы холста нужно добавить. Числа углов/полос не должны скрывать игровые области. |
+| 5. Заполнить пустоты | Общая подложка из выбранного образца бумаги/снега/воды; масштаб, прозрачность и размытие образца. Локальное полигональное заполнение пустоты образцом с мягкими краями; показывать повторяющийся узор при увеличении. | `backgroundTexture` для всего холста, `textureFills` для локальных областей, `decorations` для крупных фрагментов ландшафта. Заливки лежат под картами и не меняют игровые координаты. |
+
+Поворот и деформация не требуются для перечисленных операций v1: в нынешнем редакторе и независимом координатном формате их нет. Если на новой карте без них не совпадут ориентиры, это отдельная доработка проекции и экспорта, а не только добавление ручки вращения в UI.
+
+### Как проверить результат на существующем рецепте
+
+1. Сначала дать редактору загрузку рабочего рецепта Wyrmheart и точный просмотр текущего результата. Загрузка/сохранение без действий должна сохранять смысл всех полей, масок, фона, рамки, названия и заплаток. Неизвестные/пока не редактируемые поля сохраняются и обозначаются в интерфейсе; упрощённый экспорт не должен их терять.
+2. Для основного просмотра использовать тот же рендерер, что при сборке. Быстрые манипуляторы могут быть отдельным наложением; фон, маски и рамка должны совпадать с экспортом. Сейчас упрощённый SVG редактора этого не гарантирует.
+3. На копии Wyrmheart воспроизвести масштаб/совмещение, вырез, мягкий стык, заплатку, локальную заливку и общую рамку. На Drakheim проверить три слоя, смену порядка и несколько вырезов; отдельно сохранить существующую внешнюю repair-заплатку.
+4. Все пять инструментов проходят undo/redo, сохранение/повторную загрузку и экспорт/пробную сборку. Проверить, что декор и обработка швов не меняют положения мобов и патрулей.
+5. На новой независимой карте проверить отсутствие обязательной Full-калибровки, работу с двумя/тремя слоями разных масштабов и заполнение пустого участка. Для однослойной карты объединение пропускается; оформление фона/рамки может использоваться отдельно.
+
+Порядок реализации: без потерь открыть существующий рецепт → общий точный просмотр → удобное совмещение/маски → швы и заплатки → общий холст/рамка → общий и локальный фон. Это позволяет проверять каждый инструмент на уже принятой карте, не ожидая патча.
+
 | Recipe | Dungeon |
 | --- | --- |
 | `empyrean-sands.mjs` | Empyrean Sands |
@@ -58,11 +94,11 @@ All source coordinates use a **1024 × 512 reference frame**, regardless of the 
 - `backgroundTexture.soften`: optional blur radius for a subdued native-paper wash over the procedural paper base, avoiding conspicuous repeats when only a small clean sample is available.
 - `frame.corner` / `frame.edge`: output sizes of the original nine-slice border. Sands uses matching 5× scaling for corners and edges. `frame.featherCorners` uses the complete 64px original corner, mirrored four ways with a feathered inner mask and continuous border strips, avoiding square paper patches or cropped flourishes.
 
-Sands uses Full coordinates for all 234 mapped enemy placements and patrols. Its complete End image is registered using five visual landmarks, independently of the world-coordinate calibration. The earlier local gate deformation is removed; an explicit seam retains the Start cliffs. Gate masks and the original sun insignia are explicit parts of its recipe. The added Feidalan Gate text label is omitted to match Full. The reference positions are visual planner positions, not a claim of independently measured game accuracy.
+Sands uses the reviewed Full coordinate frame with freshly extracted enemy positions and patrols. Its complete End image is registered using five visual landmarks, independently of the world-coordinate calibration. The earlier local gate deformation is removed; an explicit seam retains the Start cliffs. Gate masks and the original sun insignia are explicit parts of its recipe. The added Feidalan Gate text label is omitted to match Full. The reference positions are visual planner positions, not a claim of independently measured game accuracy.
 
 Background changes can safely adjust context, decorations and restores. Changing `at`, `join`, `offset`, `scale`, or an outline that determines canvas bounds changes the coordinate frame: update the Combined view version and migrate existing Combined drawings before releasing such a change. Original-layer annotations and mobs use the generated source transforms. Verify both geometry and appearance; passing tests alone does not prove a seamless illustration or correct in-game transitions.
 
-Sands uses Combined-v4; the other eight maps now use Combined-v3. Previous stitched transforms and visible contours are retained in `data/combined-legacy-layouts.js`; saved drawings follow the nearest old terrain into the new layout. The original tiled v1 migration remains supported. Full and Combined annotations remain independent.
+The current rotation builds five Combined maps. Previous-build drawing migration and combined-legacy-layouts.js have been removed: route imports require the current build ID. Full and Combined annotations remain independent.
 
 ## Full-source map checklist
 

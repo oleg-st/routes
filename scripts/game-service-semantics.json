@@ -1,30 +1,39 @@
 {
   "model": "hit-capsule-cylinder-v1",
   "removalCylinderHeight": 1000,
-  "nativeSourceSha256": "f92d63e638784efb677862a66ce80558ca10b998c94566290647752003c7a8f8",
-  "polymorphLargeThresholdOverride": {
-    "status": "provisional",
-    "value": 3.3,
-    "exportedValue": 3.5,
-    "steamBuild": "25647984",
-    "reason": "User-approved estimate consistent with Medium Tombguard Reaver and Large Hollowed Corsair; the exact live threshold has not been recovered.",
-    "evidence": [
-      {"reportCode": "aVpJGQxmhLygPKXc", "fightId": 74, "sourceGameId": 175, "chicken": "medium"},
-      {"reportCode": "3dQ12FNLgv9b7KnG", "fightId": 37, "sourceGameId": 97, "chicken": "large"}
-    ]
-  },
+  "nativeSourceSha256": "f46315b847bd8bdda49b47ae229c31da9d175f683aef96a5f0175304da06d99a",
   "scripts": {
     "/Game/Modifiers/DungeonModifiers/EmpoweredMinions/BP_DungeonModifiers_EmpoweredMinions": "ec4d6d074343d1c4adc1e2c432b0aa9a7cb30bffefa38f6c703515628a45fd21",
     "/Game/Modifiers/DungeonModifiers/EmpoweredMinions/GE_DungeonModifiers_EmpoweredMinions_EmpoweredEnemyBuff": "7277bdbda48aad3b4103599c7768ba5f595fb52108773b275eb78200423d4ce1",
     "/Game/Modifiers/DungeonModifiers/Shared/BP_DM_MiniBossSpawner": "8711a4756a3942f04bed33c7a9b55a97ae78b4984642cf4a73abed8f49b060f7",
-    "/Game/Modifiers/DungeonModifiers/WinterGiant/BP_DungeonModifier_WinterGiant": "1ce3c5e866010f9c921bf863ecda516a2c4cf2b0e7a50cf183cea857ca8a8a0f",
+    "/Game/Modifiers/DungeonModifiers/WinterGiant/BP_DungeonModifier_WinterGiant": "e314dc09548483b97bad6c16d240fa33e1741cbe0cc9433befee66f8acc561a0",
     "/Game/Modifiers/DungeonModifiers/WinterWitch/BP_DungeonModifier_WinterWitch": "3ce89ad5ab1914d92acac5fcf79e10f713f2ae0b198765818c3ae2992b105163",
-    "/Game/Modifiers/DungeonModifiers/ShadowLord/GA_DungeonModifiers_ShadowLord_OrbSpawner": "6f914cf42326e4a885d2e8e5cf6a281de9adfeca95c06cb4af70d227f31a1d56",
+    "/Game/Modifiers/DungeonModifiers/ShadowLord/GA_DungeonModifiers_ShadowLord_OrbSpawner": "ee588d26d177ce0b38f49d7c0599c2c22cb167d6c7405b637e8ba90dba38b740",
     "/Game/Modifiers/DungeonModifiers/Shared/GEC_DM_CappedMaxHealth_Target": "b28297e184fa88ab32af33acfa19473e641a059b533822a8c1f3ecf95fc634c6",
-    "/Game/Abilities/RelicPowers/PolymorphTargetWithSharedCharges/GA_RelicPower_PolymorphTargetWithSharedCharges": "43e14c670b099dba00eaeb1d1567041a68442d6906e42ee367009fda6a81f77b",
+    "/Game/Abilities/RelicPowers/PolymorphTargetWithSharedCharges/GA_RelicPower_PolymorphTargetWithSharedCharges": "9fb21b9ee0b0c646963a37bd6d0e9f503d1abcc9dcf4a2fd6eb22ef94019c6a0",
     "/Game/Abilities/RelicPowers/PolymorphTargetWithSharedCharges/GE_RelicPower_PolyMorphTargetWithSharedCharges_PolymorphTarget": "bea75728fa3311ccdd0fc5f5e2bd7b8d25cc237a3852d2896d36d6e1266c1042",
-    "/Game/characters/NPC/Critters/Chicken/BP_NPC_Critter_PolymorphChickenMedium": "f509e2f5b55fb6d3703f900ae26e2de485e939b8717c7684ecf2f0f937094606",
+    "/Game/characters/NPC/Critters/Chicken/BP_NPC_Critter_PolymorphChickenMedium": "ec4ee4fbd18ae2fc35c0f3348b88707ef0d10fcee6f0d86197ae1f78979ef882",
     "/Game/characters/NPC/Critters/Chicken/AI/AIBC_Shared_PolymorphChicken": "66fdd18247181aeb9495f45e3ab81ebc274b5ddab7b7335cede7cd553c1d1b6b",
     "/Game/Abilities/NPC/Shared/PolymorphChicken/GA_Shared_PolymorphChicken_Spawn": "f546157ffca906fa1bb26402e88639e2bebadb2a905cdb0b1d3fa028508399c9"
+  },
+  "review": {
+    "steamBuild": "26122410",
+    "native": {
+      "getKillScore": "0x1451539a0",
+      "getMaxHealthAtDifficulty": "0x145234de0",
+      "getDifficultyScales": "0x145232b20",
+      "cylinderCore": "0x1450f8ca0",
+      "cylinderQuery": "0x1450f18a0",
+      "cylinderFilter": "0x145246020",
+      "cylinderShape": "0x145228f50"
+    },
+    "notes": [
+      "GetKillScore, health arithmetic and cylinder routines match previous instructions after relocation.",
+      "GetDifficultyScales now initializes scales to 1 and guards a missing global; populated attribute arrays retain direct clamped difficulty indexing.",
+      "Shadow OrbSpawner changes only reflected struct size (320 to 328).",
+      "WinterGiant adds false to navigation projection in GetGiantSpawnPoint; removal cylinder Blueprint unchanged.",
+      "Polymorph activation now checks Charm readiness; chicken selection graph unchanged. Old build 3.3 estimate removed; use current exported threshold.",
+      "ChickenMedium parent export indices shifted with unchanged object names."
+    ]
   }
 }

@@ -78,15 +78,17 @@ function prepare(doc, c, context) {
         const assignments=doc.getMap('assignments'),pulls=visibleIds(doc,'pulls');
         for(const kind of ['ghorn','witch']){
           const targets=doc.getMap('modifiers').get(kind)?.get('replacement')?.replacedEnemies??[];
-          const assigned=assignments.get(`modifier:${kind}`);
+          for(const spawn of context.modifierSpawns(kind,targets)){
+          const assigned=assignments.get(spawn.placementId);
           if(!choice.modifiers.includes(kind)){
-            if(pulls.includes(assigned))for(const mob of targets)if(!pulls.includes(assignments.get(mob)))assignments.set(mob,assigned);
-            if(assigned!=null)assignments.set(`modifier:${kind}`,null);
+            if(pulls.includes(assigned))for(const mob of spawn.replacedEnemies)if(!pulls.includes(assignments.get(mob)))assignments.set(mob,assigned);
+            if(assigned!=null)assignments.set(spawn.placementId,null);
             continue;
           }
           if(pulls.includes(assigned))continue;
-          const pull=pulls.find(key=>targets.some(mob=>assignments.get(mob)===key));
-          if(pull)assignments.set(`modifier:${kind}`,pull);
+          const pull=pulls.find(key=>spawn.replacedEnemies.some(mob=>assignments.get(mob)===key));
+          if(pull)assignments.set(spawn.placementId,pull);
+          }
         }
       };
     }
@@ -191,19 +193,23 @@ function prepare(doc, c, context) {
         if (members) writeMembership(row.ensureMergeableMap('enemies'), members);
         if (replacement) {
           row.set('replacement', replacement);
-          doc.getMap('assignments').set(`modifier:${c.kind}`, null);
-          doc.getMap('excluded').set(`modifier:${c.kind}`, false);
-          doc.getMap('priorityTargets').set(`modifier:${c.kind}`, false);
+          for(const id of context.modifierIds(c.kind)){
+            doc.getMap('assignments').set(id, null);
+            doc.getMap('excluded').set(id, false);
+            doc.getMap('priorityTargets').set(id, false);
+          }
           if (!replacement.packId) row.set('active', false);
         }
         if ('active' in patch) row.set('active', patch.active);
         // Match the existing activation behavior for presets, without assigning a changed replacement.
         if (!empowered && !replacement && patch.active === true) {
-          const mobId = `modifier:${c.kind}`, assignments = doc.getMap('assignments');
+          for(const spawn of context.modifierSpawns(c.kind,row.get('replacement')?.replacedEnemies??[])){
+          const mobId = spawn.placementId, assignments = doc.getMap('assignments');
           if (!visibleIds(doc, 'pulls').includes(assignments.get(mobId))) {
-            const targets = row.get('replacement')?.replacedEnemies ?? [];
+            const targets = spawn.replacedEnemies;
             const pull = visibleIds(doc, 'pulls').find(key => targets.some(mob => assignments.get(mob) === key));
             if (pull) assignments.set(mobId, pull);
+          }
           }
         }
       };

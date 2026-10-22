@@ -55,14 +55,19 @@ for(const d of s.read('dungeons').playable){
  const row={empowered,ghorn:null,witch:null};
  for(const [kind,enumValue]of [['ghorn',0],['witch',2]]){
   const spawners=objects.filter(o=>o.type==='BP_DM_MiniBossSpawner_C'&&Number((o.properties.MiniBossType??'NewEnumerator0').match(/NewEnumerator(\d+)/)?.[1])===enumValue);
-  assert.ok(spawners.length<=1,'Multiple '+kind+' spawners need UI support');if(!spawners.length)continue;
-  const o=spawners[0],point=map(o),radius=o.properties.RemoveAddRadius,height=semantics.removalCylinderHeight;
+  if(!spawners.length)continue;
+  const spawns=spawners.map((o,index)=>{
+  const point=map(o),radius=o.properties.RemoveAddRadius,height=semantics.removalCylinderHeight;
   assert.ok(Number.isFinite(radius),'Missing removal radius');
   const members=actors.filter(a=>capsuleInCylinder(capsule(a,actorPlacement(a)),point.worldPosition,radius,height)).map(actorPlacement);
-  assert.ok(members.length,'Spawner replaces no active mobs: '+o.ref);
   assert.ok(!members.some(p=>catalog.find(e=>e.id===p.id)?.isBoss),'Spawner intersects boss: '+o.ref);
   const anchor=[...members].sort((a,b)=>Math.hypot(a.worldPosition.x-point.worldPosition.x,a.worldPosition.y-point.worldPosition.y)-Math.hypot(b.worldPosition.x-point.worldPosition.x,b.worldPosition.y-point.worldPosition.y))[0];
-  row[kind]={packId:anchor.packId,replacedEnemies:members.map(p=>p.placementId).sort(),...point,radius,height,source:o.ref};
+  return {placementId:'modifier:'+kind+(index?':'+s.object(o.ref).ActorInstanceGuid.ActorGuid.toLowerCase():''),packId:anchor?.packId??null,replacedEnemies:members.map(p=>p.placementId).sort(),...point,radius,height,source:o.ref};
+  });
+  const replacedEnemies=spawns.flatMap(p=>p.replacedEnemies);
+  assert.equal(new Set(replacedEnemies).size,replacedEnemies.length,'Overlapping mini-boss replacement zones: '+d.id);
+  assert.ok(spawns.some(p=>p.packId),'Modifier with no replacement anywhere requires an independent preset: '+d.id+' '+kind);
+  row[kind]={...spawns[0],packId:spawns.find(p=>p.packId).packId,replacedEnemies:replacedEnemies.sort(),spawns};
  }
  presets.dungeons[d.id]=row;report.dungeons.push({id:d.id,campfires:campfires[d.id].length,empowered:empowered.length,ghorn:row.ghorn?.replacedEnemies.length??0,witch:row.witch?.replacedEnemies.length??0});
 }
@@ -72,6 +77,6 @@ fs.writeFileSync(out+'/game-service-rules.js','// Generated from game effect def
 fs.writeFileSync(out+'/map-campfires.js','// Generated from installed-game respawn actors.\nexport const campfireBuildId='+JSON.stringify(s.manifest.steamBuild)+';\nexport const campfires='+JSON.stringify(campfires,null,2)+';\n');
 fs.writeFileSync(out+'/map-starts.js','// Generated from installed-game PlayerStart actors; flag = party spawn centroid.\nexport const mapStartBuildId='+JSON.stringify(s.manifest.steamBuild)+';\nexport const mapStarts='+JSON.stringify(starts,null,2)+';\n');
 fs.writeFileSync(out+'/modifier-placements.json',JSON.stringify(presets,null,2)+'\n');
-fs.writeFileSync(out+'/game-modifier-positions.js','// Generated from installed-game mini-boss spawners.\nexport const modifierPositions='+JSON.stringify(Object.fromEntries(Object.entries(presets.dungeons).map(([id,row])=>[id,Object.fromEntries(['ghorn','witch'].filter(k=>row[k]).map(k=>[k,{worldPosition:row[k].worldPosition,mapImageId:row[k].mapImageId,mapPosition:row[k].mapPosition,replacedEnemies:row[k].replacedEnemies}]))])))+';\n');
+fs.writeFileSync(out+'/game-modifier-positions.js','// Generated from installed-game mini-boss spawners.\nexport const modifierPositions='+JSON.stringify(Object.fromEntries(Object.entries(presets.dungeons).map(([id,row])=>[id,Object.fromEntries(['ghorn','witch'].filter(k=>row[k]).map(k=>[k,{worldPosition:row[k].worldPosition,mapImageId:row[k].mapImageId,mapPosition:row[k].mapPosition,replacedEnemies:row[k].replacedEnemies,spawns:row[k].spawns}]))])))+';\n');
 fs.mkdirSync('tmp/game-services',{recursive:true});fs.writeFileSync('tmp/game-services/report.json',JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report.dungeons));

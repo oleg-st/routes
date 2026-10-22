@@ -18,9 +18,9 @@ test('Published site omits layer controls and private images while preserving sa
   assert.equal(fs.readFileSync('dist/local-map-views.js','utf8'),"export {mapViews} from './map-views.js';\n");
   assert.doesNotMatch(fs.readFileSync('dist/app.js','utf8'),/background-user\.(?:png|avif)|Retouched/);
   assert.ok(!fs.existsSync('dist/images/dungeons/full'));
-  assert.equal(fs.readdirSync('dist/images/dungeons/maps').length,6);
+  assert.equal(fs.readdirSync('dist/images/dungeons/maps').length,5);
   assert.doesNotMatch(fs.readFileSync('dist/index.html','utf8'), /id="(?:floor-panel|floors|floor-panel-option|show-floor-panel)"/);
-  for(const file of ['combined-layouts.js','combined-legacy-layouts.js']){
+  for(const file of ['combined-layouts.js']){
     assert.doesNotMatch(fs.readFileSync(`dist/data/${file}`,'utf8'), /private\/|images\/dungeons\/maps\//);
   }
   assert.doesNotMatch(fs.readFileSync('dist/data/full-maps.js','utf8'), /private\/|Referenced|images\/dungeons\/full/);
@@ -35,12 +35,14 @@ test('Published site omits layer controls and private images while preserving sa
   const abilityFields=['id','parentId','name','description','castInterruptibility','baseCooldownSeconds','liveStatus'];
   const abilityView=ability=>Object.fromEntries(abilityFields.filter(key=>key in ability).map(key=>[key,ability[key]]));
   const bytes=directory=>fs.readdirSync(directory).reduce((sum,file)=>sum+fs.statSync(`${directory}/${file}`).size,0);
-  assert.ok(bytes('dist/data')<bytes('data')*.3,'Published data must be at least 70% smaller');
+  // Offset patrol columns now have distinct paths, so fewer paths can be shared.
+  assert.ok(bytes('dist/data')<4_000_000,'Published data stays within its 4 MB budget');
+  assert.ok(bytes('dist/data')<bytes('data')*.4,'Published data must be at least 60% smaller');
   const enemies = new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(enemy=>[enemy.id,enemy]));
   for (const dungeon of dungeons) {
     const publicDungeon=publicDungeons.find(d=>d.id===dungeon.id);
     assert.deepEqual(publicDungeon.enemies,dungeon.enemies,'Patrols, IDs and coordinates round-trip exactly');
-    const transferRoute=newRoute(dungeon,'test');transferRoute.pulls[0].enemies=dungeon.enemies.slice(0,5).map(e=>e.placementId);
+    const transferRoute=newRoute(dungeon,dungeon.routeBuildId??'test');transferRoute.pulls[0].enemies=dungeon.enemies.slice(0,5).map(e=>e.placementId);
     const transferred=await publishedRoutes.decodeRoute(await encodeRoute(transferRoute,dungeon),publicDungeons,publicEnemies);
     assert.deepEqual(transferred.pulls[0].enemies,transferRoute.pulls[0].enemies);
     assert.equal(publicDungeon.requiredScore,dungeon.requiredScore);
@@ -58,7 +60,7 @@ test('Published site omits layer controls and private images while preserving sa
     if (dungeon.mapImages.length === 1) continue;
     assert.equal(views[0].name, 'Full map');
     assert.equal(local[1].name, 'Referenced');
-    const route=newRoute(dungeon,'test');
+    const route=newRoute(dungeon,dungeon.routeBuildId??'test');
     route.drawings=[{id:'reference-note',mapId:local[1].id,kind:'note',points:[[100,100]],color:'#abcdef',text:'Shared reference note'}];
     for(const layer of dungeon.mapImages){
       route.drawings.push({id:layer.id,mapId:layer.id,kind:'note',points:[[layer.width/2,layer.height/2]],color:'#abcdef',text:'Original layer note'});

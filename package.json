@@ -28,7 +28,14 @@
     "test:rooms:browser": "node tests/room-browser.mjs",
     "test:cursors:browser": "node tests/cursor-transport-browser.mjs",
     "test:network:browser": "node tests/network-check-browser.mjs",
-    "data:mapping": "node scripts/update-route-mapping.mjs"
+    "data:mapping": "node scripts/update-route-mapping.mjs",
+    "patch:baseline": "node scripts/game-patch.mjs baseline",
+    "patch:plan": "node scripts/game-patch.mjs plan",
+    "patch:extract": "node scripts/game-patch.mjs extract",
+    "patch:report": "node scripts/game-patch.mjs report",
+    "patch:build": "node scripts/game-patch.mjs build",
+    "maps:editor": "node scripts/map-editor-server.mjs",
+    "test:maps:editor": "node tests/map-editor-browser.mjs"
   },
   "dependencies": {
     "@trystero-p2p/core": "0.26.0",

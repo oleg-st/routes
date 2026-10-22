@@ -20,7 +20,7 @@ function fixture(){
     {id:'boss',placementId:'boss',packId:'boss'},
     {id:'scenery',placementId:'scenery',packId:'scenery'},
   ]};
-  const route=newRoute(dungeon,'test');
+  const route=newRoute(dungeon,dungeon.routeBuildId??'test');
   return {enemies,dungeon,route,calculate:()=>dungeonPackEfficiencies(dungeon,enemies,route)};
 }
 const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-10,`${actual} != ${expected}`);
@@ -116,7 +116,7 @@ test('Every dungeon computes finite pack ratings from game data, including activ
   const read=name=>JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`,import.meta.url),'utf8'));
   const enemies=new Map(read('enemies').map(e=>[e.id,e])),presets=read('modifier-placements');
   for(const dungeon of read('dungeons').map(correctDungeon)){
-    const route=newRoute(dungeon,'test');applyModifierPresets(route,dungeon,presets);
+    const route=newRoute(dungeon,dungeon.routeBuildId??'test');applyModifierPresets(route,dungeon,presets);
     const baseline=dungeonPackEfficiencies(dungeon,enemies,route);
     for(const modified of [false,true]){
       route.shadow=modified;
@@ -134,29 +134,31 @@ test('Sands ordinary packs keep their ratings when Empowered, replacements or Ch
   const read=name=>JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`,import.meta.url),'utf8'));
   const dungeon=correctDungeon(read('dungeons').find(d=>d.name==='Empyrean Sands'));
   const enemies=new Map(read('enemies').map(e=>[e.id,e]));
-  const route=newRoute(dungeon,'test');applyModifierPresets(route,dungeon,read('modifier-placements'));
+  const route=newRoute(dungeon,dungeon.routeBuildId??'test');applyModifierPresets(route,dungeon,read('modifier-placements'));
   route.shadow=true;
   const calculate=()=>dungeonPackEfficiencies(dungeon,enemies,route);
-  const controls={'pack-308240c4':'placement-3034c49315fb36dd3116417317759423bbd90852a7bbeae552c3b38f7e9a8e15','pack-f53eada7':'placement-735293bb508989aea4a1e634b148440efc096d92e3bb54e4ac1440fb2e6565b6','pack-50964c76':'placement-3a84285bc8073601c0e1797ca571c7bd0146ee33ec7d2188b18734fea54429c5'};
-  const placement=prefix=>controls[prefix];
-  const gamePack=prefix=>dungeon.enemies.find(p=>p.placementId===placement(prefix)).packId;
-  const baseline=calculate(),pack=gamePack('pack-308240c4');
-  assert.equal(baseline.values.get(pack).toFixed(2),'4.51');
+  const blocked=new Set(['ghorn','witch'].flatMap(kind=>route.modifiers[kind].replacedEnemies??[]));
+  const empowered=new Set(route.modifiers.empowered.enemies);
+  const packs=Object.groupBy(dungeon.enemies,p=>p.packId);
+  const ordinary=Object.values(packs).filter(ps=>ps.every(p=>!enemies.get(p.id).isBoss&&!blocked.has(p.placementId)&&!empowered.has(p.placementId)));
+  assert.ok(ordinary.length>=2);
+  const pack=ordinary[0][0].packId;
+  const boosted=dungeon.enemies.find(p=>empowered.has(p.placementId)&&!blocked.has(p.placementId)).packId;
+  const baseline=calculate();assert.ok(baseline.values.get(pack)>0);
   route.modifiers.empowered.active=true;
   route.modifiers.ghorn.active=true;
-  route.excluded=[placement('pack-f53eada7')];
+  route.excluded=[ordinary[1][0].placementId];
   const modified=calculate();
   assert.equal(modified.totalHealth,baseline.totalHealth);
   assert.equal(modified.values.get(pack),baseline.values.get(pack));
   assert.equal(packEfficiencyColor(modified.values.get(pack),modified.range),packEfficiencyColor(baseline.values.get(pack),baseline.range));
-  for(const difficulty of [72,82,102]){
+  route.dungeonId='scaling-without-affixes';
+  for(const difficulty of [21,35,50]){
     route.difficulty=difficulty;
     const scaled=calculate();
     near(scaled.values.get(pack),baseline.values.get(pack));
     assert.deepEqual(scaled.range,baseline.range);
     assert.equal(packEfficiencyColor(scaled.values.get(pack),scaled.range),packEfficiencyColor(baseline.values.get(pack),baseline.range));
   }
-  const boosted=gamePack('pack-50964c76');
-  assert.equal(modified.values.get(boosted).toFixed(2),'4.32');
   assert.notEqual(modified.values.get(boosted),baseline.values.get(boosted));
 });

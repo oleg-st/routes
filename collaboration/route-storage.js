@@ -1,6 +1,5 @@
 import {LoroDoc} from 'loro-crdt';
 import {invariant} from './route-schema.js';
-const stores = ['routes', 'updates', 'drafts', 'bookmarks', 'preferences'];
 const keyOf = i => JSON.stringify([i.schemaVersion, i.routeId, i.documentId, i.dungeonId, i.buildId]);
 function merge(base, updates) {
   if (!base) return null;
@@ -123,32 +122,6 @@ export async function openRouteStorage({name = 'fellowship-route-together', inde
     },
     saveRoom(roomId, metadata) {
       return transaction(['preferences'], 'readwrite', tx=>tx.objectStore('preferences').put(structuredClone(metadata),'room:'+roomId));
-    },
-    isMigrated() {
-      return transaction(['preferences'], 'readonly', (tx, done) => {
-        tx.objectStore('preferences').get('legacyMigrated').onsuccess = e => done(e.target.result === true);
-      });
-    },
-    migrate({packets, drafts, saved, lastDungeon, nextRouteNumber}) {
-      return transaction(stores, 'readwrite', (tx, done, fail) => {
-        const prefs = tx.objectStore('preferences');
-        prefs.get('legacyMigrated').onsuccess = e => {
-          if (e.target.result) return;
-          for (const packet of packets) {
-            const table = tx.objectStore('routes');
-            table.get(packet.identity.routeId).onsuccess = e => {if (!e.target.result) table.put(packet);};
-          }
-          for (const [dungeonId, routeId] of Object.entries(drafts)) {
-            const table = tx.objectStore('drafts'); table.get(dungeonId).onsuccess = e => {if (!e.target.result) table.put(routeId, dungeonId);};
-          }
-          for (const view of saved) {
-            const table = tx.objectStore('bookmarks'); table.get(view.id).onsuccess = e => {if (!e.target.result) table.put(view);};
-          }
-          prefs.get('nextRouteNumber').onsuccess = e => prefs.put(Math.max(nextRouteNumber, Number(e.target.result) || 1), 'nextRouteNumber');
-          if (lastDungeon) prefs.get('lastDungeon').onsuccess = e => {if (!e.target.result) prefs.put(lastDungeon, 'lastDungeon');};
-          prefs.put(true, 'legacyMigrated');
-        };
-      });
     },
     bind(document, onStatus = () => {}) {
       let active = true, reading = false, writes = 0, error;

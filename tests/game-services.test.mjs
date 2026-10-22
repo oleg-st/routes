@@ -24,7 +24,7 @@ test('Service layer selection excludes ordinary enemy duplicates, keeps environm
  assert.equal(selectedServiceLevel('/Dungeon_Environment.umap',selected),true);
 });
 test('Own campfires and every remaining UI texture have game provenance',()=>{
- assert.equal(Object.values(campfires).flat().length,53);
+ assert.equal(Object.values(campfires).flat().length,34);
  const dungeons=read('dungeons');
  for(const [id,list]of Object.entries(campfires))for(const fire of list){
   assert.match(fire.source,/^\//);assert.ok(Number.isFinite(fire.worldPosition.z));
@@ -41,7 +41,7 @@ test('Native modifier markers survive sharing and replacements remain independen
  for(const d of dungeons){
   const row=presets.dungeons[d.id];assert.ok(!row.ghorn?.replacedEnemies.some(id=>row.witch?.replacedEnemies.includes(id)));
   for(const kind of ['ghorn','witch'])if(row[kind]&&modifierAvailable(d.id,kind)){
-   const route=newRoute(d,'test');applyModifierPresets(route,d,presets);toggleModifier(route,kind);
+   const route=newRoute(d,d.routeBuildId??'test');applyModifierPresets(route,d,presets);toggleModifier(route,kind);
    const copy=await decodeRoute(await encodeRoute(route,d),dungeons,catalog);
    const marker=effectivePositions(copy,d).find(p=>p.modifier===kind);
    assert.deepEqual(marker.worldPosition,modifierPositions[d.id][kind].worldPosition);

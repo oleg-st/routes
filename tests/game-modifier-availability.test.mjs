@@ -25,25 +25,20 @@ test('Availability uses exact dungeon keys and the union of difficulty rows',()=
 });
 
 test('Published availability matches the installed game table', {skip:!fs.existsSync('private/game-data/planner/tables.json')},()=>{
- const source={tables:JSON.parse(fs.readFileSync('private/game-data/planner/tables.json')),read:()=>JSON.parse(fs.readFileSync('private/game-data/planner/dungeons.json'))};
+ const source={tables:JSON.parse(fs.readFileSync('private/game-data/planner/tables.json')),read:()=>({playable:JSON.parse(fs.readFileSync('private/game-data/planner/dungeons.json')).playable.filter(d=>dungeons.some(p=>p.id===d.id))})};
  assert.deepEqual(rules.modifierAvailabilityByDungeon,gameModifierAvailability(source));
 });
 
-test('Known game assignments distinguish Pinnacle, dungeons and adventure mini-bosses',()=>{
- assert.deepEqual(Object.entries(rules.modifierAvailabilityByDungeon).filter(([,v])=>!v.shadow).map(([id])=>id),
-  ['DemonicRitual','FrozenKingdom','PirateRaid','SandTomb','VikingVillageAttack'].map(k=>'Level.ID.'+k));
- assert.deepEqual(rules.modifierAvailabilityByDungeon['Level.ID.SandTomb'],{witch:false,ghorn:false,empowered:false,shadow:false});
- assert.equal(modifierAvailable('Level.ID.DesertDunes','witch'),false);
- assert.equal(modifierAvailable('Level.ID.DesertDunes','ghorn'),true);
- assert.equal(modifierAvailable('Level.ID.ShipGraveyard','witch'),true);
- assert.equal(modifierAvailable('Level.ID.ShipGraveyard','ghorn'),false);
- assert.equal(Object.values(rules.modifierAvailabilityByDungeon).filter(v=>v.empowered).length,14);
+test('Current rotation exposes exactly the exported modifier availability',()=>{
  assert.deepEqual(Object.keys(rules.modifierAvailabilityByDungeon).sort(),dungeons.map(d=>d.id).sort());
+ assert.ok(Object.values(rules.modifierAvailabilityByDungeon).every(v=>v.empowered&&v.shadow&&v.witch));
+ assert.deepEqual(Object.entries(rules.modifierAvailabilityByDungeon).filter(([,v])=>!v.ghorn).map(([id])=>id),['Level.ID.FrozenKingdom','Level.ID.PirateRaid','Level.ID.SnowPeak']);
+ assert.equal(modifierAvailable('Level.ID.SandTomb','witch'),false);
 });
 
 test('Legacy imports disable unavailable modifiers while preserving ordinary route content',()=>{
  for(const dungeon of dungeons){
-  const route=newRoute(dungeon,'test');applyModifierPresets(route,dungeon,presets);
+  const route=newRoute(dungeon,dungeon.routeBuildId??'test');applyModifierPresets(route,dungeon,presets);
   route.shadow=true;
   for(const mod of Object.values(route.modifiers))if(mod.packId||mod.enemies?.length)mod.active=true;
   route.pulls[0].enemies=[dungeon.enemies[0].placementId];
@@ -52,25 +47,19 @@ test('Legacy imports disable unavailable modifiers while preserving ordinary rou
   assert.equal(loaded.shadow,modifierAvailable(dungeon.id,'shadow'));
   for(const kind of ['witch','ghorn','empowered'])assert.equal(loaded.modifiers[kind].active,route.modifiers[kind].active&&modifierAvailable(dungeon.id,kind));
  }
- const dungeon=dungeons.find(d=>d.id==='Level.ID.ShipGraveyard'),route=newRoute(dungeon,'test');
+ const dungeon=dungeons.find(d=>d.id==='Level.ID.SnowPeak'),route=newRoute(dungeon,dungeon.routeBuildId??'test');
  applyModifierPresets(route,dungeon,presets);
  toggleModifier(route,'ghorn');assert.equal(route.modifiers.ghorn.active,false);
  toggleModifier(route,'witch');assert.equal(route.modifiers.witch.active,true);
 });
 
-test('Commands reject unavailable activation and restored old CRDT state cannot enable it',t=>{
- const dungeon=dungeons.find(d=>d.id==='Level.ID.SandTomb'),options={dungeon,enemies,role:'player'};
- const route=newRoute(dungeon,'test');route.shadow=true;route.modifiers.empowered={active:true,enemies:[dungeon.enemies[0].placementId]};
+test('Commands and restored CRDT cannot enable an unavailable Ghorn',t=>{
+ const dungeon=dungeons.find(d=>d.id==='Level.ID.FrozenKingdom'),options={dungeon,enemies,role:'player'};
+ const route=newRoute(dungeon,dungeon.routeBuildId);applyModifierPresets(route,dungeon,presets);route.modifiers.ghorn.active=true;
  const doc=createRouteDocument(route,options);t.after(()=>doc.dispose());
- assert.equal(route.shadow,true,'Import does not mutate the caller');
- assert.equal(doc.snapshot().shadow,false);assert.equal(doc.snapshot().modifiers.empowered.active,false);
- const before=doc.canonical();
- assert.throws(()=>doc.execute({type:'set-meta',patch:{shadow:true}}),/unavailable/);
- for(const kind of ['witch','ghorn','empowered'])assert.throws(()=>doc.execute({type:'set-modifier',kind,patch:{active:true}}),/unavailable/);
- assert.equal(doc.canonical(),before);
- const packet=doc.exportSnapshot(),raw=new LoroDoc();raw.import(packet.bytes);
- raw.getMap('meta').set('shadow',true);raw.getMap('modifiers').get('empowered').set('active',true);raw.commit();
- const restored=restoreRouteDocument({...packet,bytes:raw.export({mode:'snapshot'})},options);t.after(()=>restored.dispose());
- assert.equal(restored.snapshot().shadow,false);assert.equal(restored.snapshot().modifiers.empowered.active,false);
- assert.deepEqual(scoreRoute(restored.snapshot(),dungeon,enemies),scoreRoute(doc.snapshot(),dungeon,enemies));
+ assert.equal(route.modifiers.ghorn.active,true);assert.equal(doc.snapshot().modifiers.ghorn.active,false);
+ const before=doc.canonical();assert.throws(()=>doc.execute({type:'set-modifier',kind:'ghorn',patch:{active:true}}),/unavailable/);assert.equal(doc.canonical(),before);
+ const packet=doc.exportSnapshot(),raw=new LoroDoc();raw.import(packet.bytes);raw.getMap('modifiers').get('ghorn').set('active',true);raw.commit();
+ const restored=restoreRouteDocument({...packet,bytes:raw.export({mode:'snapshot'})},options);t.after(()=>restored.dispose());t.after(()=>raw.free());
+ assert.equal(restored.snapshot().modifiers.ghorn.active,false);
 });

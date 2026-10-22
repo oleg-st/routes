@@ -11,15 +11,15 @@ import {dataNames} from '../data/runtime-loader.js';
 const check = spawnSync(process.execPath, ['scripts/verify-data.mjs', '--public'], {stdio: 'inherit'});
 if (check.status !== 0) throw new Error('Image/data verification failed.');
 // Explicit publication allowlist: private originals and build tooling never enter dist.
-const files = ['index.html', 'app.js', 'route-model.js', 'game-scoring.js', 'difficulty.js', 'map-geometry.js', 'pull-split.js', 'map-views.js', 'marker-symbols.js', 'styles.css',
+const files = ['index.html', 'app.js', 'route-model.js', 'route-build.js', 'game-scoring.js', 'difficulty.js', 'map-geometry.js', 'pull-split.js', 'map-views.js', 'marker-symbols.js', 'styles.css',
   ...['import-ui','import-issues','review-session','fight-label','live-import','live-api','live-analysis','live-matcher','matcher-client','matcher-worker','oauth','report-url',
     'pack-corrections','placement-geometry','assignment','pack-solver','approach-filter','reverse-approach','summon-evidence','summon-patterns','game-summons','boss-encounters',
     'modifier-evidence','invisibility','portals','route-relics','intended-pulls','death-skips','death-skip-assignment','matching-config','activation','path-proximity','gap-approach','neighbor-approach','movement-trail','aggro-evidence'].map(name=>`log-import/${name}.js`),
   ...fs.readdirSync('collaboration').filter(file=>file.endsWith('.js')).map(file=>'collaboration/'+file),
   ...dataNames.map(name=>`data/${name}.json`),
-  ...['full-maps','map-starts','map-campfires','combined-layouts','combined-legacy-layouts','combined-maps',
+  ...['full-maps','map-starts','map-campfires','combined-layouts','combined-maps',
     'boss-encounters','placement-corrections','route-mapping','route-dictionary','game-modifier-stats',
-    'game-modifier-positions','game-service-rules','game-difficulty','game-summon-rules','ability-corrections','enemy-marker-sizes','marker-anchors',
+    'game-modifier-positions','modifier-spawns','game-service-rules','game-difficulty','game-summon-rules','ability-corrections','enemy-marker-sizes','marker-anchors',
     'compact-data','runtime-loader','dungeon-loader'].map(name=>`data/${name}.js`),
   'data/LICENSE-fellowship-data.txt',
   ...usedImages()];
@@ -49,7 +49,7 @@ for(const dungeon of dungeons)for(const map of dungeon.mapImages){
   delete map.sourcePath;
 }
 fs.writeFileSync(path.join(destination,'data/dungeons.json'),JSON.stringify(dungeons,null,2)+'\n');
-for(const name of ['combined-layouts','combined-legacy-layouts']){
+for(const name of ['combined-layouts']){
   const filename=path.join(destination,`data/${name}.js`);
   const source=fs.readFileSync(filename,'utf8').replace(/\s*"(?:path|sourcePath)":\s*"(?:private\/)?images\/dungeons\/maps\/[^"\n]+",?/g,'');
   fs.writeFileSync(filename,source);

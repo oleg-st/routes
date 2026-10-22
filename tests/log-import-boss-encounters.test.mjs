@@ -38,7 +38,7 @@ test('Silken Hollow places Vexira on the lair map, imports her own pull and pres
       events:[{...event(21000,boss),targetResources:{x:-7292,y:44017,hitPoints:100,maxHitPoints:100}}]},
       {dungeon,catalog,presets:{},dungeonData:mode});
     assert.deepEqual(pulls(result),[{id:'segment-2',enemies:[boss.placementId]}]);
-    const route=newRoute(dungeon,'25647984');route.pulls[0].enemies=[boss.placementId];
+    const route=newRoute(dungeon,dungeon.routeBuildId??'test');route.pulls[0].enemies=[boss.placementId];
     const encoded=await encodeRoute(route,dungeon);
     for(const target of ['custom','fellership'])assert.deepEqual((await decodeRoute(encoded,[correctDungeon(raw,target)],catalog)).pulls[0].enemies,[boss.placementId]);
   }
@@ -49,7 +49,7 @@ test('Stormwatch has two independent placements and keeps both across route expo
   assert.notEqual(bridge.packId,final.packId);
   assert.match(placementName(bridge,catalog.get(bridge.id)),/Bridge/);
   assert.match(placementName(final,catalog.get(final.id)),/Final/);
-  const route=newRoute(dungeon,'25647984');route.pulls[0].enemies=[bridge.placementId];
+  const route=newRoute(dungeon,dungeon.routeBuildId??'test');route.pulls[0].enemies=[bridge.placementId];
   route.pulls.push({...newPull(1),enemies:[final.placementId]});
   const encoded=await encodeRoute(route,dungeon);
   for(const mode of ['custom','fellership']){

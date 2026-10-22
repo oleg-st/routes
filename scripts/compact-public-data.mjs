@@ -10,8 +10,8 @@ export function compactPublicData(destination) {
   const dungeons = read('dungeons');
   const enemyIds = new Set(dungeons.flatMap(dungeon => dungeon.enemies.map(enemy => enemy.id)));
   write('dungeons', dungeons.map(dungeon => {
-    const compact = pick(dungeon, ['id', 'name', 'requiredScore', 'timerSeconds', 'mapImages', 'retiredPlacementIds']);
-    compact.mapImages = compact.mapImages.map(image => pick(image, ['id', 'name', 'path', 'width', 'height']));
+    const compact = pick(dungeon, ['id', 'routeBuildId', 'name', 'requiredScore', 'timerSeconds', 'mapImages']);
+    compact.mapImages = compact.mapImages.map(image => pick(image, ['id', 'name', 'path', 'width', 'height', 'gameFrame']));
     const indexes = new Map(), sharedPatrols = [];
     compact.enemies = dungeon.enemies.map(({patrolPath, mapPatrolPath, ...enemy}) => {
       const paths = [patrolPath, mapPatrolPath], key = JSON.stringify(paths);

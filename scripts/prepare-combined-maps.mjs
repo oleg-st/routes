@@ -7,19 +7,27 @@ import {fullMaps} from '../data/full-maps.js';
 import {mapCoordinates} from '../map-views.js';
 import {warpedArtwork} from './combined-maps/art-warp.mjs';
 import {originalFor, compressImages, hashFile, combinedRasterSize} from './avif-assets.mjs';
+import {pathToFileURL} from 'node:url';
+import pathModule from 'node:path';
+import {validateDraft} from './map-editor/model.mjs';
+import {loadEditorCatalog} from './map-editor/catalog.mjs';
 const read=name=>JSON.parse(fs.readFileSync(`data/${name}.json`,'utf8'));
-const dungeons=read('dungeons'),buildId=read('manifest').buildId;
+let dungeons=read('dungeons');const buildId=read('manifest').buildId;
 const args=process.argv.slice(2),requested=args.find(a=>!a.startsWith('--'));
-if(args.some(a=>a.startsWith('--')&&a!=='--guides')||args.filter(a=>!a.startsWith('--')).length>1)throw new Error('Usage: npm run maps -- [map-slug] [--guides]');
+const customFile=args.find(a=>a.startsWith('--recipe='))?.slice(9),preview=args.includes('--preview');
+if(customFile&&preview)dungeons=loadEditorCatalog(process.cwd()).dungeons;
+if(args.some(a=>a.startsWith('--')&&!['--guides','--preview'].includes(a)&&!a.startsWith('--recipe='))||args.filter(a=>!a.startsWith('--')).length>1)throw new Error('Usage: npm run maps -- [map-slug] [--guides] [--preview] | --recipe=file.mjs --preview');
+if(customFile&&(!preview||requested))throw new Error('Custom recipes require --preview; register the recipe in combined-maps/index.mjs before publication');
 if(requested&&!recipes.some(r=>r.slug===requested||r.key===requested))throw new Error(`Unknown map ${requested}. Choose: ${recipes.map(r=>r.slug).join(', ')}`);
-const selected=recipes.filter(r=>!requested||r.slug===requested||r.key===requested);
+const selected=customFile?[(await import(pathToFileURL(pathModule.resolve(customFile)))).default]:recipes.filter(r=>dungeons.some(d=>d.id==='Level.ID.'+r.key)&&(!requested||r.slug===requested||r.key===requested));
+if(customFile){const recipe=selected[0],d=dungeons.find(d=>d.id==='Level.ID.'+recipe?.key);if(!d)throw new Error('Unknown recipe dungeon');validateDraft({schemaVersion:1,dungeonId:d.id,...recipe},d);}
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
 const n=value=>Number(value.toFixed(4));
 fs.mkdirSync('images/dungeons/combined',{recursive:true});
 fs.mkdirSync('private/images-combined',{recursive:true});
 let result={};
-if(requested){
+if(requested&&!preview){
   const previous=await import('../data/combined-layouts.js');
   if(previous.combinedBuildId!==buildId)throw new Error('Data build changed; rebuild all maps first.');
   result={...previous.combinedLayouts};
@@ -61,7 +69,7 @@ for(const config of selected){
       .filter(p=>p.mapImageId===map.id&&p.mapPosition).map(p=>[p.mapPosition.x*1024,p.mapPosition.y*512]);
     const outline=layer.outline;
     for(const [px,py] of [...outline,...points])extent.push([x+px*scale,y+py*scale]);
-    const original=originalFor(map.path),bytes=fs.readFileSync(original);
+    const original=preview&&map.sourcePath?map.sourcePath:originalFor(map.path),bytes=fs.readFileSync(original);
     if(hash(bytes)!==(map.sourceSha256||map.sha256))throw new Error(`Source image hash differs: ${original}`);
     parts.push({map,x,y,width,height,scale,outline,points,bytes,index,layer});
   }
@@ -211,9 +219,14 @@ for(const config of selected){
     }else paperBackground='<rect width="100%" height="100%" fill="url(#original-paper)"/>';
   }
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><title>${esc(d.name)}</title><desc>Composed locally from extracted game textures with independently traced terrain contours and their surrounding landscape.</desc><defs><filter id="feather" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="5"/></filter><filter id="crest-feather" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="12"/></filter><filter id="context-feather" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="34"/></filter><filter id="paper" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".006 .009" numOctaves="4" seed="17"/><feColorMatrix type="saturate" values="0"/><feColorMatrix type="matrix" values=".22 0 0 0 .62  .21 0 0 0 .58  .18 0 0 0 .48  0 0 0 0 1"/></filter><radialGradient id="edge-shade"><stop offset=".6" stop-color="#55432b" stop-opacity="0"/><stop offset="1" stop-color="#55432b" stop-opacity=".18"/></radialGradient>${defs.join('')}</defs>${paperBackground}${textureFills}${backgroundDecorations}${surroundings.join('')}${decorations}${paths}${foreground}${restorations}${overlays}${preservedContours}${labels}${titleArtwork}${arrows}<rect width="100%" height="100%" fill="url(#edge-shade)"/>${caption}${frame}</svg>`;
-  const svgPath=`private/images-combined/${key.toLowerCase()}.svg`;
+  if(preview)fs.mkdirSync('private/combined-previews',{recursive:true});
+  const svgPath=preview?`private/combined-previews/${key.toLowerCase()}.svg`:`private/images-combined/${key.toLowerCase()}.svg`;
   const path=`images/dungeons/combined/${key.toLowerCase()}.avif`;
   fs.writeFileSync(svgPath,svg);
+  if(preview){
+    fs.writeFileSync(svgPath.replace(/\.svg$/,'.json'),JSON.stringify({key,width,height,sources,artworkSources,recipeSha256:hash(JSON.stringify(config))},null,2)+'\n');
+    console.log('Preview only: '+svgPath);continue;
+  }
   const rasterSize=combinedRasterSize({width,height,artworkSources},d);
   await compressImages([{source:svgPath,destination:path,rasterSize}]);
   if(args.includes('--guides')){
@@ -259,4 +272,4 @@ for(const config of selected){
   result[d.id]={id:`${d.id}:Combined-v${config.version||2}`,name:'Full map',kind:'combined',path,width,height,pixelWidth:rasterSize.width,pixelHeight:rasterSize.height,sha256:hashFile(path),recipeSha256:hash(JSON.stringify(config)),sources,artworkSources,...(reference?{referenceId:d.id,referenceSha256:hash(JSON.stringify(reference))}:{}),...(Object.keys(placements).length?{placements,patrols,placementPatrols}:{})};
   console.log(`${d.name}: ${parts.length} source contours, ${width} x ${height}`);
 }
-fs.writeFileSync('data/combined-layouts.js',`// Generated by scripts/prepare-combined-maps.mjs from extracted game textures and our own authoring.\nexport const combinedBuildId=${JSON.stringify(buildId)};\nexport const combinedLayouts=${JSON.stringify(result,null,2)};\n`);
+if(!preview)fs.writeFileSync('data/combined-layouts.js',`// Generated by scripts/prepare-combined-maps.mjs from extracted game textures and our own authoring.\nexport const combinedBuildId=${JSON.stringify(buildId)};\nexport const combinedLayouts=${JSON.stringify(result,null,2)};\n`);

@@ -1,12 +1,8 @@
 import {routeMapping} from './route-mapping.js';
 
 export const routeDictionary=id=>routeMapping.dungeons[id];
-export function historicPack(dungeon,id){
-  const dictionary=routeDictionary(dungeon.id),pack=dictionary?.packs.find(p=>p.id===id);
-  return pack?.members.map(index=>dictionary.placements[index]);
-}
 export function replacementMembers(dungeon,id,members){
-  return members??historicPack(dungeon,id)??dungeon.enemies.filter(p=>p.packId===id).map(p=>p.placementId);
+  return members??dungeon.enemies.filter(p=>p.packId===id).map(p=>p.placementId);
 }
 // Non-negative tokens refer to permanent pack compositions. Negative tokens
 // refer to individual placements (-index-1), including partial pack selections.

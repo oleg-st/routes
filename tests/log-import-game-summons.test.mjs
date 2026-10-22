@@ -52,14 +52,14 @@ test('An exact cast sample resolves phase rows of one boss when the log omits so
   args.events[0].sourceResources=undefined;assert.deepEqual(classifyGameSummons(args),[]);
 });
 
-test('Eggbearer death requires a complete 2..3 Spiderling wave and fresh corpse coordinates',()=>{
+test('Eggbearer death requires a complete two-Spiderling wave and fresh corpse coordinates',()=>{
   const corpse={...parent,gameID:267,positions:[{x:0,y:0,t:9900}],deaths:[{timestamp:10000}]};
   const children=[0,1,2].map(i=>({...child,key:`2:${i+1}`,instance:i+1,gameID:89,firstTime:11000+i*100,
     firstPosition:{x:300+i*100,y:0,t:11000+i*100}}));
   const run=rows=>classifyGameSummons({fightID:5,actors:[{id:1,type:'NPC',gameID:267}],rows,events:[]});
-  assert.equal(run([corpse,...children]).length,3);assert.equal(run([corpse,...children.slice(1)]).length,2);
+  assert.equal(run([corpse,...children]).length,0);assert.equal(run([corpse,...children.slice(1)]).length,2);
   for(const rows of [[corpse,children[0]],[corpse,...children,{...children[0],key:'2:4'}],
-    [{...corpse,deaths:[]},...children],[{...corpse,positions:[{x:0,y:0,t:8000}]},...children],
+    [{...corpse,deaths:[]},...children.slice(1)],[{...corpse,positions:[{x:0,y:0,t:8000}]},...children],
     [corpse,...children.map(c=>({...c,firstPosition:{...c.firstPosition,t:16000}}))],
     [{...corpse,gameID:268},...children],
     [corpse,...children.map(c=>({...c,nearest:[{distance:500}]}))]])assert.deepEqual(run(rows),[]);

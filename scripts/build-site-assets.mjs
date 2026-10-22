@@ -21,7 +21,7 @@ export async function buildSiteAssets(destination){
     if(!/^Level\.ID\.[A-Za-z0-9]+$/.test(dungeon.id))throw new Error('Invalid dungeon asset ID.');
     const dataURL=emit(`dungeon-${dungeon.id.slice('Level.ID.'.length)}.json`,JSON.stringify(dungeon)+'\n');
     dungeonURLs[dungeon.id]=dataURL;
-    return {id:dungeon.id,name:dungeon.name,dataURL};
+    return {id:dungeon.id,name:dungeon.name,routeBuildId:dungeon.routeBuildId,dataURL};
   });
   const dataURLs=Object.fromEntries(dataNames.map(name=>[
     name,name==='dungeons'?emit('dungeons-index.json',JSON.stringify(catalogue)+'\n'):emit(`${name}.json`,fs.readFileSync(path.join(destination,`data/${name}.json`))),

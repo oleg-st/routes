@@ -8,8 +8,7 @@ import {reverseApproachEvidence} from '../log-import/reverse-approach.js';
 const dungeonID='Level.ID.UrrakMarkets';
 const dungeon=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id===dungeonID);
 const catalog=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
-const controls=JSON.parse(fs.readFileSync('tests/fixtures/urrak-pack-controls.json'));
-const flowerPlacement=dungeon.enemies.find(p=>p.placementId===controls[3][0]);
+const flowerPlacement=dungeon.enemies.find(p=>p.dormant);
 const corrected=correctImportPacks([{id:'flower',number:'G48',placements:[flowerPlacement]}],{catalog});
 
 test('Buried flowers require player contact at 100; targeting or chain aggro cannot uncover them',()=>{
@@ -42,7 +41,7 @@ test('Dormant splitting preserves each member once, counts, and the input',()=>{
 });
 
 test('Attack on an established patrol member does not activate stationary G21 members',()=>{
-  const parts=controls.slice(0,2).map((ids,i)=>({id:String(i),number:i?'G21 (static)':'G21 (patrol)',placements:ids.map(id=>dungeon.enemies.find(p=>p.placementId===id))}));
+  const parts=['patrol','static'].map(id=>({id,number:`G21 (${id})`,placements:[{id:'mob',placementId:id,worldPosition:{x:100,y:100}}]}));
   const patrol=parts.find(p=>p.number.endsWith('(patrol)')),stationary=parts.find(p=>p.number.endsWith('(static)'));
   const p=patrol.placements[0].worldPosition;
   const filter=createApproachFilter({packs:parts.map(pack=>({...pack,memberKeys:pack.id===patrol.id?['looter']:[]})),

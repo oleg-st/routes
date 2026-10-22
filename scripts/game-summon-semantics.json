@@ -1,15 +1,15 @@
 {
-  "steamBuild": "25647984",
+  "steamBuild": "26122410",
   "sources": [
     {
       "source": "/Game/Abilities/NPC/DemonicRitual/WaveSummoner/GA_DR_WaveSummoner_Summoning",
       "file": "private/game-data/all-dungeons/behavior-scripts/880cf8046b4dbcb3b652d83457b53050618157bcc73880b6fe50765fe39d3a71.json",
-      "sha256": "4a2e34c2a81ea3e32307845d2d98fd9c54527b74d97ecc485d80e63b2c56307a"
+      "sha256": "0ef05730e606828d480f6516e6a8f6674bd642f38d8c010291ace6f349918bb1"
     },
     {
       "source": "/Game/Abilities/NPC/DesertDunes/NightboundMagi/GA_DD_NightboundMagi_ChanneledFriendlyBuff",
       "file": "private/game-data/all-dungeons/behavior-scripts/e14e4eab08d2a1eae776c1be1061b95cdfbd6abb76c6df0b8d1d269a45b5b18f.json",
-      "sha256": "c4f219145ce6a5f99d1ee4b24b119d58a8223f459c704df8009f232d9368adaf"
+      "sha256": "d3a2133488d20abdf995efa76215a70e3456afbc5da5688f7017b2189d9dc7ee"
     },
     {
       "source": "/Game/Abilities/NPC/ElfMines/BossGiantTroll/SummonAdds/GA_EM_BossGiantTroll_SummonAdds",
@@ -24,7 +24,7 @@
     {
       "source": "/Game/Abilities/NPC/FrozenKingdom/IceGolem/GA_FK_IceGolem_OnDeathSpawnMobs",
       "file": "private/game-data/all-dungeons/behavior-scripts/713699983081dddfc9c0232779375d6c877ce26e49a109b0d90cbeb5802dd005.json",
-      "sha256": "5e05272190afba19abbd569cf456084fed44013b1c31c0ec73e3bd881d08718f"
+      "sha256": "130b93dbb4fea65b4cab15872515df26f8e087ec4ff2023f56d3162da393ee10"
     },
     {
       "source": "/Game/Abilities/NPC/JourneyToStronghold/TutorialTroll/SpawnAdds/GA_JS_TutorialTroll_SpawnAdds",
@@ -34,12 +34,12 @@
     {
       "source": "/Game/Abilities/NPC/MooreCastle/BloodSummoner/GA_MC_BloodSummoner_CastSpawnBloodCreation",
       "file": "private/game-data/all-dungeons/behavior-scripts/e7c8c8b4e9af46ff1f8bbe14674cd2d4356a5d14e10bb2e59ac37a517af3265f.json",
-      "sha256": "af8916f4b29640511a08c815a4d6dcc69f94bbc24ed8f301f1159a640f526cea"
+      "sha256": "5eee39bd00c10b0cd91387feea03323258b276d12352588ab4c62219ceba7e9f"
     },
     {
       "source": "/Game/Abilities/NPC/MooreCastle/BloodSummoner/GA_MC_BloodSummoner_ChannelSpawnBloodAnimation",
       "file": "private/game-data/all-dungeons/behavior-scripts/35056f1b0fa52a5eac0f6a9d922ddc5acd07f50d8fc94c53373add6c45d9f864.json",
-      "sha256": "57fb2fc88616c370a1ea69a2da8784efe368396743f8244cfde28b9a321ab959"
+      "sha256": "1b3ba0ce002765f3b32e79352bb2448bbe29c2af28ab69971a933bf58d87b176"
     },
     {
       "source": "/Game/Abilities/NPC/MooreCastle/BloodSummoner/GA_MC_BloodSummoner_SpawnBlood",
@@ -94,7 +94,7 @@
     {
       "source": "/Game/Abilities/NPC/SilkenHollow/BossSpider/SpawnAdds/GA_SH_BossSpider_SpawnAdds",
       "file": "private/game-data/all-dungeons/behavior-scripts/c28c392b8f57be578ddf28bda1ee2b7b7ce811028c526092d553a2b0560825af.json",
-      "sha256": "d8394cd58f2eb97e66c49440c0ad0e8a24a390cd5514a844efc64fc4bbb8c55b"
+      "sha256": "7d3ad4b20b7ae5797c13a80825eef89ededab9ce0b7c0aa08602c9ed89757827"
     },
     {
       "source": "/Game/Abilities/NPC/SilkenHollow/CarrionHorror/OnDeathExplosion/GA_SH_CarrionHorror_OnDeathExplosion",
@@ -114,7 +114,7 @@
     {
       "source": "/Game/Abilities/NPC/VikingVillage/BossVikingMystic_RuneMinion/GA_BossVikingMystic_RuneMinion_OnDeathExplosion",
       "file": "private/game-data/all-dungeons/behavior-scripts/18694c1d61b0805dc6204d5091b35235b25011db7468175c5f1de535772d93e7.json",
-      "sha256": "99834f8c7dbec8b96000479bff2ebecb0cc9d06ed45dcb15d9a1f65274261354"
+      "sha256": "ee7ac7815a2c191d049cd347ae1de1bc0a074104f1ed6323653beded3b1d1f9b"
     },
     {
       "source": "/Game/Abilities/NPC/VikingVillage/Chilgar/GA_VV_BossChilgar_SpawnAdds",
@@ -124,17 +124,17 @@
     {
       "source": "/Game/Abilities/RelicPowers/PolymorphTargetWithSharedCharges/GA_RelicPower_PolymorphTargetWithSharedCharges",
       "file": "private/game-data/all-dungeons/behavior-scripts/6e56bef33764fb8e3103afafa98da258c96e0d3a284cf851038bf486ae4e7d93.json",
-      "sha256": "43e14c670b099dba00eaeb1d1567041a68442d6906e42ee367009fda6a81f77b"
+      "sha256": "9fb21b9ee0b0c646963a37bd6d0e9f503d1abcc9dcf4a2fd6eb22ef94019c6a0"
     },
     {
       "source": "/Game/Modifiers/DungeonModifiers/ShadowLord/GA_DungeonModifiers_ShadowLord_OrbSpawner",
       "file": "private/game-data/all-dungeons/behavior-scripts/9e86e4da021e3dd6c2b8fe9578c4e1a32031eef4f7c4bee23ff3cbc1963f8ec2.json",
-      "sha256": "6f914cf42326e4a885d2e8e5cf6a281de9adfeca95c06cb4af70d227f31a1d56"
+      "sha256": "ee588d26d177ce0b38f49d7c0599c2c22cb167d6c7405b637e8ba90dba38b740"
     },
     {
       "source": "/Game/characters/NPC/DemonicRitual/WaveSummoner/BP_NPC_DR_WaveSummoner",
       "file": "private/game-data/all-dungeons/behavior-scripts/f556e55a5358a3f2505ed51430fc4684378d061a7e4d96ee3e9aba664f663125.json",
-      "sha256": "37d6947f8549cfd2697e8fc1ab939a2a435e35f8c40b2a8d2dbd5fe1bd436bfe"
+      "sha256": "cd883ecf3253ae185357d4641a237988e9f39fcc70fd1cf4d7539428e597bc7a"
     },
     {
       "source": "/Game/characters/NPC/DemonicRitual/WaveSummoner/AI/AIBC_DR_WaveSummoner",
@@ -144,7 +144,7 @@
     {
       "source": "/Game/characters/NPC/DesertDunes/NightboundMagi/BP_NPC_DD_NightboundMagi",
       "file": "private/game-data/all-dungeons/behavior-scripts/206bbcc23a2d60daf6590718ca2f4f32a99fd4994b85bdbb493c165332c66091.json",
-      "sha256": "4e7e15532a0c5f7a8604529277c0ee2b6ed1c2402fb86221cd82e546fd0c3602"
+      "sha256": "6b36e9517da2d75efe1b59a9d2ccfdb00b0b5ff40d40e38f4a3bb659a9732db0"
     },
     {
       "source": "/Game/characters/NPC/DesertDunes/NightboundMagi/AI/AIBC_DD_NightboundMagi",
@@ -154,7 +154,7 @@
     {
       "source": "/Game/characters/NPC/ElfMines/BossGiantTroll/BP_NPC_EM_BossGiantTroll",
       "file": "private/game-data/all-dungeons/behavior-scripts/e8fe238977baf67adc2622848173608b5cf16db113e3d901301e00a2b5643a42.json",
-      "sha256": "9354ca1f904945425b9452f23360de1f00aa8693ac427361fe94e8575974f7e3"
+      "sha256": "4865b0813e64e56909015368990ec613e2e1e77c4df6fbb28d22e857b10134b8"
     },
     {
       "source": "/Game/characters/NPC/ElfMines/BossGiantTroll/AI/AIBC_EM_BossGiantTroll",
@@ -164,7 +164,7 @@
     {
       "source": "/Game/characters/NPC/FrozenKingdom/BossRangerCaptain/BP_NPC_FK_BossRangerCaptain",
       "file": "private/game-data/all-dungeons/behavior-scripts/a1c942c4683745143360a17f04056345d369c40e8334b7ffa2a09a4b123fe899.json",
-      "sha256": "290b588c94b43557f7b29a5e7bae9cdba1d793c3264dc6905dfd88cf01f545d9"
+      "sha256": "c09e3f247f8e9517502de17b67145595fd78f34b3de15b2385549cddaf444d65"
     },
     {
       "source": "/Game/characters/NPC/FrozenKingdom/BossRangerCaptain/AI/AIBC_FK_BossRangerCaptain",
@@ -174,7 +174,7 @@
     {
       "source": "/Game/characters/NPC/FrozenKingdom/IceGolem/BP_NPC_FK_IceGolem",
       "file": "private/game-data/all-dungeons/behavior-scripts/51c0b700db630738f02fdae59b368a3ba87c35ca3dec7d89419c50edfa76e2c2.json",
-      "sha256": "2fe91678c583986e482c45f204ec67531f024926ab284fbee7dc92bc890b8188"
+      "sha256": "d5b62a4c4e5f92c9956ba8f709f3466ff2bf22eddd91ec573eb26f6aa74b0fda"
     },
     {
       "source": "/Game/characters/NPC/FrozenKingdom/IceGolem/AI/AIBC_FK_IceGolem",
@@ -184,7 +184,7 @@
     {
       "source": "/Game/characters/NPC/MoorCastle/BloodSummoner/BP_NPC_MC_BloodSummoner",
       "file": "private/game-data/all-dungeons/behavior-scripts/4fb7f066c9c2815c07522a2ca178a8032d2e0ec292e8fc29ae31164e714ce20d.json",
-      "sha256": "57e450171464fac3e61a226cc3812ea4a613efdbb03246388be97b4d2a34bf4a"
+      "sha256": "1e16d6cde880d57f61ce6035779dfc76609e7bcee65e66b45eab6dcf2b25c062"
     },
     {
       "source": "/Game/characters/NPC/MoorCastle/BloodSummoner/AI/AIBC_MC_BloodSummoner",
@@ -194,7 +194,7 @@
     {
       "source": "/Game/characters/NPC/NightPatrol/BossHellcaller/BP_NPC_NP_BossHellcaller",
       "file": "private/game-data/all-dungeons/behavior-scripts/860aed4426bad963dd62ea853ba6f24e62765d7fdf5b5b287c133a94126e1d97.json",
-      "sha256": "69cd3deb647d1009f288fdc1b3c424942f4a5a2be1e447ef07e0df3d86c6c2a7"
+      "sha256": "f981a91061119936b198a00cb1e5ab72755246d72f5793722ce386f286fedce0"
     },
     {
       "source": "/Game/characters/NPC/NightPatrol/BossHellcaller/AI/AIBC_NP_BossHellcaller",
@@ -204,7 +204,7 @@
     {
       "source": "/Game/characters/NPC/PirateRaid/BossAnchor/BP_NPC_PR_BossAnchor",
       "file": "private/game-data/all-dungeons/behavior-scripts/4300b03066c6d7792ee26cc86a2e23ed936eeb5ccde7b7f204dbad6432dc6bb9.json",
-      "sha256": "cd41ba0915f21b348ea7b2124504e6ecfcc4e398a9629205e1d31871574afdf0"
+      "sha256": "86543b9156a14208fa70ee968ddc38f1b967c9bd8e86babf92d7ae1605736eea"
     },
     {
       "source": "/Game/characters/NPC/PirateRaid/BossAnchor/AI/AIBC_PR_BossAnchor",
@@ -214,7 +214,7 @@
     {
       "source": "/Game/characters/NPC/SandTomb/BossDefenseEye/BP_NPC_ST_BossDefenseEye",
       "file": "private/game-data/all-dungeons/behavior-scripts/245560236e1871e0ca8872739e3eec156626df45f67c903e3f1597b22fbd9451.json",
-      "sha256": "8161ee251c072cdbcabe1c9a74d11d11a73f782bece3604af162ebae1b2194cf"
+      "sha256": "955d2441341de0509364081bbe50f814e1969bb8e8f7241a7fd699d58d25cc12"
     },
     {
       "source": "/Game/characters/NPC/SandTomb/BossDefenseEye/AI/AIBC_ST_BossDefenseEye",
@@ -224,17 +224,17 @@
     {
       "source": "/Game/characters/NPC/SilkenHollow/BossSpider/BP_NPC_SH_BossSpider",
       "file": "private/game-data/all-dungeons/behavior-scripts/54a40bb6c82aab4f9e28a6d1c47b5c2e089fe309eed223297bdd36ea9dfa8a52.json",
-      "sha256": "7766593be3c5ffc698b74448dc7067926302e6b1247966b56101ccb6990bc219"
+      "sha256": "835669fc80225f17378845c4018ba64f0ec944355e05daeb5d3681aee8c578c8"
     },
     {
       "source": "/Game/characters/NPC/SilkenHollow/BossSpider/AI/AIBC_SH_BossSpider",
       "file": "private/game-data/all-dungeons/behavior-scripts/dde16c7a5ecd1d860403a345c819674e5e1d101b4a32dde8b8159a7f97486bbf.json",
-      "sha256": "20630ca43ea9cdc05bb38a6ea91cf2352a1eb3b3bce6c8205f7c9a03bae9e716"
+      "sha256": "95904bb5e4242f6785277d7871499144bfffed54dbfe375ca335dda421dc9778"
     },
     {
       "source": "/Game/characters/NPC/SilkenHollow/CarrionHorror/BP_NPC_SH_CarrionHorror",
       "file": "private/game-data/all-dungeons/behavior-scripts/833cadc0384dee3deac5d75da10a629f479e7cf9310e80ae8a99a9be3b465339.json",
-      "sha256": "84b50e5fe134c03f8f994f0874f79684fe06818c77d9493c3a162dd4bcb30bea"
+      "sha256": "d4a8711ad80e08713e404fb0a1d06a689c8db65313ea7414e760fdd96cd81495"
     },
     {
       "source": "/Game/characters/NPC/SilkenHollow/CarrionHorror/AI/AIBC_SH_CarrionHorror",
@@ -244,7 +244,7 @@
     {
       "source": "/Game/characters/NPC/SilkenHollow/Eggbearer/BP_NPC_SH_Eggbearer",
       "file": "private/game-data/all-dungeons/behavior-scripts/2739f32d8981d975eab092c5a4c57dc71f4bdda5a24db96f03058101ca967e75.json",
-      "sha256": "78b3792bc87aae8eb3bf8f36d49895796ff7b80fe4666f3871adf00c7f5cdf12"
+      "sha256": "f33e41e886e42a8b1f5cddff498d6895859e7a895a198dc2471b7f32557778eb"
     },
     {
       "source": "/Game/characters/NPC/SilkenHollow/Eggbearer/AI/AIBC_SH_Eggbearer",
@@ -254,7 +254,7 @@
     {
       "source": "/Game/characters/NPC/VikingVillage/BossChilgar/BP_NPC_VV_BossChilgar",
       "file": "private/game-data/all-dungeons/behavior-scripts/7a349b40ec1b5a799c1aa6a3438bc9f60e246408bb67578a635c49d76d6f1db2.json",
-      "sha256": "f818ae8f6da212c7525ad519b3366695fc2e7b2b43a5beedb55a1e02f6046786"
+      "sha256": "1146df82655846dffa8767ce78bce385fcc6256d6ce49b2ee1b522fb1d419b6b"
     },
     {
       "source": "/Game/characters/NPC/VikingVillage/BossChilgar/AI/AIBC_VV_BossChilgar",
@@ -264,17 +264,17 @@
     {
       "source": "/Game/characters/NPC/DemonicRitual/BurningDemon/BP_NPC_DR_BurningDemon",
       "file": "private/game-data/all-dungeons/behavior-scripts/9b34006dd0416c2c9f4647c0cb4e1bdf0cb11f8de896d2031068d705493636c0.json",
-      "sha256": "966d90aa56c78586b8f9049f7b8086a8ecf9d53c620a8e2f7bbaef4a271a10ea"
+      "sha256": "72c4ea25f82df11469e4747a9f325f37dc5b30f3b52fe481aedba82f9dd4b7e0"
     },
     {
       "source": "/Game/characters/NPC/DemonicRitual/FlyingImp/BP_NPC_DR_FlyingImp",
       "file": "private/game-data/all-dungeons/behavior-scripts/aa62280f0831a0b55595ee7cfdec5feebd2b5db2b2521e94305e38d80465c68e.json",
-      "sha256": "02df6355c2ecea84b80c63a4174fd61e455e67ee046c10614317ef2503768889"
+      "sha256": "20b1a7ae46a21657300ac74fc4db21973d1431e94aed78efdace7af031281f80"
     },
     {
       "source": "/Game/characters/NPC/DesertDunes/DesertNomad/BP_NPC_DD_DesertNomad",
       "file": "private/game-data/all-dungeons/behavior-scripts/58efdae6aa66fa99850305288b96ce6cf7ce2fecb7582127f417e36ba53784fe.json",
-      "sha256": "17e817add6773dc987829f209954404b1d96110d09b900f48ccb44c65a4c7649"
+      "sha256": "ad8eab5ec7ed6235fd872d8def4ac2d5df37f00e8b0de9dcb9df2258dc19c2a9"
     },
     {
       "source": "/Game/Abilities/NPC/ElfMines/BossGiantTroll/SummonAdds/BP_EM_BossGiantTroll_SummonAdds_ProjectileStartMarker",
@@ -294,17 +294,17 @@
     {
       "source": "/Game/characters/NPC/CrystalMines/RubiliteAurastone/BP_NPC_CM_RubiliteAurastone",
       "file": "private/game-data/all-dungeons/behavior-scripts/350e9798c2e7d7c02c1b779269fe7983a8c87caee91f4282c530076e9493eb8f.json",
-      "sha256": "67c33c793d10e135621e205fc2d82861d8aabb84df1253febf6cb932b4987ecb"
+      "sha256": "e3f0650d32e7abd6c0de49472573b7c2c502834f33f552af0132d308d5516cfc"
     },
     {
       "source": "/Game/characters/NPC/FrozenKingdom/ElfGuard/BP_NPC_FK_Elf_Guard",
       "file": "private/game-data/all-dungeons/behavior-scripts/0666a408741b8a2244d798e5238c27e60dacde19e6a26a46f34d0e7f58f9c68a.json",
-      "sha256": "da037402a81825d30b3de13dc0525d567a2f4ce8207931f220466c0903ea7220"
+      "sha256": "5557d78e641b06021d8db5eae420216e6936415958339c5d776ea8f0f22866ca"
     },
     {
       "source": "/Game/characters/NPC/FrozenKingdom/ElfGoon/BP_NPC_FK_Elf_Goon",
       "file": "private/game-data/all-dungeons/behavior-scripts/9a53da9da1a4fa7d9c7114f7c5cd646d998350bcf768add15fac539f9efbdc50.json",
-      "sha256": "bbae355ecba8c29ad88c3dfbbd0a184f30514b250bb4c3f9437cf23d1104a57e"
+      "sha256": "efd1b7b082eef8c548c7da58a12d0a3b05070479a636111be43260fa6cd06cea"
     },
     {
       "source": "/Game/Abilities/NPC/FrozenKingdom/IceGolem/BP_FK_IceGolem_OnDeathSpawnMobsSpawnProjectile",
@@ -314,7 +314,7 @@
     {
       "source": "/Game/characters/NPC/FrozenKingdom/ElfShardling/BP_NPC_FK_Elf_Shardling",
       "file": "private/game-data/all-dungeons/behavior-scripts/0b2b087b7bd279508bfe0787288e504dfb14cd602f9a6d5056273ebc110d49b2.json",
-      "sha256": "513641704f7bedbf38ade4c645b4cf8fd558c30be4ebd3fdf1628fbfce903bee"
+      "sha256": "68e1ffe850a43adb7e27da2de15ecdf26e5fa6bd94643878e9378c498909e8b2"
     },
     {
       "source": "/Game/characters/NPC/JourneyToStronghold/TutorialTroll/BP_NPC_JS_TutorialTroll",
@@ -339,12 +339,12 @@
     {
       "source": "/Game/characters/NPC/SandTomb/BloodCreation/BP_NPC_ST_BloodCreation",
       "file": "private/game-data/all-dungeons/behavior-scripts/8477192f3549024763f2640416173c7397aaf993eeabe084e10754ed99d3de83.json",
-      "sha256": "e0598e9ab9fc3811f5e409bc13e005defccbca71e0e30a4e1b2fca2c79af8d49"
+      "sha256": "16a70f97fafc1b6cff85e3c84242993b1b7a9b16b6eb9de1ef5cae73346d4797"
     },
     {
       "source": "/Game/characters/NPC/MoorCastle/BloodAnimation/BP_NPC_MC_BloodAnimation",
       "file": "private/game-data/all-dungeons/behavior-scripts/c8b59963ec2a59f0470f5bc6bbe3d17f6febb1009b9a6d4799574216016138f7.json",
-      "sha256": "dda0626ad8a29136a04ead4a277f819a8c34ecd58ed2d332eafc3b0463d9d063"
+      "sha256": "0b2944a1645675cc2ea7067ec0060812a0d0aca5452ee7f15e6ffe4ce6595fae"
     },
     {
       "source": "/Game/Abilities/NPC/MythicForest/BossNecrolord/SummonCrystal/BP_MF_BossNecrolord_SummonCrystal_Crystal",
@@ -354,27 +354,27 @@
     {
       "source": "/Game/characters/NPC/MythicForest/BossUnicorn/BP_NPC_MF_BossUnicorn",
       "file": "private/game-data/all-dungeons/behavior-scripts/d0423d1457a4dce8dc7a1a531ce738e199de7e5fd416636db49ef04965bd70e4.json",
-      "sha256": "5fd1bb2b75e4ddf551a1cbbf4069e16fc5488757665293633893e4f0c748da23"
+      "sha256": "98c4bf1b02c4c74d94e2181a0f6a4b869130dee6e3397c7aef27612403040a2d"
     },
     {
       "source": "/Game/characters/NPC/MythicForest/BossNecrolord/BP_NPC_MF_BossNecrolord",
       "file": "private/game-data/all-dungeons/behavior-scripts/c324d4e652c14e8bf9ec99140341e62b78c4480cfa6f6bfa2449bde4166d625a.json",
-      "sha256": "b6cab82b39808971655e8b04e06ab55d0db96d61b49d4575b0f46cd2d2f93224"
+      "sha256": "87013526062918be9adbca5ae61a141adf9a95926e03a2736b911157cdee5199"
     },
     {
       "source": "/Game/characters/NPC/MythicForest/BossTotem/BP_NPC_MF_BossTotem",
       "file": "private/game-data/all-dungeons/behavior-scripts/ec10ca37c03f2ff54645fc1a62def60fb2148eaeb650a7090285e5710a5297d4.json",
-      "sha256": "8b9c7cdf0ab5a33fb2bda7e8534c29be582ad0b8eed3c1289bdc33a249644a94"
+      "sha256": "944d0945b7941438e0f80e95bb15dff07697633991eb27dbbfbe7f90f8ae1d47"
     },
     {
       "source": "/Game/characters/NPC/MythicForest/Totem/BP_NPC_MF_Totem",
       "file": "private/game-data/all-dungeons/behavior-scripts/01631223cc04b662b17ff535cc2e36afc17517ba409b07e86a2e218685a9b330.json",
-      "sha256": "dc560949688666d9fa63cd1b7250aa90d2e1c7aa2d653c1853e490a5e9fffb66"
+      "sha256": "14535c1f24893c40670528d1b2a5a28cebacaf2f028b4d27c294f5f6884fd0cc"
     },
     {
       "source": "/Game/characters/NPC/NightPatrol/BossHellcaller/Minions/HalfMancatcher/BP_NPC_NP_HalfMancatcher",
       "file": "private/game-data/all-dungeons/behavior-scripts/31a8f6919087b893985d2be3c67190cdcb19226484ee942fbcd08be3d54a43cf.json",
-      "sha256": "be8748907ab63dc7ca32c657d157531993c0360ae21ee4de9b586a46f0f24941"
+      "sha256": "39177aae63d31f91bc21c91aed95d4df756e1e543082d107545a06f49b34ad4f"
     },
     {
       "source": "/Game/Abilities/NPC/PirateRaid/BossAnchor/Reinforcements/BP_PR_BossAnchor_Reinforcements_Cannon",
@@ -384,42 +384,42 @@
     {
       "source": "/Game/characters/NPC/PirateRaid/Scallywag/BP_NPC_PR_Scallywag",
       "file": "private/game-data/all-dungeons/behavior-scripts/098449e237a461b8712d3892f43945b3e38f6eb11b4b4e61721c16ac632a9550.json",
-      "sha256": "73d2bc6559dc2a534df871f370801d39a63070330d8f6dcbaa531ddeab4d5a49"
+      "sha256": "4d3b5faad81fcc5a04b1119ba74d02dece925636bb71dbca422b9090119e3883"
     },
     {
       "source": "/Game/characters/NPC/PirateRaid/WaterCaster/BP_NPC_PR_WaterCaster",
       "file": "private/game-data/all-dungeons/behavior-scripts/2c902d6cfe72a83de434320a64252c547ef365aedce73b20cdb9fab3d82cbab7.json",
-      "sha256": "216e119946f62d3dc345e320fdd5cff71e8393ee80e3c1c9faf57c76e58bc001"
+      "sha256": "7a4ffa6cd074ec664c8440d110e5d41ce6b8826fa2730b2c5fcbc65798dbe2e3"
     },
     {
       "source": "/Game/characters/NPC/SandTomb/SmallBloodElemental/BP_NPC_ST_SmallBloodElemental",
       "file": "private/game-data/all-dungeons/behavior-scripts/5ac90cfd9d26556e20bf25f202f6dd1e122fecd26d3af0b97de2d6b7f68d065e.json",
-      "sha256": "b76efde7ce8c56f2c18b9f79e129dea111d517ad6249c2a06430080724623e0f"
+      "sha256": "e18b16e9a5541cea393d1100a312d54a6d0d4d1a1045b3793d439c7e6b63a71a"
     },
     {
       "source": "/Game/characters/NPC/SandTomb/BigBloodElemental/BP_NPC_ST_BigBloodElemental",
       "file": "private/game-data/all-dungeons/behavior-scripts/166225cb7958fef1cf7bba8f544ae90b1c92364e87a320427015659984b73e48.json",
-      "sha256": "8f329a9ea617d2860acc4b905079b829db81286482ae103092e17b2ed3da4662"
+      "sha256": "537b598cc1c7aa9f3e613552356fa42d36b90f6aebca413b621d0903cb8ee3ca"
     },
     {
       "source": "/Game/characters/NPC/MoorCastle/BloodGrunt/BP_NPC_MC_BloodGrunt",
       "file": "private/game-data/all-dungeons/behavior-scripts/e60f111901e206be7e728df88277d9812caa75a4537f2ada1b8effb48ee449f0.json",
-      "sha256": "5330b131839ebbde3f065e289a0f70006d4cfec520d1b78eed6b888b850cdedf"
+      "sha256": "561a41bd9d559b89e6214a99b97b3296d462181f2c273d6e30ddd83be3d269f9"
     },
     {
       "source": "/Game/characters/NPC/MoorCastle/BloodHound/BP_NPC_MC_BloodHound",
       "file": "private/game-data/all-dungeons/behavior-scripts/6317606edd8bf7d271c0eb81be091846675beebb93b1010c59740e4d2d7c491f.json",
-      "sha256": "dfaa7e5f48aeecf86d23fb5c81a2c4b9e3b3ff0c83c19f438f43922ea270a17d"
+      "sha256": "d795424fe5457fd2e5bf6bc211d657bf56a71ad02c836a9d5d816c97309a1018"
     },
     {
       "source": "/Game/characters/NPC/SandTomb/BloodBrute/BP_NPC_ST_BloodBrute",
       "file": "private/game-data/all-dungeons/behavior-scripts/2963c2eaf80d1e0435db505fb80d7a88de373a1edb145f2afa24afbb4f0493b3.json",
-      "sha256": "47ccf4dc1b8eee68891d5d5c80b62837833d9273d12f064d90c95cec73918530"
+      "sha256": "de6eea1dff3ef6c07b39e3d6ffdcf91e01b6ca12c60fd716512753b90a1f55c2"
     },
     {
       "source": "/Game/characters/enemy/BP_AICharacter",
       "file": "private/game-data/all-dungeons/behavior-scripts/43e98af45804932fc584c1500031088aeaeb192f110e25337d309150167fe56a.json",
-      "sha256": "c5530af478e143221132c1cfa9aec3c225c8c7437ef6897589c464442463324f"
+      "sha256": "7b4375f9f4fd43e685ecda8e6231cac35e7d3851b05e78a01ff51e19afcadfc8"
     },
     {
       "source": "/Game/Abilities/NPC/SandTomb/BossDefenseEye/SpawnAdds/BP_ST_BossDefenseEye_SpawnAdds_SpawnSpot",
@@ -439,7 +439,7 @@
     {
       "source": "/Game/characters/NPC/SandTomb/BloodCreationBig/BP_NPC_ST_BloodCreationBig",
       "file": "private/game-data/all-dungeons/behavior-scripts/7bdd9e7621d4444b14a29af18dcd184e316f4b658e3dda296d7940b35cff4e7e.json",
-      "sha256": "a25129eb046c945642767d838fd4445b61da64d1d7e149ab37a78cef2ff674a9"
+      "sha256": "170301e63d2890d3c1959e46db7eeafd8e98021aba49c5b917b1343d70905a7f"
     },
     {
       "source": "/Game/Abilities/NPC/SilkenHollow/BossSpider/SpawnAdds/BP_SH_BossSpider_SpawnAdds_Swarm_AoeActor",
@@ -474,17 +474,17 @@
     {
       "source": "/Game/characters/NPC/VikingVillage/BlackmistShadow/Minions/BP_NPC_VV_BlackmistShadowMinion",
       "file": "private/game-data/all-dungeons/behavior-scripts/8848ca54b610535a373c685ca4d75b1d5193f6dc329c6e971d2866f9a4701db9.json",
-      "sha256": "db4671f3e9167c1775533d3342daefcc5946a0bc53560959ada0f4e1dbdefd69"
+      "sha256": "07f42d95fd8021345dba9467dcafc6f710ada9080a10ba7e4793c818702a3255"
     },
     {
       "source": "/Game/characters/NPC/VikingVillage/BossVikingMystic_RuneMinion1/BP_NPC_VV_BossVikingMystic_RuneMinion1",
       "file": "private/game-data/all-dungeons/behavior-scripts/2d79632d8381904fb80f29064baf2ab9d6db4d34dc97918dd8e945e03dc2df11.json",
-      "sha256": "6178d139873dab13ab02543403259193493ba2576442b897f87b6adc7f07cf74"
+      "sha256": "2224cddbe5436b1d78b02ca409001a077759558083c726eadc53c0fcfc7737b3"
     },
     {
       "source": "/Game/characters/NPC/VikingVillage/BossChilgar/BP_NPC_VV_BossChilgarLargeOrb",
       "file": "private/game-data/all-dungeons/behavior-scripts/bf8ee6d98974959a2e699e0523604333ff7c0e69b78248debda7a6268d6580ae.json",
-      "sha256": "26293593266cfb5511681b6dec98396288866d92e09a5348a8bb522f8c562824"
+      "sha256": "7bd9bdf50916b73044f08077f410f17fde084fb1a79c8398ba41e42a8cc2d6c7"
     },
     {
       "source": "/Game/Abilities/NPC/VikingVillage/Chilgar/BP_VV_BossChilgar_WaterOrbSpawnLocation",
@@ -504,7 +504,7 @@
     {
       "source": "/Game/characters/NPC/Critters/Chicken/BP_NPC_Critter_PolymorphChickenMedium",
       "file": "private/game-data/all-dungeons/behavior-scripts/31ef836106d983ce7e6f60e2c10080824b2d4b8654306161a8429ad60870e91e.json",
-      "sha256": "f509e2f5b55fb6d3703f900ae26e2de485e939b8717c7684ecf2f0f937094606"
+      "sha256": "ec4ee4fbd18ae2fc35c0f3348b88707ef0d10fcee6f0d86197ae1f78979ef882"
     },
     {
       "source": "/Game/characters/NPC/Critters/Chicken/BP_NPC_Critter_PolymorphChickenLarge",
@@ -519,7 +519,7 @@
     {
       "source": "/Game/characters/NPC/MythicForest/FoulTotemic/BP_NPC_MF_FoulTotemic",
       "file": "private/game-data/all-dungeons/behavior-scripts/99daa805083c03afa2c4448e41ba6bdbb563a8afce96d61c8448aad8017b543d.json",
-      "sha256": "9ef38960ec7683df3f3985633654be9734e167c3d45f763a4b56e82acc974834"
+      "sha256": "ffa46497ad635ab349374b1a9ce20616ba4e5af49836d60815325ca2f77b8f33"
     },
     {
       "source": "/Game/characters/NPC/MythicForest/FoulTotemic/AI/AIBC_MF_FoulTotemic",
@@ -803,8 +803,8 @@
       "proof": [
         {
           "terms": [
-            "Spawn Shardling Class",
-            "EX_LetObj"
+            "SetClassPropertyByName",
+            "Spawn Shardling Class"
           ]
         },
         {
@@ -861,5 +861,13 @@
       ],
       "maxDistance": 6000
     }
-  ]
+  ],
+  "review": {
+    "steamBuild": "26122410",
+    "notes": [
+      "Reviewed changed spawn graphs for IceGolem and BloodSummoner channel: task completion/delegate wiring changed; child class, projectile and spawn-property links preserved.",
+      "Other changes are reflected channel flags, parent export indices, replication indices, portraits/display names and capsule scale; source constants are regenerated.",
+      "Parent AI assignment and spawn-call/child-field evidence are checked by prepare-game-summons."
+    ]
+  }
 }

@@ -30,7 +30,7 @@ test('KDvzJny1w6YW8BaH/1 keeps whole packs and 270 points without scoring death-
     assert.deepEqual(group.enemies.toSorted(),pack.map(p=>p.placementId).sort());
   }
   for(const variant of result.variants){
-    const route=newRoute(dungeon,'test');
+    const route=newRoute(dungeon,dungeon.routeBuildId??'test');
     route.shadow=result.shadow;
     route.pulls=variant.pulls.map(p=>({enemies:p.groups.flatMap(id=>result.groups[id].enemies)}));
     route.excluded=variant.pulls.flatMap(p=>p.groups.flatMap(id=>result.groups[id].excluded));

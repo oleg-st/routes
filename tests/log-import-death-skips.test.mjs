@@ -7,7 +7,7 @@ import {matchLiveLog} from '../log-import/live-matcher.js';
 import {newRoute,scoreRoute,encodeRoute,decodeRoute} from '../route-model.js';
 import {campfires} from '../data/map-campfires.js';
 import {mapCampfires,mapViews} from '../map-views.js';
-const rawDungeon=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.SandTomb');
+const rawDungeon=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.TreeVillage');
 const fire=campfires[rawDungeon.id][0];
 const fireResources=()=>({x:fire.worldPosition.y,y:fire.worldPosition.x,hitPoints:100,maxHitPoints:100});
 
@@ -115,7 +115,7 @@ test('A living diversion pack is omitted while a later kill retains its full sco
   assert.deepEqual(detect(input),[{key:'3:1',pullID:1,reason:'survived-death-skip'}]);
   for(const allowPartial of [false,true]){
     const result=await matchLiveLog(log,{dungeon,catalog,presets:{},dungeonData:'custom',allowPartial});
-    const route=newRoute(dungeon,'test');
+    const route=newRoute(dungeon,dungeon.routeBuildId??'test');
     route.pulls=result.variants[0].pulls.map(p=>({enemies:p.groups.flatMap(id=>result.groups[id].enemies)}));
     assert.deepEqual(route.pulls,[{enemies:['kill']}]);
     assert.equal(scoreRoute(route,dungeon,catalog).percent,100);
@@ -123,7 +123,7 @@ test('A living diversion pack is omitted while a later kill retains its full sco
     const note=result.drawings.find(d=>d.kind==='note'),view=mapViews(dungeon)[0],point=mapCampfires(dungeon,view).find(c=>c.id===fire.id).point;
     assert.equal(note.text,'Death skip');assert.equal(note.afterTime,7);
     assert.deepEqual(note.points,[[point[0]-view.width*34/1400,point[1]]]);
-    const transferable=newRoute(rawDungeon,'test');
+    const transferable=newRoute(rawDungeon,rawDungeon.routeBuildId??'test');
     transferable.drawings=result.drawings.map(({afterTime,...d})=>d);
     assert.equal((await decodeRoute(await encodeRoute(transferable,rawDungeon),[rawDungeon],catalog)).drawings[0].text,note.text);
   }
@@ -159,24 +159,11 @@ test('Missing mob deaths do not alone establish a death skip',()=>{
   for(const mutate of cases){const input=example();mutate(input);assert.deepEqual(detect(input),[],mutate.toString());}
 });
 
-test('vYbAnLBdZNfJk4tR/2 excludes 35 points from the diversion but keeps the late Heart of Rot kill',()=>{
-  const log=JSON.parse(fs.readFileSync('tests/fixtures/xul-death-skip.json'));
-  const dungeon=JSON.parse(fs.readFileSync('data/dungeons.json')).find(d=>d.id==='Level.ID.SandTomb');
-  const catalog=new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(e=>[e.id,e]));
-  const rows=analyzeRouteEvents(log,dungeon,catalog).npcRows;
-  const skipped=deathSkipRows(log,rows,{dungeonID:dungeon.id}),keys=new Set(skipped.map(r=>r.key));
-  assert.equal(skipped.length,10);
-  assert.ok(skipped.every(r=>r.pullID===4));
-  const byGameID=new Map([...catalog.values()].map(e=>[e.gameId,e]));
-  assert.equal(rows.filter(r=>keys.has(r.key)).reduce((n,r)=>n+byGameID.get(r.gameID).dungeonScore,0),35);
-  assert.ok(rows.some(r=>r.key==='38:3'&&r.deaths.length));
-  assert.equal(keys.has('38:3'),false);
-  const [confirmed]=confirmedDeathSkips(log,rows,{dungeonID:dungeon.id});
-  assert.equal(confirmed.campfireID,fire.id);
-  assert.deepEqual(confirmed.playerIDs,[2]);
-  assert.equal(confirmed.activatedBy,23);
-  assert.equal(confirmed.activatedAt-log.fight.startTime,501038);
-  assert.equal(confirmed.endTime-log.fight.startTime,503208);
+test('A late kill of a diversion enemy is retained after a confirmed respawn',()=>{
+  const input=example();
+  assert.deepEqual(detect(input).map(r=>r.key),['3:1']);
+  input.log.events.push({fight:5,type:'death',timestamp:8000,sourceID:2,targetID:3});
+  assert.deepEqual(detect(input),[]);
 });
 
 test('The campfire may be activated while the tank is still kiting, before death',()=>{

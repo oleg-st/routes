@@ -1,90 +1,4 @@
 {
-  "Level.ID.DemonicRitual": {
-    "Level.ID.DemonicRitual:T_Map_Demonicritual_Start": {
-      "calibration": {
-        "sx": 56000,
-        "sy": -28000,
-        "ox": -25531.883,
-        "oy": 6003.2334
-      },
-      "bounds": [
-        {
-          "x": -21996.7666,
-          "y": -25531.883,
-          "z": -6939.3092
-        },
-        {
-          "x": 6003.2334,
-          "y": 30468.117,
-          "z": 3060.6908000000003
-        }
-      ],
-      "source": "/Game/dungeons/DemonicRitual/DemonicRitual.270"
-    },
-    "Level.ID.DemonicRitual:T_Map_Demonicritual_UpperFloor": {
-      "calibration": {
-        "sx": 56000,
-        "sy": -28000,
-        "ox": -30930.1133,
-        "oy": 26058.1
-      },
-      "bounds": [
-        {
-          "x": -1941.8999999999996,
-          "y": -30930.1133,
-          "z": -3383.4356
-        },
-        {
-          "x": 26058.1,
-          "y": 25069.8867,
-          "z": 1616.5644
-        }
-      ],
-      "source": "/Game/dungeons/DemonicRitual/DemonicRitual.271"
-    },
-    "Level.ID.DemonicRitual:T_Map_Demonicritual_End": {
-      "calibration": {
-        "sx": 64000,
-        "sy": -32000,
-        "ox": -16278.995,
-        "oy": 34380.703
-      },
-      "bounds": [
-        {
-          "x": 2380.7030000000013,
-          "y": -16278.995,
-          "z": -15420.819
-        },
-        {
-          "x": 34380.703,
-          "y": 47721.005,
-          "z": -5420.8189999999995
-        }
-      ],
-      "source": "/Game/dungeons/DemonicRitual/DemonicRitual.272"
-    },
-    "Level.ID.DemonicRitual:T_Map_Demonicritual_LowerFloor": {
-      "calibration": {
-        "sx": 56000,
-        "sy": -28000,
-        "ox": -30930.113,
-        "oy": 26058.1
-      },
-      "bounds": [
-        {
-          "x": -1941.8999999999996,
-          "y": -30930.113,
-          "z": -11495.796
-        },
-        {
-          "x": 26058.1,
-          "y": 25069.887,
-          "z": -1495.7960000000003
-        }
-      ],
-      "source": "/Game/dungeons/DemonicRitual/DemonicRitual.273"
-    }
-  },
   "Level.ID.DesertDunes": {
     "Level.ID.DesertDunes:T_Map_DesertDunes_Start": {
       "calibration": {
@@ -105,7 +19,7 @@
           "z": 4793.61464
         }
       ],
-      "source": "/Game/dungeons/DesertDunes/DesertDunes.269"
+      "source": "/Game/dungeons/DesertDunes/DesertDunes.266"
     },
     "Level.ID.DesertDunes:T_Map_DesertDunes_End": {
       "calibration": {
@@ -126,7 +40,7 @@
           "z": 4339.05005
         }
       ],
-      "source": "/Game/dungeons/DesertDunes/DesertDunes.270"
+      "source": "/Game/dungeons/DesertDunes/DesertDunes.267"
     }
   },
   "Level.ID.ElfMines": {
@@ -149,7 +63,7 @@
           "z": 4114.3027
         }
       ],
-      "source": "/Game/dungeons/ElfMines/ElfMines.610"
+      "source": "/Game/dungeons/ElfMines/ElfMines.607"
     }
   },
   "Level.ID.FrozenKingdom": {
@@ -172,51 +86,7 @@
           "z": 11182.757
         }
       ],
-      "source": "/Game/dungeons/FrozenKingdom/FrozenKingdom.239"
-    }
-  },
-  "Level.ID.IceCave": {
-    "Level.ID.IceCave:T_Map_IceCave_StartArea": {
-      "calibration": {
-        "sx": 61000,
-        "sy": -30500,
-        "ox": -32815.5063,
-        "oy": 36090.414000000004
-      },
-      "bounds": [
-        {
-          "x": 5590.414000000001,
-          "y": -32815.5063,
-          "z": -8144.1553
-        },
-        {
-          "x": 36090.414000000004,
-          "y": 28184.4937,
-          "z": 1855.8447
-        }
-      ],
-      "source": "/Game/dungeons/IceCave/IceCave.149"
-    },
-    "Level.ID.IceCave:T_Map_IceCave_Ending": {
-      "calibration": {
-        "sx": 88000,
-        "sy": -44000,
-        "ox": -29542.485,
-        "oy": 72195.01999999999
-      },
-      "bounds": [
-        {
-          "x": 28195.019999999997,
-          "y": -29542.485,
-          "z": -12338.714
-        },
-        {
-          "x": 72195.01999999999,
-          "y": 58457.515,
-          "z": -2338.714
-        }
-      ],
-      "source": "/Game/dungeons/IceCave/IceCave.150"
+      "source": "/Game/dungeons/FrozenKingdom/FrozenKingdom.231"
     }
   },
   "Level.ID.MoorCastle": {
@@ -239,7 +109,7 @@
           "z": 3833.7317000000003
         }
       ],
-      "source": "/MoorCastle/Levels/MoorCastle.52"
+      "source": "/MoorCastle/Levels/MoorCastle.50"
     },
     "Level.ID.MoorCastle:T_Map_MC_Chamber_01": {
       "calibration": {
@@ -260,30 +130,7 @@
           "z": -6279.9400000000005
         }
       ],
-      "source": "/MoorCastle/Levels/MoorCastle.53"
-    }
-  },
-  "Level.ID.MythicForest": {
-    "Level.ID.MythicForest:T_Map_MythicForest_Global": {
-      "calibration": {
-        "sx": 96000,
-        "sy": -48000,
-        "ox": -37963.955,
-        "oy": 18912.6826
-      },
-      "bounds": [
-        {
-          "x": -29087.3174,
-          "y": -37963.955,
-          "z": -7093.616
-        },
-        {
-          "x": 18912.6826,
-          "y": 58036.045,
-          "z": 2906.384
-        }
-      ],
-      "source": "/Game/dungeons/MythicForest/MythicForest.139"
+      "source": "/MoorCastle/Levels/MoorCastle.51"
     }
   },
   "Level.ID.NightPatrol": {
@@ -306,7 +153,7 @@
           "z": 16370.681
         }
       ],
-      "source": "/Game/dungeons/NightPatrol/NightPatrol.172"
+      "source": "/Game/dungeons/NightPatrol/NightPatrol.188"
     },
     "Level.ID.NightPatrol:T_Map_NightPatrol": {
       "calibration": {
@@ -327,7 +174,7 @@
           "z": 13521.805
         }
       ],
-      "source": "/Game/dungeons/NightPatrol/NightPatrol.173"
+      "source": "/Game/dungeons/NightPatrol/NightPatrol.189"
     }
   },
   "Level.ID.PirateRaid": {
@@ -350,7 +197,7 @@
           "z": 3356.8913000000002
         }
       ],
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.669"
+      "source": "/Game/dungeons/PirateRaid/PirateRaid.666"
     },
     "Level.ID.PirateRaid:T_Map_PirateRaid_Upper": {
       "calibration": {
@@ -371,7 +218,7 @@
           "z": 5663.948
         }
       ],
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.670"
+      "source": "/Game/dungeons/PirateRaid/PirateRaid.667"
     },
     "Level.ID.PirateRaid:T_Map_PirateRaid_Ship": {
       "calibration": {
@@ -392,7 +239,7 @@
           "z": 2683.599
         }
       ],
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.671"
+      "source": "/Game/dungeons/PirateRaid/PirateRaid.668"
     },
     "Level.ID.PirateRaid:T_Map_PirateRaid_JungleArea": {
       "calibration": {
@@ -413,95 +260,7 @@
           "z": 5536.05426
         }
       ],
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.672"
-    }
-  },
-  "Level.ID.SandTomb": {
-    "Level.ID.SandTomb:T_ST_Map_Exterior_01": {
-      "calibration": {
-        "sx": 68000,
-        "sy": -34000,
-        "ox": -40405.576,
-        "oy": 21633.3413
-      },
-      "bounds": [
-        {
-          "x": -12366.6587,
-          "y": -40405.576,
-          "z": -4190.3202
-        },
-        {
-          "x": 21633.3413,
-          "y": 27594.424,
-          "z": 2809.6798
-        }
-      ],
-      "source": "/SandTomb/Levels/SandTomb_Environment.61"
-    },
-    "Level.ID.SandTomb:T_ST_Map_Interior_01": {
-      "calibration": {
-        "sx": 76000,
-        "sy": -38000,
-        "ox": -44405.576,
-        "oy": 53673.883
-      },
-      "bounds": [
-        {
-          "x": 15673.883000000002,
-          "y": -44405.576,
-          "z": -8579.199700000001
-        },
-        {
-          "x": 53673.883,
-          "y": 31594.424,
-          "z": 1420.8002999999999
-        }
-      ],
-      "source": "/SandTomb/Levels/SandTomb_Environment.62"
-    },
-    "Level.ID.SandTomb:T_ST_Map_End_01": {
-      "calibration": {
-        "sx": 124000,
-        "sy": -62000,
-        "ox": -74939.093,
-        "oy": 100827.27
-      },
-      "bounds": [
-        {
-          "x": 38827.270000000004,
-          "y": -74939.093,
-          "z": -12001.237000000001
-        },
-        {
-          "x": 100827.27,
-          "y": 49060.907,
-          "z": -2001.237
-        }
-      ],
-      "source": "/SandTomb/Levels/SandTomb_Environment.63"
-    }
-  },
-  "Level.ID.ShipGraveyard": {
-    "Level.ID.ShipGraveyard:T_Map_ShipGraveyard_01": {
-      "calibration": {
-        "sx": 80000,
-        "sy": -40000,
-        "ox": -35018.7583,
-        "oy": 16971.0886
-      },
-      "bounds": [
-        {
-          "x": -23028.9114,
-          "y": -35018.7583,
-          "z": -11446.0127
-        },
-        {
-          "x": 16971.0886,
-          "y": 44981.2417,
-          "z": 553.9872999999998
-        }
-      ],
-      "source": "/Game/dungeons/ShipGraveyard/ShipGraveyard.506"
+      "source": "/Game/dungeons/PirateRaid/PirateRaid.669"
     }
   },
   "Level.ID.SnowPeak": {
@@ -524,7 +283,7 @@
           "z": 9129.6284
         }
       ],
-      "source": "/SnowPeak/Levels/SnowPeak.17"
+      "source": "/SnowPeak/Levels/SnowPeak.16"
     }
   },
   "Level.ID.SpiderForest": {
@@ -547,7 +306,7 @@
           "z": 3242.0798
         }
       ],
-      "source": "/Game/dungeons/SpiderForest/SpiderForest.183"
+      "source": "/Game/dungeons/SpiderForest/SpiderForest.161"
     },
     "Level.ID.SpiderForest:T_Map_SF_Lair": {
       "calibration": {
@@ -568,7 +327,30 @@
           "z": -9715.84
         }
       ],
-      "source": "/Game/dungeons/SpiderForest/SpiderForest.184"
+      "source": "/Game/dungeons/SpiderForest/SpiderForest.162"
+    }
+  },
+  "Level.ID.TreeVillage": {
+    "Level.ID.TreeVillage:T_TreeVillage_Global": {
+      "calibration": {
+        "sx": 80000,
+        "sy": -40000,
+        "ox": -33102.612,
+        "oy": 15147.420399999999
+      },
+      "bounds": [
+        {
+          "x": -24852.5796,
+          "y": -33102.612,
+          "z": -4221.5396
+        },
+        {
+          "x": 15147.420399999999,
+          "y": 46897.388,
+          "z": 11778.4604
+        }
+      ],
+      "source": "/TreeVillage/Levels/TreeVillage_Lighting.186"
     }
   },
   "Level.ID.UrrakMarkets": {
@@ -591,72 +373,7 @@
           "z": 7980.8765
         }
       ],
-      "source": "/Game/dungeons/UrrakMarkets/UrrakMarkets.1334"
-    }
-  },
-  "Level.ID.VikingVillageAttack": {
-    "Level.ID.VikingVillageAttack:T_VikingVillage_Church": {
-      "calibration": {
-        "sx": 56000,
-        "sy": -28000,
-        "ox": -35021.966,
-        "oy": 15124.5323
-      },
-      "bounds": [
-        {
-          "x": -12875.4677,
-          "y": -35021.966,
-          "z": 2075.8115
-        },
-        {
-          "x": 15124.5323,
-          "y": 20978.034,
-          "z": 7075.8115
-        }
-      ],
-      "source": "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.295"
-    },
-    "Level.ID.VikingVillageAttack:T_VikingVillage_Lower": {
-      "calibration": {
-        "sx": 65697.53959999999,
-        "sy": -32848.769799999995,
-        "ox": -32006.749099999994,
-        "oy": -2303.344100000002
-      },
-      "bounds": [
-        {
-          "x": -35152.1139,
-          "y": -32006.749099999994,
-          "z": -7987.91825
-        },
-        {
-          "x": -2303.344100000002,
-          "y": 33690.790499999996,
-          "z": 5450.214849999999
-        }
-      ],
-      "source": "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.296"
-    },
-    "Level.ID.VikingVillageAttack:T_Map_VV_Market": {
-      "calibration": {
-        "sx": 70000,
-        "sy": -35000,
-        "ox": -19008.109,
-        "oy": 27771.334000000003
-      },
-      "bounds": [
-        {
-          "x": -7228.665999999999,
-          "y": -19008.109,
-          "z": -981.4872999999998
-        },
-        {
-          "x": 27771.334000000003,
-          "y": 50991.891,
-          "z": 9018.5127
-        }
-      ],
-      "source": "/Game/dungeons/VikingVillageAttack/VikingVillageAttack.297"
+      "source": "/Game/dungeons/UrrakMarkets/UrrakMarkets.1314"
     }
   }
 }

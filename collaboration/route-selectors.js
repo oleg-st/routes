@@ -41,7 +41,7 @@ export function selectRoute(doc, identity) {
   const {ghorn, witch} = modifiers;
   if (ghorn.active && witch.active && (ghorn.packId === witch.packId ||
       ghorn.replacedEnemies?.some(key => witch.replacedEnemies?.includes(key)))) witch.active = false;
-  const availableMob = key => !key.startsWith('modifier:') || Boolean(modifiers[key.slice(9)]?.packId);
+  const availableMob = key => !key.startsWith('modifier:') || Boolean(modifiers[key.split(':')[1]]?.packId);
   for (const pull of pulls) pull.enemies = pull.enemies.filter(availableMob);
   const route={version: 2, id: identity.routeId, buildId: identity.buildId, dungeonId: identity.dungeonId,
     ...(meta.get('difficulty')===undefined?{}:{difficulty:meta.get('difficulty')}),

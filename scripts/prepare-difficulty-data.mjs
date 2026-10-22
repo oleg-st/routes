@@ -1,20 +1,16 @@
 // Installed-game difficulty selection, affixes and summoned NPC attributes.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import {spawnSync} from 'node:child_process';
-import {loadGameCatalogSource,readJson,sha} from './game-catalog-source.mjs';
+import {exportDifficultyTables,availableDifficultyLevels} from './game-difficulty-source.mjs';
+import {loadGameCatalogSource,sha} from './game-catalog-source.mjs';
 import {npcCatalogId} from './game-catalog-actors.mjs';
-const assets='private/game-data/all-dungeons/difficulty-assets.txt';
-fs.writeFileSync(assets,'/Game/dungeons/DT_DifficultyToLevel\n/Game/MatchMaking/DT_GameFinderLeagues\n');
-const extraction=spawnSync('dotnet',['private/game-data/extractor/bin/Debug/net10.0/Extractor.dll','--assets',assets],{stdio:'inherit',windowsHide:true});
-if(extraction.error)throw extraction.error;assert.equal(extraction.status,0,'Difficulty export failed');
-for(const result of readJson(assets+'.status.json'))assert.ok(!result.Error&&!result.Diagnostics?.length,'Incomplete difficulty export');
+const difficultyTables=exportDifficultyTables();
 const s=loadGameCatalogSource();
-const levelFile='private/game-data/all-dungeons/dependencies/c48ce7a48162e26b0e57a39d89df15eedd3b248e1f9e30b28cdfec758b425066.json';
-const leagueFile='private/game-data/all-dungeons/dependencies/5a7917ce3e1c57da05cc1d5701c81e93c52bd78e545668ad998226d79976e0d1.json';
-const levels=readJson(levelFile).Objects.find(o=>o.Name==='DT_DifficultyToLevel').Rows;
-const leagues=Object.values(readJson(leagueFile).Objects.find(o=>o.Name==='DT_GameFinderLeagues').Rows);
+const levelFile=difficultyTables.DT_DifficultyToLevel.file,leagueFile=difficultyTables.DT_GameFinderLeagues.file;
+const levels=difficultyTables.DT_DifficultyToLevel.rows;
+const leagues=Object.values(difficultyTables.DT_GameFinderLeagues.rows);
 const eternal=leagues.find(l=>l.Type.endsWith('::Eternal')),pinnacle=leagues.find(l=>l.Type.endsWith('::Pinnacle'));
+assert.ok(eternal&&pinnacle,'Review changed difficulty league types');
 const offset=eternal.MinimumDifficulty-1,affixes=s.tables.find(t=>t.name==='DT_ModifersInDungeons').rows;
 const tags={empowered:'EmpoweredMinions',ghorn:'WinterGiant',witch:'WinterWitch',shadow:'ShadowLord',stoneskin:'StoneSkin',ultimatum:'Ultimatum'};
 const dungeons={};
@@ -24,8 +20,8 @@ for(const d of s.read('dungeons').playable){
   // Difficulty gates for the extra Hard / Nightmare mechanics are game curve values.
   choices=[pinnacle.MinimumDifficulty,s.curve('AbilityUnlock.Pinnacle.Hard'),s.curve('AbilityUnlock.Pinnacle.Ultimate')].map((value,i)=>({value,label:['Normal','Hard','Nightmare'][i],modifiers:[]}));
  }else{
-  const maximum=d.info.MaximumDifficulty??2147483647;
-  choices=Object.entries(levels).filter(([level,row])=>Number(level)>offset&&Number(level)<=Math.min(maximum,offset+90)&&Object.values(row).includes(d.id)).map(([level])=>{
+  // The league's exported bounds define the current Eternal scale.
+  choices=availableDifficultyLevels(levels,eternal,d).map(level=>{
    // Gameplay tags are FNames: assignment tables spell StoneSkin as Stoneskin.
    const values=Object.values(affixes[d.key+'.'+level]??{}).map(tag=>tag.toLowerCase());
    assert.ok(values.length,'Missing affix assignment: '+d.key+'.'+level);

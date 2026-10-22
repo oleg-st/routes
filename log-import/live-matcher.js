@@ -290,9 +290,16 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       pulls[segment].groups.push(id);
     }
     for(const kind of ['ghorn','witch'])if(affixes[kind].active){
-      const npc=npcRows.find(r=>r.gameID===affixes[kind].gameID),id=`modifier:${kind}`;
-      const segment=engagementSegmentIndex(pullSegments,npc.firstTime);
-      groups[id]={id,label:kind==='ghorn'?'Ghorn':'Witch',enemies:[id],excluded:[],empowered:[]};pulls[segment].groups.push(id);
+      const npcs=npcRows.filter(r=>r.gameID===affixes[kind].gameID);
+      const spawns=presets?.[kind]?.spawns??[{placementId:`modifier:${kind}`}];
+      if(npcs.length>spawns.length||spawns.length>1&&npcs.some(r=>!r.firstPosition))throw new Error('Mini-boss positions are missing or ambiguous in this log.');
+      const costs=npcs.map(r=>spawns.map(s=>spawns.length===1?0:Math.hypot(r.firstPosition.y-s.worldPosition.x,r.firstPosition.x-s.worldPosition.y)));
+      if(spawns.length>1&&costs.some(row=>row.filter(v=>v===Math.min(...row)).length!==1))throw new Error('Mini-boss positions are ambiguous in this log.');
+      const {columns}=minimumAssignment(costs);
+      for(const [i,npc]of npcs.entries()){
+        const id=spawns[columns[i]].placementId,segment=engagementSegmentIndex(pullSegments,npc.firstTime);
+        groups[id]={id,label:kind==='ghorn'?'Ghorn':'Witch',enemies:[id],excluded:[],empowered:[]};pulls[segment].groups.push(id);
+      }
     }
     pulls.forEach(p=>p.groups.sort());
     const routeKey=JSON.stringify(pulls),duplicate=variantByPulls.get(routeKey);

@@ -31,17 +31,11 @@ test('Game Dormant placements stay independent and preserve spawn identity',()=>
   }
 });
 
-test('Original Urrak G48 selects as two Mancatchers and three independent flowers',()=>{
-  const before=raw.find(d=>d.id==='Level.ID.UrrakMarkets'),after=correctDungeon(before);
-  const ids=new Set(urrakControls.slice(2).flat()),members=after.enemies.filter(p=>ids.has(p.placementId));
-  const packs=[...Map.groupBy(members,p=>p.packId).values()];
-  assert.deepEqual(packs.map(ps=>ps.length).sort(),[1,1,1,2]);
-  assert.ok(packs.find(ps=>ps.length===2).every(p=>enemies.get(p.id).name==='Mancatcher'));
-});
+
 
 test('Both data variants round-trip without changing members or score',async()=>{
   for(const {id} of dormantDungeons){
-    const before=raw.find(d=>d.id===id),after=correctDungeon(before),r=newRoute(before,'25647984');
+    const before=raw.find(d=>d.id===id),after=correctDungeon(before),r=newRoute(before,before.routeBuildId??'test');
     r.pulls[0].enemies=before.enemies.filter(p=>p.id==='dr-slaughtervine').map(p=>p.placementId);
     const score=scoreRoute(r,before,enemies,null);
     assert.deepEqual((await decodeRoute(await encodeRoute(r,before),dungeons,enemies)).pulls[0].enemies,r.pulls[0].enemies);

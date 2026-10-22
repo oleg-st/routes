@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
+import assert from 'node:assert/strict';
+const root='private/game-data/all-dungeons';
+const review=JSON.parse(fs.readFileSync('scripts/game-summon-semantics.json'));
+const list=root+'/summon-assets.txt';
+fs.writeFileSync(list,[...new Set(review.sources.map(r=>r.source))].join('\n')+'\n');
+const run=spawnSync('dotnet',['private/game-data/extractor/bin/Debug/net10.0/Extractor.dll','--assets',list,'--scripts'],{stdio:'inherit',windowsHide:true});
+if(run.error)throw run.error;
+assert.equal(run.status,0,'Summon source export failed');
+const results=JSON.parse(fs.readFileSync(list+'.status.json'));
+assert.ok(results.every(r=>r.Output&&!r.Error&&!r.Diagnostics?.length),'Incomplete summon source export');

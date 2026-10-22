@@ -31,8 +31,8 @@ test('Failed or mismatched dungeon responses leave the catalogue intact and allo
 
 test('Route imports load only their dungeon before decoding placement references',async()=>{
   const originals=JSON.parse(fs.readFileSync('data/dungeons.json'));
-  const target=originals.find(d=>d.id==='Level.ID.SandTomb');
-  const route=newRoute(target,'test');route.pulls[0].enemies=target.enemies.slice(0,3).map(p=>p.placementId);
+  const target=originals.find(d=>d.id==='Level.ID.TreeVillage');
+  const route=newRoute(target,target.routeBuildId??'test');route.pulls[0].enemies=target.enemies.slice(0,3).map(p=>p.placementId);
   const text=await encodeRoute(route,target),catalogue=originals.map(({id,name})=>({id,name,dataURL:id})),calls=[];
   const load=createDungeonLoader(catalogue,undefined,async id=>{calls.push(id);return {ok:true,json:async()=>originals.find(d=>d.id===id)};});
   const restored=await decodeRoute(text,catalogue,undefined,load);

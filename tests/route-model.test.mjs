@@ -7,9 +7,9 @@ import {modifierAvailable} from '../game-scoring.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url),'utf8'));
 const dungeons=read('dungeons').map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
-const d=dungeons.find(d=>d.name==="Sailor's Abyss"),lost=d.enemies.find(p=>enemies.get(p.id).name==='Lost Soul');
+const d=dungeons.find(d=>d.id==='Level.ID.UrrakMarkets'),lost=d.enemies.find(p=>!enemies.get(p.id).isBoss);
 test('Clearing removes all route content, preserves identity, and reloads with zero pulls',()=>{
-  const r=newRoute(d,'test'),id=r.id;r.name='My route';r.shadow=true;
+  const r=newRoute(d,d.routeBuildId??'test'),id=r.id;r.name='My route';r.shadow=true;
   r.pulls.push(newPull(1));r.pulls[0].enemies=[lost.placementId];r.pulls[0].note='Plan';
   r.excluded=[lost.placementId];r.modifiers.empowered={active:true,enemies:[lost.placementId]};
   r.priorityTargets=[lost.placementId];
@@ -23,7 +23,7 @@ test('Clearing removes all route content, preserves identity, and reloads with z
   assert.equal(loaded.pulls.length,0);assert.equal(scoreRoute(loaded,d,enemies).score,0);
 });
 test('Arrow style survives JSON; old paths become straight and invalid widths use medium',()=>{
-  const r=newRoute(d,'test');
+  const r=newRoute(d,d.routeBuildId??'test');
   r.drawings=[{id:'arrow',mapId:d.mapImages[0].id,kind:'line',color:'#9000ff',width:5,points:[[10,20],[60,90],[150,180]]}];
   const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons,enemies);
   assert.deepEqual(loaded.drawings[0].points,[[10,20],[150,180]]);
@@ -32,7 +32,7 @@ test('Arrow style survives JSON; old paths become straight and invalid widths us
   r.drawings[0].points=[[1,2]];assert.throws(()=>validateRoute(r,dungeons,enemies),/two endpoints/);
 });
 test('Moving pulls updates automatic names and keeps colors at their list positions',()=>{
-  const r=newRoute(d,'test');r.pulls.push(newPull(1),newPull(2));
+  const r=newRoute(d,d.routeBuildId??'test');r.pulls.push(newPull(1),newPull(2));
   const original=[...r.pulls],colors=r.pulls.map(p=>p.color);
   original[1].enemies=[lost.placementId];original[1].note='Interrupt first';
   movePull(r,1,0);
@@ -46,7 +46,7 @@ test('Moving pulls updates automatic names and keeps colors at their list positi
   assert.deepEqual(r.pulls.map(p=>p.color),colors);
 });
 test('Manual names survive reordering and JSON roundtrip, including names like Pull 9',()=>{
-  const r=newRoute(d,'test');r.pulls.push(newPull(1),newPull(2));
+  const r=newRoute(d,d.routeBuildId??'test');r.pulls.push(newPull(1),newPull(2));
   renamePull(r.pulls[0],'Boss',0);renamePull(r.pulls[1],'Pull 9',1);
   const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons,enemies),colors=loaded.pulls.map(p=>p.color);
   movePull(loaded,0,2);
@@ -56,7 +56,7 @@ test('Manual names survive reordering and JSON roundtrip, including names like P
   assert.deepEqual(loaded.pulls.map(p=>p.name),['Pull 1','Pull 2','Boss']);
 });
 test('Legacy custom names survive and color-only edits keep automatic naming',()=>{
-  const r=newRoute(d,'test');r.pulls.push(newPull(1),newPull(2));
+  const r=newRoute(d,d.routeBuildId??'test');r.pulls.push(newPull(1),newPull(2));
   for(const p of r.pulls)delete p.customName;
   r.pulls[0].name='Opening pack';r.pulls[1].name='Пулл 2';
   const loaded=validateRoute(r,dungeons,enemies);
@@ -66,25 +66,25 @@ test('Legacy custom names survive and color-only edits keep automatic naming',()
   assert.equal(loaded.pulls[1].color,'#abcdef');
 });
 test('Invalid or unchanged pull moves leave the route untouched',()=>{
-  const r=newRoute(d,'test'),before=structuredClone(r);
+  const r=newRoute(d,d.routeBuildId??'test'),before=structuredClone(r);
   for(const [from,to]of [[0,0],[-1,0],[0,-1],[0,1],[1,0],[0,.5]])movePull(r,from,to);
   assert.deepEqual(r,before);
 });
 test('Shadow Lord uses the same current kill scores without name-based deductions',()=>{
-  const r=newRoute(d,'test');assignEnemies(r,r.pulls[0].id,[lost.placementId]);
-  assert.equal(scoreRoute(r,d,enemies).score,1);
-  r.shadow=true;assert.equal(scoreRoute(r,d,enemies).score,1);
-  assert.equal(scoreRoute(r,d,enemies).percent,1/d.requiredScore*100);
+  const r=newRoute(d,d.routeBuildId??'test');assignEnemies(r,r.pulls[0].id,[lost.placementId]);
+  assert.equal(scoreRoute(r,d,enemies).score,enemyScore(enemies.get(lost.id)));
+  r.shadow=true;assert.equal(scoreRoute(r,d,enemies).score,enemyScore(enemies.get(lost.id)));
+  assert.equal(scoreRoute(r,d,enemies).percent,enemyScore(enemies.get(lost.id))/d.requiredScore*100);
 });
 test('Moving an existing pack to another pull never counts it twice',()=>{
-  const r=newRoute(d,'test'),p=newPull(1);r.pulls.push(p);
+  const r=newRoute(d,d.routeBuildId??'test'),p=newPull(1);r.pulls.push(p);
   const ids=d.enemies.filter(e=>e.packId===lost.packId).map(e=>e.placementId);
   assignEnemies(r,r.pulls[0].id,ids);const before=scoreRoute(r,d,enemies);
   assignEnemies(r,p.id,ids);assert.equal(r.pulls[0].enemies.length,0);assert.equal(scoreRoute(r,d,enemies).score,before.score);
   assignEnemies(r,p.id,ids);assert.equal(scoreRoute(r,d,enemies).score,0);
 });
 test('Chicken mobs stay in the pull and count as mobs while scoring zero',()=>{
-  const r=newRoute(d,'test'),boss=d.enemies.find(p=>enemies.get(p.id).isBoss);
+  const r=newRoute(d,d.routeBuildId??'test'),boss=d.enemies.find(p=>enemies.get(p.id).isBoss);
   assignEnemies(r,r.pulls[0].id,[lost.placementId,boss.placementId]);r.excluded=[lost.placementId];
   const s=scoreRoute(r,d,enemies);assert.equal(s.score,0);assert.equal(s.orbScore,0);assert.equal(s.bosses,1);assert.equal(s.count,2);
   assert.ok(effectivePositions(r,d).some(p=>p.placementId===lost.placementId));
@@ -92,36 +92,36 @@ test('Chicken mobs stay in the pull and count as mobs while scoring zero',()=>{
   assert.ok(loaded.pulls[0].enemies.includes(lost.placementId));assert.deepEqual(loaded.excluded,[lost.placementId]);
   r.modifiers.empowered={active:true,enemies:[lost.placementId]};r.shadow=true;
   assert.equal(scoreRoute(r,d,enemies).score,0);assert.equal(scoreRoute(r,d,enemies).orbScore,0);
-  r.excluded=[];assert.equal(scoreRoute(r,d,enemies).score,3);
+  r.excluded=[];assert.equal(scoreRoute(r,d,enemies).score,enemyScore(enemies.get(lost.id),true));
 });
 test('Kill score depends on attributes, not the display name',()=>{
   assert.equal(enemyScore({name:'Lost Soul',dungeonScore:2}),2);
   assert.equal(enemyScore({name:'Unknown',dungeonScore:null},false),null);
 });
 test('JSON roundtrip preserves Unicode notes, floors, drawings and mode',()=>{
-  const r=newRoute(d,'test');r.name='Test route 🧭';r.pulls[0].note='Interrupt the cast → save cooldowns';r.shadow=true;
+  const r=newRoute(d,d.routeBuildId??'test');r.name='Test route 🧭';r.pulls[0].note='Interrupt the cast → save cooldowns';r.shadow=true;
   assignEnemies(r,r.pulls[0].id,[lost.placementId]);r.drawings=[{id:'test',mapId:d.mapImages[0].id,kind:'portal',color:'#abcdef',points:[[1,2],[3,4]]}];
   const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons);
   assert.equal(loaded.name,r.name);assert.equal(loaded.pulls[0].note,r.pulls[0].note);assert.equal(loaded.shadow,true);assert.deepEqual(loaded.drawings[0].points,[[1,2],[3,4]]);
 });
 test('Import rejects duplicate, foreign, malformed and incompatible data',()=>{
-  const r=newRoute(d,'test');r.pulls[0].enemies=[lost.placementId];r.pulls.push({...newPull(1),enemies:[lost.placementId]});
+  const r=newRoute(d,d.routeBuildId??'test');r.pulls[0].enemies=[lost.placementId];r.pulls.push({...newPull(1),enemies:[lost.placementId]});
   assert.throws(()=>validateRoute(r,dungeons),/multiple pulls/);
   r.pulls.pop();r.pulls[0].enemies=['foreign'];assert.throws(()=>validateRoute(r,dungeons),/another dataset/);
   r.pulls[0].enemies=[];r.drawings=[{mapId:d.mapImages[0].id,points:[[NaN,0]]}];assert.throws(()=>validateRoute(r,dungeons),/coordinates/);
   assert.throws(()=>validateRoute({version:999},dungeons),/format/);
 });
 test('Empowered multiplies the game score and never empowers bosses',()=>{
-  const r=newRoute(d,'test'),boss=d.enemies.find(p=>enemies.get(p.id).isBoss);
+  const r=newRoute(d,d.routeBuildId??'test'),boss=d.enemies.find(p=>enemies.get(p.id).isBoss);
   assignEnemies(r,r.pulls[0].id,[lost.placementId,boss.placementId]);
   r.modifiers.empowered={active:true,enemies:[lost.placementId,boss.placementId]};
-  assert.equal(scoreRoute(r,d,enemies).score,3);
-  r.shadow=true;assert.equal(scoreRoute(r,d,enemies).score,3);
-  r.modifiers.empowered.active=false;assert.equal(scoreRoute(r,d,enemies).score,1);
+  assert.equal(scoreRoute(r,d,enemies).score,enemyScore(enemies.get(lost.id),true));
+  r.shadow=true;assert.equal(scoreRoute(r,d,enemies).score,enemyScore(enemies.get(lost.id),true));
+  r.modifiers.empowered.active=false;assert.equal(scoreRoute(r,d,enemies).score,enemyScore(enemies.get(lost.id)));
 });
 test('Both replacements suppress original packs, count once, and restore on disable',()=>{
-  const d=dungeons.find(d=>d.id==='Level.ID.DemonicRitual');
-  const r=newRoute(d,'test');r.pulls.push(newPull(1));
+  const d=dungeons.find(d=>d.id==='Level.ID.UrrakMarkets');
+  const r=newRoute(d,d.routeBuildId??'test');r.pulls.push(newPull(1));
   const packs=[...new Set(d.enemies.filter(p=>!enemies.get(p.id).isBoss).map(p=>p.packId))].slice(0,2);
   const ids=d.enemies.filter(p=>packs.includes(p.packId)).map(p=>p.placementId);
   assignEnemies(r,r.pulls[0].id,ids);const original=scoreRoute(r,d,enemies).score;
@@ -140,14 +140,14 @@ test('Both replacements suppress original packs, count once, and restore on disa
 });
 test('Orb rounding uses cumulative score, handles reordering and thresholds',()=>{
   const dungeon={id:'Level.ID.FrozenKingdom',name:"Cithrel's Fall",requiredScore:188,enemies:[{id:'a',placementId:'a'},{id:'b',placementId:'b'},{id:'c',placementId:'c'}]};
-  const es=new Map([['a',{dungeonScore:1}],['b',{dungeonScore:1}],['c',{dungeonScore:63}]]),r=newRoute(dungeon,'test');r.shadow=true;r.pulls=[{enemies:['a']},{enemies:['b']},{enemies:['c']}];
+  const es=new Map([['a',{dungeonScore:1}],['b',{dungeonScore:1}],['c',{dungeonScore:63}]]),r=newRoute(dungeon,dungeon.routeBuildId??'test');r.shadow=true;r.pulls=[{enemies:['a']},{enemies:['b']},{enemies:['c']}];
   const result=shadowTimeline(r,dungeon,es);assert.deepEqual(result.map(p=>p.orbs),[1,0,30]);assert.equal(result[2].spawns,1);
   r.pulls.reverse();const reversed=shadowTimeline(r,dungeon,es);assert.equal(reversed.at(-1).total,result.at(-1).total);
   assert.equal(reversed.reduce((s,p)=>s+p.orbs,0),orbCount(65,dungeon));
-  assert.equal(shadowTarget(dungeons.find(d=>d.name==='The Heart of Tuzari')),90);assert.equal(shadowTarget(d),60);
+  assert.equal(shadowTarget(dungeons.find(d=>d.id==='Level.ID.FrozenKingdom')),90);assert.equal(shadowTarget(d),60);
 });
 test('Import migrates v1 and rejects invalid modifier state and one-ended paths',()=>{
-  const r=newRoute(d,'test');delete r.modifiers;r.version=1;
+  const r=newRoute(d,d.routeBuildId??'test');delete r.modifiers;r.version=1;
   const migrated=validateRoute(r,dungeons,enemies);assert.equal(migrated.version,2);assert.equal(migrated.modifiers.empowered.active,false);
   migrated.modifiers.empowered.enemies=['foreign'];assert.throws(()=>validateRoute(migrated,dungeons,enemies),/empowered/);
   migrated.modifiers.empowered.enemies=[];migrated.modifiers.ghorn={active:true,packId:d.enemies.find(p=>enemies.get(p.id).isBoss).packId};assert.throws(()=>validateRoute(migrated,dungeons,enemies),/boss pack/);
@@ -161,13 +161,13 @@ test('Pull envelopes contain padded single, collinear and spread-out mobs',()=>{
   assert.deepEqual(pullOutline([],4),[]);
 });
 test('All dungeons can create, score and validate a complete map route',()=>{
-  for(const dungeon of dungeons){const r=newRoute(dungeon,'test');assignEnemies(r,r.pulls[0].id,dungeon.enemies.map(e=>e.placementId));const s=scoreRoute(r,dungeon,enemies);assert.equal(s.unknown,0);assert.ok(s.percent>=100,dungeon.name);assert.doesNotThrow(()=>validateRoute(r,dungeons));}
+  for(const dungeon of dungeons){const r=newRoute(dungeon,dungeon.routeBuildId??'test');assignEnemies(r,r.pulls[0].id,dungeon.enemies.map(e=>e.placementId));const s=scoreRoute(r,dungeon,enemies);assert.equal(s.unknown,0);assert.ok(s.percent>=100,dungeon.name);assert.doesNotThrow(()=>validateRoute(r,dungeons));}
 });
 test('Every automatic modifier target exists and replacements exclude only the matched mobs',()=>{
   const presets=read('modifier-placements');assert.equal(presets.buildId,read('manifest').buildId);
   let marked=0,replacements=0;
   for(const dungeon of dungeons){
-    const r=newRoute(dungeon,'test'),row=presets.dungeons[dungeon.id];applyModifierPresets(r,dungeon,presets);
+    const r=newRoute(dungeon,dungeon.routeBuildId??'test'),row=presets.dungeons[dungeon.id];applyModifierPresets(r,dungeon,presets);
     assert.deepEqual(r.modifiers.empowered.enemies,row.empowered);marked+=row.empowered.length;
     assignEnemies(r,r.pulls[0].id,dungeon.enemies.map(p=>p.placementId));
     const before=scoreRoute(r,dungeon,enemies).score;
@@ -175,19 +175,20 @@ test('Every automatic modifier target exists and replacements exclude only the m
       replacements++;const ids=row[kind].replacedEnemies;
       assert.ok(ids.every(id=>dungeon.enemies.some(p=>p.placementId===id&&!enemies.get(p.id)?.isBoss)));
       toggleModifier(r,kind);
-      assert.ok(r.pulls[0].enemies.includes('modifier:'+kind));
-      const expected=before-ids.reduce((s,id)=>s+enemies.get(dungeon.enemies.find(p=>p.placementId===id).id).dungeonScore,0)+20;
+      const spawns=row[kind].spawns;
+      for(const spawn of spawns)assert.equal(r.pulls[0].enemies.includes(spawn.placementId),spawn.replacedEnemies.length>0);
+      const expected=before-ids.reduce((s,id)=>s+enemies.get(dungeon.enemies.find(p=>p.placementId===id).id).dungeonScore,0)+20*spawns.filter(s=>s.replacedEnemies.length).length;
       assert.equal(scoreRoute(r,dungeon,enemies).score,expected);
-      assert.equal(effectivePositions(r,dungeon).length,dungeon.enemies.length-ids.length+1);
+      assert.equal(effectivePositions(r,dungeon).length,dungeon.enemies.length-ids.length+spawns.length);
       const loaded=validateRoute(JSON.parse(JSON.stringify(r)),dungeons,enemies);assert.deepEqual(loaded.modifiers,r.modifiers);
       toggleModifier(r,kind);assert.equal(scoreRoute(r,dungeon,enemies).score,before);
     }
   }
-  assert.equal(marked,64);assert.equal(replacements,18);
+  assert.equal(marked,46);assert.equal(replacements,17);
 });
 
 test('Save state tracks content through saving, undo, clearing, and reload',()=>{
-  const r=newRoute(d,'test');assert.equal(hasRouteChanges(r),false);
+  const r=newRoute(d,d.routeBuildId??'test');assert.equal(hasRouteChanges(r),false);
   r.pulls.push(newPull(1));assert.equal(hasRouteChanges(r),true);
   const saved=structuredClone(r);assert.equal(hasRouteChanges(r,saved),false);
   r.name='Changed';assert.equal(hasRouteChanges(r,saved),true);
@@ -200,7 +201,7 @@ test('Save state tracks content through saving, undo, clearing, and reload',()=>
 });
 
 test('All annotation identities survive repeated saved-route reloads without mutating the source',()=>{
-  const r=newRoute(d,'test');
+  const r=newRoute(d,d.routeBuildId??'test');
   r.drawings=['line','portal','invis','note'].map((kind,i)=>({
     id:`annotation-${i}`,mapId:d.mapImages[0].id,kind,color:'#abcdef',text:kind==='note'?'Keep this note':'',
     points:kind==='note'?[[10,20]]:[[10,20],[30,40]],
@@ -215,7 +216,7 @@ test('All annotation identities survive repeated saved-route reloads without mut
 });
 
 test('Legacy annotations acquire distinct stable IDs on their first saved reload',()=>{
-  const r=newRoute(d,'test');
+  const r=newRoute(d,d.routeBuildId??'test');
   r.drawings=Array.from({length:3},()=>({mapId:d.mapImages[0].id,kind:'note',points:[[10,20]],text:'Legacy'}));
   const migrated=validateRoute(r,dungeons,enemies),ids=migrated.drawings.map(d=>d.id);
   assert.equal(new Set(ids).size,3);
@@ -226,7 +227,7 @@ test('Legacy annotations acquire distinct stable IDs on their first saved reload
 });
 
 test('Ambiguous annotation IDs are rejected instead of silently assigning new identities',()=>{
-  const r=newRoute(d,'test');
+  const r=newRoute(d,d.routeBuildId??'test');
   r.drawings=['line','note'].map(kind=>({id:'duplicate',mapId:d.mapImages[0].id,kind,points:[[10,20],[30,40]]}));
   assert.throws(()=>validateRoute(r,dungeons,enemies),/Duplicate drawing ID/);
 });

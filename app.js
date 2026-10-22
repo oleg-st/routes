@@ -24,7 +24,6 @@ import {createRoomUI} from './collaboration/room-ui.js';
 import {newRoomCode,roomCode} from './collaboration/room-protocol.js';
 import {createRouteDocument,restoreRouteDocument} from './collaboration/route-document.js';
 import {openRouteStorage} from './collaboration/route-storage.js';
-import {migrateLegacyLibrary} from './collaboration/route-library.js';
 import {createLogImportUI} from './log-import/import-ui.js';
 import {movementTrailLines} from './log-import/movement-trail.js';
 import {captureLogCallback,createLiveImport} from './log-import/live-import.js';
@@ -61,7 +60,6 @@ let modifierHighlightKey='';
 const enemyFocusDuration=1000;
 const enemyHoverDelay=200;
 let arrowColor='#ff0000',arrowWidth=3;
-const storageKey='fellowship-atlas-v1';
 const dungeonDataMode='custom';
 let store={drafts:{},saved:[],lastDungeon:null};
 function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),4500);}
@@ -730,7 +728,7 @@ function renderModifierHighlight(){
   if(!mod||button.disabled){modifierHighlightKey='';return;}
   const ids=new Set(kind==='empowered'
     ?[...mod.enemies,...(data['modifier-placements'].dungeons[dungeon.id]?.empowered??[])]
-    :mod.active?['modifier:'+kind]:replacementMembers(dungeon,mod.packId,mod.replacedEnemies));
+    :mod.active?currentPositions().filter(p=>p.modifier===kind).map(p=>p.placementId):replacementMembers(dungeon,mod.packId,mod.replacedEnemies));
   const key=JSON.stringify([dungeon.id,kind,mod.active,[...ids]]);
   if(key===modifierHighlightKey)return;
   modifierHighlightKey=key;
@@ -838,7 +836,7 @@ async function importRouteText(text){
   const incoming=await decodeRoute(text,data.dungeons,enemies,data.loadDungeon);incoming.id=uid();
   if(!canEdit())throw new Error('Only players can import routes.');
   await selectDungeon(incoming.dungeonId,incoming);
-  toast(incoming.buildId!==data.manifest.buildId?'Imported a route from another build. Check scores and pull contents.':'Route imported.');
+  toast('Route imported.');
 }
 function logPreviewRoute(fixture,state,id){
   if(fixture.dungeonData!==dungeonDataMode)throw new Error('Dungeon data changed. Reopen Import from log.');
@@ -954,7 +952,6 @@ function toggleRouteModifier(kind){
     const other=kind==='ghorn'?'witch':'ghorn';
     if(route.modifiers[other].active)commands.push({type:'set-modifier',kind:other,patch:{active:false}});
   }
-  if(kind!=='empowered'&&!mod.active&&!route.pulls.some(p=>p.enemies.includes('modifier:'+kind))){const pull=route.pulls.find(p=>p.enemies.some(id=>mod.replacedEnemies?.includes(id)));if(pull)commands.push({type:'assign-mobs',pullId:pull.id,mobIds:['modifier:'+kind]});}
   change(commands);
 }
 function bind(){
@@ -1249,21 +1246,8 @@ async function init(){
   if(fullMapBuildId!==data.manifest.buildId)throw new Error('Full map coordinates need updating for this game data build. Run node scripts/prepare-full-maps.mjs.');
   if(combinedBuildId!==data.manifest.buildId)throw new Error('Combined maps need updating for this game data build. Run npm run maps.');
   data.loadDungeon=createDungeonLoader(data.dungeons,d=>correctDungeon(d,dungeonDataMode));
-  try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved&&saved.drafts&&Array.isArray(saved.saved))store=saved;}catch{toast('Browser storage is corrupted. You can import a route string backup.');}
-  for(const saved of [...Object.values(store.drafts),...store.saved]){
-    if(!saved||typeof saved!=='object')continue;
-    saved.name=englishDefaultLabel(saved.name);
-    if(Array.isArray(saved.pulls))for(const pull of saved.pulls){if(pull)pull.name=englishDefaultLabel(pull.name);}
-  }
   $('#dungeon').innerHTML=[...data.dungeons].sort((a,b)=>a.name.localeCompare(b.name)).map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
-  routeStorage=await openRouteStorage();
-  if(!await routeStorage.isMigrated()){
-    const ids=new Set([...Object.values(store.drafts),...store.saved].map(value=>value?.dungeonId));
-    // Resolve only referenced legacy routes before migrating. A network failure
-    // must not mark the library migrated and strand otherwise valid backups.
-    await Promise.all([...ids].filter(id=>data.dungeons.some(d=>d.id===id)).map(id=>data.loadDungeon(id)));
-  }
-  const errors=await migrateLegacyLibrary(routeStorage,store,{dungeons:data.dungeons,enemies,presets:data['modifier-placements']});
+  routeStorage=await openRouteStorage({name:'fellowship-route-together-'+data.manifest.buildId});
   store=await routeStorage.library();
   let incoming;const initialRouteHash=location.hash;
   if(initialRouteHash.startsWith('#route=')){
@@ -1275,7 +1259,6 @@ async function init(){
   let resume;try{resume=JSON.parse(sessionStorage.getItem('rt-room'));}catch{}
   if(location.hash.startsWith('#room=')){const code=roomCode(location.hash);if(resume?.code===code)await startRoom({...resume,code});else openRoomHash();}
   setTool('select');
-  if(errors.length)toast('Some older routes could not be migrated. Their original browser backup is preserved.');
   await logImportUI.resume();
 }
 init().catch(err=>{$('#map-loading').hidden=false;$('#map-loading').textContent=err.message;$('#map-loading').classList.add('fatal');console.error(err);});

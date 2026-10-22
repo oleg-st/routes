@@ -31,7 +31,11 @@ export function gameScoringRules(s,semantics={}){
  const section=ini.split('[/Script/fellowship.CRFellowshipModifierSubsystem]')[1]?.split(/\r?\n\[/)[0];
  const cap=Number(section?.match(/^MaxModifierDifficultyScaleLimit\s*=\s*(-?\d+)/m)?.[1]);assert.ok(Number.isInteger(cap),'Missing modifier difficulty limit');
  const curve=s.tables.find(t=>t.name==='CT_CharacterScalingBaseAttributes').rows['Default.BasicAttributeSet.DifficultyHealthScale'];
- assert.ok(curve.Keys.length&&curve.Keys.every((k,i)=>k.Time===i+1),'Health difficulty table must have consecutive level samples');
+ assert.ok(curve.Keys.length&&curve.Keys[0].Time===1&&curve.Keys.every((k,i)=>Number.isInteger(k.Time)&&(!i||k.Time>curve.Keys[i-1].Time)),'Invalid health difficulty curve');
+ assert.ok(curve.InterpMode.endsWith('RCIM_Linear'),'Review changed health curve interpolation');
+ // Attribute defaults sample the curve at every integer level. Sparse keys
+ // (the new zero tail at levels 54–151) do not remove indexes from that array.
+ const difficultyHealthScales=Array.from({length:curve.Keys.at(-1).Time},(_,i)=>s.curve('Default.BasicAttributeSet.DifficultyHealthScale',i+1));
  // Native GetDifficultyScales indexes the attribute-value array at difficulty;
  // UE attribute defaults arrays start with curve level 1 at index 0.
  const orb=defaults('GA_DungeonModifiers_ShadowLord_OrbSpawner');
@@ -61,5 +65,5 @@ export function gameScoringRules(s,semantics={}){
   assert.ok(baseHealth>0,'Missing Polymorph chicken HP: '+size);
   return [size,{id:npcCatalogId(npc),baseHealth}];
  }));
- return {empoweredScoreMultiplier:s.scalable(score.ModifierMagnitude.ScalableFloatMagnitude),empoweredHealthBonus:s.scalable(magnitude.Coefficient),modifierDifficultyCap:cap,difficultyHealthScales:curve.Keys.map(k=>k.Value),shadowOrbsPerLord,shadowLordsByDungeon,modifierAvailabilityByDungeon:gameModifierAvailability(s),markerHealthThresholds,markerDefaultBaseHealth,polymorphChickens,...(thresholdOverride?{polymorphLargeThresholdOverride:thresholdOverride}:{})};
+ return {empoweredScoreMultiplier:s.scalable(score.ModifierMagnitude.ScalableFloatMagnitude),empoweredHealthBonus:s.scalable(magnitude.Coefficient),modifierDifficultyCap:cap,difficultyHealthScales,shadowOrbsPerLord,shadowLordsByDungeon,modifierAvailabilityByDungeon:gameModifierAvailability(s),markerHealthThresholds,markerDefaultBaseHealth,polymorphChickens,...(thresholdOverride?{polymorphLargeThresholdOverride:thresholdOverride}:{})};
 }

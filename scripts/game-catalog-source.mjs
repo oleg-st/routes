@@ -1,10 +1,14 @@
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {readDifficultyTables,selectSeasonDungeons} from './game-difficulty-source.mjs';
 export const gamePlannerRoot=process.env.GAME_PLANNER_ROOT??'private/game-data/planner';
 export const readJson=f=>JSON.parse(fs.readFileSync(f));
 export const sha=b=>createHash('sha256').update(b).digest('hex');
 export function loadGameCatalogSource(){
- const read=n=>readJson(gamePlannerRoot+'/'+n+'.json');
+ const read=n=>{
+  const value=readJson(gamePlannerRoot+'/'+n+'.json');
+  return n==='dungeons'&&value.playable.some(d=>Object.hasOwn(d.info,'AvailableForCasual'))?{...value,playable:selectSeasonDungeons(value,readDifficultyTables(process.env.GAME_DATA_ROOT??'private/game-data/all-dungeons'))}:value;
+ };
  const manifest=read('manifest'),objects=new Map(),packages=[];
  for(const r of manifest.results.filter(r=>r.Kind!=='raw')){
   if(r.Error||r.Diagnostics?.length)throw Error('Incomplete export: '+r.Source);

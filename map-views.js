@@ -76,16 +76,16 @@ export function worldMapImage(worldPosition,dungeon,mapName){
   if(dungeon.mapImages.length===1)return dungeon.mapImages[0];
   const sources=fullMaps[dungeon.id]?.sources;
   const contains=map=>{
-    const bounds=sources?.[map.id]?.bounds;
+    const bounds=map.gameFrame?.bounds??sources?.[map.id]?.bounds;
     return bounds&&['x','y','z'].every(k=>!Number.isFinite(worldPosition[k])||worldPosition[k]>=bounds[0][k]&&worldPosition[k]<=bounds[1][k]);
   };
   const named=dungeon.mapImages.find(m=>mapName&&m.name===mapName);
-  if(named&&(!sources?.[named.id]?.bounds||contains(named)))return named;
+  if(named&&(!(named.gameFrame?.bounds??sources?.[named.id]?.bounds)||contains(named)))return named;
   const matches=dungeon.mapImages.filter(contains);
   if(matches.length===1)return matches[0];
   if(mapName==='Start'){
     const entrance=dungeon.mapImages.find(m=>m.id===mapStarts[dungeon.id]?.mapImageId);
-    if(entrance&&(!sources?.[entrance.id]?.bounds||contains(entrance)))return entrance;
+    if(entrance&&(!(entrance.gameFrame?.bounds??sources?.[entrance.id]?.bounds)||contains(entrance)))return entrance;
   }
   return null;
 }
@@ -93,8 +93,19 @@ export function worldMapImage(worldPosition,dungeon,mapName){
 // already contain world transforms; original layers need their own calibration.
 export function worldMapCoordinates(worldPosition,mapImageId,view,dungeon){
   if(!Number.isFinite(worldPosition?.x)||!Number.isFinite(worldPosition?.y))return null;
+  const layer=dungeon.mapImages.find(m=>m.id===mapImageId);
+  if(view.kind==='combined'&&!view.referenceId&&view.sources?.[mapImageId]){
+    if(!layer)return null;
+    const xy=worldMapCoordinates(worldPosition,mapImageId,layer,dungeon),t=view.sources[mapImageId];
+    return xy?[t.x+xy[0]/layer.width*t.width,t.y+xy[1]/layer.height*t.height]:null;
+  }
   if(view.sources?.[mapImageId])return mapCoordinates({worldPosition,mapImageId},view);
   if(view.id!==mapImageId)return null;
+  const c=layer?.gameFrame?.calibration;
+  if(c){
+    if(![c.sx,c.sy,c.ox,c.oy].every(Number.isFinite)||!c.sx||!c.sy)return null;
+    return [(worldPosition.y-c.ox)/c.sx*view.width,(worldPosition.x-c.oy)/c.sy*view.height];
+  }
   const samples=dungeon.enemies.filter(p=>p.mapImageId===mapImageId&&
     [p.worldPosition?.x,p.worldPosition?.y,p.mapPosition?.x,p.mapPosition?.y].every(Number.isFinite));
   const fit=(worldAxis,mapAxis)=>{

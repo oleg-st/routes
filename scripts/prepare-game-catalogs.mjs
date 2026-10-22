@@ -52,10 +52,10 @@ for(const d of registry.playable){
   const texture=o.properties.DungeonAreaTexture,tex=texture.ObjectName.split("'")[1],id=d.id+':'+tex;
   frames[d.id][id]={calibration:{sx:2*e.Y,sy:-2*e.X,ox:loc.Y-e.Y,oy:loc.X+e.X},bounds:[{x:loc.X-e.X,y:loc.Y-e.Y,z:loc.Z-e.Z},{x:loc.X+e.X,y:loc.Y+e.Y,z:loc.Z+e.Z}],source:o.ref};
   const destination=`${maps.length>1?'private/':''}images/dungeons/maps/${d.key.toLowerCase()}-${tex.toLowerCase()}-game.avif`;
-  return {...picture(texture,id,'dungeon-map','full',destination),name:areaLabels[tex]??o.properties.DungeonAreaName??'Overview'};
+  return {...picture(texture,id,'dungeon-map','full',destination),name:areaLabels[tex]??o.properties.DungeonAreaName??'Overview',gameFrame:{calibration:frames[d.id][id].calibration,bounds:frames[d.id][id].bounds}};
  }).sort((a,b)=>a.id.localeCompare(b.id));
  const info=d.info;
- dungeons.push({id:d.id,name:s.text(info.DisplayName),description:s.text(info.LevelDescription),kind:info.AvailableForQuickplay?'adventure':'capstone',minimumDifficulty:info.MinimumDifficulty,
+ dungeons.push({id:d.id,routeBuildId:s.manifest.steamBuild,name:s.text(info.DisplayName),description:s.text(info.LevelDescription),kind:info.LevelType.endsWith('::Adventure')?'adventure':'capstone',minimumDifficulty:info.MinimumDifficulty,
  requiredScore:info.RequiredDungeonScoreToComplete,timerSeconds:info.DungeonQualifierTime,mapImages,loadingScreenImages:[],enemies:[],source:{kind:'game',steamBuild:s.manifest.steamBuild,levelInfo:d.source}});
 }
 // Hero roles are local UI categories; names, colors and portraits come from game assets.
@@ -103,7 +103,6 @@ for(const table of s.tables.filter(t=>t.type==='DataTable'))for(const [rowName,r
 // Keep public icon URLs stable, but rebuild every pixel from game-owned textures.
 const modifierInfo=s.tables.find(t=>t.name==='DT_ModifierInfo').rows;
 const relicAbilities=s.tables.find(t=>t.name==='DT_AbilityData_RelicPowers').rows;
-const itemIcon=name=>s.properties([...s.objects.values()].find(o=>o.Name===name)?.ref).DefaultIcon;
 const checkpoint=Object.values(s.tables.find(t=>t.name==='DT_DungeonMapItems').rows).find(r=>r.MapItemCategory.TagName==='DungeonMap.ItemCategory.Checkpoint');
 for(const [destination,ref]of [
  ['images/modifiers/empowered-minions.avif',modifierInfo.EmpoweredMinions.UIIcon],
@@ -111,8 +110,8 @@ for(const [destination,ref]of [
  ['images/modifiers/winter-giant.avif',modifierInfo.WinterGiant.UIIcon],
  ['images/modifiers/winter-witch.avif',modifierInfo.WinterWitch.UIIcon],
  ['images/pois/bonfire.avif',checkpoint.MapIcon],
- ['images/hero-items/relic-b-crit-portal-hero-item-200.avif',itemIcon('Relic_B_Crit_Portal')],
- ['images/hero-items/relic-b-expertise-groupinvisibility-hero-item-200.avif',itemIcon('Relic_B_Expertise_GroupInvisibility')],
+ ['images/hero-items/relic-b-crit-portal-hero-item-200.avif',relicAbilities.GA_RelicPower_Portal.UIIconTexture.ResourceObject],
+ ['images/hero-items/relic-b-expertise-groupinvisibility-hero-item-200.avif',relicAbilities.GA_RelicPower_PartyInvisibility.UIIconTexture.ResourceObject],
  ['images/relics/ga-relicpower-polymorphtargetwithsharedcharges-relic-200.avif',relicAbilities.GA_RelicPower_PolymorphTargetWithSharedCharges.UIIconTexture.ResourceObject],
 ])assert.ok(picture(ref,destination,'ui','200',destination),'Missing UI icon '+destination);
 function write(name,data){fs.writeFileSync(out+'/'+name+'.json',JSON.stringify(data,null,2)+'\n');}
@@ -120,7 +119,7 @@ write('enemies',enemies);write('dungeons',dungeons);write('heroes',heroes);write
 write('game-map-frames',frames);write('game-image-sources',imageSources);
 write('manifest',{schemaVersion:1,buildId:s.manifest.steamBuild,source:'installed-game',data:{enemies:enemies.length,dungeons:dungeons.length,heroes:heroes.length,abilities:abilities.size},sourceManifestSha256:sha(fs.readFileSync(gamePlannerRoot+'/manifest.json'))});
 fs.mkdirSync('private/reports',{recursive:true});
-fs.writeFileSync('private/reports/game-catalog-evidence.json',JSON.stringify({steamBuild:s.manifest.steamBuild,warnings,nativeMapFrames:30,bossTagExceptions:[...bossesWithoutTag]},null,2)+'\n');
+fs.writeFileSync('private/reports/game-catalog-evidence.json',JSON.stringify({steamBuild:s.manifest.steamBuild,warnings,nativeMapFrames:Object.values(frames).reduce((n,areas)=>n+Object.keys(areas).length,0),bossTagExceptions:[...bossesWithoutTag]},null,2)+'\n');
 fs.writeFileSync(out+'/game-modifier-stats.js','// Generated from installed-game NPC attribute curves.\nexport const modifierStats='+JSON.stringify(Object.fromEntries([['ghorn','dm-wintergiant'],['witch','dm-winterwitch']].map(([kind,id])=>{const e=enemies.find(e=>e.id===id);return[kind,{baseHealth:e.baseHealth,dungeonScore:e.dungeonScore,sourceId:id}];})))+';\n');
 fs.mkdirSync('tmp/game-catalog-migration',{recursive:true});fs.writeFileSync('tmp/game-catalog-migration/image-jobs.json',JSON.stringify([...jobs.values()]));
 console.log(JSON.stringify({enemies:enemies.length,abilities:abilities.size,heroes:heroes.length,dungeons:dungeons.length,images:jobs.size,warnings}));

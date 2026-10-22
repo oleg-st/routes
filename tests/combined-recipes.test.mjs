@@ -1,14 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {recipes} from '../scripts/combined-maps/index.mjs';
+import {recipes as allRecipes} from '../scripts/combined-maps/index.mjs';
 import {combinedLayouts} from '../data/combined-layouts.js';
 import {fullMaps} from '../data/full-maps.js';
-import {legacyStitchedLayouts} from '../data/combined-legacy-layouts.js';
-import {migrateCombinedDrawing} from '../data/combined-maps.js';
 import {mapCoordinates} from '../map-views.js';
 import {originalFor} from '../scripts/avif-assets.mjs';
 const dungeons=JSON.parse(fs.readFileSync(new URL('../data/dungeons.json',import.meta.url)));
+const recipes=allRecipes.filter(r=>dungeons.some(d=>d.id==='Level.ID.'+r.key));
 
 test('Every multilevel dungeon has one recipe using each original layer exactly once',()=>{
   assert.equal(new Set(recipes.map(r=>r.key)).size,recipes.length);
@@ -38,25 +37,11 @@ test('Sands original artwork uses the Full coordinate frame and every marker and
     assert.deepEqual(mapCoordinates(p,map),mapCoordinates(p,full));
     for(const pt of p.mapPatrolPath||[])assert.deepEqual(mapCoordinates(pt,map),mapCoordinates(pt,full));
   }
-  assert.deepEqual(map.patrols,full.patrols);assert.deepEqual(map.placementPatrols,full.placementPatrols);
+  assert.deepEqual(map.patrols,full.patrols??{});assert.deepEqual(map.placementPatrols,full.placementPatrols??{});
   for(const source of d.mapImages){assert.equal(map.sources[source.id].path,source.path);assert.equal(map.sources[source.id].sha256,source.sha256);}
 });
 
-test('Sands v2 and v3 annotations follow their terrain into v4, including overlapping source rectangles',()=>{
-  const d=dungeons.find(d=>d.id.endsWith('DesertDunes')),current=combinedLayouts[d.id];
-  for(const version of [2,3]){
-  const old=legacyStitchedLayouts[`${d.id}:Combined-v${version}`];
-  for(const [suffix,point] of [['T_Map_DesertDunes_Start',[500,350]],['T_Map_DesertDunes_End',[600,150]]]){
-    const id=`${d.id}:${suffix}`,t=old.sources[id],next=current.sources[id];
-    const drawing={mapId:old.id,kind:'note',text:'Keep',points:[[t.x+point[0]/1024*t.width,t.y+point[1]/512*t.height]]};
-    const migrated=migrateCombinedDrawing(drawing,d);
-    assert.equal(migrated.mapId,current.id);assert.equal(migrated.text,'Keep');
-    const expected=[next.x+point[0]/1024*next.width,next.y+point[1]/512*next.height];
-    assert.ok(migrated.points[0].every((v,i)=>Math.abs(v-expected[i])<.001));
-    assert.deepEqual(migrateCombinedDrawing(migrated,d),migrated);
-  }
-  }
-});
+
 
 test('Sands End artwork aligns with Full landmarks independently of marker calibration',()=>{
   const recipe=recipes.find(r=>r.key==='DesertDunes'),layer=recipe.layers[1];
@@ -106,8 +91,8 @@ test('Every Combined matches Full encounters and patrols without embedding Full 
       assert.deepEqual(mapCoordinates(p,map),mapCoordinates(p,full));
       for(const pt of p.mapPatrolPath||[])assert.deepEqual(mapCoordinates(pt,map),mapCoordinates(pt,full));
     }
-    assert.deepEqual(map.patrols,full.patrols);
-    assert.deepEqual(map.placementPatrols,full.placementPatrols);
+    assert.deepEqual(map.patrols,full.patrols??{});
+    assert.deepEqual(map.placementPatrols,full.placementPatrols??{});
     if(fs.existsSync('private/images-combined')){
       const svg=fs.readFileSync(originalFor(map.path),'utf8');
       assert.equal((svg.match(/<image id="source-\d+"[^>]+data:image\/png;base64,/g)||[]).length,d.mapImages.length);
@@ -120,16 +105,4 @@ test('Every Combined matches Full encounters and patrols without embedding Full 
   }
 });
 
-test('All former v2 stitched drawings migrate once and retain content',()=>{
-  for(const r of recipes.filter(r=>r.key!=='DesertDunes')){
-    const id=`Level.ID.${r.key}`,d=dungeons.find(d=>d.id===id),old=legacyStitchedLayouts[`${id}:Combined-v2`],next=combinedLayouts[id];
-    assert.ok(old);assert.notEqual(old.id,next.id);
-    // Last painted terrain unambiguously owns a point inside its polygon.
-    const [sid,t]=Object.entries(old.sources).at(-1),p=t.outline[0],target=next.sources[sid];
-    const drawing={id:'migration-check',mapId:old.id,kind:'note',text:'Маршрут',points:[[t.x+p[0]*t.width/1024,t.y+p[1]*t.height/512]]};
-    const migrated=migrateCombinedDrawing(drawing,d);
-    assert.equal(migrated.mapId,next.id);assert.equal(migrated.text,drawing.text);
-    assert.ok(Math.hypot(migrated.points[0][0]-(target.x+p[0]*target.width/1024),migrated.points[0][1]-(target.y+p[1]*target.height/512))<.01);
-    assert.deepEqual(migrateCombinedDrawing(migrated,d),migrated);
-  }
-});
+
