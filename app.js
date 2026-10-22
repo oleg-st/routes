@@ -316,8 +316,8 @@ function render(){
 function matchesSearch(pos){const q=$('#search').value.trim().toLowerCase();if(!q)return true;return placementName(pos,enemies.get(pos.id)).toLowerCase().includes(q)||`g${packNumbers.get(pos.packId)}`===q;}
 function visiblePositions(){const owners=assigned();return currentPositions().filter(p=>logHighlights.has(p.placementId)||!$('#hide-unselected').checked||owners.has(p.placementId));}
 function relicSummary(chickens,invis){
-  const overLimit=chickens>gameServiceRules.chickenLimitsByDungeon[dungeon.id];
-  return [[chickenIcon,'Chicken',chickens],[relicIcons.invis,'Invisibility',invis]].map(([icon,name,count])=>`<span class="route-relic ${count?'present':''} ${name==='Chicken'&&overLimit?'over-limit':''}" ${name==='Chicken'?'data-route-chicken tabindex="0" aria-describedby="chicken-tooltip"':`title="${name}: ${count}"`}><img src="${icon}" alt=""><span>${name}${name==='Chicken'&&overLimit?' — dungeon limit exceeded':''}</span><b>${count}</b>${name==='Chicken'&&overLimit?'<em class="relic-warning" aria-hidden="true">!</em>':''}</span>`).join('');
+  const limit=gameServiceRules.chickenLimitsByDungeon[dungeon.id],overLimit=limit!=null&&chickens>limit;
+  return [[chickenIcon,'Chicken',chickens],[relicIcons.invis,'Invisibility',invis]].map(([icon,name,count])=>`<span class="route-relic ${count?'present':''} ${name==='Chicken'&&overLimit?'over-limit':''}" ${name==='Chicken'?'data-route-chicken tabindex="0" aria-describedby="chicken-tooltip"':`title="${name}: ${count}"`}><img src="${icon}" alt=""><span>${name}${name==='Chicken'&&overLimit?' — dungeon limit exceeded':''}</span><b>${count}${name==='Chicken'&&overLimit?`/${limit}`:''}</b></span>`).join('');
 }
 function chickenPositions(){return route.excluded.map(id=>positions.get(id)).filter(p=>p&&!enemies.get(p.id)?.isBoss);}
 let chickenTooltipTimer;
@@ -327,10 +327,10 @@ function showChickenTooltip(anchor){
   clearTimeout(chickenTooltipTimer);hideHover();hidePullTooltip();
   const tip=$('#chicken-tooltip'),chickens=chickenPositions(),owners=assigned();
   const limit=gameServiceRules.chickenLimitsByDungeon[dungeon.id];
-  const limitNote=limit==null?'':chickens.length>limit?`<div class="chicken-limit-warning">Dungeon limit exceeded: ${chickens.length} / ${limit} Chicken uses.</div><div class="muted">Charges are shared by the party.</div>`:`<div class="muted">Dungeon limit: ${limit} uses, shared by the party.</div>`;
+  const count=`<span${limit!=null&&chickens.length>limit?` class="chicken-limit-warning" title="Dungeon limit exceeded: ${chickens.length} / ${limit} Chicken uses."`:''}>${chickens.length}${limit==null?'':`/${limit}`}</span>`;
   const withoutChicken={...route,excluded:[]};
   const groups=[...route.pulls.map(p=>({name:p.name,id:p.id})),{name:'Not in a pull',id:null}];
-  tip.innerHTML=`<strong>Chicken · ${chickens.length}</strong>${limitNote}${chickens.length?groups.map(group=>{
+  tip.innerHTML=`<strong>Chicken · ${count}</strong>${chickens.length?groups.map(group=>{
     const members=chickens.filter(p=>(owners.get(p.placementId)?.pull.id??null)===group.id);if(!members.length)return '';
     return `<div class="tip-pack-heading">${esc(group.name)}</div><ul class="tip-pack">${members.map(p=>{const enemy=enemies.get(p.id),icon=availableImage(enemy),score=placementScore(p,enemy,withoutChicken),percent=score!=null&&dungeon.requiredScore>0?score/dungeon.requiredScore*100:null;return `<li class="tip-focus-row"><button type="button" data-focus-enemies="${esc(JSON.stringify([p.placementId]))}">${icon?`<img src="${icon}" alt="">`:''}<span>${esc(enemy.name)}</span><span class="tip-pack-status">${route.priorityTargets.includes(p.placementId)?priorityIcon:''}<span class="tip-pack-percent" title="Contribution without Chicken">${pct(percent)}</span></span></button></li>`;}).join('')}</ul>`;
   }).join(''):'<div class="muted">No Chicken mobs in this route.</div>'}`;
