@@ -29,7 +29,8 @@ export function mapPatrols(placements,view){
     if(reference?.length>1)segment=reference;
     else for(const [i,point] of (p.mapPatrolPath||[]).entries()){
       // Keep floor transitions disconnected, including on stitched overviews.
-      if(i&&point.mapImageId!==p.mapPatrolPath[i-1].mapImageId)flush();
+      if(i&&(point.mapImageId!==p.mapPatrolPath[i-1].mapImageId||
+        positionRegion(point,view)?.id!==positionRegion(p.mapPatrolPath[i-1],view)?.id))flush();
       const xy=onMap(point,view)?mapCoordinates({...point,worldPosition:p.patrolPath?.[i]},view):null;
       if(xy)segment.push(xy);else flush();
     }
@@ -45,6 +46,27 @@ export function mapPatrols(placements,view){
   }
   return [...packs.values()].flatMap(({packId,segments})=>segments.map(points=>({packId,points})));
 }
+function insidePolygon([x,y],polygon){
+  let inside=false;
+  for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){
+    const [ax,ay]=polygon[i],[bx,by]=polygon[j];
+    if((ay>y)!==(by>y)&&x<(bx-ax)*(y-ay)/(by-ay)+ax)inside=!inside;
+  }
+  return inside;
+}
+function displayRegions(view,mapImageId){
+  return (view.referenceId?fullMaps[view.referenceId]:view).displayRegions?.filter(r=>r.mapImageId===mapImageId)||[];
+}
+function projectRegion(point,region){
+  const t=region.transform;
+  return [t.x+point[0]*t.width,t.y+point[1]*t.height];
+}
+function positionRegion(position,view){
+  const reference=view.referenceId?fullMaps[view.referenceId]:view;
+  const c=reference.sources?.[position.mapImageId]?.calibration,w=position.worldPosition,p=position.mapPosition;
+  const normalized=w&&c?[(w.y-c.ox)/c.sx,(w.x-c.oy)/c.sy]:p&&[p.x,p.y];
+  return normalized&&displayRegions(view,position.mapImageId).find(r=>insidePolygon(normalized,r.polygon));
+}
 export function mapCoordinates(position,view){
   if(view.sources&&position.mapMembers?.length){const points=position.mapMembers.map(p=>mapCoordinates(p,view));return [0,1].map(i=>points.reduce((sum,p)=>sum+p[i],0)/points.length);}
   if(view.referenceId){
@@ -59,6 +81,12 @@ export function mapCoordinates(position,view){
   if(view.kind==='combined')return [t.x+p.x*t.width,t.y+p.y*t.height];
   const c=t.calibration,w=position.worldPosition||(c?{y:p.x*c.sx+c.ox,x:p.y*c.sy+c.oy}:null);
   if(!w)return null;
+  // Some source textures show two floors on top of each other. A cropped
+  // region of one floor is displayed separately in the overview artwork.
+  // Apply the same transform to all coordinates, including new game actors.
+  const normalized=c?[(w.y-c.ox)/c.sx,(w.x-c.oy)/c.sy]:p&&[p.x,p.y];
+  const region=positionRegion(position,view);
+  if(region)return projectRegion(normalized,region);
   const inside=source=>['x','y','z'].every(k=>w[k]>=source.bounds[0][k]&&w[k]<=source.bounds[1][k]);
   // Upstream planners disagree on some floor boundaries. Only switch when
   // world coordinates identify one unambiguous reference floor.
@@ -145,7 +173,15 @@ function invertBasis(point,basis){
 }
 function projectDrawingPoint(point,source,target,dungeon){
   if(source.id===target.id||source.sources&&target.sources)return [...point];
-  return invertBasis(applyBasis(point,drawingBasis(source,dungeon)),drawingBasis(target,dungeon));
+  const overview=combinedMap(dungeon)||fullMaps[dungeon.id];
+  const normalized=[point[0]/source.width,point[1]/source.height];
+  const region=!source.sources&&overview&&displayRegions(overview,source.id).find(r=>insidePolygon(normalized,r.polygon));
+  const projected=region?projectRegion(normalized,region):applyBasis(point,drawingBasis(source,dungeon));
+  if(!target.sources&&overview)for(const r of displayRegions(overview,target.id)){
+    const t=r.transform,original=[(projected[0]-t.x)/t.width,(projected[1]-t.y)/t.height];
+    if(insidePolygon(original,r.polygon))return [original[0]*target.width,original[1]*target.height];
+  }
+  return invertBasis(projected,drawingBasis(target,dungeon));
 }
 function drawingIntersectsMap(drawing,view){
   const inside=([x,y])=>x>=0&&x<=view.width&&y>=0&&y<=view.height;

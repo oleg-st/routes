@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {fullMaps} from '../data/full-maps.js';
+import {recipes} from '../scripts/combined-maps/index.mjs';
 import {mapViews,mapCoordinates,worldMapCoordinates,onMap,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires,mapPatrols} from '../map-views.js';
 import {campfires,campfireBuildId} from '../data/map-campfires.js';
 import {mapStarts,mapStartBuildId} from '../data/map-starts.js';
@@ -149,6 +151,57 @@ test('Game Wraithtide captain follows world coordinates rather than a frozen mar
   const d=dungeons.find(d=>d.id.endsWith('PirateRaid')),p=d.enemies.find(p=>p.id==='pr-bosspiratecaptain');
   assert.deepEqual(mapCoordinates(p,mapViews(d)[0]),mapCoordinates({...p,placementId:undefined},mapViews(d)[0]));
   assert.notDeepEqual(mapCoordinates({...p,worldPosition:{...p.worldPosition,y:p.worldPosition.y+1000}},mapViews(d)[0]),mapCoordinates(p,mapViews(d)[0]));
+});
+
+test('Wraithtide deck actors, world points and annotations follow the separated deck artwork',()=>{
+  const d=dungeons.find(d=>d.id.endsWith('PirateRaid')),[overview,reference]=mapViews(d);
+  const jungle=d.mapImages.find(m=>m.id.endsWith('JungleArea'));
+  const deck=d.enemies.filter(p=>p.mapImageId===jungle.id&&p.worldPosition.x<-22000&&p.worldPosition.y>-13000&&p.worldPosition.y<-8000&&p.worldPosition.z>2600);
+  const interior=d.enemies.filter(p=>p.mapImageId.endsWith('_Ship'));
+  assert.equal(deck.length,14);assert.equal(interior.length,18);
+  const overlay=recipes.find(r=>r.key==='PirateRaid').overlays[0];
+  const close=(a,b)=>assert.ok(a.every((v,i)=>Math.abs(v-b[i])<1e-6),`${a} != ${b}`);
+  for(const p of deck){
+    const expected=[0,1].map(i=>overlay.at[i]+(([p.mapPosition.x*1024,p.mapPosition.y*512][i]-overlay.crop[i])/overlay.crop[i+2])*overlay.size[i]);
+    close(mapCoordinates(p,overview),expected);
+    close(mapCoordinates(p,reference),expected);
+    close(mapCoordinates({...p,worldPosition:undefined},overview),expected);
+    close(worldMapCoordinates(p.worldPosition,p.mapImageId,overview,d),expected);
+    const point=mapCoordinates(p,jungle),drawing={id:'deck-note',kind:'note',mapId:jungle.id,points:[point]};
+    close(drawingOnMap(drawing,overview,d).points[0],expected);
+    close(drawingOnMap({...drawing,mapId:overview.id,points:[expected]},jungle,d).points[0],point);
+    close(drawingPointFromMap(expected,drawing,overview,d),point);
+  }
+  assert.ok(Math.min(...deck.map(p=>mapCoordinates(p,overview)[0]))>Math.max(...interior.map(p=>mapCoordinates(p,overview)[0]))+400);
+  // Crossing between the island and its detached deck must not paint a line across the sea.
+  const p=deck.find(p=>p.id==='pr-bosspiratecaptain');
+  const outside={mapImageId:jungle.id,mapPosition:{x:.6,y:.2}};
+  const paths=mapPatrols([{placementId:'crossing',packId:'test',mapPatrolPath:[outside,outside,p,p]}],overview);
+  assert.equal(paths.length,2);
+});
+
+test('All multi-floor maps register displaced playable artwork and retain every floor',()=>{
+  const multi=dungeons.filter(d=>d.mapImages.length>1);
+  assert.equal(multi.length,6);
+  const displaced=[];
+  for(const d of multi){
+    const overview=mapViews(d)[0],recipe=recipes.find(r=>d.id==='Level.ID.'+r.key);
+    for(const m of d.mapImages){
+      assert.ok(d.enemies.some(p=>p.mapImageId===m.id),`${d.name}: empty ${m.name}`);
+      assert.ok(overview.sources[m.id],`${d.name}: omitted ${m.name}`);
+    }
+    for(const overlay of recipe.overlays??[]){
+      const id=d.id+':'+recipe.layers[overlay.source].suffix,art=overview.artworkSources[id];
+      const [cx,cy,cw,ch]=overlay.crop,[x,y]=overlay.at,[w,h]=overlay.size;
+      if(Math.abs(x-(art.x+cx/1024*art.width))<1e-6&&Math.abs(y-(art.y+cy/512*art.height))<1e-6&&Math.abs(w-cw/1024*art.width)<1e-6&&Math.abs(h-ch/512*art.height)<1e-6)continue;
+      const region=fullMaps[d.id].displayRegions?.find(r=>r.mapImageId===id);
+      assert.ok(region,`${d.name}: displaced artwork needs coordinate registration`);
+      assert.deepEqual(region.polygon,overlay.maskPolygon.map(([px,py])=>[(cx+px*cw)/1024,(cy+py*ch)/512]));
+      assert.deepEqual(region.transform,{x:x-cx*w/cw,y:y-cy*h/ch,width:1024*w/cw,height:512*h/ch});
+      displaced.push(region.id);
+    }
+  }
+  assert.deepEqual(displaced,['ship-deck']);
 });
 
 test('Combined projects original layers, patrols and modifier members in its chosen frame',()=>{

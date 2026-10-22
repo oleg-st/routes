@@ -2171,15 +2171,15 @@ export const combinedLayouts={
       }
     },
     "referenceId": "Level.ID.PirateRaid",
-    "referenceSha256": "fb12f5157626ea0782a03703a3d31a30c828e8ad3a856930b926631dede10404",
+    "referenceSha256": "bd3ce0979ffa7b004408ae07c29dd73dfe145ecd465c4bdf4a71fac655297549",
     "placements": {
       "placement-83af8c44d4dbfdd5ecf80aec4965a9addcae91e0c97919dda0d02dca7ed4a859": [
         3631.49759,
         397.28584
       ],
       "placement-905076d85532095b64a19cbd7ed29cc3c1ac0bf20c0cd23cbd6b7efa17217da9": [
-        2604.604089,
-        2474.3096603333333
+        3257.638239896306,
+        2444.381539691456
       ],
       "placement-fce087b3397c5e0de12d773b907c3ef54b47bf667d16265df3327fc94c3f7693": [
         2450.7071429677426,
@@ -2262,8 +2262,8 @@ export const combinedLayouts={
         2476.2961856666666
       ],
       "placement-e19d7c406444537f8e4efb0b47d795f37bd6bea643c01b4daa8ff7172bd36fa5": [
-        2600.7991223333333,
-        2960.855631666667
+        3253.6737310471162,
+        2951.3283746760844
       ],
       "placement-c6d2aef8046909dbe706cba94b6b24cdf6d8cf440bd4ac9b9c266d5e394aec91": [
         2699.9641536774197,
@@ -2362,12 +2362,12 @@ export const combinedLayouts={
         2473.925085
       ],
       "placement-9e702afdd0e90d570d187094e34ec9e1269105019e691e007943bd70411af51d": [
-        2690.036485,
-        2856.3779553333334
+        3346.6528146931482,
+        2842.4699512909574
       ],
       "placement-76896dedaf4101edd950176f52c25dbf01811561da8364b29167538cd2bb646e": [
-        2521.267537333333,
-        2858.326001666667
+        3170.8073881472405,
+        2844.4996791713065
       ],
       "placement-7b0f9d256c621398831ae26953ebc12ccbe95639f6e01eaf6c7cd894b64c859c": [
         2375.772964333333,
@@ -2434,12 +2434,12 @@ export const combinedLayouts={
         787.9071039999999
       ],
       "placement-12857be198ddbab1d88a9fc5200aaef07d1c65c9ec9c28aebdfb82d6db6fd366": [
-        2615.6014623333335,
-        2740.438152333333
+        3269.096732891736,
+        2721.668794478328
       ],
       "placement-c4b13062b1cbddc1f5d069113e8cdcf3602080f38524120d50b44f739273f4e5": [
-        2588.1361503333333,
-        2741.367283333333
+        3240.479800863485,
+        2722.636883924111
       ],
       "placement-6455e404e0bda1292f67a59d7ba9d85097c0708a63aa6782d28baa55681cfd3e": [
         3315.200276,
@@ -2562,8 +2562,8 @@ export const combinedLayouts={
         1718.58844
       ],
       "placement-16cb3e0b7908a910342888fafc5c8985563641cbf376b2b66eecf76130abbf01": [
-        2603.6569796666668,
-        2736.6324343333335
+        3256.651418286003,
+        2717.7035027924117
       ],
       "placement-114d6172c6bb8382c0a28a61608c1d77d3f39843c056f4461dc750c0f5587739": [
         3199.7218076,
@@ -2678,8 +2678,8 @@ export const combinedLayouts={
         2781.3660440000003
       ],
       "placement-game-11650f1d-42a022d8-70ecdbbe-c3c9fa00": [
-        2601.490188,
-        3203.47807
+        3254.3937730845073,
+        3204.123967397314
       ],
       "placement-game-122b220f-485dd93b-b165a59d-5a17634a": [
         2883.8485401290327,
@@ -2734,8 +2734,8 @@ export const combinedLayouts={
         1928.7802656666665
       ],
       "placement-game-39c6c16b-4690f11c-f539ee85-8f30cc15": [
-        2627.153749,
-        3205.13637
+        3281.1334067263847,
+        3205.8517998858892
       ],
       "placement-game-3b89c712-4eed1c3f-3ed540b0-fcc0db41": [
         2802.335092503226,
@@ -2846,8 +2846,8 @@ export const combinedLayouts={
         1442.4233199999999
       ],
       "placement-game-6fa06077-48df7769-ce47b1a5-ab0ec206": [
-        2602.8801546666664,
-        3218.533448333333
+        3255.842021028005,
+        3219.8106174679415
       ],
       "placement-game-6fa1b52a-46330e65-8a4aa9b1-78b9aa38": [
         2752.1362321290326,
@@ -2898,8 +2898,8 @@ export const combinedLayouts={
         2174.3379486666663
       ],
       "placement-game-8be22cd3-4af96b9d-3012dbb6-d623f7e4": [
-        2592.3827668333333,
-        2968.102134333333
+        3244.9044779154165,
+        2958.8787230666117
       ],
       "placement-game-8c0ecc9b-46ded831-42daaba5-1ab630cd": [
         2412.674862,
@@ -2962,8 +2962,8 @@ export const combinedLayouts={
         1695.1356018064514
       ],
       "placement-game-a77a6450-438e51e4-ee31e0b1-7119c571": [
-        2615.6404243333336,
-        3229.3963866666663
+        3269.137328567681,
+        3231.129038606288
       ],
       "placement-game-a84449b3-4cb1ef59-90dab8a7-f39f4816": [
         3905.62232,
@@ -2978,8 +2978,8 @@ export const combinedLayouts={
         988.4258450193547
       ],
       "placement-game-af0dcedd-40ec0667-88a8ca83-f1d8e962": [
-        2628.1365466666666,
-        3216.915452
+        3282.157413081183,
+        3218.124778578037
       ],
       "placement-game-af616d2a-4ca5b6b7-00f51d91-174227f1": [
         2894.4414305806454,
@@ -3070,8 +3070,8 @@ export const combinedLayouts={
         533.0796334193546
       ],
       "placement-game-ea327d4d-46e230bd-e71e63a7-d653ff4f": [
-        2600.9421976666667,
-        2976.3846183333335
+        3253.822805526551,
+        2967.5084914687723
       ],
       "placement-game-eb241807-4bdf9e0c-4b38beae-390a5af4": [
         3588.340628,
