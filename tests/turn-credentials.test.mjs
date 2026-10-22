@@ -1,9 +1,37 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createTurnCredentials} from '../collaboration/turn-credentials.js';
+import {createTurnCredentials,createOptionalTurnCredentials} from '../collaboration/turn-credentials.js';
 import {connectionConfig} from '../collaboration/connection-config.js';
 const settings={endpoint:'https://turn.example/credentials',siteKey:'public-site-key'};
 const iceServers=[{urls:['turns:turn.cloudflare.com:443?transport=tcp'],username:'user',credential:'password'}];
+test('Optional TURN preserves direct settings on verification, network and service failures',async()=>{
+  const config={rtcConfig:{iceServers:[{urls:'stun:example.org'}]},relayConfig:{urls:['wss://relay.example']}};
+  for(const failure of [
+    {verify:async()=>{throw Error('Connection verification failed.');}},
+    {fetchImpl:async()=>{throw TypeError('Failed to fetch');}},
+    {fetchImpl:async()=>{throw new DOMException('Timed out','TimeoutError');}},
+    ...[403,429,503].map(status=>({fetchImpl:async()=>new Response('',{status})})),
+    {fetchImpl:async()=>Response.json({iceServers:[],expiresAt:0})},
+  ]){
+    const get=createOptionalTurnCredentials({settings,storage:()=>null,verify:async()=>'token',fetchImpl:()=>assert.fail('Must not request credentials after failed verification'),...failure});
+    assert.equal(await get(config),config);
+    await assert.rejects(get({...config,rtcConfig:{...config.rtcConfig,iceTransportPolicy:'relay'}}));
+  }
+});
+test('Optional TURN preserves cancellation and retries preparation on the next connection',async()=>{
+  const controller=new AbortController();
+  const cancelled=createOptionalTurnCredentials({settings,verify:async()=>{throw new DOMException('Cancelled','AbortError');}});
+  await assert.rejects(cancelled(),{name:'AbortError'});
+  const aborted=createOptionalTurnCredentials({settings,verify:async()=>{controller.abort();throw Error('Verification failed');}});
+  await assert.rejects(aborted({},controller.signal),{name:'AbortError'});
+  let attempts=0;
+  const get=createOptionalTurnCredentials({settings,storage:()=>null,verify:async()=>{if(++attempts===1)throw Error('Verification failed');return 'token';},fetchImpl:async()=>Response.json({iceServers,expiresAt:Date.now()+14400000})});
+  let fallbacks=0;const onFallback=()=>fallbacks++;
+  assert.deepEqual(await get({},undefined,onFallback),{});
+  assert.equal(fallbacks,1);
+  assert.deepEqual((await get({},undefined,onFallback)).turnConfig,iceServers);
+  assert.equal(attempts,2);assert.equal(fallbacks,1);
+});
 test('Automatic TURN is lazy, bypassed for manual servers, cached in memory and renewed on expiry',async()=>{
   let clock=1000,verified=0,issued=0;const get=createTurnCredentials({settings,now:()=>clock,verify:async()=>{verified++;return 'token';},fetchImpl:async(url,options)=>{issued++;assert.equal(url,settings.endpoint);assert.equal(options.credentials,'omit');assert.equal(options.cache,'no-store');assert.deepEqual(JSON.parse(options.body),{token:'token'});return Response.json({iceServers,expiresAt:clock+14400000});}});
   assert.equal(verified,0);const first=await get();assert.deepEqual(first.turnConfig,iceServers);await get();assert.equal(issued,1);

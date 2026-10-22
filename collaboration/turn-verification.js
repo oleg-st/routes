@@ -24,7 +24,7 @@ export function verifyTurnstile(siteKey, signal) {
       if (widget !== undefined) api?.remove(widget);
       dialog.close();dialog.remove();if (error) reject(error);else resolve(token);
     };
-    const cancel = () => finish(new Error('Connection verification was cancelled. Reconnect to try again.'));
+    const cancel = () => finish(new DOMException('Connection verification was cancelled. Reconnect to try again.', 'AbortError'));
     const timer = setTimeout(() => finish(new Error('Connection verification timed out. Reconnect to try again.')), 120000);
     signal?.addEventListener('abort', cancel, {once: true});
     dialog.addEventListener('cancel', event => {event.preventDefault();cancel();});dialog.querySelector('button').onclick = cancel;

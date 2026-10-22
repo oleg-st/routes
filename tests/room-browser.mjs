@@ -11,8 +11,9 @@ import {chromium} from 'playwright';
 const realPublic=process.env.RT_PUBLIC_SIGNALING==='1',site=process.env.RT_SITE==='1';
 const bundle=site?null:await build({entryPoints:['app.js'],bundle:true,format:'esm',write:false,alias:{'loro-crdt':'loro-crdt/base64'},plugins:realPublic?[]:[{name:'local-signaling',setup(b){
   b.onLoad({filter:/[/\\]room-config\.js$/},()=>({loader:'js',contents:"export const roomAppId='route-together-browser-test';export const roomTransportConfig={relayConfig:{urls:['wss://relay.route-together.test'],redundancy:1},rtcConfig:{iceServers:[]},_test_only_mdnsHostFallbackToLoopback:true};"}));
-  // Controlled local WebRTC must not depend on a public TURN verification flow.
-  b.onLoad({filter:/[/\\]turn-service-config\.js$/},()=>({loader:'js',contents:'export const turnServiceConfig={};'}));
+  // Failed automatic TURN must still allow real direct WebRTC and route synchronization.
+  b.onLoad({filter:/[/\\]turn-service-config\.js$/},()=>({loader:'js',contents:"export const turnServiceConfig={endpoint:'https://relay.test/credentials',siteKey:'test-public-key'};"}));
+  b.onLoad({filter:/[/\\]turn-verification\.js$/},()=>({loader:'js',contents:"export async function verifyTurnstile(){window.turnAttempts=(window.turnAttempts||0)+1;throw new Error('Connection verification failed. Reconnect to try again.');}"}));
 }}]});
 const root=path.resolve(site?'dist':'.'),prefix=site?'/RoutePlanner/':'/';
 const server=http.createServer((req,res)=>{
@@ -57,10 +58,19 @@ try{
   assert.ok(new URL(b.url()).hash.startsWith('#room='),'Accepting an invitation must retain the room URL');
   await b.waitForFunction(()=>!document.querySelector('#workspace').hidden,{},{timeout:realPublic?60000:20000});console.log('WebRTC connected');
   await a.locator('#add-pull').click();await b.waitForFunction(()=>document.querySelector('#pull-count').textContent==='2');
+  if(!realPublic&&!site){
+    await b.waitForFunction(()=>document.querySelector('#room-status').dataset.sync==='synced');
+    assert.equal(await b.locator('#room-diagnostic').isVisible(),true);
+    assert.match(await b.locator('#room-diagnostic').textContent(),/TURN unavailable.*using direct connection.*Reconnect to retry TURN/);
+    const attempts=await b.evaluate(()=>window.turnAttempts);
+    await b.locator('#room-reconnect').click();await b.waitForFunction(count=>window.turnAttempts===count+1,attempts);
+    await b.waitForFunction(()=>document.querySelector('#room-status').dataset.sync==='synced');
+    assert.equal(await b.locator('#room-diagnostic').isVisible(),true);
+  }
   await selectAffix(b,'empowered');await a.waitForFunction(()=>document.querySelector('#empowered').getAttribute('aria-pressed')==='true');
   const map=await b.locator('#map').boundingBox(),click=(x,y)=>b.mouse.click(map.x+x,map.y+y);
   await b.locator('[data-tool=marker]').click();await click(400,380);await b.locator('#marker-label').fill('Team marker');await b.locator('#place-marker').click();
-  await b.locator('[data-tool=note]').click();await click(500,420);await b.getByRole('textbox',{name:'Note text'}).fill('Shared note');await b.locator('#place-note').click();
+  await b.locator('[data-tool=marker]').click();await click(500,420);await b.locator('[data-marker-icon="number"]').click();await b.locator('#marker-label').fill('Shared note');await b.locator('#place-marker').click();
   for(const [tool,y] of [['line',220],['portal',300],['invis',500]]){await b.locator('[data-tool='+tool+']').click();await click(280,y);await click(600,y);}
   await a.waitForFunction(()=>document.querySelectorAll('#drawings > g').length===5);
   const viewer=await join('spectator','Guest');await viewer.waitForFunction(()=>!document.querySelector('#workspace').hidden);
@@ -76,7 +86,8 @@ try{
   const remote=a.locator('#remote-cursors [data-cursor-session="'+originalSession+'"]');
   const moveCursor=async(p)=>{const target=await p.locator('#map').evaluate(el=>{const v=el.viewBox.baseVal,point=el.createSVGPoint();point.x=v.x+v.width*.42;point.y=v.y+v.height*.48;const screen=point.matrixTransform(el.getScreenCTM());return {x:point.x,y:point.y,clientX:screen.x,clientY:screen.y};});await p.mouse.move(target.clientX,target.clientY);return target;};
   await a.locator('#room-sessions').evaluate(e=>e.open=false);const target=await moveCursor(b);await remote.waitFor();
-  assert.ok(Math.abs(Number(await remote.getAttribute('data-map-x'))-target.x)<1);assert.equal(await remote.locator('text').textContent(),'Cursor player');assert.equal(await remote.locator('path').getAttribute('fill'),'#B46831');assert.match(await remote.locator('image').getAttribute('href'),/warmaster-hero-200.avif/);await remote.locator('image').evaluate(el=>new Promise((resolve,reject)=>{const image=new Image();image.onload=resolve;image.onerror=reject;image.src=el.getAttribute('href');}));await a.screenshot({path:'tmp/route-together-cursor.png'});await remote.screenshot({path:'tmp/route-together-cursor-detail.png'});
+  const portrait=JSON.parse(fs.readFileSync('data/heroes.json','utf8')).find(hero=>hero.id==='warmaster').images[0].path;
+  assert.ok(Math.abs(Number(await remote.getAttribute('data-map-x'))-target.x)<1);assert.equal(await remote.locator('text').textContent(),'Cursor player');assert.equal(await remote.locator('path').getAttribute('fill'),'#B46831');assert.equal(await remote.locator('image').getAttribute('href'),portrait);await remote.locator('image').evaluate(el=>new Promise((resolve,reject)=>{const image=new Image();image.onload=resolve;image.onerror=reject;image.src=el.getAttribute('href');}));await a.screenshot({path:'tmp/route-together-cursor.png'});await remote.screenshot({path:'tmp/route-together-cursor-detail.png'});
   await viewer.locator('#remote-cursors [data-cursor-session="'+originalSession+'"] ').waitFor();
   await a.waitForFunction(()=>[...document.querySelectorAll('.room-ping')].filter(e=>/^\d+ ms$/.test(e.textContent)).length===2);
   await viewer.waitForFunction(()=>[...document.querySelectorAll('.room-ping')].filter(e=>/^\d+ ms$/.test(e.textContent)).length===2);

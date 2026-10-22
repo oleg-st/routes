@@ -156,9 +156,10 @@ try{
       assert.ok(currentStart.radius<=10.01&&currentStart.radius<=currentStart.bossRadius/2+.01,'flag stays smaller than a boss during zoom-out');
       assert.ok(await startHandle.evaluate(node=>node.isConnected),'flag resizes without replacing its nodes');
     }
-    assert.ok((await view()).w>=imageWidth,'test reaches distant overview zoom');
+    assert.ok(Math.abs((await view()).w-imageWidth)<.01,'pinch zoom-out stops at the whole-map fit');
     const distantStart=await startState();
-    assert.ok(distantStart.radius<initialStart.radius/2,'flag shrinks substantially at distant zoom');
+    const overviewRadius=Math.min(10,enemyMarkerRadius(Number(await page.locator('#marker-size').inputValue()),1,true)/2);
+    assert.ok(Math.abs(distantStart.radius-overviewRadius)<.01,'flag uses its overview size at the zoom-out limit');
     await touch('touchEnd',[]);
     await page.waitForFunction(node=>!node.isConnected,startHandle);
     assert.ok(Math.abs((await startState()).radius-distantStart.radius)<.01,'start flag size is stable after delayed layout');

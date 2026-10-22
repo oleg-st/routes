@@ -1,4 +1,19 @@
 const STORAGE_KEY = 'route-together:turn-credentials:v1';
+
+export function createOptionalTurnCredentials(options) {
+  const prepare = createTurnCredentials(options);
+  return async (config = {}, signal, onFallback = () => {}) => {
+    signal?.throwIfAborted();
+    try {return await prepare(config, signal);} catch (error) {
+      signal?.throwIfAborted();
+      // Relay setup must not prevent direct WebRTC, except when explicitly required.
+      if (config.rtcConfig?.iceTransportPolicy === 'relay' || error?.name === 'AbortError') throw error;
+      onFallback();
+      return config;
+    }
+  };
+}
+
 function validCredentials(data, now) {
   return data && Number.isFinite(data.expiresAt) && data.expiresAt >= now + 60000 && data.expiresAt <= now + 6 * 60 * 60 * 1000
     && Array.isArray(data.iceServers) && data.iceServers.length > 0 && data.iceServers.length <= 8

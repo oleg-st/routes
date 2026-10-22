@@ -53,6 +53,7 @@ let enemyMarkerCenters=new Map();
 let enemyMarkerLayoutKey='';
 let mapRenderDeferred=false,mapRenderTimer;
 let markerScaleFrame,renderedMarkerRadius=0,markerScaleFactor=1,markerScaleTargets=[];
+let markerGeometry=new Map();
 let startMarker=null;
 let logImportUI,logPreview=null,logHighlights=new Set(),logChickenPreview=new Set();
 let focusedEnemies=new Set(),enemyFocusUntil=0,enemyFocusTimer,enemyHoverTimer;
@@ -480,7 +481,29 @@ function resizeMapMarkers(){
     group.setAttribute('transform',`matrix(${factor} 0 0 ${factor} ${x*(1-factor)} ${y*(1-factor)})`);
   }
 }
-function renderMap(){
+function updateMarkerGeometry(cached,x,y,r,unit){
+  const {group,circles,images,badges}=cached;
+  group.removeAttribute('transform');
+  for(const {node,offset} of circles){
+    node.setAttribute('cx',x);node.setAttribute('cy',y);node.setAttribute('r',r+offset*unit);
+  }
+  for(const image of images){
+    image.setAttribute('x',x-r);image.setAttribute('y',y-r);image.setAttribute('width',r*2);image.setAttribute('height',r*2);
+  }
+  // Focus rings can be added/removed independently between map renders.
+  for(const node of group.querySelectorAll('.mob-focus-ring,.log-choice-ring')){
+    node.setAttribute('cx',x);node.setAttribute('cy',y);node.setAttribute('r',r+(node.classList.contains('mob-focus-ring')?7:6)*unit);
+  }
+  for(const {group:badge,circle,image,side} of badges){
+    const bx=x+side*r*.85,by=y-r*.9,br=7*unit;
+    badge.removeAttribute('transform');
+    circle.setAttribute('cx',bx);circle.setAttribute('cy',by);circle.setAttribute('r',br+2*unit);
+    image.setAttribute('x',bx-br);image.setAttribute('y',by-br);image.setAttribute('width',br*2);image.setAttribute('height',br*2);
+    markerScaleTargets.push({group:badge,x,y});
+  }
+  markerScaleTargets.push({group,x,y});
+}
+function renderMap({zoomOnly=false}={}){
   if(!mapLayer||!view)return;
   $('#enemy-menu').hidden=true;$('#tooltip').hidden=true;
   $('#map').setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);
@@ -504,12 +527,14 @@ function renderMap(){
   if(layoutKey!==enemyMarkerLayoutKey){
     enemyMarkerCenters=separateMarkerCenters(layoutMarkers,0,.25,{tolerance:.02*unit});enemyMarkerLayoutKey=layoutKey;
   }
-  renderMapStart(unit);
-  renderCampfires();
+  const visible=visiblePositions(),sorted=[...visible].sort((a,b)=>Number(enemies.get(a.id)?.isBoss)-Number(enemies.get(b.id)?.isBoss));
+  zoomOnly=zoomOnly&&sorted.length===markerGeometry.size&&sorted.every(p=>markerGeometry.has(p.placementId));
+  if(zoomOnly)resizeMapStart(unit);
+  else{renderMapStart(unit);renderCampfires();}
   let trailRoot=$('#log-movement');
   if(!trailRoot){trailRoot=svg('g',{id:'log-movement','pointer-events':'none','aria-label':'Approximate party movement'});$('#markers').before(trailRoot);}
-  trailRoot.replaceChildren();
-  if(logPreview?.movementVisible){
+  if(!zoomOnly)trailRoot.replaceChildren();
+  if(!zoomOnly&&logPreview?.movementVisible){
     for(const line of movementTrailLines(logPreview.movementTrail,logPreview.reviewState,mapLayer,dungeon,data.heroes)){
       const attrs={points:line.points.map(p=>p.join(',')).join(' '),fill:'none',opacity:line.inCombat?.65:1,
         'stroke-dasharray':line.estimated?'2 8':'8 5','stroke-linecap':'round','stroke-linejoin':'round','vector-effect':'non-scaling-stroke'};
@@ -517,8 +542,9 @@ function renderMap(){
 
     }
   }
-  const markerRoot=$('#markers');markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#pack-labels').replaceChildren();$('#pack-efficiency').replaceChildren();$('#pack-health').replaceChildren();$('#status-badges').replaceChildren();
-  const visible=visiblePositions();const sorted=[...visible].sort((a,b)=>Number(enemies.get(a.id)?.isBoss)-Number(enemies.get(b.id)?.isBoss));
+  const markerRoot=$('#markers');
+  if(!zoomOnly){markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#status-badges').replaceChildren();markerGeometry=new Map();}
+  $('#pack-labels').replaceChildren();$('#pack-efficiency').replaceChildren();$('#pack-health').replaceChildren();
   $('#pull-outlines').replaceChildren();$('#pull-labels').replaceChildren();
   for(const [i,pull] of route.pulls.entries()){
     const members=visible.filter(p=>owners.get(p.placementId)?.pull.id===pull.id);if(!members.length)continue;
@@ -535,11 +561,13 @@ function renderMap(){
     $('#pull-labels').append(label);
   }
   const visiblePacks=new Set(visible.map(p=>p.packId));
-  for(const {packId,points} of mapPatrols(currentPositions().filter(p=>visiblePacks.has(p.packId)),mapLayer)){
+  if(!zoomOnly)for(const {packId,points} of mapPatrols(currentPositions().filter(p=>visiblePacks.has(p.packId)),mapLayer)){
     $('#patrols').append(svg('polyline',{'data-pack':packId,class:'patrol-path',points:points.map(xy=>xy.join(',')).join(' '),fill:'none',stroke:'#ded8cc','stroke-width':1.8,'stroke-dasharray':'5 4','vector-effect':'non-scaling-stroke',opacity:.65}));
   }
   for(const p of sorted){
     const enemy=enemies.get(p.id),own=owners.get(p.placementId),chicken=!enemy?.isBoss&&(route.excluded.includes(p.placementId)||logPreview&&logChickenPreview.has(p.placementId)),[x,y]=markerCoordinates(p),r=radius*enemyMarkerScale(enemy);
+    if(zoomOnly){updateMarkerGeometry(markerGeometry.get(p.placementId),x,y,r,unit);continue;}
+    const badges=[];
     const portrait=chicken?chickenIcon:showIcons&&availableImage(enemy),hasPortrait=portrait&&!failedMobImages.has(portrait);
     const empowered=isEmpowered(p);
     const color=own?.pull.color||(enemy?.isBoss?'#df858c':'#879eab');
@@ -558,6 +586,7 @@ function renderMap(){
       const badge=svg('g',{['data-'+status.kind+'-badge']:p.placementId,'data-placement':p.placementId,opacity:matchesSearch(p)?1:.14,style:'cursor:pointer'});
       badge.append(svg('title',{},`${enemy.name} · ${status.name}`),svg('circle',{cx:bx,cy:by,r:br+2*unit,fill:'#1a1005',stroke:'#ffbb25','stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('image',{href:status.icon,x:bx-br,y:by-br,width:br*2,height:br*2,'clip-path':'url(#mob-portrait-clip)',preserveAspectRatio:'xMidYMid slice','pointer-events':'none'}));
       $('#status-badges').append(badge);
+      badges.push({group:badge,circle:badge.querySelector('circle'),image:badge.querySelector('image'),side:status.side});
       markerScaleTargets.push({group:badge,x,y});
     }
     group.append(svg('circle',{cx:x,cy:y,r:r+unit*(enemy?.isBoss?2:.75),fill:enemy?.isBoss?'#10161bcc':'#10161b99'}));
@@ -571,11 +600,14 @@ function renderMap(){
     group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(enemy?.isBoss?' boss-ring':'')+(own?' assigned-ring':'')+(chicken?' chicken-ring':'')}));
     appendEnemyFocus(group);
     markerRoot.append(group);
+    markerGeometry.set(p.placementId,{group,badges,
+      circles:[...group.querySelectorAll('circle:not(.mob-focus-ring)')].map(node=>({node,offset:(Number(node.getAttribute('r'))-r)/unit})),
+      images:[...group.querySelectorAll('image')]});
     markerScaleTargets.push({group,x,y});
   }
   setHoveredPack(hoveredPack);
   renderModifierHighlight();
-  for(const group of $$('#markers > g'))if(logHighlights.has(group.dataset.placement)){
+  if(!zoomOnly)for(const group of $$('#markers > g'))if(logHighlights.has(group.dataset.placement)){
     const ring=group.querySelector('.mob-ring');if(!ring)continue;
     group.style.opacity='1';group.append(svg('circle',{cx:ring.getAttribute('cx'),cy:ring.getAttribute('cy'),r:Number(ring.getAttribute('r'))+6*scale(),class:'log-choice-ring','pointer-events':'none'}));
   }
@@ -696,7 +728,15 @@ function renderDraft(preview){const root=$('#draft');root.replaceChildren();if(t
 function point(event){const p=$('#map').createSVGPoint();p.x=event.clientX;p.y=event.clientY;const v=p.matrixTransform($('#map').getScreenCTM().inverse());return[v.x,v.y];}
 function commitDrag(state){if(!state.edit||!state.moved)return;change(state.edit.kind==='marker'?{type:'update-marker',markerId:state.edit.id,patch:{position:state.edit.points[0]}}:{type:'move-point',drawingId:state.edit.id,pointId:state.edit.pointIds[state.endpoint],position:state.edit.points[state.endpoint]});}
 function draggedDrawingPoint(event,state){const pos=point(event).map((v,i)=>v+state.offset[i]);return drawingPointFromMap(pos,state.edit,mapLayer,dungeon);}
-function zoom(factor,at,pan=[0,0]){const anchor=at||[view.x+view.w/2,view.y+view.h/2];factor=Math.max(baseView.w/24,Math.min(baseView.w*2.5,view.w*factor))/view.w;if(factor===1&&!pan.some(Boolean))return;view={x:anchor[0]+(view.x-anchor[0]+pan[0])*factor,y:anchor[1]+(view.y-anchor[1]+pan[1])*factor,w:view.w*factor,h:view.h*factor};renderMap();}
+function zoom(factor,at,pan=[0,0]){
+  const anchor=at||[view.x+view.w/2,view.y+view.h/2],bounds=$('#map').getBoundingClientRect();
+  // Use actual screen scale: auto-framing can change the viewBox aspect ratio.
+  // Zoom out only as far as the whole-map fit, and in up to 24 times that scale.
+  const fitUnit=Math.max(baseView.w/Math.max(bounds.width,1),baseView.h/Math.max(bounds.height,1)),unit=scale();
+  factor=Math.max(fitUnit/(24*unit),Math.min(fitUnit/unit,factor));
+  if(factor===1&&!pan.some(Boolean))return;
+  view={x:anchor[0]+(view.x-anchor[0]+pan[0])*factor,y:anchor[1]+(view.y-anchor[1]+pan[1])*factor,w:view.w*factor,h:view.h*factor};renderMap({zoomOnly:true});
+}
 function setTool(value,{cancel=false}={}){
   if(value!=='line')closeArrowOptions();
   if(value!==tool||cancel){
@@ -1116,7 +1156,17 @@ function bind(){
     if(map.hasPointerCapture(e.pointerId))map.releasePointerCapture(e.pointerId);
     return handled;
   };
-  map.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1.12:1/1.12,point(e));},{passive:false});
+  // Tune wheel zoom independently of pinch zoom. A typical 100px wheel
+  // tick grows the map by 16%, regardless of how quickly ticks arrive.
+  const wheelStep=1.16,wheelTickPixels=100;
+  map.addEventListener('wheel',e=>{
+    e.preventDefault();
+    // Three lines are a conventional wheel tick; page deltas use the viewport.
+    const unit=e.deltaMode===1?wheelTickPixels/3:e.deltaMode===2?map.getBoundingClientRect().height:1;
+    const delta=e.deltaY*unit;
+    if(!Number.isFinite(delta)||!delta||drag||touches.size)return;
+    zoom(wheelStep**(delta/wheelTickPixels),point(e));
+  },{passive:false});
   map.addEventListener('pointerdown',e=>{
     if(e.button!==0&&e.button!==2)return;
     cancelLongPress();
