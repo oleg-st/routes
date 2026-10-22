@@ -2,7 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {loadLog,loadReportFights,routeEventFilter,compactRouteEvent} from '../log-import/live-api.js';
-import {fightLabel} from '../log-import/fight-label.js';
+import {fightLabel,fightDifficulty} from '../log-import/fight-label.js';
+
+test('Raw Casual difficulty does not invent a legacy league or an Easy/Medium/Hard bucket',()=>{
+  assert.equal(fightDifficulty(1),'Difficulty 1');
+  assert.equal(fightDifficulty(20),'Difficulty 20');
+  assert.equal(fightDifficulty(21),'Eternal 1');
+  assert.equal(fightDifficulty(52),'Eternal 32');
+  assert.equal(fightDifficulty(undefined),null);
+});
 import {beginAuthorization,consumeCallback,exchangeCode} from '../log-import/oauth.js';
 import {captureLogCallback,createLiveImport} from '../log-import/live-import.js';
 import {matchLiveLog} from '../log-import/live-matcher.js';

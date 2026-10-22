@@ -9,6 +9,7 @@
     "data": "node scripts/prepare-data.mjs",
     "data:game": "node scripts/prepare-data.mjs",
     "data:summons": "node scripts/prepare-game-summons.mjs",
+    "patch:audit:summons": "node scripts/audit-game-summons.mjs --export",
     "replay:logs": "node scripts/replay-log-summons.mjs",
     "images": "node scripts/prepare-images.mjs",
     "maps": "node scripts/prepare-combined-maps.mjs",

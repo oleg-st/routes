@@ -37,7 +37,7 @@ function report(before,after,dir){
   console.log(patchReportText(result));console.log('Full report: '+path.join(dir,'report.json'));
   return result;
 }
-const extractionSteps=[['private/game-data/run-all-dungeons.mjs',['--planner','--python='+python]],['scripts/export-game-difficulty.mjs',[]],['scripts/export-game-summon-sources.mjs',[]]];
+const extractionSteps=[['private/game-data/run-all-dungeons.mjs',['--planner','--python='+python]],['scripts/export-game-difficulty.mjs',[]],['scripts/export-game-summon-sources.mjs',[]],['scripts/audit-game-summons.mjs',['--export']]];
 function extractionPreflight(){
   for(const file of ['private/game-data/run-all-dungeons.mjs','private/game-data/run-planner-export.mjs','private/game-data/extractor/Extractor.csproj','private/game-data/extractor/Program.cs'])
     if(!fs.existsSync(file))throw Error('Missing local extraction tool: '+file+'; restore tools from the baseline/tools backup');

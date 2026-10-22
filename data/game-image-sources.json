@@ -389,6 +389,21 @@
     "sha256": "a8ef07870b2ca35816bfbe7dcf62bdd725f5c34a3ec64ffe1e39da2219d6b65d",
     "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BigBloodElemental"
   },
+  "images/game/1ce5ee224466f41b8b37e7e2.avif": {
+    "source": "private/game-data/planner/images\\ba2014df3e9f5038f3b2430ec5f7e7ad2407b27642ad254ed352a276173bbfc0.png",
+    "sha256": "1ce5ee224466f41b8b37e7e2c56033a9b34fd7953623d43185100e4e731b8ba8",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossArbiter"
+  },
+  "images/game/dfa0839c4e425c481a9e8698.avif": {
+    "source": "private/game-data/planner/images\\b4b4071e4d6ca7160ac96fbd4debd1dfa30b9c2fc987cab00d3d8e7072dd10ec.png",
+    "sha256": "dfa0839c4e425c481a9e869834e024052d223d8a4d2d3032d4bae861fa2ab274",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossDefenseEye"
+  },
+  "images/game/bf34936c3c87b315ba9dbf57.avif": {
+    "source": "private/game-data/planner/images\\e85f7cbdd8f5daa3157ac5d37af19cee3ddea14165182b31e5ebea9338f73e14.png",
+    "sha256": "bf34936c3c87b315ba9dbf57a677def408c97f3be40fa3409a68736a56a20d59",
+    "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossGatekeeper"
+  },
   "images/game/f672bc1a4c701603296d30e4.avif": {
     "source": "private/game-data/planner/images\\df65deff4302c8de65d21af29ed49dfcdf23f8be8a5a6634debec3ad280b654f.png",
     "sha256": "f672bc1a4c701603296d30e472aed5bf5cecb3ff9623eaa3c007e9027340dc65",
@@ -628,6 +643,21 @@
     "source": "private/game-data/planner/images\\cb0c612400ad09cd8b543bd3c9cc6c80b5b65e7ab36b92a6461f20ec9ed91673.png",
     "sha256": "7fa7fc8c615cfd9e4a26df491be55b2f9abcebd307b764e0f102c9423ca3ba46",
     "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_JungleArea"
+  },
+  "private/images/dungeons/maps/sandtomb-t_st_map_exterior_01-game.avif": {
+    "source": "private/game-data/planner/images\\c06e6b1fffab30d21d60708ecd8d50c59050f7845e1415796996ac04afc0a531.png",
+    "sha256": "6129f1862650ab0e7c2b9d2e979f3c60d941aaf19e4ec47dbf1fd8c011501fcc",
+    "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_Exterior_01"
+  },
+  "private/images/dungeons/maps/sandtomb-t_st_map_interior_01-game.avif": {
+    "source": "private/game-data/planner/images\\4dfa60e585912991db97c9c3cf6e67c8af763d6fd8b6ea0383c40669c20bdf39.png",
+    "sha256": "36bac07d37369650fe7aae7dd1cfcdc21c4b3ec3d74e9c5137c579e6ddcdff4f",
+    "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_Interior_01"
+  },
+  "private/images/dungeons/maps/sandtomb-t_st_map_end_01-game.avif": {
+    "source": "private/game-data/planner/images\\71c2c8433227bf57970152e58c4753742ff9febc07998c430f588f962d3857cf.png",
+    "sha256": "5e28d61d97ff65fd1028bd480267499e4b0b1391b234f64c84b8f8ace6feea53",
+    "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_End_01"
   },
   "images/dungeons/maps/snowpeak-t_sp_map_global_01-game.avif": {
     "source": "private/game-data/planner/images\\cee7ed5dfc1a1af68a34d2db01c2edc8b67222f7c67e964ae4d5ff2de4204b98.png",

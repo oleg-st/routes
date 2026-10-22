@@ -735,6 +735,11 @@
         ]
       }
     },
+    "Level.ID.SandTomb": {
+      "empowered": [],
+      "ghorn": null,
+      "witch": null
+    },
     "Level.ID.SnowPeak": {
       "empowered": [
         "placement-game-531f4634-445929b4-17e1c3b2-f66770c4",

@@ -12,7 +12,7 @@ export function selectSeasonDungeons(registry,tables){
   const ids=new Set(Object.entries(tables.DT_DifficultyToLevel.rows)
     .filter(([level])=>Number(level)>=league.MinimumDifficulty&&Number(level)<=league.MaximumDifficulty)
     .flatMap(([,row])=>Object.values(row).filter(v=>typeof v==='string'&&v.startsWith('Level.ID.'))));
-  for(const d of registry.playable)if(d.info.AvailableForCasual)ids.add(d.id);
+  for(const d of registry.playable)if(d.info.AvailableForCasual||d.info.IsSeasonalPinnacleDungeon&&d.info.IsEnabledInGame)ids.add(d.id);
   for(const id of ids)assert.ok(registry.playable.some(d=>d.id===id),'Rotation references missing dungeon: '+id);
   assert.ok(ids.size,'Empty active dungeon rotation');
   return registry.playable.filter(d=>ids.has(d.id));

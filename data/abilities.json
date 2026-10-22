@@ -27782,6 +27782,630 @@
     "descriptionTokens": []
   },
   {
+    "id": "GA_ST_BloodOrb_BuffBoss",
+    "parentId": "st-bossarbiter",
+    "name": "Sanguine Might",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BloodOrb/GA_ST_BloodOrb_BuffBoss.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BloodOrb_SharedHealth",
+    "parentId": "st-bossarbiter",
+    "name": "Shared Health",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BloodOrb/GA_ST_BloodOrb_SharedHealth.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_ArenaProjectiles",
+    "parentId": "st-bossarbiter",
+    "name": "Marching Vessels",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/ArenaProjectiles/GA_ST_BossArbiter_ArenaProjectiles.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_BeamIllusions",
+    "parentId": "st-bossarbiter",
+    "name": "Sinister Vessels",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/BeamIllusions/GA_ST_BossArbiter_BeamIllusions.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_ChannelTruesighter",
+    "parentId": "st-bossarbiter",
+    "name": "Tormenting Visions",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/ChannelTruesighter/GA_ST_BossArbiter_ChannelTruesighter.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_CircleIllusions",
+    "parentId": "st-bossarbiter",
+    "name": "Hungering Vessels",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/CircleIllusions/GA_ST_BossArbiter_CircleIllusions.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_GiveTruesight_Interact",
+    "parentId": "st-bossarbiter",
+    "name": "Drinking",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/GiveTruesight/GA_ST_BossArbiter_GiveTruesight_Interact.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_GiveTruesight_Passive",
+    "parentId": "st-bossarbiter",
+    "name": "Truesight Corruption",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/GiveTruesight/GA_ST_BossArbiter_GiveTruesight_Passive.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_LavaFloor",
+    "parentId": "st-bossarbiter",
+    "name": "Arena Paths",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/LavaFloor/GA_ST_BossArbiter_LavaFloor.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_Maze",
+    "parentId": "st-bossarbiter",
+    "name": "One True Path",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/Maze/GA_ST_BossArbiter_Maze.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_MazeNuke",
+    "parentId": "st-bossarbiter",
+    "name": "Repent",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/MazeNuke/GA_ST_BossArbiter_MazeNuke.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_MeleeAutoAttack",
+    "parentId": "st-bossarbiter",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/MeleeAutoAttack/GA_ST_BossArbiter_MeleeAutoAttack.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_RandomImpactsAoe",
+    "parentId": "st-bossarbiter",
+    "name": "Apotheosis",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/RandomImpactsAoe/GA_ST_BossArbiter_RandomImpactsAoe.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_Runes",
+    "parentId": "st-bossarbiter",
+    "name": "Blood Sermon",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/Runes/GA_ST_BossArbiter_Runes.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_SingleEnemyEnrage",
+    "parentId": "st-bossarbiter",
+    "name": "Prevailing Arrogance",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/SingleEnemyEnrage/GA_ST_BossArbiter_SingleEnemyEnrage.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_SpawnOrbs",
+    "parentId": "st-bossarbiter",
+    "name": "Blood Orbs",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/SpawnOrbs/GA_ST_BossArbiter_SpawnOrbs.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiter_TankSlam",
+    "parentId": "st-bossarbiter",
+    "name": "Contrite",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiter/TankSlam/GA_ST_BossArbiter_TankSlam.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiterIllusion_CastBeam",
+    "parentId": "st-bossarbiter",
+    "name": "Eradication",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiterIllusion/GA_ST_BossArbiterIllusion_CastBeam.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossArbiterIllusion_Circle",
+    "parentId": "st-bossarbiter",
+    "name": "Gorging Pool",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossArbiterIllusion/Circle/GA_ST_BossArbiterIllusion_Circle.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_AbsorbAdds",
+    "parentId": "st-bossdefenseeye",
+    "name": "Draw Blood",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/AbsorbAdds/GA_ST_BossDefenseEye_AbsorbAdds.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": 40
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_ApplyDelayedAoePlacementDebuffToAll",
+    "parentId": "st-bossdefenseeye",
+    "name": "Vein Seeds",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/PlayerAoePlacement/GA_ST_BossDefenseEye_ApplyDelayedAoePlacementDebuffToAll.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_Beams",
+    "parentId": "st-bossdefenseeye",
+    "name": "Judgement",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/Beams/GA_ST_BossDefenseEye_Beams.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_CastSpawnBloodCreation",
+    "parentId": "st-bossdefenseeye",
+    "name": "Summon Creations",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/SpawnBloodCreations/GA_ST_BossDefenseEye_CastSpawnBloodCreation.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_Passive_ShootProjectilesAndAoePlacement",
+    "parentId": "st-bossdefenseeye",
+    "name": "Vein Sprout",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/PlayerAoePlacement/GA_ST_BossDefenseEye_Passive_ShootProjectilesAndAoePlacement.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_PlatformAoEDamage",
+    "parentId": "st-bossdefenseeye",
+    "name": "Vein Constriction",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/PlatformAoEDamage/GA_ST_BossDefenseEye_PlatformAoEDamage.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_RotatingCross",
+    "parentId": "st-bossdefenseeye",
+    "name": "Annihilation Protocol",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/Cross/GA_ST_BossDefenseEye_RotatingCross.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_SearchLight",
+    "parentId": "st-bossdefenseeye",
+    "name": "Scan",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/SearchLight/GA_ST_BossDefenseEye_SearchLight.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossDefenseEye_SpawnAdds",
+    "parentId": "st-bossdefenseeye",
+    "name": "Palace Response Unit",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossDefenseEye/SpawnAdds/GA_ST_BossDefenseEye_SpawnAdds.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGateKeeper_AuraHealingReduction_PassiveAbility",
+    "parentId": "st-bossgatekeeper",
+    "name": "Edict of Frailty",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Auras/HealingReduction/GA_ST_BossGateKeeper_AuraHealingReduction_PassiveAbility.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGateKeeper_AuraProximityDamage",
+    "parentId": "st-bossgatekeeper",
+    "name": "Edict of Isolation",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Auras/ProximityDamage/GA_ST_BossGateKeeper_AuraProximityDamage.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGateKeeper_AuraSlow_PassiveAbility",
+    "parentId": "st-bossgatekeeper",
+    "name": "Edict of Burden",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Auras/Slow/GA_ST_BossGateKeeper_AuraSlow_PassiveAbility.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGateKeeper_CastAura",
+    "parentId": "st-bossgatekeeper",
+    "name": "Gatekeeper's Edict",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Auras/GA_ST_BossGateKeeper_CastAura.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGatekeeper_Conduit_Circle_Passive",
+    "parentId": "st-bossgatekeeper",
+    "name": "Conduit of the Bleeding Gaze",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Conduits/Circle/GA_ST_BossGatekeeper_Conduit_Circle_Passive.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGatekeeper_Conduit_Square_Passive",
+    "parentId": "st-bossgatekeeper",
+    "name": "Conduit of the Burning Circle",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Conduits/Square/GA_ST_BossGatekeeper_Conduit_Square_Passive.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGatekeeper_Conduit_Triangle_Passive",
+    "parentId": "st-bossgatekeeper",
+    "name": "Conduit of Striking Shadows",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/Conduits/Triangle/GA_ST_BossGatekeeper_Conduit_Triangle_Passive.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGatekeeper_MeleeAutoAttack",
+    "parentId": "st-bossgatekeeper",
+    "name": "Attack",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/MeleeAutoAttack/GA_ST_BossGatekeeper_MeleeAutoAttack.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGatekeeper_MultiCastedMeleeStrike",
+    "parentId": "st-bossgatekeeper",
+    "name": "Exsanguinating Strike",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/MultiCastedMeleeStrike/GA_ST_BossGatekeeper_MultiCastedMeleeStrike.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGatekeeper_PullAndCastedAoe",
+    "parentId": "st-bossgatekeeper",
+    "name": "Gatekeeper's Judgment",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "never",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/PullAndCastedAoe/GA_ST_BossGatekeeper_PullAndCastedAoe.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
+    "id": "GA_ST_BossGatekeeper_TankCone",
+    "parentId": "st-bossgatekeeper",
+    "name": "Nullification",
+    "description": null,
+    "baseCooldownSeconds": null,
+    "castInterruptibility": "unknown",
+    "liveStatus": "live",
+    "images": [],
+    "sourcePath": "fellowship/Content/Abilities/NPC/SandTomb/BossGatekeeper/TankCone/GA_ST_BossGatekeeper_TankCone.uasset",
+    "actionProfile": {
+      "castTimeSeconds": null,
+      "channelTimeSeconds": null
+    },
+    "descriptionTokens": []
+  },
+  {
     "id": "GA_ST_SanguineCrusher_Knockback",
     "parentId": "st-sanguinecrusher",
     "name": "Sunder Earth",

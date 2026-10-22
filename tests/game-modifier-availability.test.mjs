@@ -31,8 +31,9 @@ test('Published availability matches the installed game table', {skip:!fs.exists
 
 test('Current rotation exposes exactly the exported modifier availability',()=>{
  assert.deepEqual(Object.keys(rules.modifierAvailabilityByDungeon).sort(),dungeons.map(d=>d.id).sort());
- assert.ok(Object.values(rules.modifierAvailabilityByDungeon).every(v=>v.empowered&&v.shadow&&v.witch));
- assert.deepEqual(Object.entries(rules.modifierAvailabilityByDungeon).filter(([,v])=>!v.ghorn).map(([id])=>id),['Level.ID.FrozenKingdom','Level.ID.PirateRaid','Level.ID.SnowPeak']);
+ assert.ok(Object.entries(rules.modifierAvailabilityByDungeon).filter(([id])=>id!=='Level.ID.SandTomb').every(([,v])=>v.empowered&&v.shadow&&v.witch));
+ assert.deepEqual(rules.modifierAvailabilityByDungeon['Level.ID.SandTomb'],{witch:false,ghorn:false,empowered:false,shadow:false});
+ assert.deepEqual(Object.entries(rules.modifierAvailabilityByDungeon).filter(([,v])=>!v.ghorn).map(([id])=>id),['Level.ID.FrozenKingdom','Level.ID.PirateRaid','Level.ID.SandTomb','Level.ID.SnowPeak']);
  assert.equal(modifierAvailable('Level.ID.SandTomb','witch'),false);
 });
 

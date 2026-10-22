@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {compareGameStates,patchReportText,diffRecords,captureTextureState,sha} from '../scripts/game-patch-state.mjs';
+import {compareGameStates,patchReportText,diffRecords,captureTextureState,captureSummonDiscovery,indexNpcVariants,sha} from '../scripts/game-patch-state.mjs';
 import {backupFiles,restoreFiles,freshExtraction,inside} from '../scripts/game-patch-files.mjs';
 import {readDifficultyTables,availableDifficultyLevels,difficultyAssets} from '../scripts/game-difficulty-source.mjs';
 import {dungeonIdentity,selectMapFrame,resolveIdentity} from '../scripts/game-source-identity.mjs';
@@ -36,6 +36,30 @@ test('Texture-only changes are reported separately; old baselines do not imply a
   delete before.textures;
   assert.equal(compareGameStates(before,after).textures,null);
   assert.match(patchReportText(compareGameStates(before,after)),/comparison unavailable/);
+});
+
+test('NPC variants sharing a character ID remain independently comparable',()=>{
+  const before=state(),after=state();
+  before.npcVariants=indexNpcVariants([{characterId:'dragon',blueprint:'A',gameId:1},{characterId:'dragon',blueprint:'B',gameId:2}]);
+  after.npcVariants=structuredClone(before.npcVariants);after.npcVariants.A.gameId=3;
+  assert.deepEqual(compareGameStates(before,after).npcVariants.changed,['A']);
+  delete before.npcVariants;assert.equal(compareGameStates(before,after).npcVariants,null);
+});
+
+test('Summon discovery validates catalogue, completeness and bytecode hashes before comparison',t=>{
+  const {root,write}=fixture(t),source='private/game-data/all-dungeons/behavior-scripts/spawn.json';
+  assert.equal(captureSummonDiscovery(root,'new'),null);
+  write('private/game-data/planner/manifest.json','catalogue');write(source,'bytecode');
+  const report={steamBuild:'new',catalogManifestSha256:sha('catalogue'),blueprints:1,exported:1,errors:[],hashes:{spawn:sha('bytecode')},files:{spawn:source}};
+  const save=()=>write('private/reports/summon-discovery.json',JSON.stringify(report));save();
+  assert.deepEqual(captureSummonDiscovery(root,'new'),report.hashes);
+  assert.throws(()=>captureSummonDiscovery(root,'old'),/mixed-build/);
+  write(source,'changed');assert.throws(()=>captureSummonDiscovery(root,'new'),/hash mismatch/);write(source,'bytecode');
+  report.exported=0;save();assert.throws(()=>captureSummonDiscovery(root,'new'),/Incomplete/);
+  report.exported=1;report.catalogManifestSha256='stale';save();assert.throws(()=>captureSummonDiscovery(root,'new'),/Stale/);
+  const before=state(),after=state();before.summonDiscovery={spawn:'old'};after.summonDiscovery={spawn:'new'};
+  assert.deepEqual(compareGameStates(before,after).summonDiscovery.changed,['spawn']);
+  delete before.summonDiscovery;assert.equal(compareGameStates(before,after).summonDiscovery,null);
 });
 test('Texture capture verifies raw pixels, decoded images, metadata and build, including HDR without PNG',t=>{
   const {root,write}=fixture(t),prefix='private/game-data/planner/';

@@ -1,9 +1,9 @@
-// Current leagues have four levels and a capstone (five raw levels each).
-// For the supplied report, raw level 75 is displayed by FL as Eternal 55.
+// Eternal retains the exported offset of 20. Below it, raw level alone cannot
+// distinguish the new Casual buckets (all use level 1) or a historical league.
 export function fightDifficulty(level){
   if(!Number.isInteger(level)||level<=0)return null;
   if(level>20)return `Eternal ${level-20}`;
-  return `${['Contender','Adept','Champion','Paragon'][Math.floor((level-1)/5)]} ${(level-1)%5+1}`;
+  return `Difficulty ${level}`;
 }
 export function fightLabel(fight){
   const duration=fight.kill===true&&fight.completionTime>0?fight.completionTime:fight.endTime-fight.startTime;

@@ -22,7 +22,7 @@ test('Game catalogs cover every active actor and expose unescaped localized name
 });
 
 test('Every map frame comes from a game map box and projects its corners correctly',()=>{
-  assert.equal(dungeons.flatMap(d=>d.mapImages).length,17);
+  assert.equal(dungeons.flatMap(d=>d.mapImages).length,20);
   for(const d of dungeons)for(const map of d.mapImages){
     const frame=frames[d.id][map.id], [lo,hi]=frame.bounds;
     assert.match(frame.source,/^\/[^/]+\/.+\.\d+$/);

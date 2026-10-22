@@ -51,12 +51,12 @@ test('Every game patrol member has a matching projected path',()=>{
     assert.deepEqual(correctDungeon(custom,'fellership'),original);
     assert.deepEqual(correctDungeon(correctDungeon(custom,'fellership'),'custom'),custom);
   }
-  assert.equal(checked,388);
+  assert.equal(checked,439);
 });
 
-test('Current game model has 628 packs and keeps Dormant actors separate',()=>{
-  assert.equal(Object.values(customDungeons).reduce((n,d)=>n+d.packs.length,0),628);
-  assert.equal(Object.values(gameDungeons).reduce((n,d)=>n+d.enemies.length,0),1546);
+test('Current game model has 704 packs and keeps Dormant actors separate',()=>{
+  assert.equal(Object.values(customDungeons).reduce((n,d)=>n+d.packs.length,0),704);
+  assert.equal(Object.values(gameDungeons).reduce((n,d)=>n+d.enemies.length,0),1768);
   const dormant=Object.values(gameDungeons).flatMap(d=>d.enemies.filter(p=>p.dormant));
   assert.equal(dormant.length,31);
   for(const d of Object.values(gameDungeons))for(const p of d.enemies.filter(p=>p.dormant))assert.equal(d.enemies.filter(q=>q.packId===p.packId).length,1);

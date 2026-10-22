@@ -98,7 +98,7 @@ Sands uses the reviewed Full coordinate frame with freshly extracted enemy posit
 
 Background changes can safely adjust context, decorations and restores. Changing `at`, `join`, `offset`, `scale`, or an outline that determines canvas bounds changes the coordinate frame: update the Combined view version and migrate existing Combined drawings before releasing such a change. Original-layer annotations and mobs use the generated source transforms. Verify both geometry and appearance; passing tests alone does not prove a seamless illustration or correct in-game transitions.
 
-The current rotation builds five Combined maps. Previous-build drawing migration and combined-legacy-layouts.js have been removed: route imports require the current build ID. Full and Combined annotations remain independent.
+The current selection builds six Combined maps, including seasonal Pinnacle Xul. Previous-build drawing migration and combined-legacy-layouts.js have been removed: route imports require the current build ID. Full and Combined annotations remain independent.
 
 ## Full-source map checklist
 

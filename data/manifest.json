@@ -3,10 +3,10 @@
   "buildId": "26122410",
   "source": "installed-game",
   "data": {
-    "enemies": 119,
-    "dungeons": 10,
+    "enemies": 122,
+    "dungeons": 11,
     "heroes": 11,
-    "abilities": 676
+    "abilities": 715
   },
   "sourceManifestSha256": "6e1724368e1d39582e6681c65641ededdc6bac85616fde2448cc98ef3cb72d1b"
 }

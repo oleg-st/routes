@@ -24,7 +24,7 @@ test('Service layer selection excludes ordinary enemy duplicates, keeps environm
  assert.equal(selectedServiceLevel('/Dungeon_Environment.umap',selected),true);
 });
 test('Own campfires and every remaining UI texture have game provenance',()=>{
- assert.equal(Object.values(campfires).flat().length,34);
+ assert.equal(Object.values(campfires).flat().length,38);
  const dungeons=read('dungeons');
  for(const [id,list]of Object.entries(campfires))for(const fire of list){
   assert.match(fire.source,/^\//);assert.ok(Number.isFinite(fire.worldPosition.z));

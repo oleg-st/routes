@@ -3686,5 +3686,965 @@ export const combinedLayouts={
     },
     "patrols": {},
     "placementPatrols": {}
+  },
+  "Level.ID.SandTomb": {
+    "id": "Level.ID.SandTomb:Combined-v3",
+    "name": "Full map",
+    "kind": "combined",
+    "path": "images/dungeons/combined/sandtomb.avif",
+    "width": 6750,
+    "height": 3375,
+    "pixelWidth": 6750,
+    "pixelHeight": 3375,
+    "sha256": "45c65c9a1d9ac2878d3b8f94a20fe3c118dde9b91a58f22172cd2a773ab27266",
+    "recipeSha256": "b111f9e723074ccb52f029c4e70591c42c4a9a0412197c4d8ba421fe8070a289",
+    "sources": {
+      "Level.ID.SandTomb:T_ST_Map_Exterior_01": {
+        "x": 2365.0216,
+        "y": 2266.7331,
+        "width": 2176,
+        "height": 1088,
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_exterior_01-game.avif",
+        "sha256": "01915e291bc25b44300351ee66f52888307de2e42a7dc28da9b441de5a77e7ca",
+        "sourceSha256": "6129f1862650ab0e7c2b9d2e979f3c60d941aaf19e4ec47dbf1fd8c011501fcc"
+      },
+      "Level.ID.SandTomb:T_ST_Map_Interior_01": {
+        "x": 2347.8868,
+        "y": 1274.8734,
+        "width": 2269.8667,
+        "height": 1134.9333,
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_interior_01-game.avif",
+        "sha256": "92913e15ad47ed867bacd68c7715d492711b3141f5ad5816da527ee7712ae814",
+        "sourceSha256": "36bac07d37369650fe7aae7dd1cfcdc21c4b3ec3d74e9c5137c579e6ddcdff4f"
+      },
+      "Level.ID.SandTomb:T_ST_Map_End_01": {
+        "x": 1749.0988,
+        "y": 32.0342,
+        "width": 3255,
+        "height": 1627.5,
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_end_01-game.avif",
+        "sha256": "fa562977868cfc9cd88be6572c92f319d4c228f4a76e1b975dc8c2e656aee5c5",
+        "sourceSha256": "5e28d61d97ff65fd1028bd480267499e4b0b1391b234f64c84b8f8ace6feea53"
+      }
+    },
+    "artworkSources": {
+      "Level.ID.SandTomb:T_ST_Map_Exterior_01": {
+        "x": 2308.0870445344126,
+        "y": 2235.1923076923076,
+        "width": 2282.2348178137645,
+        "height": 1141.1174089068822,
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_exterior_01-game.avif",
+        "sha256": "01915e291bc25b44300351ee66f52888307de2e42a7dc28da9b441de5a77e7ca",
+        "sourceSha256": "6129f1862650ab0e7c2b9d2e979f3c60d941aaf19e4ec47dbf1fd8c011501fcc"
+      },
+      "Level.ID.SandTomb:T_ST_Map_Interior_01": {
+        "x": 2282.4603746397697,
+        "y": 1252.2118155619598,
+        "width": 2354.5360230547567,
+        "height": 1177.2680115273783,
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_interior_01-game.avif",
+        "sha256": "92913e15ad47ed867bacd68c7715d492711b3141f5ad5816da527ee7712ae814",
+        "sourceSha256": "36bac07d37369650fe7aae7dd1cfcdc21c4b3ec3d74e9c5137c579e6ddcdff4f"
+      },
+      "Level.ID.SandTomb:T_ST_Map_End_01": {
+        "x": 1677.79116853066,
+        "y": 0.5755881218669856,
+        "width": 3363.838025453139,
+        "height": 1681.9190127265695,
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_end_01-game.avif",
+        "sha256": "fa562977868cfc9cd88be6572c92f319d4c228f4a76e1b975dc8c2e656aee5c5",
+        "sourceSha256": "5e28d61d97ff65fd1028bd480267499e4b0b1391b234f64c84b8f8ace6feea53"
+      }
+    },
+    "referenceId": "Level.ID.SandTomb",
+    "referenceSha256": "d0a9fcc9de8bfd343532e4d025c8b12469f653c377efe835970c9f8a9c8d3f52",
+    "placements": {
+      "placement-cc1f6ceec2540ee8728dd1c4b96d200c49df2ae7db1f0c468daad7c6a4f51776": [
+        3472.125,
+        158.75
+      ],
+      "placement-8092419a053730c023b1545edcab92d8e54c0cdd29332bffbdf462de608787fb": [
+        3472.125,
+        996.125
+      ],
+      "placement-1cda2476c220e2d280dd73561827942e0fb447e20776b45c8df3d2075b000b46": [
+        3629.51524032,
+        2726.444832
+      ],
+      "placement-2b84b496b01547c4229f768dc3f3a01da33385ed70adc59f0335c66d7f1993a8": [
+        4059.308053333333,
+        1810.3432704
+      ],
+      "placement-693b1f4881f8ce362555960c8cc7bca584d264710197e9f0b1d6e8496a602bda": [
+        4059.308053333333,
+        1912.1014528
+      ],
+      "placement-d000d9550d75aa0beae7f1cf853ff202303d7b2d1cdcb82464c1b5b55aa17088": [
+        3264.9534400000002,
+        3058.045056
+      ],
+      "placement-440a7b34faa0ef23b9c843d0e8dac041ef8ceccd3fd21e14d47827e004a8882b": [
+        3466.3575600000004,
+        1397.8623499999999
+      ],
+      "placement-ca2897caa15402ef6436554a3f8857574c3937f5bfebe114cd8bb481263f8e3a": [
+        3488.55936375,
+        1406.5385
+      ],
+      "placement-066006dd763c46978ef4e5775177057112312a1928cfd514928978214f828a0f": [
+        3736.9819776000004,
+        2924.5114688
+      ],
+      "placement-fafaf58c50e6dff7ec6d5bb2f456b6ff68ff7ee4cb39f9b20f3a38fb0143fef6": [
+        3736.4,
+        2958.04
+      ],
+      "placement-9e5b46ac91977f2d0f504b1bd1b0628637417ee99d61f4ac1fe81f99becab9fd": [
+        3749.0942254933334,
+        2249.9730176000003
+      ],
+      "placement-8c447e91574da158c1d6216b17ff7bcf29f51541ca0efdf6cc3b9c9702ce3ed5": [
+        3751.22467456,
+        2240.485393066667
+      ],
+      "placement-a0bbf4680df3b151c4ba2d5f6397e9ff689d40108234abf40cd16aec133c2533": [
+        3256.4374080000002,
+        3052.2432
+      ],
+      "placement-e5f3863d0c46aab0665307505172fa03696b54ef44dbe5f614e312c9c19dd492": [
+        3759.4120000000003,
+        2243.884608
+      ],
+      "placement-12ee7f3f445b5c5bed3e1d3f00ed55ea308b08320f78e9804898962add561057": [
+        3477.3080768,
+        3100.0285632
+      ],
+      "placement-d161d7185416e6e9e5fb540517ec38c55c4295bcdca6d2a21fe57aaf3a2399bf": [
+        3471.5092672,
+        3110.9445312
+      ],
+      "placement-1af683a55e82c83bf9872d8e68c9f9520614a6feed950a7aa3015a3d2910e5f9": [
+        3479.284672,
+        3106.558496
+      ],
+      "placement-c9dc8d83783f8072eeb041f9c426ce4b39478e452170eeba31f7792dcfbc9f32": [
+        3550.9390498133334,
+        2257.3544149333334
+      ],
+      "placement-dcc45ee0ef0a9d66426ec949740639166fa827723f90d904a0e21ecc0f1aebec": [
+        3540.5647317333332,
+        2263.1535957333335
+      ],
+      "placement-21e70361429f2b8cd45b88a9b98508665e37de8ca401a8f56e42e30de4ac47eb": [
+        4126.858299733333,
+        1788.6275157333334
+      ],
+      "placement-f5acde99a10a64c9d8f012eb049e7ae99372abc8cd123735e96de49bc125c299": [
+        3537.4853410133337,
+        2255.029802666667
+      ],
+      "placement-d1faca82d9bcdee98039c7d2f24d6d389eb41c326fe0a731d1caf92fe5f6b398": [
+        4124.275758933333,
+        1798.6153173333332
+      ],
+      "placement-f84f4df10fed332011530ff657b48b885929b199ac247a97869ce15b3d8fb346": [
+        4078.8528262500004,
+        1383.6359
+      ],
+      "placement-bd060b0e807a7672c4cd35e4c5570dbea401cae1febb303ae9cec5916551debe": [
+        3348.80761875,
+        1390.87565
+      ],
+      "placement-f153fad78078edbc05de26fd15bcea33edd70ed55e358f7cb95dcc9655a0e5ca": [
+        3356.6239237500004,
+        1394.9352912499999
+      ],
+      "placement-5ce5ec2643536bfb315525afab71627c534bbb90fdd5edcba7bf8db3777be237": [
+        3354.5796525000005,
+        1386.60194
+      ],
+      "placement-63382f8cc29ad50a8de26885e26164e8cea48443e4124931a036830cc0310e3b": [
+        4168.934638933333,
+        1817.9989333333333
+      ],
+      "placement-c0fa0a51843102592dc81d720c3208cd238fdaa8e15c0ac8f4cc7685990cc898": [
+        4165.670481066667,
+        1898.5410602666666
+      ],
+      "placement-b076b600991f2459addc147ba9a6114a390d57718d712688911e554257790f25": [
+        4390.240516266667,
+        1696.4499925333334
+      ],
+      "placement-dbf8cdce08d8d4ab3dec4b1ade576ed5bb9c26623306bfd76478dc5c3b1a2c9e": [
+        4085.71231875,
+        1301.9250837499999
+      ],
+      "placement-8489f6186492415dc9526939619ada0f14f56bcb084c0d067a7d616ce55102ca": [
+        4083.6906750000003,
+        1441.46609375
+      ],
+      "placement-f1d09c4caa3ea3e9c667fbce3257be8c65d3ca3670c1fabf5e102dfa1735ebe0": [
+        4099.13898375,
+        1630.08035
+      ],
+      "placement-06ca444fb3ff6a8764b931830bd5d9f3f3e518be0271b9ee91af62d1cf909cf2": [
+        3527.6273600000004,
+        2916.3397152
+      ],
+      "placement-ef9dfe843de2acc2921c57c050d61fba312b0ad05817c1f9d3adf2912f0f4364": [
+        4075.25122125,
+        1464.2759
+      ],
+      "placement-712c8b6edda0be9c4f3af73578387355d231e915865c77dea0bfd09596739d8e": [
+        4078.4375775000003,
+        1276.3643562500001
+      ],
+      "placement-6c3c3fec3a527994bbe9afc4b61fc1840db0415dfe6483d292f02393cc46e82b": [
+        4185.58606125,
+        1383.407
+      ],
+      "placement-3e81b587c98a8b739c2d7444b5e475e346d83b2eac1cd33443b48bf874d606b9": [
+        3975.8401875,
+        1366.5615875
+      ],
+      "placement-46199067765464200108c5bc0cfbe709a184da73f6cd94d7dd324de8cff3e867": [
+        3975.8667000000005,
+        1375.6832787499998
+      ],
+      "placement-5c2d58330ab68d39df19072d1b534b7319f0d46b01f7dbcf096d81777f8d6cd5": [
+        3568.9258991250003,
+        1390.370075
+      ],
+      "placement-9ba817ba71f518fb4d8a3e0b0930302bfeb19409f10da4f4c1e490edf84baddc": [
+        3529.682208,
+        2968.96434656
+      ],
+      "placement-e38180a718efbfbede6a7b68ff0e02431fd27b8b32ee2c4bc30da933891dff81": [
+        3566.038399125,
+        1331.8095799999999
+      ],
+      "placement-f29e295c983c82938fe7dd761637a5f1e6697d91c3ebb26e7014f87e5c774b39": [
+        3367.3526137500003,
+        1392.995075
+      ],
+      "placement-27c668b771e0717cb238f978a1ea23647c582e3088dba2b740cbe2a6315adde6": [
+        3301.86432375,
+        1392.995075
+      ],
+      "placement-ca4895e2309013a89baf14cdca795cd3f6ad702e5dd509e831a19e1183dce205": [
+        3367.3526137500003,
+        1331.8095799999999
+      ],
+      "placement-2c27ffe2d9366cb89cfd3905a7b25e0f06ab45bd3797e141d74f5155ed0a12a9": [
+        3292.41432375,
+        1331.8095799999999
+      ],
+      "placement-af8512121ac76edc50a4da5a3b3aef385ad5586b56682c10cb761a35738eee2f": [
+        3488.8483237500004,
+        1205.3795
+      ],
+      "placement-956722751f2f0153c2ad176b47f0847b753beee4b7567dfbb6dce5fb61ae4fe2": [
+        3456.27270375,
+        1204.8852124999999
+      ],
+      "placement-27991fae0a0d55bdf2154b340e5acf3f4f79290491f1815eedccd2dc6844c12c": [
+        3355.981664,
+        3060.7993056
+      ],
+      "placement-27282c02f52a3a57b6c82cc49ea48fa4ac1b27f4187e15f3efe3ee766f5677ae": [
+        3367.500864,
+        3073.36864
+      ],
+      "placement-244f24de5309d9944337c7e371430e4b94655f1d4baecdd350235501239e39d9": [
+        3696.1464032000003,
+        2959.913066944
+      ],
+      "placement-c59dfc60904bb0c746671d328d4dcba758e2fe242c3a8d46759162e2dfcf2891": [
+        3699.2253312000003,
+        2925.1479808
+      ],
+      "placement-a47d1c91e89ed96fcbdb5b14e038004379ca59537a68be34df6b7b7f330540db": [
+        3079.5163199999997,
+        3105.11872
+      ],
+      "placement-f3630c0c31000c5fcd2a7735cb1b000d8bd3963b3ff327fe41a5737baccbf8d1": [
+        3086.86256,
+        3117.500448
+      ],
+      "placement-6e2e9d0fab4a5f8d9b60210082d0e2cbd9c2242f8265416022c3c4eb7059c158": [
+        3669.7112830293336,
+        2149.8726144
+      ],
+      "placement-3c5bdecf4c3f322912a74920e304c7a82325889460438e2afdc7173e3a354daa": [
+        3628.5425386666666,
+        2144.1979477333334
+      ],
+      "placement-db451623e40cc48bd31049bec6e42a40febbd9c9de2227698d9a9c926843a50d": [
+        3406.6654848,
+        2898.34912
+      ],
+      "placement-51118c987601788f233d74dadece26ba0e3c394d8cc1e67f143b75a8c6df91c3": [
+        3361.117024,
+        3053.805648
+      ],
+      "placement-d4b1d7800a7d5ae96f0c1d528b393bd6315b676a2bc0a7ccacd29f4f75efef94": [
+        3365.92432,
+        3078.6640767999997
+      ],
+      "placement-a0b5181bcca959d5bf85dbaf5ff66dbd517308a88fe71773931cf855ddb398c0": [
+        3419.3627968,
+        3176.1768128
+      ],
+      "placement-1848ce4d7c8e20aaf07419d4ef62e733ee883a39864cec6c1831fb60e07e9273": [
+        3404.35552,
+        3195.7025472
+      ],
+      "placement-cf6bfac9b3c077e150f9c07e5bb00f488cf7c324c9b92640760c6f1418d40d6b": [
+        3269.8107375,
+        1288.87655
+      ],
+      "placement-912c354935066d28b77b1cfd86367955b8e42cf98e44a713f7a715ca9da39066": [
+        3556.53226875,
+        1290.27297125
+      ],
+      "placement-267fa2fb1f9374ec93a1faa8ea7654e4ef4c739a849bd214ff62c80de5ca3ac8": [
+        3558.0462243750003,
+        1277.104475
+      ],
+      "placement-050371536e86a56e4e4b83a071d29c967a2c7beff5ec97156f03c4d5614f5f62": [
+        3552.0891255,
+        1283.0875325000002
+      ],
+      "placement-a4424eee38a06eb9d1e058be149466e0ed4ae9d0d76db0ddec060e9502857309": [
+        3359.898585,
+        1307.1421662500002
+      ],
+      "placement-89462b2d262a67755333906f6dbc459bf1fe488022d9beb81985b02932189a92": [
+        3406.6619362500005,
+        1133.6868125
+      ],
+      "placement-143ea3345f517f2cf0af510092851718d1373d41c0348b0a29f99ee04bf3a23f": [
+        3412.60824375,
+        1130.0656250000002
+      ],
+      "placement-54110374a94209c6f6f3291ca0b4ec987c66b3f80389abbab1876522b593c97b": [
+        4132.524842666667,
+        1798.8525184
+      ],
+      "placement-bf88d768fa71f4675cfd775d6e3fbb37107ee60ff770e848e5a1aacfbbe8125e": [
+        3087.9449919999997,
+        3017.0442816
+      ],
+      "placement-6dac135909f28ca7c1c0cbe2f609f826b091ecbf2bfa0ef46c1ce5f44727588d": [
+        3622.7819520000003,
+        3075.5389376
+      ],
+      "placement-1a06ba296c67e8ef2c5ca6dc5d66e1ae987db3a89b270f5dddd58ae121fdfe80": [
+        3270.0732375000002,
+        1279.4265500000001
+      ],
+      "placement-a6512c5ce176c6508c52db070f738f194ed0005785b1a61bcc4375b31a3d26ff": [
+        3173.3156799999997,
+        3120.534432
+      ],
+      "placement-c9c707aa186313b61cd4e49f818f7fb337f684c8b358210256ed2620b0cfbfa4": [
+        3258.3249450000003,
+        1257.3937175
+      ],
+      "placement-0894c3f38508f590f86eabb9698ee6788f26d3993b17a320c654414c4396408c": [
+        3279.7857375000003,
+        1285.2015500000002
+      ],
+      "placement-db67f2893049e5aa3ca1f4e1f87770e4864a4b6fa9a3eba2999f47e640aa9b02": [
+        3649.941333333333,
+        2247.1493333333333
+      ],
+      "placement-6d4f8d0b431d0477f8ff1e5b910ec717b110901b82f97060740af198829b4f3f": [
+        4040.7452550000003,
+        1370.8725725
+      ],
+      "placement-330bc6cf5f795aed02b2eb0a719ac5dc9338eff2c2e359c572977626b240470a": [
+        3470.90739375,
+        1133.6206625
+      ],
+      "placement-eb9f3e6a05801f613a191f19a90a8430da7efeb4664c355be6713fdb791e9836": [
+        3626.9592352,
+        2434.880096
+      ],
+      "placement-227f3da102bed0e08ca3c5c2cb36c3785e3dff37a59fed18be420b974c6f94d3": [
+        3464.59153875,
+        333.3172249999998
+      ],
+      "placement-d0da9971a72125206ea040b1fae0d7cbebff9b1563405e76478ecd2634ee8113": [
+        3482.5773037500003,
+        332.17141249999986
+      ],
+      "placement-41569cd65c546321855d95941bed49ee86c00fded13f533972d46fcae5b0630a": [
+        3203.462688,
+        2949.6626912
+      ],
+      "placement-49541db925edfa281c28da300f720f16736a5b7ed2e0677d28493b15632b601d": [
+        4138.557371733334,
+        1895.7709866666664
+      ],
+      "placement-a2617ebead667083c82ca737dc6f10fac07291e911e2ee05e90dcc7997b79537": [
+        3611.8662161250004,
+        1381.2495125
+      ],
+      "placement-e5bd98ba9014cb833f7ebd6775c89d7b21fef34cdbb3536ab0643d125127e934": [
+        3098.563328,
+        3014.1284544
+      ],
+      "placement-bf6bb4aa34d50c27fc0a3fe99b96a02c24c956612a47157d8ae5b30324134e8e": [
+        3727.373088375,
+        1378.19375
+      ],
+      "placement-e7742bb18b2900c1d2ee8479104437ae9db7bb7ee187c25bee0943c6d1d90763": [
+        3658.9013333333332,
+        2256.1093333333333
+      ],
+      "placement-e08b5a56f2bcec6562f22df0b75a7c45158e5b7c40762c3ed7176f14eef1bffd": [
+        4291.9216,
+        1826.4699861333334
+      ],
+      "placement-5f3e7203592e8661ff20b4f342df9f2845afda9d000349f132fbeff236868029": [
+        4058.19615,
+        1357.11017
+      ],
+      "placement-b50ed4373568bae23d74f0132c15c65094d5164fbb5114b03830ace2e3e10bb7": [
+        4056.599415,
+        1386.619475
+      ],
+      "placement-1b2758367cfd74e0c27920db4836c1df3b6a7ac45612d7b77fd547bd373c51ac": [
+        3649.941333333333,
+        2265.0693333333334
+      ],
+      "placement-db0745bf14c5a089d34e17bc8dd065978153c88aecd7a2f3f912090bc6c08ced": [
+        3705.426023025,
+        1180.7265499999999
+      ],
+      "placement-f4f4408eedc2fd64ed313aedf38dc59b99f85fe445042672200ae589f3914944": [
+        3731.4750000000004,
+        1250.75
+      ],
+      "placement-07cc18a4d459302c9ba9e8f69c38c1502caca0bee48e6e8f8820ceb8a0fb7294": [
+        3459,
+        1138.6625
+      ],
+      "placement-49421cd498057b69e5dc1aefbbccdd602a62f4819d4aec503786ceeb50db9589": [
+        3483.4125000000004,
+        1136.8249999999998
+      ],
+      "placement-ad88ca2397d478209e305cc0dcbda683e4cdcef9f44c12699bdce83a4c1198f3": [
+        3640.981333333333,
+        2256.1093333333333
+      ],
+      "placement-ae6cb017db0d6b1952f44adc5c0ab0592355599624500cae1eb786646699adbf": [
+        4070.8835370666666,
+        1970.214848
+      ],
+      "placement-7023c8297efe199c8ab7b0ea6fc1ebe9ab9c127b9c8fb6e80c80648c93c9dfb2": [
+        4291.492864,
+        1835.2857898666666
+      ],
+      "placement-game-067c5d59-480a5ed4-cb281a97-aafac96f": [
+        4086.6830700000005,
+        1455.67443125
+      ],
+      "placement-game-078dd4d5-430aefc4-009cd38d-1ef13015": [
+        3727.75754325,
+        1305.4613
+      ],
+      "placement-game-07ab1f1d-43e428c3-97d5c99e-0a73bbfe": [
+        3257.094048,
+        3066.2231648
+      ],
+      "placement-game-0a43cffa-47cba50e-40381595-1a1ed273": [
+        4169.4557824,
+        1889.4801706666667
+      ],
+      "placement-game-0ab4f14c-48c6ef72-0fbb3ea5-5fbc92d3": [
+        3620.7883840000004,
+        3066.1394144
+      ],
+      "placement-game-0c26a58c-485c9e3e-cc70da9a-1319c6d1": [
+        3414.7438272,
+        2890.0371328
+      ],
+      "placement-game-14dc009b-44b1bf9c-fc932b87-27fca316": [
+        3421.2287488,
+        3195.4524992
+      ],
+      "placement-game-15dcad5b-477986a2-8cbd9b8f-d157637b": [
+        4210.525316266667,
+        1894.8315306666664
+      ],
+      "placement-game-16db9637-4a648f7b-7e1ce7a3-a5c51028": [
+        4049.5708928000004,
+        1967.3523370666667
+      ],
+      "placement-game-19b60c74-4a4862c2-6e0e2288-f6cc6b45": [
+        3434.35566,
+        476.23115000000007
+      ],
+      "placement-game-22f4b892-4fc174e4-a1ac2aa2-f5c9dad9": [
+        3460.79557875,
+        1334.1182675
+      ],
+      "placement-game-2412eaaa-4bbee70e-bae7498b-2bee6b75": [
+        4375.900782933333,
+        1712.0461269333332
+      ],
+      "placement-game-24999458-4e3f533f-9963ffb7-40c43537": [
+        3454.0125,
+        340.9250000000002
+      ],
+      "placement-game-2996bed6-40548de2-91473085-98117f40": [
+        4177.560885,
+        1365.4962312500002
+      ],
+      "placement-game-2e57e112-499a9813-1a0230bb-dffd573a": [
+        3323.1669075,
+        1253.6867187500002
+      ],
+      "placement-game-2f237eb3-472f449e-1ac45b8a-220395be": [
+        3730.5076980000003,
+        1357.17939125
+      ],
+      "placement-game-33be7daa-4324ffa2-3f5b8482-8a890d0b": [
+        3253.4152320000003,
+        3060.4821952
+      ],
+      "placement-game-34463414-43405182-7f77cfbb-ddeac49e": [
+        3816.84171675,
+        1341.982295
+      ],
+      "placement-game-3a9b39ab-41534b08-29e4aa9e-aed51edb": [
+        3411.7952960000002,
+        3186.8009056
+      ],
+      "placement-game-3b086598-42808631-b09d5981-22a4d43c": [
+        3092.58064,
+        3109.9551264
+      ],
+      "placement-game-3c2a65bf-407b41af-aa4ef7a6-5c7bf761": [
+        4135.3974525,
+        1264.7341625
+      ],
+      "placement-game-3dca9db8-4c76b349-faa3238e-c501c257": [
+        4118.6680125,
+        1634.1572374999998
+      ],
+      "placement-game-40a4f065-4d593eae-e3143e9b-de530e1d": [
+        3463.2,
+        1314.8000000000002
+      ],
+      "placement-game-4203b506-40d1ed72-d99d0caa-fc09b206": [
+        3604.0992375,
+        1389.2310875
+      ],
+      "placement-game-4255689f-4a8e9f96-29cf14a0-86d4850d": [
+        3121.364928,
+        3196.4190304
+      ],
+      "placement-game-451a58b0-4a431edf-e692bc96-c9c9d68b": [
+        4384.057429333334,
+        1704.9105621333333
+      ],
+      "placement-game-4704bf6d-4dd5039c-f6ce3f99-1ea2a6c5": [
+        3125.365184,
+        3199.07984
+      ],
+      "placement-game-4840e07c-427a1063-53e5bca3-96cb810b": [
+        3612.52033725,
+        1249.9641275
+      ],
+      "placement-game-49c55dc5-41e6cd3c-466d03af-ca261bb5": [
+        4359.4998912,
+        1695.2848639999997
+      ],
+      "placement-game-4a3c3050-4e064f45-8487c1b7-470f7c40": [
+        3335.570505,
+        1391.0453825
+      ],
+      "placement-game-4b93ab30-4018cb83-b6bc5eab-4a589589": [
+        3719.75127645,
+        1170.4735624999998
+      ],
+      "placement-game-4d9282fc-4329e9bb-6861f6a0-bb755b2c": [
+        3471.8153812500004,
+        1195.3671199999999
+      ],
+      "placement-game-4dd72e0f-4b6bf9a5-56ccaba7-cddcb1e8": [
+        4085.8706062500005,
+        1288.4264412499997
+      ],
+      "placement-game-4f5b8766-4d98ab38-71f600be-88eae09f": [
+        4050.1129877333333,
+        1749.2749866666666
+      ],
+      "placement-game-50579400-42dfa2d2-6b65eaac-f98f19e9": [
+        3485.8949625000005,
+        1336.3677874999998
+      ],
+      "placement-game-50ce875c-4aa70654-0277ce85-86e19c43": [
+        3540.151245,
+        1134.3455037499998
+      ],
+      "placement-game-55c7081d-44ea88f4-3c6baaae-f5e79276": [
+        3174.021344,
+        2939.3545056
+      ],
+      "placement-game-5766b4df-43b19e82-3e9a66af-c946ab43": [
+        3817.597764,
+        1403.4747575000001
+      ],
+      "placement-game-583ee827-44cfb298-3e9912a4-8447c901": [
+        3822.611563875,
+        1401.9177124999999
+      ],
+      "placement-game-59013e54-4ec9df48-8f6d4b81-a65f4570": [
+        3701.8125,
+        1168.0625
+      ],
+      "placement-game-59732050-4a46a1e8-21567bb5-9de8712d": [
+        3951.7147605333334,
+        1859.5554730666668
+      ],
+      "placement-game-5bc40652-43818980-deca08a3-e34855c9": [
+        3619.8477727500003,
+        1389.01654625
+      ],
+      "placement-game-5f1e4e8d-42ff8527-709fdb9b-f43029bc": [
+        3528.3727424,
+        2928.9858816
+      ],
+      "placement-game-5fc3aaf1-4f724fe4-5f8d7bae-e613e2c8": [
+        3545.1690375000003,
+        1139.1970287499998
+      ],
+      "placement-game-5fe36f13-480960d2-fc7efaac-e0ad1937": [
+        3783.3277616249998,
+        1420.8633875
+      ],
+      "placement-game-5ffa02a8-452effbf-9255e283-fef30ebd": [
+        3646.6247712000004,
+        2453.475232
+      ],
+      "placement-game-645cc1cd-48f5e16f-b6c4aeb3-2373fb4c": [
+        3161.551488,
+        3116.8357664
+      ],
+      "placement-game-65869482-4ff0a4d1-de737482-2497cb68": [
+        3329.8147200000003,
+        1247.99015375
+      ],
+      "placement-game-6994c0fb-4c051cf1-2810348b-1b50ff64": [
+        3636.7805568,
+        2444.190368
+      ],
+      "placement-game-6abb84d4-4b7092e6-eb841c8d-374abf08": [
+        4177.924290000001,
+        1375.7574875
+      ],
+      "placement-game-6c3e744d-4130ef31-83deaca1-c13a6a61": [
+        3327.6837450000003,
+        1383.18237875
+      ],
+      "placement-game-6e3e449b-4e597956-3564d686-b7b9f3ed": [
+        3382.6432320000004,
+        3184.0850144
+      ],
+      "placement-game-6ebfab65-4593b253-d9bd4588-e10e8b24": [
+        4401.644565333334,
+        1883.8509013333332
+      ],
+      "placement-game-6fe413ff-4ccff3ce-d0283082-6b9e81f6": [
+        4210.444049066667,
+        1883.0973056
+      ],
+      "placement-game-72341326-463cbc75-7479a783-b36c87b0": [
+        3490.6442700000002,
+        1333.36715
+      ],
+      "placement-game-7a41e3f3-456ba76b-e569e395-1bd7ed50": [
+        4210.484637866667,
+        1888.9643733333332
+      ],
+      "placement-game-7cf3d0d1-4294bd66-c56ad9bb-8d1ad13b": [
+        4300.028578133333,
+        1831.1622186666666
+      ],
+      "placement-game-7cf95862-4b9a7fea-67d06e9b-57812c75": [
+        3329.0874240000003,
+        2876.1514688
+      ],
+      "placement-game-7e5b2e50-437121b9-c384b7a2-e0cfa643": [
+        3456.1326075,
+        1330.2741649999998
+      ],
+      "placement-game-7eb56a44-422dc7e7-3e8c13a1-ac718d2f": [
+        4145.7109199999995,
+        1265.95602125
+      ],
+      "placement-game-851ec1af-41454ae0-81a4ffbc-f5005f03": [
+        4067.7340074666668,
+        1749.3816106666666
+      ],
+      "placement-game-87534071-47a9738e-6545bc9e-cd1768f3": [
+        3760.7200000000003,
+        2927.96
+      ],
+      "placement-game-87801586-4ea5db1b-6b327e86-738bf620": [
+        4069.0561687500003,
+        1391.222045
+      ],
+      "placement-game-8aa1d1ba-492eb8bf-91ae3a98-b4e9e6fa": [
+        3480.4353300000002,
+        1341.4130375
+      ],
+      "placement-game-8ab764d4-4e25e8b7-0d5ff3b8-b8da4356": [
+        3328.4,
+        2856.6
+      ],
+      "placement-game-8b3f5b0c-4d8c2e5e-33fe5093-8f4ba0a6": [
+        3157.452192,
+        3105.22768
+      ],
+      "placement-game-8b6f2ebd-41098d72-0c42c3a5-4fdf3dad": [
+        3472.21480125,
+        1344.9465500000001
+      ],
+      "placement-game-8be7ebc6-49a6dab0-5b4d9c9e-e26f009b": [
+        4216.0323413333335,
+        1885.9922815999998
+      ],
+      "placement-game-8f538aff-4f0de762-5b2b0a90-0d845aad": [
+        3617.5864736,
+        2444.666912
+      ],
+      "placement-game-8fc3fba7-4e04d2bb-07315788-bd6528df": [
+        3352.109376,
+        2860.1764608
+      ],
+      "placement-game-91619d92-486f50b2-5eb9369f-30ea26d4": [
+        4172.114304000001,
+        1825.7334741333332
+      ],
+      "placement-game-92e91fb5-45d7160b-96535f86-bc8e031a": [
+        3094.820384,
+        3023.7557568
+      ],
+      "placement-game-93908d9b-4eb86458-c9be94b2-ea3879e8": [
+        4216.07296,
+        1891.8593493333333
+      ],
+      "placement-game-94fc029f-42ab93a1-c11d7e87-6a2104a6": [
+        3707.2114425,
+        1156.3794125
+      ],
+      "placement-game-96149b7c-4dc1f0a0-fb943d99-8523d2e4": [
+        3296.61432375,
+        1328.65958
+      ],
+      "placement-game-96bef35d-4a53c3f8-f210b88e-1f047e5c": [
+        3365.890912,
+        3059.495552
+      ],
+      "placement-game-98c027fe-480e18eb-8502309f-2075c36c": [
+        3091.308,
+        3105.325568
+      ],
+      "placement-game-9a2fffde-4448ae90-30353eaf-abce75f0": [
+        3338.25690375,
+        1251.6634212499998
+      ],
+      "placement-game-9a7ac369-4bede2d7-822450a3-69313e7d": [
+        4141.096065,
+        1267.2243424999997
+      ],
+      "placement-game-9ab4d949-447a9eeb-a7110db2-6bb40a29": [
+        3784.9785060000004,
+        1321.1204749999997
+      ],
+      "placement-game-a169597a-4c99a354-6d73289f-8fc65ec2": [
+        4404.373333333333,
+        1892.632
+      ],
+      "placement-game-a2f57bcf-4408e44d-832e23af-602255cb": [
+        3529.2928448000002,
+        2942.4226783999998
+      ],
+      "placement-game-a4bcec2c-4765f238-99d63f98-9227a2ca": [
+        4409.632913066667,
+        1884.2966314666664
+      ],
+      "placement-game-a7fc1960-4f80eb64-8739cfa7-8d1a98b8": [
+        3946.4265088,
+        1872.6133888
+      ],
+      "placement-game-a88130f2-4ef926d6-8283fab9-cb2b3335": [
+        3605.87253,
+        1255.6606925
+      ],
+      "placement-game-a94ba198-496f548d-d03400b3-b3566692": [
+        3387.688448,
+        3190.2935456
+      ],
+      "placement-game-aa7385c8-4893bd6b-765ed1aa-65f1f325": [
+        3465.2710987500004,
+        1340.05394375
+      ],
+      "placement-game-aabd0058-486b7e25-80b1ecb9-8d1d87af": [
+        3608.238672,
+        2454.508352
+      ],
+      "placement-game-ac5d55f3-47b81f06-a77389aa-24d55952": [
+        3760.7485088000003,
+        2955.8293952
+      ],
+      "placement-game-b8734bd4-43b92369-1a0188b6-dfffdc98": [
+        3462.78973875,
+        1199.5271149999999
+      ],
+      "placement-game-b94431b3-43c51ea2-d031d4b0-b487de8e": [
+        4149.14476125,
+        1260.5924375
+      ],
+      "placement-game-bc369505-4ff25acc-ccc08e99-816be361": [
+        3472.14712875,
+        1321.398725
+      ],
+      "placement-game-bce922e7-41b28931-79a7faba-d23ee72b": [
+        3530.3502272,
+        2954.18841984
+      ],
+      "placement-game-bcf7b669-4162ca03-312a699b-89483746": [
+        4367.339025066667,
+        1704.4286933333333
+      ],
+      "placement-game-be205aac-45553310-ea62c7b7-7989dd7b": [
+        3426.682995,
+        477.96155
+      ],
+      "placement-game-c1bbd8f4-48a744b1-25a08dae-4ba9eb87": [
+        3970.33359375,
+        1371.13845875
+      ],
+      "placement-game-c4c2fe0b-48b9aef6-9d0b829f-b74a2549": [
+        3947.114666666667,
+        1848.4293333333333
+      ],
+      "placement-game-c5b8240e-4c6b13f6-af7457b0-d3bc4439": [
+        4067.7799987500002,
+        1370.7716675
+      ],
+      "placement-game-c61fe57d-49d9661f-51c909bd-8298755d": [
+        3361.31511375,
+        1329.97208
+      ],
+      "placement-game-c7e7d736-42932584-892c20a6-090592aa": [
+        3302.95504,
+        3147.654656
+      ],
+      "placement-game-c870dbf0-46c04127-c2893a91-f0432cf5": [
+        3459.7558425,
+        1404.62400875
+      ],
+      "placement-game-cf543963-4022ccc0-619915ba-a5828b21": [
+        3482.11330875,
+        1317.8802799999999
+      ],
+      "placement-game-cf70020c-4c128db4-c6da4d89-ea0af461": [
+        3516.8395046250002,
+        486.5274499999996
+      ],
+      "placement-game-d3597361-49c3316c-70c7db93-3821f306": [
+        4184.66823,
+        1360.4641325
+      ],
+      "placement-game-d40d25b4-4ff373f5-52ac699b-43abd67f": [
+        4081.97605125,
+        1371.482885
+      ],
+      "placement-game-d4513fc6-435a3cdc-d89065a2-78c5d0f5": [
+        3509.82433125,
+        482.9535125000002
+      ],
+      "placement-game-d6723784-4e3a620e-502b1a97-ad29c39e": [
+        3159.7430400000003,
+        3094.407072
+      ],
+      "placement-game-dc4e8619-470dea46-90f1648c-4eb2907e": [
+        3415.500192,
+        2901.0221056
+      ],
+      "placement-game-dc670b8f-42e1e537-687d4eb7-9ae40129": [
+        3811.8127076250003,
+        1340.475125
+      ],
+      "placement-game-ded4ddc1-42992a36-43a19695-06687dc8": [
+        3319.8205312500004,
+        1391.068955
+      ],
+      "placement-game-e0327982-4154c9a5-a7abcdb6-d0ae5017": [
+        3356.091648,
+        3074.7122816
+      ],
+      "placement-game-e2ac7c1d-450113fb-842f16ab-8702ff67": [
+        3630.96729504,
+        3068.6077568
+      ],
+      "placement-game-e33b573d-4be86167-1dbc099c-620c7bc4": [
+        3620.9625,
+        1253.6374999999998
+      ],
+      "placement-game-e5aa2a7b-407797c1-8e8c0fa3-4ff85929": [
+        3481.15644375,
+        1199.0285750000003
+      ],
+      "placement-game-ef7b913a-4172e07e-bb4fe6be-14bac8ea": [
+        3765.84,
+        2941.4
+      ],
+      "placement-game-ef9b02d3-46abd70e-5ce8deb4-6449b881": [
+        3168.076224,
+        3108.125824
+      ],
+      "placement-game-efdd5137-46f9c9f1-bc6521ae-00970315": [
+        4193.2125,
+        1373.075
+      ],
+      "placement-game-f453468c-45e20395-ae238f9b-0823b1b8": [
+        4074.9461437500004,
+        1362.985865
+      ],
+      "placement-game-f6d8bb29-4cb846f6-834ff5ad-605fe4f9": [
+        3493.20487875,
+        338.1317374999999
+      ],
+      "placement-game-f83ce333-4016e141-5a29ee89-85c4c2cb": [
+        3310.660672,
+        3145.330064
+      ],
+      "placement-game-fb0a547b-4b79a849-27e93fb8-7a9a278c": [
+        3482.13696,
+        1400.725385
+      ],
+      "placement-game-fc0e9c63-40c10c92-1c2e8b97-d241a96b": [
+        3306.49424,
+        3155.164576
+      ],
+      "placement-game-fc6af68a-42d0324b-e3528e93-c8770c13": [
+        4064.5486237500004,
+        1356.40716875
+      ],
+      "placement-game-ff2207ea-4ea3d1f8-e0e37da5-b622820b": [
+        3188.5085440000003,
+        2944.4585263999998
+      ]
+    },
+    "patrols": {},
+    "placementPatrols": {}
   }
 };

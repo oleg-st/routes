@@ -130,7 +130,7 @@ test('All active multi-layer dungeons have a full view with every mapped enemy e
     const r=newRoute(d,d.routeBuildId??'test');applyModifierPresets(r,d,presets);
     for(const kind of ['ghorn','witch'])if(r.modifiers[kind].packId){toggleModifier(r,kind,d);for(const p of effectivePositions(r,d).filter(p=>onMap(p,v)))assert.ok(mapCoordinates(p,v).every(Number.isFinite));toggleModifier(r,kind,d);}
   }
-  assert.equal(count,5);
+  assert.equal(count,6);
 });
 test('Game Sands uses world positions; original layers and saved annotations remain stable',()=>{
   const d=dungeons.find(d=>d.id.endsWith('DesertDunes')),views=mapViews(d),p=d.enemies.find(p=>p.id==='ub-bossarchbishop');
@@ -242,4 +242,3 @@ test('Layer visibility hides outside objects but keeps crossing lines and revers
     assert.ok(drawingPointFromMap([-500,-500],outside,layer,dungeon).every(Number.isFinite));
   }
 });
-

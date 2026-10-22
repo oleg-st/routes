@@ -58,6 +58,22 @@ export function captureTextureState(root,build){
   for(const key of decoded.keys())if(!(key in textures))throw Error('Unregistered decoded texture: '+key);
   return textures;
 }
+export function captureSummonDiscovery(root,build){
+  const file=path.join(root,'private/reports/summon-discovery.json');
+  if(!fs.existsSync(file))return null;
+  const report=JSON.parse(fs.readFileSync(file));
+  if(String(report.steamBuild)!==String(build)||report.errors?.length||report.exported!==report.blueprints)
+    throw Error('Incomplete or mixed-build summon discovery');
+  if(report.catalogManifestSha256!==sha(fs.readFileSync(path.join(root,'private/game-data/planner/manifest.json'))))
+    throw Error('Stale summon discovery catalogue');
+  if(!report.hashes||Object.keys(report.hashes).length!==report.blueprints)throw Error('Missing summon discovery hashes');
+  for(const [key,hash]of Object.entries(report.hashes)){
+    const source=report.files?.[key];
+    if(!source||sha(fs.readFileSync(path.join(root,source)))!==hash)throw Error('Summon discovery hash mismatch: '+key);
+  }
+  return report.hashes;
+}
+export function indexNpcVariants(npcs){return Object.fromEntries(npcs.map(n=>[n.blueprint,n]));}
 export function captureGameState(root='.'){
   const issues=[],read=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
   function attempt(label,fn,fallback={}){try{return fn();}catch(e){issues.push(label+': '+e.message);return fallback;}}
@@ -113,7 +129,9 @@ export function captureGameState(root='.'){
         behaviorSha256:sha(JSON.stringify(canonical(data.mobs.map(m=>({guid:guids.get(m.actorKey),behavior:m.behavior,socialAggro:m.socialAggro}))))),navmesh};
     });
   }
-  const npcs=Object.fromEntries(read(planner+'/npcs.json').map(n=>[n.characterId,n]));
+  const npcRows=read(planner+'/npcs.json');
+  const npcs=Object.fromEntries(npcRows.map(n=>[n.characterId,n])),npcVariants=indexNpcVariants(npcRows);
+  const summonDiscovery=attempt('summon discovery',()=>captureSummonDiscovery(root,build),null);
   const abilities=Object.fromEntries(read(planner+'/abilities.json').map(a=>[a.blueprint,a]));
   const tables=Object.fromEntries(read(planner+'/tables.json').map(t=>[t.name,t.rows]));
   const difficulty=attempt('difficulty tables',()=>Object.fromEntries(Object.entries(readDifficultyTables(path.join(root,actorsRoot))).map(([name,t])=>[name,t.rows])));
@@ -130,7 +148,7 @@ export function captureGameState(root='.'){
   if(String(summons.steamBuild)!==build)guards.push('Review summon semantics for build '+build+': scripts/game-summon-semantics.json');
   for(const entry of summons.sources)if(attempt(entry.source,()=>sha(fs.readFileSync(path.join(root,entry.file))),null)!==entry.sha256)guards.push('Review summon Blueprint: '+entry.source);
   return {schemaVersion:1,build,capturedAt:new Date().toISOString(),issues,guards,nativeSha256:mappings.sourceSha256,
-    sources,textures,dungeons,npcs,abilities,tables,mapAreas};
+    sources,textures,dungeons,npcs,npcVariants,summonDiscovery,abilities,tables,mapAreas};
 }
 export function compareGameStates(before,after){
   if(before.schemaVersion!==1||after.schemaVersion!==1)throw Error('Unsupported patch snapshot schema');
@@ -151,6 +169,8 @@ export function compareGameStates(before,after){
   const tableRows=Object.fromEntries(tables.changed.map(name=>[name,diffRecords(before.tables[name],after.tables[name])]));
   return {schemaVersion:1,fromBuild:before.build,toBuild:after.build,issues:after.issues,guards:after.guards,
     dungeonDiff,dungeons,npcs:diffRecords(before.npcs,after.npcs),abilities:diffRecords(before.abilities,after.abilities),
+    npcVariants:before.npcVariants&&after.npcVariants?diffRecords(before.npcVariants,after.npcVariants):null,
+    summonDiscovery:before.summonDiscovery&&after.summonDiscovery?diffRecords(before.summonDiscovery,after.summonDiscovery):null,
     tables,tableRows,sources:diffRecords(before.sources,after.sources),
     textures:before.textures&&after.textures?diffRecords(before.textures,after.textures):null,
     nativeChanged:before.nativeSha256!==after.nativeSha256,
@@ -160,6 +180,8 @@ export function patchReportText(report){
   const list=d=>`+${d.added.length} / -${d.removed.length} / changed ${d.changed.length}`;
   const lines=[`Game patch ${report.fromBuild} -> ${report.toBuild}`,
     `Dungeons: ${list(report.dungeonDiff)}`,`NPCs: ${list(report.npcs)}`,`Abilities: ${list(report.abilities)}`,
+    report.npcVariants?`NPC Blueprint variants: ${list(report.npcVariants)}`:'NPC Blueprint variants: comparison unavailable; snapshot lacks variant inventory',
+    report.summonDiscovery?`Summon discovery Blueprints: ${list(report.summonDiscovery)}`:'Summon discovery: comparison unavailable; snapshot lacks discovery hashes',
     `Tables: ${list(report.tables)}`,`Exported sources: ${list(report.sources)}`,
     report.textures?`Textures (raw and decoded): ${list(report.textures)}`:'Textures: comparison unavailable; snapshot lacks a texture inventory',
     `Native executable changed: ${report.nativeChanged}; map areas changed: ${report.mapAreasChanged}`];

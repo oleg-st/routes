@@ -2,7 +2,8 @@
   "buildId": "26122410",
   "notes": [
     "Local display regions retained after native bounds, calibration and texture hashes were verified unchanged.",
-    "Wraithtide nested regions use explicit Ship, Jungle, Lower, Upper priority. Jungle includes the new sea-level spawns. These are planner presentation rules, not a claim about runtime map selection."
+    "Wraithtide nested regions use explicit Ship, Jungle, Lower, Upper priority. Jungle includes the new sea-level spawns. These are planner presentation rules, not a claim about runtime map selection.",
+    "SandTomb: Sanctum display starts at its native x bound (38827.27), covering the descending entrance below the Interior display region."
   ],
   "dungeons": {
     "Level.ID.DesertDunes": [
@@ -264,6 +265,71 @@
           "sy": -11000,
           "ox": -18228.3213,
           "oy": 47891.223
+        }
+      }
+    ],
+    "Level.ID.SandTomb": [
+      {
+        "id": "Level.ID.SandTomb:T_ST_Map_Exterior_01",
+        "bounds": [
+          {
+            "x": -35000,
+            "y": -50000,
+            "z": -2000
+          },
+          {
+            "x": 19000,
+            "y": 50000,
+            "z": 6000
+          }
+        ],
+        "calibration": {
+          "sx": 68000,
+          "sy": -34000,
+          "ox": -40405.576,
+          "oy": 21633.3413
+        }
+      },
+      {
+        "id": "Level.ID.SandTomb:T_ST_Map_Interior_01",
+        "bounds": [
+          {
+            "x": 19000,
+            "y": -50000,
+            "z": -3000
+          },
+          {
+            "x": 80000,
+            "y": 50000,
+            "z": 1000
+          }
+        ],
+        "calibration": {
+          "sx": 76000,
+          "sy": -38000,
+          "ox": -44405.576,
+          "oy": 53673.883
+        }
+      },
+      {
+        "id": "Level.ID.SandTomb:T_ST_Map_End_01",
+        "bounds": [
+          {
+            "x": 38827.270000000004,
+            "y": -50000,
+            "z": -200000
+          },
+          {
+            "x": 200000,
+            "y": 20000,
+            "z": 200000
+          }
+        ],
+        "calibration": {
+          "sx": 124000,
+          "sy": -62000,
+          "ox": -74939.093,
+          "oy": 100827.27
         }
       }
     ]

@@ -6,11 +6,19 @@ import path from 'node:path';
 export function selectedEnemyLevels(dungeonKey, packages) {
   const persistent = packages.find(p => path.basename(p.Source, '.umap') === dungeonKey);
   assert.ok(persistent, 'Missing persistent world: ' + dungeonKey);
-  const names = new Set(packages.map(p => path.basename(p.Source, '.umap')));
-  const selected = persistent.Objects.map(r => r.Object).filter(o => o.Type === 'LevelStreamingAlwaysLoaded')
-    .map(o => o.Properties?.WorldAsset?.AssetPathName?.split('.').at(-1))
-    .filter(name => name && /_Enemies(?:_Alternate_\d+)?$/.test(name));
-  assert.ok(selected.length, 'No always-loaded enemy population: ' + dungeonKey);
-  for (const name of selected) assert.ok(names.has(name), 'Missing loaded enemy package: ' + name);
-  return [dungeonKey, ...new Set(selected)];
+  const byName = new Map(packages.map(p => [path.basename(p.Source, '.umap'),p]));
+  const selected = new Set([dungeonKey]);
+  // Combat actors and patrols may live in Environment or other authoring levels.
+  // Follow streaming references, including nested levels, rather than filenames.
+  for(const name of selected){
+    const pkg=byName.get(name);
+    assert.ok(pkg,'Missing always-loaded package: '+name);
+    for(const {Object:o} of pkg.Objects){
+      if(o.Type!=='LevelStreamingAlwaysLoaded')continue;
+      const loaded=o.Properties?.WorldAsset?.AssetPathName?.split('.').at(-1);
+      assert.ok(loaded,'Missing always-loaded world reference: '+name);
+      selected.add(loaded);
+    }
+  }
+  return [...selected];
 }

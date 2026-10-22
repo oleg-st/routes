@@ -530,6 +530,26 @@
       "source": "/Game/characters/NPC/JourneyToStronghold/TutorialTroll/AI/AIBC_JS_TutorialTroll",
       "file": "private/game-data/all-dungeons/behavior-scripts/da2b741d570188c3f7e7f65033b486cee7dadd5502e0b605cb2d7f999cee0336.json",
       "sha256": "baa3b99711dc5c2759830bd54db885f12708a41890964d0b578b24aba2125d48"
+    },
+    {
+      "source": "/Game/Abilities/NPC/MooreCastle/BloodCaster/GA_MC_BloodCaster_SpawnTotem",
+      "file": "private/game-data/all-dungeons/behavior-scripts/012e5d54596d66d6a1353197976be5c55adecbaa4d0b43edc3f29b380f8dd538.json",
+      "sha256": "ebf005464b6684531131f3db4947a1811ac9676c1feb16fa663275fa611683cc"
+    },
+    {
+      "source": "/Game/Abilities/NPC/PirateRaid/Bilgerat/GA_PR_Bilgerat_ChanneledActorSpawner",
+      "file": "private/game-data/all-dungeons/behavior-scripts/33cc55c9682011e3c321b4163208ca2e41c2ae14b82118b99d2c45f40add52ff.json",
+      "sha256": "7b1541efc07cab14117b500d985156b13e9d2504df8cd0d5fa94dd5ff511480f"
+    },
+    {
+      "source": "/Game/characters/NPC/MoorCastle/BloodCaster/AI/AIBC_MC_BloodCaster",
+      "file": "private/game-data/all-dungeons/behavior-scripts/fd51ea78b305381b5beabb75e72e9ac7268d2b3c13a42f711f68daa0f8a1d47a.json",
+      "sha256": "1f4a1aeb66c7248df2599a139c1573acc95993244260decbf0527591a3b7888d"
+    },
+    {
+      "source": "/Game/characters/NPC/PirateRaid/Bilgerat/AI/AIBC_PR_Bilgerat",
+      "file": "private/game-data/all-dungeons/behavior-scripts/cb6625ba4206a276e944d2e3ddd76fe3fc3f0d54b6a7c397890e826995f94640.json",
+      "sha256": "3a426eaa728f2d54d9acba77948aa97887a56af172d82969945e954fd6448027"
     }
   ],
   "rules": [
@@ -860,6 +880,21 @@
         "CastingData.CastingDuration"
       ],
       "maxDistance": 6000
+    },
+    {
+      "id": "bilgerat-ship-rats",
+      "parent": "BP_NPC_PR_Bilgerat",
+      "ability": "GA_PR_Bilgerat_ChanneledActorSpawner",
+      "trigger": "cast",
+      "childLiterals": [
+        "BP_NPC_PR_ShipRat"
+      ],
+      "windowFields": [
+        "Casting Data.CastingDuration",
+        "Channeling Data.ChannelingDuration"
+      ],
+      "maxDistance": 2000,
+      "notes": "Assigned channeled spawn: cast 2 s + channel 4.1 s, ticks every 1 s. Radius 2000 is detector tolerance, not an exported spawn range; partial channels are allowed."
     }
   ],
   "review": {
@@ -867,7 +902,8 @@
     "notes": [
       "Reviewed changed spawn graphs for IceGolem and BloodSummoner channel: task completion/delegate wiring changed; child class, projectile and spawn-property links preserved.",
       "Other changes are reflected channel flags, parent export indices, replication indices, portraits/display names and capsule scale; source constants are regenerated.",
-      "Parent AI assignment and spawn-call/child-field evidence are checked by prepare-game-summons."
+      "Parent AI assignment and spawn-call/child-field evidence are checked by prepare-game-summons.",
+      "Broad Blueprint audit found an uncovered enabled Bilgerat rat channel. BloodCaster SpawnTotem is assigned but disabled by default; no enabling Blueprint call was found, so no active rule was added."
     ]
   }
 }

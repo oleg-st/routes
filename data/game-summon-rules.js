@@ -177,5 +177,17 @@ export const gameSummonRules=Object.freeze([
     "windowMs": 5500,
     "minSpawnDistance": 1000,
     "maxDistance": 6000
+  },
+  {
+    "id": "bilgerat-ship-rats",
+    "trigger": "cast",
+    "parentGameID": 127,
+    "abilityGameID": 608,
+    "childGameIDs": [
+      112
+    ],
+    "windowMs": 9100,
+    "minSpawnDistance": 1000,
+    "maxDistance": 2000
   }
 ]);

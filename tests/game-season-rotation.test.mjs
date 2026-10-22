@@ -11,4 +11,8 @@ test('active rotation excludes enabled historical maps and ignores old ranked ro
   assert.deepEqual(selectSeasonDungeons(registry,tables).map(d=>d.id),['Level.ID.Adventure','Level.ID.Capstone']);
   assert.deepEqual(availableDifficultyLevels(levels,league,registry.playable[1]),[23]);
   assert.throws(()=>selectSeasonDungeons({playable:registry.playable.slice(0,1)},tables),/missing dungeon/);
+  registry.playable.push({...dungeon('Seasonal',false),info:{IsEnabledInGame:true,IsSeasonalPinnacleDungeon:true}});
+  registry.playable.push({...dungeon('DisabledSeasonal',false),info:{IsEnabledInGame:false,IsSeasonalPinnacleDungeon:true}});
+  assert.deepEqual(selectSeasonDungeons(registry,tables).map(d=>d.id),['Level.ID.Adventure','Level.ID.Capstone','Level.ID.Seasonal']);
+  assert.deepEqual(availableDifficultyLevels(levels,league,registry.playable[3]),[],'Pinnacle is not assigned Eternal levels');
 });

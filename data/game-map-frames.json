@@ -263,6 +263,71 @@
       "source": "/Game/dungeons/PirateRaid/PirateRaid.669"
     }
   },
+  "Level.ID.SandTomb": {
+    "Level.ID.SandTomb:T_ST_Map_Exterior_01": {
+      "calibration": {
+        "sx": 68000,
+        "sy": -34000,
+        "ox": -40405.576,
+        "oy": 21633.3413
+      },
+      "bounds": [
+        {
+          "x": -12366.6587,
+          "y": -40405.576,
+          "z": -4190.3202
+        },
+        {
+          "x": 21633.3413,
+          "y": 27594.424,
+          "z": 2809.6798
+        }
+      ],
+      "source": "/SandTomb/Levels/SandTomb_Environment.61"
+    },
+    "Level.ID.SandTomb:T_ST_Map_Interior_01": {
+      "calibration": {
+        "sx": 76000,
+        "sy": -38000,
+        "ox": -44405.576,
+        "oy": 53673.883
+      },
+      "bounds": [
+        {
+          "x": 15673.883000000002,
+          "y": -44405.576,
+          "z": -8579.199700000001
+        },
+        {
+          "x": 53673.883,
+          "y": 31594.424,
+          "z": 1420.8002999999999
+        }
+      ],
+      "source": "/SandTomb/Levels/SandTomb_Environment.62"
+    },
+    "Level.ID.SandTomb:T_ST_Map_End_01": {
+      "calibration": {
+        "sx": 124000,
+        "sy": -62000,
+        "ox": -74939.093,
+        "oy": 100827.27
+      },
+      "bounds": [
+        {
+          "x": 38827.270000000004,
+          "y": -74939.093,
+          "z": -12001.237000000001
+        },
+        {
+          "x": 100827.27,
+          "y": 49060.907,
+          "z": -2001.237
+        }
+      ],
+      "source": "/SandTomb/Levels/SandTomb_Environment.63"
+    }
+  },
   "Level.ID.SnowPeak": {
     "Level.ID.SnowPeak:T_SP_Map_global_01": {
       "calibration": {

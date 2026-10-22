@@ -33,5 +33,5 @@ test('Active local retouched backgrounds preserve coordinates and portable route
     assert.deepEqual(drawingOnMap(imported.drawings[0],base[0],dungeon).points,[[100,100]]);
     assert.deepEqual(drawingOnMap(imported.drawings[0],reference,dungeon).points,[[100,100]]);
   }
-  assert.equal(count,5);
+  assert.equal(count,6);
 });

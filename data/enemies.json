@@ -3570,6 +3570,111 @@
     }
   },
   {
+    "id": "st-bossarbiter",
+    "gameId": 321,
+    "name": "Vel’korath the Sanctified, Vision of the Covenant",
+    "dungeonScore": 0,
+    "countsTowardsDungeonScore": true,
+    "shadowOrbEligible": true,
+    "baseHealth": 121149.70330000001,
+    "baseHealthMultiplier": 40.3967,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-bossarbiter",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/game/1ce5ee224466f41b8b37e7e2.avif",
+        "sourcePath": "private/game-data/planner/images\\ba2014df3e9f5038f3b2430ec5f7e7ad2407b27642ad254ed352a276173bbfc0.png",
+        "sourceSha256": "1ce5ee224466f41b8b37e7e2c56033a9b34fd7953623d43185100e4e731b8ba8",
+        "width": 256,
+        "height": 256,
+        "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossArbiter",
+        "sha256": "6b912eb2265ae11e4838bd71668cb10eb0209b203dab7032078dc8d719e13656"
+      }
+    ],
+    "source": {
+      "blueprint": "fellowship/Content/Characters/NPC/SandTomb/BossArbiter/BP_NPC_ST_BossArbiter.uasset",
+      "characterId": "ST_BossArbiter",
+      "gameIdRegistry": "CRAICharacter.csv",
+      "baseAttributes": "CT_CharacterBaseAttributes"
+    }
+  },
+  {
+    "id": "st-bossdefenseeye",
+    "gameId": 319,
+    "name": "Han-Eth, Sentry of Xul",
+    "dungeonScore": 0,
+    "countsTowardsDungeonScore": true,
+    "shadowOrbEligible": true,
+    "baseHealth": 109748.55495,
+    "baseHealthMultiplier": 36.59505,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-bossdefenseeye",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/game/dfa0839c4e425c481a9e8698.avif",
+        "sourcePath": "private/game-data/planner/images\\b4b4071e4d6ca7160ac96fbd4debd1dfa30b9c2fc987cab00d3d8e7072dd10ec.png",
+        "sourceSha256": "dfa0839c4e425c481a9e869834e024052d223d8a4d2d3032d4bae861fa2ab274",
+        "width": 256,
+        "height": 256,
+        "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossDefenseEye",
+        "sha256": "cf28a648e9d445c3e17c726b11ef88b20e563ab8f73ba3b398892ba584dd1fd8"
+      }
+    ],
+    "source": {
+      "blueprint": "fellowship/Content/Characters/NPC/SandTomb/BossDefenseEye/BP_NPC_ST_BossDefenseEye.uasset",
+      "characterId": "ST_BossDefenseEye",
+      "gameIdRegistry": "CRAICharacter.csv",
+      "baseAttributes": "CT_CharacterBaseAttributes"
+    }
+  },
+  {
+    "id": "st-bossgatekeeper",
+    "gameId": 318,
+    "name": "Xul’vorith, Sentinel of the Bloodbound Gate",
+    "dungeonScore": 0,
+    "countsTowardsDungeonScore": true,
+    "shadowOrbEligible": true,
+    "baseHealth": 91754.55495,
+    "baseHealthMultiplier": 30.59505,
+    "spiritPointValue": 45,
+    "isBoss": true,
+    "canBeControlled": false,
+    "classification": "normal",
+    "armorType": null,
+    "images": [
+      {
+        "id": "st-bossgatekeeper",
+        "type": "enemy",
+        "size": "200",
+        "path": "images/game/bf34936c3c87b315ba9dbf57.avif",
+        "sourcePath": "private/game-data/planner/images\\e85f7cbdd8f5daa3157ac5d37af19cee3ddea14165182b31e5ebea9338f73e14.png",
+        "sourceSha256": "bf34936c3c87b315ba9dbf57a677def408c97f3be40fa3409a68736a56a20d59",
+        "width": 256,
+        "height": 256,
+        "gameAsset": "/Game/ui/UnitPortraits/Heskyr/T_NPC_ST_BossGatekeeper",
+        "sha256": "8428d50971de398030997125bae21c2c1d5e27c1356638e4c80cca42c8e07787"
+      }
+    ],
+    "source": {
+      "blueprint": "fellowship/Content/Characters/NPC/SandTomb/BossGatekeeper/BP_NPC_ST_BossGatekeeper.uasset",
+      "characterId": "ST_BossGateKeeper",
+      "gameIdRegistry": "CRAICharacter.csv",
+      "baseAttributes": "CT_CharacterBaseAttributes"
+    }
+  },
+  {
     "id": "st-sanguinecrusher",
     "gameId": 317,
     "name": "Sanguine Crusher",

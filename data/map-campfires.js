@@ -335,6 +335,64 @@ export const campfires={
       "source": "/Game/dungeons/PirateRaid/Sublevels/Dungeon6_Enemies_Alternate_03.799"
     }
   ],
+  "Level.ID.SandTomb": [
+    {
+      "id": "campfire-game-0ce9c457-433c5908-9bdb7793-35609221",
+      "worldPosition": {
+        "x": 31449.375,
+        "y": 6723.9365,
+        "z": -754.6586
+      },
+      "mapImageId": "Level.ID.SandTomb:T_ST_Map_Interior_01",
+      "mapPosition": {
+        "x": 0.6727567434210526,
+        "y": 0.5848554736842105
+      },
+      "source": "/SandTomb/Levels/SandTomb.93"
+    },
+    {
+      "id": "campfire-game-257b1545-47a2c8ff-113ebb9a-5a74bb4c",
+      "worldPosition": {
+        "x": 53408.355,
+        "y": -3605.097,
+        "z": -5899.9995
+      },
+      "mapImageId": "Level.ID.SandTomb:T_ST_Map_End_01",
+      "mapPosition": {
+        "x": 0.5752741612903226,
+        "y": 0.7648212096774194
+      },
+      "source": "/SandTomb/Levels/SandTomb.94"
+    },
+    {
+      "id": "campfire-game-33094fcb-4836982a-13bd6580-27e10911",
+      "worldPosition": {
+        "x": 85108.53,
+        "y": -9289.506,
+        "z": -7470.0728
+      },
+      "mapImageId": "Level.ID.SandTomb:T_ST_Map_End_01",
+      "mapPosition": {
+        "x": 0.5294321532258065,
+        "y": 0.25352806451612914
+      },
+      "source": "/SandTomb/Levels/SandTomb.95"
+    },
+    {
+      "id": "campfire-game-714a6e2a-48d61ba6-5262ce97-989be631",
+      "worldPosition": {
+        "x": -3323.2295,
+        "y": -9193.151,
+        "z": -237.98232
+      },
+      "mapImageId": "Level.ID.SandTomb:T_ST_Map_Exterior_01",
+      "mapPosition": {
+        "x": 0.45900625000000006,
+        "y": 0.7340167882352941
+      },
+      "source": "/SandTomb/Levels/SandTomb.96"
+    }
+  ],
   "Level.ID.SnowPeak": [
     {
       "id": "campfire-game-ff3a1f9d-4e832bea-5f5a3599-856dada5",

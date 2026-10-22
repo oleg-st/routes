@@ -13,6 +13,20 @@ const cast={fight:5,type:'cast',timestamp:10000,sourceID:1,sourceInstance:1,abil
 const actors=[{id:1,gameID:331,type:'NPC'},{id:2,gameID:324,type:'NPC'}];
 const input=()=>({fightID:5,actors,rows:[parent,child],events:[cast]});
 
+test('Bilgerat channel identifies rats only with a live, unambiguous cast and fresh nearby appearance',()=>{
+  const parentRow={...parent,gameID:127},rat={...child,gameID:112,firstTime:18000,firstPosition:{x:500,y:0,t:18000},nearest:[]};
+  const event={...cast,abilityGameID:608,sourceResources:{x:0,y:0,hitPoints:100}};
+  const args={fightID:5,actors:[{id:1,type:'NPC',gameID:127},{id:2,type:'NPC',gameID:112}],rows:[parentRow,rat],events:[event]};
+  assert.equal(classifyGameSummons(args)[0]?.rule,'bilgerat-ship-rats');
+  for(const changed of [{...rat,nearest:[{distance:0}]},{...rat,firstTime:20000},
+    {...rat,firstPosition:{x:3000,y:0,t:18000}},{...rat,firstPosition:undefined},{...rat,gameID:111}])
+    assert.deepEqual(classifyGameSummons({...args,rows:[parentRow,changed]}),[]);
+  assert.deepEqual(classifyGameSummons({...args,events:[]}),[]);
+  assert.deepEqual(classifyGameSummons({...args,events:[{...event,sourceResources:{x:0,y:0,hitPoints:0}}]}),[]);
+  const other={...parentRow,key:'3:1',actorID:3};
+  assert.deepEqual(classifyGameSummons({...args,actors:[...args.actors,{id:3,type:'NPC',gameID:127}],rows:[parentRow,other,rat],events:[event,{...event,sourceID:3}]}),[]);
+});
+
 test('Target-relative disciple pools identify a distant Clot Spawn without repeated waves',()=>{
   const args=input(),result=classifySummons(args);
   assert.equal(result.length,1);assert.equal(result[0].rule,'disciple-clot-pools');

@@ -15,10 +15,10 @@ function fixture(id='Level.ID.ElfMines',match=()=>true){
  route.difficulty=difficultyOptions(id).find(match).value;applyDifficulty(route);applyModifierPresets(route,dungeon,presets);
  return {dungeon,route};
 }
-test('Each dungeon offers only its game difficulties, within the new E1–E32 rotation',()=>{
+test('Each dungeon offers its exported Eternal or Pinnacle difficulties',()=>{
  for(const d of dungeons){const options=difficultyOptions(d.id);assert.ok(options.length);assert.equal(new Set(options.map(o=>o.value)).size,options.length);assert.ok(options.every(o=>o.value>20&&o.value<=52));}
  assert.deepEqual(difficultyOptions('Level.ID.ElfMines').slice(0,3).map(c=>c.label),['E2','E5','E8']);
- assert.deepEqual(difficultyOptions('Level.ID.SandTomb'),[]);
+ assert.deepEqual(difficultyOptions('Level.ID.SandTomb').map(c=>[c.label,c.value]),[['Normal',30],['Hard',35],['Nightmare',41]]);
 });
 test('Difficulty synchronizes, restores, undoes, and allows manual affix commands',()=>{
  const {route,dungeon}=fixture(),a=createRouteDocument(route,{dungeon,enemies});

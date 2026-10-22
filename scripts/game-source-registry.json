@@ -15191,6 +15191,378 @@
           "placementId": "placement-7023c8297efe199c8ab7b0ea6fc1ebe9ab9c127b9c8fb6e80c80648c93c9dfb2",
           "mapImageId": "Level.ID.SandTomb:T_ST_Map_Interior_01",
           "order": 238
+        },
+        "c1bbd8f4-48a744b1-25a08dae-4ba9eb87": {
+          "placementId": "placement-game-c1bbd8f4-48a744b1-25a08dae-4ba9eb87"
+        },
+        "451a58b0-4a431edf-e692bc96-c9c9d68b": {
+          "placementId": "placement-game-451a58b0-4a431edf-e692bc96-c9c9d68b"
+        },
+        "bcf7b669-4162ca03-312a699b-89483746": {
+          "placementId": "placement-game-bcf7b669-4162ca03-312a699b-89483746"
+        },
+        "3c2a65bf-407b41af-aa4ef7a6-5c7bf761": {
+          "placementId": "placement-game-3c2a65bf-407b41af-aa4ef7a6-5c7bf761"
+        },
+        "b94431b3-43c51ea2-d031d4b0-b487de8e": {
+          "placementId": "placement-game-b94431b3-43c51ea2-d031d4b0-b487de8e"
+        },
+        "9a7ac369-4bede2d7-822450a3-69313e7d": {
+          "placementId": "placement-game-9a7ac369-4bede2d7-822450a3-69313e7d"
+        },
+        "7eb56a44-422dc7e7-3e8c13a1-ac718d2f": {
+          "placementId": "placement-game-7eb56a44-422dc7e7-3e8c13a1-ac718d2f"
+        },
+        "fb0a547b-4b79a849-27e93fb8-7a9a278c": {
+          "placementId": "placement-game-fb0a547b-4b79a849-27e93fb8-7a9a278c"
+        },
+        "c870dbf0-46c04127-c2893a91-f0432cf5": {
+          "placementId": "placement-game-c870dbf0-46c04127-c2893a91-f0432cf5"
+        },
+        "8b6f2ebd-41098d72-0c42c3a5-4fdf3dad": {
+          "placementId": "placement-game-8b6f2ebd-41098d72-0c42c3a5-4fdf3dad"
+        },
+        "8aa1d1ba-492eb8bf-91ae3a98-b4e9e6fa": {
+          "placementId": "placement-game-8aa1d1ba-492eb8bf-91ae3a98-b4e9e6fa"
+        },
+        "aa7385c8-4893bd6b-765ed1aa-65f1f325": {
+          "placementId": "placement-game-aa7385c8-4893bd6b-765ed1aa-65f1f325"
+        },
+        "50579400-42dfa2d2-6b65eaac-f98f19e9": {
+          "placementId": "placement-game-50579400-42dfa2d2-6b65eaac-f98f19e9"
+        },
+        "22f4b892-4fc174e4-a1ac2aa2-f5c9dad9": {
+          "placementId": "placement-game-22f4b892-4fc174e4-a1ac2aa2-f5c9dad9"
+        },
+        "72341326-463cbc75-7479a783-b36c87b0": {
+          "placementId": "placement-game-72341326-463cbc75-7479a783-b36c87b0"
+        },
+        "7e5b2e50-437121b9-c384b7a2-e0cfa643": {
+          "placementId": "placement-game-7e5b2e50-437121b9-c384b7a2-e0cfa643"
+        },
+        "3b086598-42808631-b09d5981-22a4d43c": {
+          "placementId": "placement-game-3b086598-42808631-b09d5981-22a4d43c"
+        },
+        "98c027fe-480e18eb-8502309f-2075c36c": {
+          "placementId": "placement-game-98c027fe-480e18eb-8502309f-2075c36c"
+        },
+        "07ab1f1d-43e428c3-97d5c99e-0a73bbfe": {
+          "placementId": "placement-game-07ab1f1d-43e428c3-97d5c99e-0a73bbfe"
+        },
+        "33be7daa-4324ffa2-3f5b8482-8a890d0b": {
+          "placementId": "placement-game-33be7daa-4324ffa2-3f5b8482-8a890d0b"
+        },
+        "6fe413ff-4ccff3ce-d0283082-6b9e81f6": {
+          "placementId": "placement-game-6fe413ff-4ccff3ce-d0283082-6b9e81f6"
+        },
+        "15dcad5b-477986a2-8cbd9b8f-d157637b": {
+          "placementId": "placement-game-15dcad5b-477986a2-8cbd9b8f-d157637b"
+        },
+        "7a41e3f3-456ba76b-e569e395-1bd7ed50": {
+          "placementId": "placement-game-7a41e3f3-456ba76b-e569e395-1bd7ed50"
+        },
+        "8be7ebc6-49a6dab0-5b4d9c9e-e26f009b": {
+          "placementId": "placement-game-8be7ebc6-49a6dab0-5b4d9c9e-e26f009b"
+        },
+        "93908d9b-4eb86458-c9be94b2-ea3879e8": {
+          "placementId": "placement-game-93908d9b-4eb86458-c9be94b2-ea3879e8"
+        },
+        "d40d25b4-4ff373f5-52ac699b-43abd67f": {
+          "placementId": "placement-game-d40d25b4-4ff373f5-52ac699b-43abd67f"
+        },
+        "f453468c-45e20395-ae238f9b-0823b1b8": {
+          "placementId": "placement-game-f453468c-45e20395-ae238f9b-0823b1b8"
+        },
+        "fc6af68a-42d0324b-e3528e93-c8770c13": {
+          "placementId": "placement-game-fc6af68a-42d0324b-e3528e93-c8770c13"
+        },
+        "c5b8240e-4c6b13f6-af7457b0-d3bc4439": {
+          "placementId": "placement-game-c5b8240e-4c6b13f6-af7457b0-d3bc4439"
+        },
+        "87801586-4ea5db1b-6b327e86-738bf620": {
+          "placementId": "placement-game-87801586-4ea5db1b-6b327e86-738bf620"
+        },
+        "49c55dc5-41e6cd3c-466d03af-ca261bb5": {
+          "placementId": "placement-game-49c55dc5-41e6cd3c-466d03af-ca261bb5"
+        },
+        "2412eaaa-4bbee70e-bae7498b-2bee6b75": {
+          "placementId": "placement-game-2412eaaa-4bbee70e-bae7498b-2bee6b75"
+        },
+        "583ee827-44cfb298-3e9912a4-8447c901": {
+          "placementId": "placement-game-583ee827-44cfb298-3e9912a4-8447c901"
+        },
+        "dc670b8f-42e1e537-687d4eb7-9ae40129": {
+          "placementId": "placement-game-dc670b8f-42e1e537-687d4eb7-9ae40129"
+        },
+        "34463414-43405182-7f77cfbb-ddeac49e": {
+          "placementId": "placement-game-34463414-43405182-7f77cfbb-ddeac49e"
+        },
+        "5766b4df-43b19e82-3e9a66af-c946ab43": {
+          "placementId": "placement-game-5766b4df-43b19e82-3e9a66af-c946ab43"
+        },
+        "96bef35d-4a53c3f8-f210b88e-1f047e5c": {
+          "placementId": "placement-game-96bef35d-4a53c3f8-f210b88e-1f047e5c"
+        },
+        "a94ba198-496f548d-d03400b3-b3566692": {
+          "placementId": "placement-game-a94ba198-496f548d-d03400b3-b3566692"
+        },
+        "6e3e449b-4e597956-3564d686-b7b9f3ed": {
+          "placementId": "placement-game-6e3e449b-4e597956-3564d686-b7b9f3ed"
+        },
+        "91619d92-486f50b2-5eb9369f-30ea26d4": {
+          "placementId": "placement-game-91619d92-486f50b2-5eb9369f-30ea26d4"
+        },
+        "0a43cffa-47cba50e-40381595-1a1ed273": {
+          "placementId": "placement-game-0a43cffa-47cba50e-40381595-1a1ed273"
+        },
+        "c4c2fe0b-48b9aef6-9d0b829f-b74a2549": {
+          "placementId": "placement-game-c4c2fe0b-48b9aef6-9d0b829f-b74a2549"
+        },
+        "a7fc1960-4f80eb64-8739cfa7-8d1a98b8": {
+          "placementId": "placement-game-a7fc1960-4f80eb64-8739cfa7-8d1a98b8"
+        },
+        "59732050-4a46a1e8-21567bb5-9de8712d": {
+          "placementId": "placement-game-59732050-4a46a1e8-21567bb5-9de8712d"
+        },
+        "2996bed6-40548de2-91473085-98117f40": {
+          "placementId": "placement-game-2996bed6-40548de2-91473085-98117f40"
+        },
+        "d3597361-49c3316c-70c7db93-3821f306": {
+          "placementId": "placement-game-d3597361-49c3316c-70c7db93-3821f306"
+        },
+        "6abb84d4-4b7092e6-eb841c8d-374abf08": {
+          "placementId": "placement-game-6abb84d4-4b7092e6-eb841c8d-374abf08"
+        },
+        "3dca9db8-4c76b349-faa3238e-c501c257": {
+          "placementId": "placement-game-3dca9db8-4c76b349-faa3238e-c501c257"
+        },
+        "e5aa2a7b-407797c1-8e8c0fa3-4ff85929": {
+          "placementId": "placement-game-e5aa2a7b-407797c1-8e8c0fa3-4ff85929"
+        },
+        "b8734bd4-43b92369-1a0188b6-dfffdc98": {
+          "placementId": "placement-game-b8734bd4-43b92369-1a0188b6-dfffdc98"
+        },
+        "19b60c74-4a4862c2-6e0e2288-f6cc6b45": {
+          "placementId": "placement-game-19b60c74-4a4862c2-6e0e2288-f6cc6b45"
+        },
+        "cf70020c-4c128db4-c6da4d89-ea0af461": {
+          "placementId": "placement-game-cf70020c-4c128db4-c6da4d89-ea0af461"
+        },
+        "d4513fc6-435a3cdc-d89065a2-78c5d0f5": {
+          "placementId": "placement-game-d4513fc6-435a3cdc-d89065a2-78c5d0f5"
+        },
+        "be205aac-45553310-ea62c7b7-7989dd7b": {
+          "placementId": "placement-game-be205aac-45553310-ea62c7b7-7989dd7b"
+        },
+        "96149b7c-4dc1f0a0-fb943d99-8523d2e4": {
+          "placementId": "placement-game-96149b7c-4dc1f0a0-fb943d99-8523d2e4"
+        },
+        "c61fe57d-49d9661f-51c909bd-8298755d": {
+          "placementId": "placement-game-c61fe57d-49d9661f-51c909bd-8298755d"
+        },
+        "4d9282fc-4329e9bb-6861f6a0-bb755b2c": {
+          "placementId": "placement-game-4d9282fc-4329e9bb-6861f6a0-bb755b2c"
+        },
+        "e0327982-4154c9a5-a7abcdb6-d0ae5017": {
+          "placementId": "placement-game-e0327982-4154c9a5-a7abcdb6-d0ae5017"
+        },
+        "4255689f-4a8e9f96-29cf14a0-86d4850d": {
+          "placementId": "placement-game-4255689f-4a8e9f96-29cf14a0-86d4850d"
+        },
+        "4704bf6d-4dd5039c-f6ce3f99-1ea2a6c5": {
+          "placementId": "placement-game-4704bf6d-4dd5039c-f6ce3f99-1ea2a6c5"
+        },
+        "fc0e9c63-40c10c92-1c2e8b97-d241a96b": {
+          "placementId": "placement-game-fc0e9c63-40c10c92-1c2e8b97-d241a96b"
+        },
+        "f83ce333-4016e141-5a29ee89-85c4c2cb": {
+          "placementId": "placement-game-f83ce333-4016e141-5a29ee89-85c4c2cb"
+        },
+        "c7e7d736-42932584-892c20a6-090592aa": {
+          "placementId": "placement-game-c7e7d736-42932584-892c20a6-090592aa"
+        },
+        "5f1e4e8d-42ff8527-709fdb9b-f43029bc": {
+          "placementId": "placement-game-5f1e4e8d-42ff8527-709fdb9b-f43029bc"
+        },
+        "bce922e7-41b28931-79a7faba-d23ee72b": {
+          "placementId": "placement-game-bce922e7-41b28931-79a7faba-d23ee72b"
+        },
+        "14dc009b-44b1bf9c-fc932b87-27fca316": {
+          "placementId": "placement-game-14dc009b-44b1bf9c-fc932b87-27fca316"
+        },
+        "3a9b39ab-41534b08-29e4aa9e-aed51edb": {
+          "placementId": "placement-game-3a9b39ab-41534b08-29e4aa9e-aed51edb"
+        },
+        "92e91fb5-45d7160b-96535f86-bc8e031a": {
+          "placementId": "placement-game-92e91fb5-45d7160b-96535f86-bc8e031a"
+        },
+        "d6723784-4e3a620e-502b1a97-ad29c39e": {
+          "placementId": "placement-game-d6723784-4e3a620e-502b1a97-ad29c39e"
+        },
+        "0ab4f14c-48c6ef72-0fbb3ea5-5fbc92d3": {
+          "placementId": "placement-game-0ab4f14c-48c6ef72-0fbb3ea5-5fbc92d3"
+        },
+        "e2ac7c1d-450113fb-842f16ab-8702ff67": {
+          "placementId": "placement-game-e2ac7c1d-450113fb-842f16ab-8702ff67"
+        },
+        "0c26a58c-485c9e3e-cc70da9a-1319c6d1": {
+          "placementId": "placement-game-0c26a58c-485c9e3e-cc70da9a-1319c6d1"
+        },
+        "dc4e8619-470dea46-90f1648c-4eb2907e": {
+          "placementId": "placement-game-dc4e8619-470dea46-90f1648c-4eb2907e"
+        },
+        "a169597a-4c99a354-6d73289f-8fc65ec2": {
+          "placementId": "placement-game-a169597a-4c99a354-6d73289f-8fc65ec2"
+        },
+        "a4bcec2c-4765f238-99d63f98-9227a2ca": {
+          "placementId": "placement-game-a4bcec2c-4765f238-99d63f98-9227a2ca"
+        },
+        "6ebfab65-4593b253-d9bd4588-e10e8b24": {
+          "placementId": "placement-game-6ebfab65-4593b253-d9bd4588-e10e8b24"
+        },
+        "5fe36f13-480960d2-fc7efaac-e0ad1937": {
+          "placementId": "placement-game-5fe36f13-480960d2-fc7efaac-e0ad1937"
+        },
+        "9ab4d949-447a9eeb-a7110db2-6bb40a29": {
+          "placementId": "placement-game-9ab4d949-447a9eeb-a7110db2-6bb40a29"
+        },
+        "5bc40652-43818980-deca08a3-e34855c9": {
+          "placementId": "placement-game-5bc40652-43818980-deca08a3-e34855c9"
+        },
+        "4203b506-40d1ed72-d99d0caa-fc09b206": {
+          "placementId": "placement-game-4203b506-40d1ed72-d99d0caa-fc09b206"
+        },
+        "50ce875c-4aa70654-0277ce85-86e19c43": {
+          "placementId": "placement-game-50ce875c-4aa70654-0277ce85-86e19c43"
+        },
+        "5fc3aaf1-4f724fe4-5f8d7bae-e613e2c8": {
+          "placementId": "placement-game-5fc3aaf1-4f724fe4-5f8d7bae-e613e2c8"
+        },
+        "4a3c3050-4e064f45-8487c1b7-470f7c40": {
+          "placementId": "placement-game-4a3c3050-4e064f45-8487c1b7-470f7c40"
+        },
+        "ded4ddc1-42992a36-43a19695-06687dc8": {
+          "placementId": "placement-game-ded4ddc1-42992a36-43a19695-06687dc8"
+        },
+        "bc369505-4ff25acc-ccc08e99-816be361": {
+          "placementId": "placement-game-bc369505-4ff25acc-ccc08e99-816be361"
+        },
+        "65869482-4ff0a4d1-de737482-2497cb68": {
+          "placementId": "placement-game-65869482-4ff0a4d1-de737482-2497cb68"
+        },
+        "4840e07c-427a1063-53e5bca3-96cb810b": {
+          "placementId": "placement-game-4840e07c-427a1063-53e5bca3-96cb810b"
+        },
+        "59013e54-4ec9df48-8f6d4b81-a65f4570": {
+          "placementId": "placement-game-59013e54-4ec9df48-8f6d4b81-a65f4570"
+        },
+        "8ab764d4-4e25e8b7-0d5ff3b8-b8da4356": {
+          "placementId": "placement-game-8ab764d4-4e25e8b7-0d5ff3b8-b8da4356"
+        },
+        "ef7b913a-4172e07e-bb4fe6be-14bac8ea": {
+          "placementId": "placement-game-ef7b913a-4172e07e-bb4fe6be-14bac8ea"
+        },
+        "a2f57bcf-4408e44d-832e23af-602255cb": {
+          "placementId": "placement-game-a2f57bcf-4408e44d-832e23af-602255cb"
+        },
+        "efdd5137-46f9c9f1-bc6521ae-00970315": {
+          "placementId": "placement-game-efdd5137-46f9c9f1-bc6521ae-00970315"
+        },
+        "067c5d59-480a5ed4-cb281a97-aafac96f": {
+          "placementId": "placement-game-067c5d59-480a5ed4-cb281a97-aafac96f"
+        },
+        "4dd72e0f-4b6bf9a5-56ccaba7-cddcb1e8": {
+          "placementId": "placement-game-4dd72e0f-4b6bf9a5-56ccaba7-cddcb1e8"
+        },
+        "2f237eb3-472f449e-1ac45b8a-220395be": {
+          "placementId": "placement-game-2f237eb3-472f449e-1ac45b8a-220395be"
+        },
+        "6c3e744d-4130ef31-83deaca1-c13a6a61": {
+          "placementId": "placement-game-6c3e744d-4130ef31-83deaca1-c13a6a61"
+        },
+        "55c7081d-44ea88f4-3c6baaae-f5e79276": {
+          "placementId": "placement-game-55c7081d-44ea88f4-3c6baaae-f5e79276"
+        },
+        "ff2207ea-4ea3d1f8-e0e37da5-b622820b": {
+          "placementId": "placement-game-ff2207ea-4ea3d1f8-e0e37da5-b622820b"
+        },
+        "7cf95862-4b9a7fea-67d06e9b-57812c75": {
+          "placementId": "placement-game-7cf95862-4b9a7fea-67d06e9b-57812c75"
+        },
+        "8fc3fba7-4e04d2bb-07315788-bd6528df": {
+          "placementId": "placement-game-8fc3fba7-4e04d2bb-07315788-bd6528df"
+        },
+        "87534071-47a9738e-6545bc9e-cd1768f3": {
+          "placementId": "placement-game-87534071-47a9738e-6545bc9e-cd1768f3"
+        },
+        "ac5d55f3-47b81f06-a77389aa-24d55952": {
+          "placementId": "placement-game-ac5d55f3-47b81f06-a77389aa-24d55952"
+        },
+        "ef9b02d3-46abd70e-5ce8deb4-6449b881": {
+          "placementId": "placement-game-ef9b02d3-46abd70e-5ce8deb4-6449b881"
+        },
+        "6994c0fb-4c051cf1-2810348b-1b50ff64": {
+          "placementId": "placement-game-6994c0fb-4c051cf1-2810348b-1b50ff64"
+        },
+        "8f538aff-4f0de762-5b2b0a90-0d845aad": {
+          "placementId": "placement-game-8f538aff-4f0de762-5b2b0a90-0d845aad"
+        },
+        "aabd0058-486b7e25-80b1ecb9-8d1d87af": {
+          "placementId": "placement-game-aabd0058-486b7e25-80b1ecb9-8d1d87af"
+        },
+        "5ffa02a8-452effbf-9255e283-fef30ebd": {
+          "placementId": "placement-game-5ffa02a8-452effbf-9255e283-fef30ebd"
+        },
+        "16db9637-4a648f7b-7e1ce7a3-a5c51028": {
+          "placementId": "placement-game-16db9637-4a648f7b-7e1ce7a3-a5c51028"
+        },
+        "645cc1cd-48f5e16f-b6c4aeb3-2373fb4c": {
+          "placementId": "placement-game-645cc1cd-48f5e16f-b6c4aeb3-2373fb4c"
+        },
+        "4f5b8766-4d98ab38-71f600be-88eae09f": {
+          "placementId": "placement-game-4f5b8766-4d98ab38-71f600be-88eae09f"
+        },
+        "851ec1af-41454ae0-81a4ffbc-f5005f03": {
+          "placementId": "placement-game-851ec1af-41454ae0-81a4ffbc-f5005f03"
+        },
+        "7cf3d0d1-4294bd66-c56ad9bb-8d1ad13b": {
+          "placementId": "placement-game-7cf3d0d1-4294bd66-c56ad9bb-8d1ad13b"
+        },
+        "94fc029f-42ab93a1-c11d7e87-6a2104a6": {
+          "placementId": "placement-game-94fc029f-42ab93a1-c11d7e87-6a2104a6"
+        },
+        "4b93ab30-4018cb83-b6bc5eab-4a589589": {
+          "placementId": "placement-game-4b93ab30-4018cb83-b6bc5eab-4a589589"
+        },
+        "078dd4d5-430aefc4-009cd38d-1ef13015": {
+          "placementId": "placement-game-078dd4d5-430aefc4-009cd38d-1ef13015"
+        },
+        "e33b573d-4be86167-1dbc099c-620c7bc4": {
+          "placementId": "placement-game-e33b573d-4be86167-1dbc099c-620c7bc4"
+        },
+        "a88130f2-4ef926d6-8283fab9-cb2b3335": {
+          "placementId": "placement-game-a88130f2-4ef926d6-8283fab9-cb2b3335"
+        },
+        "40a4f065-4d593eae-e3143e9b-de530e1d": {
+          "placementId": "placement-game-40a4f065-4d593eae-e3143e9b-de530e1d"
+        },
+        "cf543963-4022ccc0-619915ba-a5828b21": {
+          "placementId": "placement-game-cf543963-4022ccc0-619915ba-a5828b21"
+        },
+        "9a2fffde-4448ae90-30353eaf-abce75f0": {
+          "placementId": "placement-game-9a2fffde-4448ae90-30353eaf-abce75f0"
+        },
+        "2e57e112-499a9813-1a0230bb-dffd573a": {
+          "placementId": "placement-game-2e57e112-499a9813-1a0230bb-dffd573a"
+        },
+        "24999458-4e3f533f-9963ffb7-40c43537": {
+          "placementId": "placement-game-24999458-4e3f533f-9963ffb7-40c43537"
+        },
+        "f6d8bb29-4cb846f6-834ff5ad-605fe4f9": {
+          "placementId": "placement-game-f6d8bb29-4cb846f6-834ff5ad-605fe4f9"
+        },
+        "8b3f5b0c-4d8c2e5e-33fe5093-8f4ba0a6": {
+          "placementId": "placement-game-8b3f5b0c-4d8c2e5e-33fe5093-8f4ba0a6"
         }
       },
       "maps": {
@@ -23118,6 +23490,9 @@
         },
         "7adca052-420bd941-55a78ebc-95397692": {
           "placementId": "placement-game-7adca052-420bd941-55a78ebc-95397692"
+        },
+        "5f5fa738-40331fc6-15365a86-5bd1f933": {
+          "placementId": "placement-game-5f5fa738-40331fc6-15365a86-5bd1f933"
         }
       },
       "legacyPlacementIds": []

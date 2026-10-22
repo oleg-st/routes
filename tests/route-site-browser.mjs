@@ -125,6 +125,34 @@ try{
   await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
   await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
   for(const id of witches)assert.equal(await page.locator(`#markers [data-placement="${id}"] .assigned-ring`).count(),1,'Both witches survive reload');
+  const currentDungeons=JSON.parse(fs.readFileSync('data/dungeons.json'));
+  const crown=currentDungeons.find(d=>d.id==='Level.ID.TreeVillage');
+  const centurion=crown.enemies.find(p=>p.gameGuid==='5f5fa738-40331fc6-15365a86-5bd1f933');
+  await page.locator('#dungeon').selectOption(crown.id);await page.locator('#map-loading').waitFor({state:'hidden'});
+  const centurionMarker=page.locator(`#markers [data-placement="${centurion.placementId}"]`);
+  await centurionMarker.waitFor({state:'attached'});
+  await page.locator('#map-loading').waitFor({state:'hidden'});
+  await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
+  assert.equal(await centurionMarker.count(),1);await centurionMarker.press('Enter');
+  assert.equal(await centurionMarker.locator('.assigned-ring').count(),1);
+  const xul=currentDungeons.find(d=>d.id==='Level.ID.SandTomb');
+  await page.locator('#dungeon').selectOption(xul.id);await page.locator('#map-loading').waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.querySelector('#difficulty option:nth-child(2)')?.textContent==='Normal');
+  await page.locator('#map-loading').waitFor({state:'hidden'});
+  assert.deepEqual(await page.locator('#difficulty option').allTextContents(),['Not selected','Normal','Hard','Nightmare']);
+  assert.equal(await page.locator('#markers [data-placement]').count(),221);
+  const xulMob=xul.enemies[0];await page.locator(`#markers [data-placement="${xulMob.placementId}"]`).press('Enter');
+  for(const choice of difficultyOptions(xul.id)){
+    await page.locator('#difficulty').selectOption(String(choice.value));
+    const expected=newRoute(xul,xul.routeBuildId);expected.difficulty=choice.value;applyDifficulty(expected);
+    expected.pulls[0].enemies=xul.enemies.filter(p=>p.packId===xulMob.packId).map(p=>p.placementId);
+    assert.equal(await page.locator('#route-health strong').textContent(),formatHealth(routeHealth(expected,xul,enemies).dps));
+    assert.ok(await page.locator('.modifiers').isHidden());
+  }
+  await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
+  await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
+  assert.equal(await page.locator('#difficulty').inputValue(),'41');
+  await page.screenshot({path:'tmp/xul-patch-review.png'});
   assert.equal(fs.existsSync(path.join(root,'log-import/prototype-fixtures.js')),false);
   assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log('Published bundle: Pages prefix, separate WASM, edits, URL-only log dialog and refresh passed without external requests.');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

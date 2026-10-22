@@ -241,6 +241,46 @@ export const mapStarts={
       }
     ]
   },
+  "Level.ID.SandTomb": {
+    "worldPosition": {
+      "x": -10204.55975,
+      "y": -20600.2955,
+      "z": -457.25742
+    },
+    "mapImageId": "Level.ID.SandTomb:T_ST_Map_Exterior_01",
+    "mapPosition": {
+      "x": 0.29125412500000003,
+      "y": 0.9364088544117647
+    },
+    "sources": [
+      "/SandTomb/Levels/SandTomb.553",
+      "/SandTomb/Levels/SandTomb.554",
+      "/SandTomb/Levels/SandTomb.555",
+      "/SandTomb/Levels/SandTomb.556"
+    ],
+    "spawnPoints": [
+      {
+        "x": -10239.915,
+        "y": -20564.941,
+        "z": -457.25742
+      },
+      {
+        "x": -10310.626,
+        "y": -20494.23,
+        "z": -457.25742
+      },
+      {
+        "x": -10169.204,
+        "y": -20635.65,
+        "z": -457.25742
+      },
+      {
+        "x": -10098.494,
+        "y": -20706.361,
+        "z": -457.25742
+      }
+    ]
+  },
   "Level.ID.SnowPeak": {
     "worldPosition": {
       "x": -20430.192000000003,

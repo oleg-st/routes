@@ -104,5 +104,3 @@ test('Every Combined matches Full encounters and patrols without embedding Full 
     }
   }
 });
-
-

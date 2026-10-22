@@ -17,8 +17,11 @@ const dungeons={};
 for(const d of s.read('dungeons').playable){
  let choices;
  if(d.info.IsSeasonalPinnacleDungeon){
-  // Difficulty gates for the extra Hard / Nightmare mechanics are game curve values.
-  choices=[pinnacle.MinimumDifficulty,s.curve('AbilityUnlock.Pinnacle.Hard'),s.curve('AbilityUnlock.Pinnacle.Ultimate')].map((value,i)=>({value,label:['Normal','Hard','Nightmare'][i],modifiers:[]}));
+  // Matchmaking defines selectable tiers. Ability-unlock curves can retain older
+  // thresholds and must not be used as the selectable difficulty values.
+  const values=pinnacle.Difficulties;
+  assert.ok(values?.length===3&&new Set(values).size===3&&values.every(v=>Number.isInteger(v)&&v>=pinnacle.MinimumDifficulty&&v<=pinnacle.MaximumDifficulty),'Review Pinnacle tiers');
+  choices=values.map((value,i)=>({value,label:['Normal','Hard','Nightmare'][i],modifiers:[]}));
  }else{
   // The league's exported bounds define the current Eternal scale.
   choices=availableDifficultyLevels(levels,eternal,d).map(level=>{
