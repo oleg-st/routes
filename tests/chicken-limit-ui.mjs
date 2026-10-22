@@ -22,23 +22,27 @@ try{
       await page.locator('#map-loading').waitFor({state:'hidden'});
       const counter=page.locator('[data-route-chicken]'),tip=page.locator('#chicken-tooltip');
       await counter.focus();
-      assert.match(await tip.innerText(),new RegExp(`Dungeon limit: ${limit} uses, shared by the party`));
+      assert.equal(await tip.locator('strong').innerText(),`Chicken · 0/${limit}`);
       const ids=await page.locator('#markers > g[data-placement]:not(:has(.boss-ring))').evaluateAll(elements=>elements.slice(0,5).map(element=>element.dataset.placement));
       assert.ok(ids.length>limit);
       for(let i=0;i<=limit;i++){
         await page.locator(`#markers > g[data-placement="${ids[i]}"]`).press('Shift+F10');
         await page.getByRole('menuitemcheckbox',{name:'Chicken',exact:true}).click();
         await counter.focus();
-        assert.equal(await counter.locator('b').innerText(),String(i+1));
-        assert.equal(await counter.locator('.relic-warning').count(),i===limit?1:0);
+        assert.equal(await counter.locator('b').innerText(),i+1>limit?`${i+1}/${limit}`:String(i+1));
+        assert.equal(await tip.locator('strong').innerText(),`Chicken · ${i+1}/${limit}`);
+        assert.equal(await counter.evaluate(element=>element.classList.contains('over-limit')),i===limit);
+        assert.doesNotMatch(await counter.innerText(),/!/);
         assert.equal(await tip.locator('.chicken-limit-warning').count(),i===limit?1:0);
       }
-      assert.match(await tip.innerText(),new RegExp(`Dungeon limit exceeded: ${limit+1} / ${limit} Chicken uses`));
+      assert.doesNotMatch(await tip.innerText(),/Dungeon limit|Charges are shared/);
+      assert.equal(await tip.locator('strong .chicken-limit-warning').innerText(),`${limit+1}/${limit}`);
+      assert.equal(await tip.locator('strong .chicken-limit-warning').evaluate(element=>getComputedStyle(element).color),'rgb(255, 173, 158)');
       assert.match(await tip.innerText(),/Not in a pull/);
       await tip.screenshot({path:`tmp/chicken-limit-${limit}.png`});
       await page.locator('#undo').click();await counter.focus();
       assert.equal(await tip.locator('.chicken-limit-warning').count(),0);
-      assert.equal(await counter.locator('.relic-warning').count(),0);
+      assert.equal(await counter.evaluate(element=>element.classList.contains('over-limit')),false);
       await page.locator('#redo').click();await counter.focus();
       assert.equal(await tip.locator('.chicken-limit-warning').count(),1);
       await page.setViewportSize({width:390,height:844});
