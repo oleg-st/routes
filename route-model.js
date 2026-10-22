@@ -1,5 +1,6 @@
 import {drawingMap} from './map-views.js';
 import {correctDungeon} from './data/placement-corrections.js';
+import {nonCombatBossIds} from './data/boss-encounters.js';
 import {routeDictionary,replacementMembers,encodeMembers,decodeMembers} from './data/route-dictionary.js';
 import {assertRouteBuild} from './route-build.js';
 import {modifierStats} from './data/game-modifier-stats.js';
@@ -203,6 +204,7 @@ export function scoreRoute(route,dungeon,enemies){
 export function placementHealth(pos,enemy,route,{difficulty=route.difficulty}={}){
   if(difficulty===undefined)return null;
   if(!pos)return null;
+  if(nonCombatBossIds.has(pos.id))return 0;
   const stats=enemy??modifierStats[pos.modifier];
   if(stats?.baseHealth==null&&stats?.dungeonScore===0)return 0;
   if(!stats?.isBoss&&route.excluded.includes(pos.placementId)){

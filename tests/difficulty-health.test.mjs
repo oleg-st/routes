@@ -105,6 +105,52 @@ test('Shadow spawn HP is attached to the spawning pull and included once in rout
  assert.equal(result.shadow,2*shadowHealth(route));assert.equal(result.pulls[0].shadow,result.shadow);
  assert.equal(result.total,result.mobs+result.shadow);
 });
+
+test('Godfall HP and DPS exclude invulnerable Vaerith but retain the Titan',()=>{
+ const {route,dungeon}=fixture();
+ const titan=dungeon.enemies.find(p=>p.id==='em-bossgianttroll'),vaerith=dungeon.enemies.find(p=>p.id==='em-bossvaerith');
+ route.shadow=false;
+ route.pulls[0].enemies=[titan.placementId,vaerith.placementId];
+ for(const choice of difficultyOptions(dungeon.id)){
+  route.difficulty=choice.value;
+  const expected=placementHealth(titan,enemies.get(titan.id),route);
+  assert.ok(expected>0);
+  assert.equal(placementHealth(vaerith,enemies.get(vaerith.id),route),0);
+  assert.equal(positionsHealth([titan,vaerith],enemies,route),expected);
+  const result=routeHealth(route,dungeon,enemies);
+  assert.equal(result.pulls[0].total,expected);assert.equal(result.total,expected);
+  assert.equal(result.dps,expected/dungeon.timerSeconds);
+ }
+});
+
+test('Inactive Grove excludes friendly Akari while hostile bosses still contribute HP',()=>{
+ const members=[{id:'mf-bossunicorn',placementId:'akari'},{id:'mf-bossnecrolord',placementId:'malgut'}];
+ const dungeon={id:'Level.ID.MythicForest',timerSeconds:710,enemies:members};
+ const catalog=new Map(members.map(p=>[p.id,{id:p.id,isBoss:true,baseHealth:100,dungeonScore:0}]));
+ const route=newRoute(dungeon,'test');route.difficulty=30;
+ route.pulls[0].enemies=members.map(p=>p.placementId);
+ const expected=enemyHealth(catalog.get('mf-bossnecrolord'),{difficulty:30});
+ assert.equal(placementHealth(members[0],catalog.get('mf-bossunicorn'),route),0);
+ const result=routeHealth(route,dungeon,catalog);
+ assert.equal(result.pulls[0].total,expected);assert.equal(result.total,expected);
+ assert.equal(result.dps,expected/dungeon.timerSeconds);
+ route.pulls[0].enemies=['akari'];assert.equal(routeHealth(route,dungeon,catalog).total,0);
+ delete route.difficulty;assert.equal(routeHealth(route,dungeon,catalog).total,null);
+});
+
+test('Xul Gatekeeper remains in route HP despite its initial invulnerability effect',()=>{
+ const {route,dungeon}=fixture('Level.ID.SandTomb');
+ const boss=dungeon.enemies.find(p=>p.id==='st-bossgatekeeper');
+ route.shadow=false;route.pulls[0].enemies=[boss.placementId];
+ for(const choice of difficultyOptions(dungeon.id)){
+  route.difficulty=choice.value;
+  const expected=enemyHealth(enemies.get(boss.id),{difficulty:route.difficulty,...difficultyHealthModifiers(route,boss.id)});
+  assert.ok(expected>0);
+  const result=routeHealth(route,dungeon,enemies);
+  assert.equal(result.pulls[0].total,expected);assert.equal(result.total,expected);
+  assert.equal(result.dps,expected/dungeon.timerSeconds);
+ }
+});
 test('Efficiency and grouped HP use selected difficulty and the empowered cap',()=>{
  const dungeon={id:'test',requiredScore:10,enemies:[{id:'a',placementId:'a',packId:'a'}]},catalog=new Map([['a',{baseHealth:100,dungeonScore:1}]]),route=newRoute(dungeon,dungeon.routeBuildId??'test');
  route.difficulty=50;route.modifiers.empowered={active:true,enemies:['a']};
