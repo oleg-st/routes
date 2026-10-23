@@ -14,6 +14,44 @@ let browser;
 try{
   const origin=await new Promise((resolve,reject)=>{server.stdout.on('data',d=>{const url=String(d).match(/http:\/\/127\.0\.0\.1:\d+/)?.[0];if(url)resolve(url);});server.on('error',reject);server.on('exit',code=>reject(Error(`Server exited ${code}`)));});
   browser=await chromium.launch({channel:'msedge',headless:true});
+  // Simulate a browser backend that never completes opening or reading an old database.
+  // Reload must retry the existing database without deleting the user's saved routes.
+  for(const phase of ['open','library']){
+    const recoveryContext=await browser.newContext(),recovery=await recoveryContext.newPage();
+    await recovery.goto(origin);await recovery.locator('#map-loading').waitFor({state:'hidden'});
+    await recovery.locator('#route-name').fill('Preserved route');await recovery.locator('#route-name').press('Tab');
+    await recovery.locator('#add-pull').click();await recovery.locator('#save-route').click();
+    await recovery.waitForFunction(()=>document.querySelector('#save-route').disabled&&document.querySelector('#storage-status').dataset.state==='saved');
+    await recovery.addInitScript(phase=>{
+      if(sessionStorage.getItem('storage-hang-tested'))return;
+      const stall=()=>{sessionStorage.setItem('storage-hang-tested','yes');window.storageStalled=true;};
+      if(phase==='open'){
+        IDBFactory.prototype.open=function(){stall();return {};};
+      }else{
+        const transaction=IDBDatabase.prototype.transaction;
+        IDBDatabase.prototype.transaction=function(...args){
+          if(args[0].includes('drafts')&&args[1]==='readonly'){
+            stall();return {objectStore:()=>({openCursor:()=>({}),getAll:()=>({}),get:()=>({})}),abort(){}};
+          }
+          return transaction.apply(this,args);
+        };
+      }
+    },phase);
+    await recovery.goto(origin);
+    await recovery.waitForFunction(()=>window.storageStalled);
+    await recovery.locator('#map-loading.fatal').waitFor({timeout:15000});
+    assert.match(await recovery.locator('#map-loading').innerText(),/storage.*did not respond/i);
+    assert.equal(await recovery.locator('#storage-status').getAttribute('data-state'),'error');
+    await recovery.getByRole('button',{name:'Reload planner',exact:true}).click();
+    await recovery.locator('#map-loading').waitFor({state:'hidden'});
+    await recovery.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
+    assert.equal(await recovery.locator('#route-name').inputValue(),'Preserved route');
+    assert.equal(await recovery.locator('#pull-count').innerText(),'2');
+    await recovery.locator('#library').click();
+    assert.match(await recovery.locator('#dialog-content').innerText(),/Preserved route/);
+    await recoveryContext.close();
+  }
+  console.log('Startup: stalled IndexedDB open and library read show recovery UI; reload succeeds.');
   const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.route(origin+'/storage-test',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><title>Storage tests</title>'}));
@@ -59,6 +97,85 @@ try{
     localStorage.setItem('fellowship-atlas-v1',JSON.stringify(legacy));return {routeId:route.id,legacy:JSON.stringify(legacy)};
   });
   console.log('IndexedDB: snapshots, compaction, spectator writes, quota failure/retry and fresh peer IDs passed.');
+  await page.evaluate(async()=>{
+    const name='queued-open-test';
+    const blocker=await new Promise((resolve,reject)=>{
+      const request=indexedDB.open(name,1);request.onerror=()=>reject(request.error);
+      request.onupgradeneeded=()=>request.result.createObjectStore('sentinel').put('keep me','value');
+      request.onsuccess=()=>resolve(request.result);
+    });
+    const upgrade=indexedDB.open(name,2),upgraded=new Promise((resolve,reject)=>{
+      upgrade.onsuccess=()=>resolve(upgrade.result);upgrade.onerror=()=>reject(upgrade.error);
+    });
+    await new Promise(resolve=>{upgrade.onblocked=resolve;});
+    const events=[];
+    try{
+      let error;
+      try{await RT.openRouteStorage({name,channel:null,timeoutMs:50,onDiagnostic:e=>events.push(e)});}catch(reason){error=reason;}
+      check(error?.message.includes('did not respond'),'A queued open should time out');
+      check(!events.some(e=>e.state==='blocked'),'The queued request itself does not receive blocked');
+    }finally{blocker.close();}
+    const db=await upgraded;
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction('sentinel'),request=tx.objectStore('sentinel').get('value');
+      request.onsuccess=()=>check(request.result==='keep me','Closing connections must preserve data');
+      tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);
+    });
+    db.close();
+  });
+  console.log('IndexedDB: a real queued open stalls without a blocked event; closing the blocking connection preserves records.');
+  // An unreadable CRDT history must not require deleting the database or its other routes.
+  const rescueContext=await browser.newContext(),rescue=await rescueContext.newPage();
+  await rescue.route(origin+'/storage-test',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><title>Recovery tests</title>'}));
+  await rescue.goto(origin+'/storage-test');await rescue.addScriptTag({content:bundle.outputFiles[0].text});
+  const damaged=await rescue.evaluate(async({dungeon,enemies,buildId})=>{
+    const name='fellowship-route-together-'+buildId,storage=await RT.openRouteStorage({name,channel:null});
+    const route=RT.newRoute(dungeon,buildId,'Recovery original');route.pulls.push(RT.newPull(1));
+    const doc=RT.createRouteDocument(route,{dungeon,enemies:new Map(enemies.map(e=>[e.id,e])),role:'player'});
+    await storage.write(doc.exportSnapshot());await storage.setDraft(dungeon.id,route.id);await storage.saveBookmark(route);
+    doc.execute({type:'set-meta',patch:{name:'Later unsaved draft'}});await storage.write(doc.exportUpdate());
+    // Bypass the validated writer to reproduce malformed persisted history from an old session.
+    const packet=doc.exportUpdate();packet.identity.documentId='wrong-document';
+    await new Promise((resolve,reject)=>{
+      const request=indexedDB.open(name,1);request.onerror=()=>reject(request.error);request.onsuccess=()=>{
+        const db=request.result,tx=db.transaction('updates','readwrite');
+        tx.objectStore('updates').add({routeId:route.id,packet});
+        tx.oncomplete=()=>{db.close();resolve();};tx.onabort=()=>{db.close();reject(tx.error);};
+      };
+    });
+    const before=await storage.backup();doc.dispose();storage.close();
+    return {name,routeId:route.id,before};
+  },{dungeon,enemies,buildId:read('manifest').buildId});
+  await rescue.goto(origin);await rescue.locator('#map-loading.fatal').waitFor();
+  assert.match(await rescue.locator('#map-loading').innerText(),/Stored document identity mismatch/);
+  await rescue.getByText('Startup diagnostics',{exact:true}).click();
+  if(process.env.STORAGE_RECOVERY_SCREENSHOT)await rescue.screenshot({path:process.env.STORAGE_RECOVERY_SCREENSHOT});
+  const reportDownload=rescue.waitForEvent('download');
+  await rescue.getByRole('button',{name:'Download diagnostic report',exact:true}).click();
+  const report=JSON.parse(fs.readFileSync(await (await reportDownload).path(),'utf8'));
+  assert.equal(report.phase,'Reading last route');
+  assert.ok(report.events.some(e=>e.operation==='open'&&e.state==='ready'));
+  assert.ok(report.events.some(e=>e.operation==='merge-route'&&e.state==='error'));
+  const backupDownload=rescue.waitForEvent('download');
+  await rescue.getByRole('button',{name:'Download storage backup',exact:true}).click();
+  const backup=JSON.parse(fs.readFileSync(await (await backupDownload).path(),'utf8'));
+  assert.equal(backup.format,'fellowship-route-storage-backup');assert.equal(backup.database,damaged.name);
+  assert.equal(backup.stores.updates.length,2);assert.equal(backup.stores.routes[0].value.bytes.type,'Uint8Array');
+  await rescue.getByRole('button',{name:'Open last saved copy',exact:true}).click();
+  await rescue.locator('#map-loading').waitFor({state:'hidden'});
+  assert.equal(await rescue.locator('#route-name').inputValue(),'Recovery original (recovered)');
+  assert.equal(await rescue.locator('#pull-count').innerText(),'2');
+  await rescue.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});
+  await rescue.addScriptTag({content:bundle.outputFiles[0].text});
+  const after=await rescue.evaluate(async name=>{const storage=await RT.openRouteStorage({name,channel:null});try{return await storage.backup();}finally{storage.close();}},damaged.name);
+  assert.deepEqual(after.stores.routes.find(e=>e.key===damaged.routeId),damaged.before.stores.routes[0]);
+  assert.deepEqual(after.stores.updates.filter(e=>e.value.routeId===damaged.routeId),damaged.before.stores.updates);
+  assert.deepEqual(after.stores.bookmarks,damaged.before.stores.bookmarks);
+  assert.notEqual(after.stores.drafts[0].value,damaged.routeId);
+  await rescue.reload();await rescue.locator('#map-loading').waitFor({state:'hidden'});
+  assert.equal(await rescue.locator('#route-name').inputValue(),'Recovery original (recovered)');
+  await rescueContext.close();
+  console.log('Recovery: diagnostics identify corrupt history, raw backup exports, saved copy opens; original bytes and bookmarks remain unchanged.');
   await page.goto(origin);await page.locator('#map-loading').waitFor({state:'hidden'});
   assert.equal(await page.locator('#route-name').inputValue(),'Route 1');
   assert.equal(await page.evaluate(()=>localStorage.getItem('fellowship-atlas-v1')),result.legacy);

@@ -14,33 +14,70 @@ function merge(base, updates) {
   } finally {doc.free();}
 }
 export async function openRouteStorage({name = 'fellowship-route-together', indexedDB = globalThis.indexedDB,
-  channel = undefined} = {}) {
+  channel = undefined, timeoutMs = 10000, onDiagnostic = () => {}} = {}) {
+  const diagnostic = (operation, state, details = {}) => {
+    try {onDiagnostic({database: name, operation, state, ...details});} catch {} // Diagnostics must not affect persistence.
+  };
   invariant(indexedDB, 'Browser storage is unavailable.');
   if(channel===undefined)channel=globalThis.BroadcastChannel?new BroadcastChannel(`${name}:changes`):null;
   const db = await new Promise((resolve, reject) => {
+    diagnostic('open', 'started', {version: 1});
     const request = indexedDB.open(name, 1);
-    request.onupgradeneeded = () => {
+    let settled = false;
+    const finish = (error, db) => {
+      if (settled) return;
+      settled = true; clearTimeout(timer);
+      if (error) reject(error); else resolve(db);
+    };
+    const timer = setTimeout(() => {
+      diagnostic('open', 'timeout');
+      finish(new Error('Browser storage did not respond. Close other planner tabs and restart the browser, then try again.'));
+    }, timeoutMs);
+    request.onupgradeneeded = event => {
+      diagnostic('open', 'upgrade', {oldVersion: event?.oldVersion, newVersion: event?.newVersion});
+      // An open request cannot be cancelled. Do not initialize it after giving up.
+      if (settled) {request.transaction.abort(); return;}
       const db = request.result;
       db.createObjectStore('routes', {keyPath: 'identity.routeId'});
       db.createObjectStore('updates', {autoIncrement: true}).createIndex('routeId', 'routeId');
       db.createObjectStore('drafts'); db.createObjectStore('bookmarks', {keyPath: 'id'}); db.createObjectStore('preferences');
     };
-    let blocked=false;
-    request.onsuccess = () => {if(blocked)request.result.close();else resolve(request.result);};
-    request.onerror = () => reject(request.error);
-    request.onblocked = () => {blocked=true;reject(new Error('Close older planner tabs to update browser storage.'));};
-  }).catch(error => {channel?.close(); throw error;});
-  db.onversionchange = () => db.close();
-  function transaction(names, mode, body) {
+    request.onsuccess = () => {
+      if(settled){request.result.close();diagnostic('open','late-connection-closed');}
+      else {diagnostic('open','ready');finish(null, request.result);}
+    };
+    request.onerror = () => finish(request.error ?? new Error('Unable to open browser storage.'));
+    request.onblocked = event => {
+      diagnostic('open','blocked',{oldVersion:event?.oldVersion,newVersion:event?.newVersion});
+      finish(new Error('Close older planner tabs to update browser storage, then try again.'));
+    };
+  }).catch(error => {diagnostic('open','error',{errorName:error.name,message:error.message});channel?.close(); throw error;});
+  db.onversionchange = event => {diagnostic('connection','versionchange',{newVersion:event.newVersion});db.close();};
+  db.onclose = () => diagnostic('connection','closed-unexpectedly');
+  function transaction(names, mode, body, operation = names.join('+')) {
+    diagnostic(operation, 'started', {stores: names, mode});
     return new Promise((resolve, reject) => {
-      let result, failure;
+      let result, settled = false;
       const tx = db.transaction(names, mode, mode === 'readwrite' ? {durability: 'strict'} : undefined);
-      const fail = error => {failure = error; tx.abort();};
-      tx.oncomplete = () => resolve(result);
-      tx.onabort = () => reject(failure ?? tx.error ?? new Error('Storage transaction aborted.'));
+      const finish = error => {
+        if (settled) return;
+        settled = true; clearTimeout(timer);
+        if (error) reject(error); else {diagnostic(operation,'complete');resolve(result);}
+      };
+      const fail = error => {
+        // Reject even if a stalled backend never delivers the abort event.
+        finish(error);
+        try {tx.abort();} catch {} // The transaction may already have finished.
+      };
+      const timer = setTimeout(() => {
+        diagnostic(operation,'timeout');
+        fail(new Error('Browser storage transaction did not respond. Close other planner tabs and restart the browser, then try again.'));
+      }, timeoutMs);
+      tx.oncomplete = () => finish();
+      tx.onabort = () => finish(tx.error ?? new Error('Storage transaction aborted.'));
       tx.onerror = () => {};
       try {body(tx, value => {result = value;}, fail);} catch (error) {fail(error);}
-    });
+    }).catch(error => {diagnostic(operation,'error',{errorName:error.name,message:error.message});throw error;});
   }
   const listeners = new Set();
   if (channel) channel.onmessage = event => {for (const listener of listeners) listener(event.data);};
@@ -60,7 +97,7 @@ export async function openRouteStorage({name = 'fellowship-route-together', inde
             }
           } catch (error) {fail(error);}
         };
-      });
+      }, 'write-route');
       channel?.postMessage({routeId});
     },
     async load(routeId) {
@@ -68,8 +105,14 @@ export async function openRouteStorage({name = 'fellowship-route-together', inde
       await transaction(['routes', 'updates'], 'readonly', tx => {
         tx.objectStore('routes').get(routeId).onsuccess = e => {value.base = e.target.result;};
         tx.objectStore('updates').index('routeId').getAll(routeId).onsuccess = e => {value.updates = e.target.result;};
-      });
-      return merge(value.base, value.updates);
+      }, 'read-route');
+      diagnostic('merge-route','started',{routeId,updates:value.updates.length});
+      try {
+        const packet=merge(value.base, value.updates);
+        diagnostic('merge-route','complete');return packet;
+      } catch(error) {
+        diagnostic('merge-route','error',{errorName:error.name,message:error.message});throw error;
+      }
     },
     compact(routeId) {
       return transaction(['routes', 'updates'], 'readwrite', (tx, done, fail) => {
@@ -89,7 +132,7 @@ export async function openRouteStorage({name = 'fellowship-route-together', inde
             for (const key of values.keys) tx.objectStore('updates').delete(key);
           } catch (error) {fail(error);}
         };
-      });
+      }, 'compact-route');
     },
     async library() {
       const state = {drafts: {}, saved: [], lastDungeon: null};
@@ -97,8 +140,22 @@ export async function openRouteStorage({name = 'fellowship-route-together', inde
         tx.objectStore('drafts').openCursor().onsuccess = e => {const c = e.target.result; if (c) {state.drafts[c.key] = c.value; c.continue();}};
         tx.objectStore('bookmarks').getAll().onsuccess = e => {state.saved = e.target.result;};
         tx.objectStore('preferences').get('lastDungeon').onsuccess = e => {state.lastDungeon = e.target.result ?? null;};
-      });
+      }, 'read-library');
       return state;
+    },
+    async backup() {
+      // Export raw records without decoding CRDT bytes or modifying the original database.
+      const stores = {}, names = [...db.objectStoreNames];
+      await transaction(names, 'readonly', tx => {
+        for(const name of names){
+          const entries=stores[name]=[];
+          tx.objectStore(name).openCursor().onsuccess=event=>{
+            const cursor=event.target.result;
+            if(cursor){entries.push({key:cursor.key,value:cursor.value});cursor.continue();}
+          };
+        }
+      }, 'backup');
+      return {format:'fellowship-route-storage-backup',version:1,database:name,databaseVersion:db.version,createdAt:new Date().toISOString(),stores};
     },
     setDraft(dungeonId, routeId) {
       return transaction(['drafts', 'preferences'], 'readwrite', tx => {

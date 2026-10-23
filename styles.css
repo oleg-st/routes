@@ -1,4 +1,5 @@
 :root{color-scheme:dark;--bg:#101316;--panel:#191d21;--raised:#22272c;--border:#30363c;--muted:#959ea8;--text:#e6e9eb;--gold:#e4b76b;--green:#7bc4a7;font-family:Segoe UI,Arial,sans-serif;font-size:13px}
+.startup-error{max-width:620px;max-height:100%;overflow:auto;line-height:1.6}.startup-error button{margin:4px 8px 4px 0}.startup-error details{margin:16px 0;font-size:12px;overflow-wrap:anywhere}.startup-error summary{cursor:pointer}
 #log-live-form{margin-bottom:18px}#log-url{display:block;width:100%;box-sizing:border-box;margin:8px 0 16px}#log-live-error{color:#ff9b9b}#log-live-status{color:var(--muted)}
 #log-fight-field{margin-bottom:16px}#log-fight{display:block;width:100%;box-sizing:border-box;margin-top:8px}
 #log-fight option{background:#14181c;color:var(--text)}#log-fight[data-status=clear],#log-fight option[data-status=clear]{color:var(--green)}#log-fight[data-status=wipe],#log-fight option[data-status=wipe]{color:#ff9b9b}

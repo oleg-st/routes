@@ -24,6 +24,7 @@ import {createRoomUI} from './collaboration/room-ui.js';
 import {newRoomCode,roomCode} from './collaboration/room-protocol.js';
 import {createRouteDocument,restoreRouteDocument} from './collaboration/route-document.js';
 import {openRouteStorage} from './collaboration/route-storage.js';
+import {serializeStorageBackup} from './collaboration/storage-backup.js';
 import {createLogImportUI} from './log-import/import-ui.js';
 import {movementTrailLines} from './log-import/movement-trail.js';
 import {captureLogCallback,createLiveImport} from './log-import/live-import.js';
@@ -47,6 +48,13 @@ const svg=(tag,attrs={},text)=>{const e=document.createElementNS(NS,tag);for(con
 let data,dungeon,route,activePull,mapLayer,positions,enemies,packNumbers,view,baseView,tool='select',draft=[],inspected=null;
 let drag=null,toastTimer,suppressClick=false;
 let routeDocument,routeBinding,routeStorage,stopRoute,routeBusy=false,selectionQueue=Promise.resolve();
+let startupReady=false,startupDraftId=null,startupPhase='Loading game data';
+const startupEvents=[];
+function recordStorageDiagnostic(event){startupEvents.push({at:new Date().toISOString(),...event});if(startupEvents.length>100)startupEvents.shift();}
+async function startupStep(phase,action){
+  if(!startupReady){startupPhase=phase;$('#map-loading').textContent=phase+'…';recordStorageDiagnostic({operation:phase,state:'started'});}
+  return action();
+}
 let roomSession=null,roomUI,cursorUI,roomTransition=false,roomResume=null;
 let hoveredPack=null;
 let enemyMarkerCenters=new Map();
@@ -103,11 +111,14 @@ async function loadDungeon(id,imported){
   try{
     await persist();
     const selected=data.dungeons.find(d=>d.id===id)||data.dungeons[0];
-    const target=await data.loadDungeon(selected.id);
+    const target=await startupStep('Loading dungeon',()=>data.loadDungeon(selected.id));
     const options={dungeon:target,enemies,role:'player'};
-    const packet=typeof imported==='string'?await routeStorage.load(imported):!imported&&store.drafts[target.id]?await routeStorage.load(store.drafts[target.id]):null;
-    if(typeof imported==='string'&&!packet)throw new Error('Saved route data is missing.');
-    const next=packet?restoreRouteDocument(packet,options):createRouteDocument(imported||await createRoute(target),options);
+    const storedId=typeof imported==='string'?imported:!imported?store.drafts[target.id]:null;
+    if(!startupReady)startupDraftId=storedId;
+    const packet=storedId?await startupStep('Reading last route',()=>routeStorage.load(storedId)):null;
+    if(storedId&&!packet)throw new Error('Saved route data is missing.');
+    const next=packet?await startupStep('Restoring last route',()=>restoreRouteDocument(packet,options)):await startupStep('Creating route',async()=>createRouteDocument(imported||await createRoute(target),options));
+    if(!startupReady)startupPhase='Saving initial route';
     const binding=routeStorage.bind(next,storageStatus);
     try{await binding.flush();await routeStorage.setDraft(target.id,next.identity.routeId);}catch(error){await binding.dispose().catch(()=>{});next.dispose();throw error;}
     await routeBinding?.dispose();stopRoute?.();routeDocument?.dispose();
@@ -1300,8 +1311,8 @@ async function init(){
   if(combinedBuildId!==data.manifest.buildId)throw new Error('Combined maps need updating for this game data build. Run npm run maps.');
   data.loadDungeon=createDungeonLoader(data.dungeons,d=>correctDungeon(d,dungeonDataMode));
   $('#dungeon').innerHTML=[...data.dungeons].sort((a,b)=>a.name.localeCompare(b.name)).map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('');
-  routeStorage=await openRouteStorage({name:'fellowship-route-together-'+data.manifest.buildId});
-  store=await routeStorage.library();
+  routeStorage=await startupStep('Opening browser storage',()=>openRouteStorage({name:'fellowship-route-together-'+data.manifest.buildId,onDiagnostic:recordStorageDiagnostic}));
+  store=await startupStep('Reading saved routes',()=>routeStorage.library());
   let incoming;const initialRouteHash=location.hash;
   if(initialRouteHash.startsWith('#route=')){
     try{incoming=await decodeRoute(initialRouteHash,data.dungeons,enemies,data.loadDungeon);incoming.id=uid();}
@@ -1309,9 +1320,55 @@ async function init(){
   }
   bind();setupRooms();setupLogImport();await selectDungeon(incoming?.dungeonId||store.lastDungeon||'Level.ID.FrozenKingdom',incoming);
   if(incoming)clearImportedRouteHash(initialRouteHash);
+  await finishStartup();
+}
+async function finishStartup({resumeRoom=true}={}){
+  startupReady=true;
   let resume;try{resume=JSON.parse(sessionStorage.getItem('rt-room'));}catch{}
-  if(location.hash.startsWith('#room=')){const code=roomCode(location.hash);if(resume?.code===code)await startRoom({...resume,code});else openRoomHash();}
+  if(resumeRoom&&location.hash.startsWith('#room=')){const code=roomCode(location.hash);if(resume?.code===code)await startRoom({...resume,code});else openRoomHash();}
   setTool('select');
   await logImportUI.resume();
 }
-init().catch(err=>{$('#map-loading').hidden=false;$('#map-loading').textContent=err.message;$('#map-loading').classList.add('fatal');console.error(err);});
+function downloadRecoveryFile(filename,text){
+  const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),link=document.createElement('a');
+  link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function showStartupFailure(err){
+  const failedPhase=startupPhase,failedRouteId=startupDraftId;
+  const loading=$('#map-loading'),message=document.createElement('p'),retry=document.createElement('button'),panel=document.createElement('div');
+  panel.className='startup-error';
+  message.textContent=err.message||String(err);retry.textContent='Reload planner';retry.onclick=()=>location.reload();
+  panel.append(message,retry);loading.replaceChildren(panel);loading.hidden=false;loading.classList.add('fatal');
+  const details=document.createElement('details'),summary=document.createElement('summary'),description=document.createElement('p'),report=document.createElement('button');
+  summary.textContent='Startup diagnostics';description.textContent=`Failed while: ${failedPhase}. Database: fellowship-route-together-${data?.manifest.buildId??'unknown'}.`;
+  report.textContent='Download diagnostic report';report.onclick=()=>downloadRecoveryFile('planner-startup-diagnostics.json',JSON.stringify({createdAt:new Date().toISOString(),buildId:data?.manifest.buildId,browser:navigator.userAgent,phase:failedPhase,routeId:failedRouteId,error:{name:err.name,message:err.message||String(err)},events:startupEvents},null,2));
+  details.append(summary,description,report);panel.append(details);
+  if(routeStorage){
+    const backup=document.createElement('button');backup.textContent='Download storage backup';
+    backup.onclick=async()=>{
+      backup.disabled=true;
+      try{downloadRecoveryFile('planner-storage-backup.json',serializeStorageBackup(await routeStorage.backup()));}
+      catch(error){message.textContent='Backup could not be read: '+(error.message||String(error));}
+      finally{backup.disabled=false;}
+    };
+    panel.append(backup);
+  }
+  const saved=!routeDocument&&['Reading last route','Restoring last route'].includes(failedPhase)?store.saved.find(r=>r.id===failedRouteId):null;
+  if(saved){
+    const explanation=document.createElement('p'),recover=document.createElement('button');
+    explanation.textContent='Open a separate copy from the last time you clicked Save. Later edits may be missing. The original route and its history will remain in storage; download a backup to keep them for recovery.';
+    recover.textContent='Open last saved copy';recover.onclick=async()=>{
+      recover.disabled=true;
+      try{
+        const copy=structuredClone(saved);copy.id=uid();copy.name=String(copy.name).slice(0,180)+' (recovered)';
+        await selectDungeon(copy.dungeonId,copy);await finishStartup({resumeRoom:false});
+        $('#storage-status').onclick=run(persist);loading.classList.remove('fatal');
+        toast('Opened a copy of your last save. The original route is still stored.');
+      }catch(error){showStartupFailure(error);}
+    };
+    panel.append(explanation,recover);
+  }
+  const status=$('#storage-status');status.textContent='Unable to start · click to reload';status.dataset.state='error';status.title=err.message;status.onclick=()=>location.reload();
+  console.error(err);
+}
+init().catch(showStartupFailure);
