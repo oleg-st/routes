@@ -262,6 +262,42 @@ test('Delayed Chicken geometry is usable within ten seconds, but ambiguous or la
  const ambiguous=structuredClone(input);ambiguous.events.push({...ambiguous.events[1],targetInstance:2});
  await assert.rejects(matchLiveLog(ambiguous,options),/No enemies could be matched/);
  const nextCast=structuredClone(input);nextCast.events.push({...nextCast.events[0],timestamp:1000,targetInstance:2});
- const nextResult=await matchLiveLog(nextCast,options);
- assert.deepEqual(nextResult.partial.skipped.map(r=>r.key),['2:1']);
+ // One observed chicken after two casts cannot establish either target's position.
+ await assert.rejects(matchLiveLog(nextCast,options),/No enemies could be matched/);
+});
+
+test('Rapid Chicken casts exclude boss adds only when every feasible replacement supports it',async()=>{
+ const placement=(id,x)=>({id,placementId:id,packId:id,worldPosition:{x,y:x},mapPosition:{x:0.5,y:0.5},mapImageId:'map'});
+ const dungeon={id:'test',name:'Test',enemies:[placement('static',100),placement('boss',10000)],mapImages:[{id:'map',width:100,height:100}]};
+ const catalog=new Map([['static',{id:'static',gameId:999,name:'Ordinary mob'}],['boss',{id:'boss',gameId:900,name:'Boss',isBoss:true}]]);
+ const resources=x=>({x,y:x,hitPoints:100,maxHitPoints:100});
+ const input={complete:true,reportCode:'example',fight:{...fight,endTime:10000,dungeonPulls:[{id:1,startTime:100,endTime:10000}]},
+   actors:[{id:1,type:'Player'},{id:2,type:'NPC',gameID:999},{id:3,type:'NPC',subType:'Boss',gameID:900},{id:4,type:'NPC',gameID:278}],events:[
+     {...event,targetResources:resources(100)},
+     {...event,timestamp:3000,targetID:3,targetResources:resources(10000),sourceResources:resources(10000)},
+     {fight:5,type:'cast',timestamp:3500,sourceID:1,targetID:2,targetInstance:2,abilityGameID:1478},
+     {fight:5,type:'cast',timestamp:4500,sourceID:1,targetID:2,targetInstance:3,abilityGameID:1478},
+     {...event,timestamp:5000,targetID:4,targetInstance:1,targetResources:resources(10100)},
+     {...event,timestamp:5200,targetID:4,targetInstance:2,targetResources:resources(10200)},
+   ]};
+ const options={dungeon,catalog,presets:{},dungeonData:'custom'};
+ for(const positionedSecondTarget of [false,true]){
+   const log=structuredClone(input);
+   if(positionedSecondTarget)log.events.splice(3,0,{...event,timestamp:4000,targetInstance:3,targetResources:resources(10100)});
+   const result=await matchLiveLog(log,options);
+   assert.equal(result.variants.length,1);
+   assert.deepEqual(Object.values(result.groups).flatMap(g=>g.enemies).sort(),['boss','static']);
+   assert.deepEqual(Object.values(result.groups).flatMap(g=>g.excluded),[]);
+ }
+ for(const position of [100,20000]){
+   const mixed=structuredClone(input);mixed.events.at(-1).targetResources=resources(position);
+   await assert.rejects(matchLiveLog(mixed,options));
+ }
+ const missing=structuredClone(input);missing.events.pop();
+ await assert.rejects(matchLiveLog(missing,options));
+ const noGeometry=structuredClone(input);delete noGeometry.events.at(-1).targetResources;
+ await assert.rejects(matchLiveLog(noGeometry,options));
+ const stale=structuredClone(input);
+ stale.events.find(e=>e.targetID===3).timestamp=200;
+ await assert.rejects(matchLiveLog(stale,options));
 });

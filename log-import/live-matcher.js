@@ -6,6 +6,7 @@ import {solveCompletePacks} from './pack-solver.js';
 import {createApproachFilter} from './approach-filter.js';
 import {reverseApproachEvidence,scoreReverseApproach,compareReverseRank} from './reverse-approach.js';
 import {classifySummons} from './summon-evidence.js';
+import {chickenReplacements} from './chicken-replacements.js';
 import {modifierEvidence,createEmpoweredConstraint} from './modifier-evidence.js';
 import {extractInvisibility,createVisibilityIndex} from './invisibility.js';
 import {extractPortals} from './portals.js';
@@ -39,17 +40,17 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   }).filter(p=>p.placements.length),{dungeonID:dungeon.id,catalog,dungeonData});
   const packByID=new Map(packs.map(p=>[p.id,p])),packByPlacement=new Map(packs.flatMap(p=>p.placements.map(m=>[m.placementId,p])));
   const staticTypes=new Set(packs.flatMap(p=>Object.keys(p.counts).map(Number)));
-  const chickenCasts=events.filter(e=>e.type==='cast'&&e.abilityGameID===1478);
+  const chickenCasts=events.filter(e=>e.fight===fight.id&&e.type==='cast'&&e.abilityGameID===1478);
   const chickenKeys=new Set(chickenCasts.map(e=>`${e.targetID}:${e.targetInstance??1}`));
+  const replacements=chickenReplacements(chickenCasts,npcRows);
   let rows=npcRows;
   // Replacement geometry is a hint; original identity always comes from the cast.
-  // Xul can first record the chicken 7.7 seconds later. Keep a bounded window
-  // ending at the next cast, require uniqueness, and never turn this into an anchor.
+  // Xul can first record the chicken 7.7 seconds later, after another cast.
+  // Only a unique one-to-one replacement supplies geometry, never a spawn anchor.
   rows=rows.map(r=>{
     if(r.firstPosition||!chickenKeys.has(r.key))return r;
     const cast=chickenCasts.find(e=>`${e.targetID}:${e.targetInstance??1}`===r.key);
-    const nextCast=chickenCasts.find(e=>e.timestamp>cast.timestamp)?.timestamp??Infinity;
-    const chickens=npcRows.filter(c=>[277,278].includes(c.gameID)&&c.firstTime>=cast.timestamp&&c.firstTime<Math.min(nextCast,cast.timestamp+10000));
+    const chickens=replacements.get(r.key)??[];
     return {...r,firstTime:cast.timestamp,firstPosition:chickens.length===1?chickens[0].firstPosition:undefined};
   });
   // A cast-only Chicken target can also be a boss add. Let summon checks
@@ -62,6 +63,20 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       .map(e=>({placementId:e.placementId,distance:Math.hypot(p.y-e.worldPosition.x,p.x-e.worldPosition.y)})).sort((a,b)=>a.distance-b.distance).slice(0,2)};
   });
   const summons=new Set(classifySummons({fightID:fight.id,actors,rows:summonRows,events,bossAddRadius:config.bossAddRadius??matchingConfig.bossAddRadius}).map(r=>r.key));
+  // Ambiguous pairs may still establish a boss add when EVERY feasible
+  // replacement supports that classification. Never pick an arbitrary position
+  // or reuse one chicken for multiple targets to discard ordinary map enemies.
+  for(const row of summonRows){
+    const possible=replacements.get(row.key);
+    if(row.firstPosition||summons.has(row.key)||!possible?.length)continue;
+    if(possible.every(chicken=>{
+      const p=chicken.firstPosition;if(!p)return false;
+      const candidate={...row,firstPosition:p,nearest:dungeon.enemies.filter(e=>catalog.get(e.id).gameId===row.gameID)
+        .map(e=>({placementId:e.placementId,distance:Math.hypot(p.y-e.worldPosition.x,p.x-e.worldPosition.y)})).sort((a,b)=>a.distance-b.distance).slice(0,2)};
+      return classifySummons({fightID:fight.id,actors,rows:summonRows.map(r=>r===row?candidate:r),events,
+        bossAddRadius:config.bossAddRadius??matchingConfig.bossAddRadius}).some(r=>r.key===row.key);
+    }))summons.add(row.key);
+  }
   rows=rows.filter(r=>staticTypes.has(r.gameID)&&!summons.has(r.key));
   const deathSkipEncounters=confirmedDeathSkips(log,rows,{...encounters,dungeonID:dungeon.id});
   const deathSkips=deathSkipEncounters.flatMap(s=>s.enemyKeys.map(key=>({key,pullID:s.pullID,reason:'survived-death-skip'}))),skippedKeys=new Set(deathSkips.map(r=>r.key));
