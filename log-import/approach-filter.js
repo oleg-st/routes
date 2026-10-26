@@ -43,7 +43,7 @@ export function createApproachFilter({packs,observations,attacks=[],playerRadius
       const witness={kind:'player-attack-or-cast',key:attack.key,targetKey:attack.targetKey,
         t:attack.t,distance:d,range:attack.range,abilityGameID:attack.abilityGameID};
       byTarget.set(attack.targetKey,witness);
-      if(memberKeys.has(attack.targetKey)&&(!packAttack||attack.t<packAttack.t))packAttack={...witness,scope:'established-pack-member'};
+      if((memberKeys.has(attack.targetKey)||attack.confirmedPackId===pack.id)&&(!packAttack||attack.t<packAttack.t))packAttack={...witness,scope:'established-pack-member'};
     }
     index.set(pack.id,{player,npc,byTarget,packAttack,contactOnly});
   }

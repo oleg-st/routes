@@ -4,6 +4,7 @@ import {placementDistance} from './placement-geometry.js';
 import {minimumAssignment,hasCompatibleAssignment,hasRequiredAssignment} from './assignment.js';
 import {solveCompletePacks} from './pack-solver.js';
 import {createApproachFilter} from './approach-filter.js';
+import {withOpeningPackEvidence} from './pack-attack-evidence.js';
 import {reverseApproachEvidence,scoreReverseApproach,compareReverseRank} from './reverse-approach.js';
 import {classifySummons} from './summon-evidence.js';
 import {chickenReplacements} from './chicken-replacements.js';
@@ -102,8 +103,10 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     const pack=packByID.get(packId);
     return pack&&!pack.placements.some(p=>catalog.get(p.id).isBoss)?[{packId,pack:pack.number,time:Math.min(...rs.map(r=>r.firstTime))}]:[];
   })}):null;
-  const attacks=events.filter(e=>['cast','damage'].includes(e.type)&&e.abilityGameID!==1002109&&actorByID.get(e.sourceID)?.type==='Player'&&actorByID.get(e.targetID)?.type==='NPC'&&Number.isFinite(e.sourceResources?.x)&&Number.isFinite(e.sourceResources?.y))
-    .map(e=>({x:e.sourceResources.y,y:e.sourceResources.x,t:e.timestamp,key:`${e.sourceID}:1`,targetKey:encounters.key(e,'target'),abilityGameID:e.abilityGameID,range:config.attackRange}));
+  const retainedKeys=new Set(rows.filter(r=>!skippedKeys.has(r.key)).map(r=>r.key));
+  const attacks=withOpeningPackEvidence(events.filter(e=>['cast','damage'].includes(e.type)&&e.abilityGameID!==1002109&&actorByID.get(e.sourceID)?.type==='Player'&&actorByID.get(e.targetID)?.type==='NPC'&&Number.isFinite(e.sourceResources?.x)&&Number.isFinite(e.sourceResources?.y))
+    .map(e=>({x:e.sourceResources.y,y:e.sourceResources.x,t:e.timestamp,key:`${e.sourceID}:1`,targetKey:encounters.key(e,'target'),type:e.type,fake:e.fake,abilityGameID:e.abilityGameID,range:config.attackRange})),
+    {packs,rows:npcRows.filter(r=>retainedKeys.has(r.key)),catalog});
   const radiusAttempts=[];
   const step=config.aggroRadiusStep??matchingConfig.aggroRadiusStep;
   const maximum=adaptiveRadius?Math.max(config.aggroRadius,config.maxAggroRadius??matchingConfig.maxAggroRadius):config.aggroRadius;
