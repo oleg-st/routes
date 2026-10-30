@@ -192,7 +192,7 @@ test('The first respawn can be delayed; explicit checkpoint events only need coo
   assert.equal(detect(input).length,1);
 });
 
-test('A retained pack includes its surviving siblings; only diversion-only packs are omitted',async()=>{
+test('A partially killed pack selects its killed members without its surviving siblings',async()=>{
   for(const later of [false,true]){
     const input=example(),{log,dungeon,catalog}=input;
     log.actors.push({id:5,type:'NPC',gameID:900});
@@ -202,7 +202,7 @@ test('A retained pack includes its surviving siblings; only diversion-only packs
     log.events.push({fight:5,type:'death',timestamp:later?15000:4000,targetID:5});
     assert.deepEqual(detect(input).map(r=>r.key),['3:1']);
     const result=await matchLiveLog(log,{dungeon,catalog,presets:{},dungeonData:'custom'});
-    assert.deepEqual(result.variants[0].pulls.flatMap(p=>p.groups.flatMap(id=>result.groups[id].enemies)).sort(),['kill','retained','skip']);
+    assert.deepEqual(result.variants[0].pulls.flatMap(p=>p.groups.flatMap(id=>result.groups[id].enemies)).sort(),['kill','retained']);
     assert.deepEqual(result.inferredPlacements,[]);
     assert.equal(result.drawings.filter(d=>d.kind==='note').length,1);
   }

@@ -5,6 +5,7 @@ import {minimumAssignment,hasCompatibleAssignment,hasRequiredAssignment} from '.
 import {solveCompletePacks} from './pack-solver.js';
 import {createApproachFilter} from './approach-filter.js';
 import {withOpeningPackEvidence} from './pack-attack-evidence.js';
+import {dormantSpawnEvidence} from './dormant-spawn-evidence.js';
 import {reverseApproachEvidence,scoreReverseApproach,compareReverseRank} from './reverse-approach.js';
 import {classifySummons} from './summon-evidence.js';
 import {chickenReplacements} from './chicken-replacements.js';
@@ -23,6 +24,7 @@ import {encounterIdentity} from './boss-encounters.js';
 import {createNeighborApproach} from './neighbor-approach.js';
 import {confirmedDeathSkips} from './death-skips.js';
 import {createDeathSkipAssignment} from './death-skip-assignment.js';
+import {abandonedPullSurvivors} from './pull-survivors.js';
 
 const yieldUI=()=>new Promise(resolve=>setTimeout(resolve,0));
 export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,signal,onProgress=()=>{},config=matchingConfig,adaptiveRadius=false,allowPartial=false,neighborRadius=0}){
@@ -79,6 +81,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
     }))summons.add(row.key);
   }
   rows=rows.filter(r=>staticTypes.has(r.gameID)&&!summons.has(r.key));
+  const pullSurvivors=abandonedPullSurvivors(log,rows,encounters),survivorKeys=new Set(pullSurvivors.map(r=>r.key));
   const deathSkipEncounters=confirmedDeathSkips(log,rows,{...encounters,dungeonID:dungeon.id});
   const deathSkips=deathSkipEncounters.flatMap(s=>s.enemyKeys.map(key=>({key,pullID:s.pullID,reason:'survived-death-skip'}))),skippedKeys=new Set(deathSkips.map(r=>r.key));
   // Skipped observations still constrain identity and reserve distinct map
@@ -98,6 +101,8 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   });
   observations.push(...interpolatePlayerPositions(trajectories,rows.map(r=>r.firstTime),{visibility,mapChanges:events.filter(e=>e.type==='mapchange')}));
   const anchor=r=>encounters.placements.get(r.key)??(r.nearest[0]?.distance<2&&(!r.nearest[1]||r.nearest[1].distance>=2)?r.nearest[0].placementId:null);
+  const emerged=dormantSpawnEvidence({fightID:fight.id,actors,events,rows:npcRows,packs,catalog,key:e=>encounters.key(e,'source')});
+  const placementIdentity=r=>anchor(r)??emerged.get(r.key);
   const anchors=Map.groupBy(rows.filter(anchor),r=>packByPlacement.get(anchor(r))?.id);
   const neighbors=neighborRadius?createNeighborApproach({packs,radius:neighborRadius,confirmed:[...anchors].flatMap(([packId,rs])=>{
     const pack=packByID.get(packId);
@@ -146,9 +151,9 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const allPlacements=packs.flatMap(p=>p.placements),byType=Map.groupBy(allPlacements,p=>catalog.get(p.id).gameId);
   const pair=new Map();
   for(const r of rows)for(const p of byType.get(r.gameID)??[]){
-    const support=forward.check(p.packId,r.firstTime,r.key,{playerRadius:config.aggroRadius,chainRadius:config.aggroRadius}),identity=anchor(r)===p.placementId||byType.get(r.gameID).length===1&&catalog.get(p.id).isBoss;
+    const support=forward.check(p.packId,r.firstTime,r.key,{playerRadius:config.aggroRadius,chainRadius:config.aggroRadius}),identity=placementIdentity(r)===p.placementId||byType.get(r.gameID).length===1&&catalog.get(p.id).isBoss;
     const reasons=[];
-    if(anchor(r)&&anchor(r)!==p.placementId)reasons.push('different-spawn-position');
+    if(placementIdentity(r)&&placementIdentity(r)!==p.placementId)reasons.push('different-spawn-position');
     if(!empoweredCompatible(r.key,p.placementId))reasons.push('empowered-mismatch');
     const gap=!support.supported&&!identity&&allowGaps?gapApproach(p.packId,r.firstTime,config.aggroRadius):null;
     const neighbor=!support.supported&&!identity&&!gap?neighbors?.(p.packId,r.firstTime):null;
@@ -157,7 +162,7 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
       distance:r.firstPosition?placementDistance({x:r.firstPosition.y,y:r.firstPosition.x},p).distance:0});
   }
   const rowsByType=Map.groupBy(rows,r=>r.gameID),retainedRows=rows.filter(r=>!skippedKeys.has(r.key));
-  const requiredIDs=[...new Set(retainedRows.filter(anchor).map(r=>packByPlacement.get(anchor(r))?.id).filter(Boolean))];
+  const requiredIDs=[...new Set(retainedRows.filter(placementIdentity).map(r=>packByPlacement.get(placementIdentity(r))?.id).filter(Boolean))];
   const compatibleRows=new Map(allPlacements.map(p=>[p.placementId,(rowsByType.get(catalog.get(p.id).gameId)??[])
     .filter(r=>pair.get(`${r.key}|${p.placementId}`).allowed).map(r=>r.key)]));
   const assignSkipped=skippedKeys.size?createDeathSkipAssignment({rows,placements:allPlacements,skippedKeys,pair,catalog,
@@ -271,10 +276,11 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   const gapCount=c=>new Set(c.assignments.filter(a=>a.gap||a.neighbor).map(a=>packByPlacement.get(a.placementId).id)).size;
   candidates.sort((a,b)=>gapCount(a)-gapCount(b)||compareReverseRank(a,b));
   for(const c of candidates)c.routeAssignments=[...Map.groupBy(c.assignments,a=>packByPlacement.get(a.placementId).id).values()]
-    // Complete candidates have passed the joint engagement checks and retain
-    // whole packs. Explicit partial recovery has no such proof; never turn its
-    // skipped observations back into kills just to fill a pack.
-    .flatMap(as=>as.some(a=>!a.inferred&&!skippedKeys.has(a.key))?(partial?as.filter(a=>!skippedKeys.has(a.key)):as):[]);
+    // Complete candidates passed the joint whole-pack engagement checks.
+    .flatMap(as=>as.some(a=>!a.inferred&&!skippedKeys.has(a.key)&&!survivorKeys.has(a.key))?as:[])
+    // Match the complete observed pack before removing its surviving members.
+    // Their identities still reserve map positions; they are not Chickens.
+    .filter(a=>!survivorKeys.has(a.key)&&!skippedKeys.has(a.key));
   const inferredPlacements=[...new Set(candidates.flatMap(c=>c.routeAssignments.filter(a=>a.inferred).map(a=>a.placementId)))];
   const movementHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.gap).map(a=>[`${a.placementId}|${a.gap.key}|${a.gap.start}`,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,...a.gap}]))).values()];
   const neighborHypotheses=[...new Map(candidates.flatMap(c=>c.assignments.filter(a=>a.neighbor).map(a=>[a.placementId,{placementId:a.placementId,pack:packByPlacement.get(a.placementId).number,source:a.neighbor}]))).values()];
@@ -377,8 +383,9 @@ export async function matchLiveLog(log,{dungeon,catalog,presets,dungeonData,sign
   drawings.sort((a,b)=>a.afterTime-b.afterTime);
   return {id:`${log.reportCode}-${fight.id}`,live:true,...(partial?{partial}:{}),assumption:[assumption,relicWarning].filter(Boolean).join(' ')||null,...(skippedRelics.length?{skippedRelics}:{}),inferredPlacements,movementHypotheses,...(neighborRadius?{neighborHypotheses}:{}),dungeonData,title:dungeon.name,dungeonID:dungeon.id,reportCode:log.reportCode,fightID:fight.id,
     difficulty: fight.difficultyLevel,
-    duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,movementTrail:buildMovementTrail(log,trajectories,dungeon),deathSkips,deathSkipEncounters,shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
+    duration:Math.round((fight.endTime-fight.startTime)/1000),groups,variants,drawings,movementTrail:buildMovementTrail(log,trajectories,dungeon),deathSkips,deathSkipEncounters,...(pullSurvivors.length?{pullSurvivors}:{}),shadow:affixes.shadowlord.active===true,empowered:affixes.empowered.active===true,
     replacement:Object.fromEntries(['ghorn','witch'].map(k=>[k,{active:affixes[k].active===true}])),
-    note:'Matched from the selected log using current dungeon data. Whole packs stay in their first pull; repeated attempts are omitted.'};
+    note:'Matched from the selected log using current dungeon data. Packs stay in their first pull; repeated attempts are omitted.'+
+      (pullSurvivors.length?` ${pullSurvivors.length} enemies left alive after failed pulls are omitted.`:'')};
   }
 }
