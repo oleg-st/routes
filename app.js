@@ -631,8 +631,9 @@ function renderMap({zoomOnly=false}={}){
       const image=svg('image',{href:portrait,x:x-r,y:y-r,width:r*2,height:r*2,preserveAspectRatio:'xMidYMid slice','clip-path':'url(#mob-portrait-clip)','pointer-events':'none'});
       image.addEventListener('error',()=>{failedMobImages.add(portrait);renderMap();},{once:true});
       group.append(image);
-      if(own)group.append(svg('circle',{cx:x,cy:y,r,fill:color,'fill-opacity':.3,'pointer-events':'none',class:'mob-pull-tint'}));
+      if(own)group.append(svg('circle',{cx:x,cy:y,r,fill:color,'fill-opacity':.18,'pointer-events':'none',class:'mob-pull-tint'}));
     }
+    if(own)group.append(svg('circle',{cx:x,cy:y,r,fill:'none',class:'assigned-ring-outline','pointer-events':'none'}));
     group.append(svg('circle',{cx:x,cy:y,r,fill:'none',stroke:chicken?'#ffcd70':color,class:'mob-ring'+(enemy?.isBoss?' boss-ring':'')+(own?' assigned-ring':'')+(chicken?' chicken-ring':'')}));
     appendEnemyFocus(group);
     markerRoot.append(group);
