@@ -7,6 +7,7 @@ import {recipes} from './combined-maps/index.mjs';
 import {usedImages} from './image-assets.mjs';
 import {gameDungeons} from '../data/game-dungeons.js';
 import {customDungeons} from '../data/custom-dungeons.js';
+import {registeredMap} from './register-map-coordinates.mjs';
 const read=n=>JSON.parse(fs.readFileSync(`data/${n}.json`,'utf8'));
 const dungeons=read('dungeons'),enemies=read('enemies'),ids=new Set(enemies.map(e=>e.id));
 const publicOnly=process.argv.includes('--public');
@@ -18,6 +19,7 @@ for(const d of dungeons.filter(d=>d.mapImages.length>1)){
   if(!combined)throw new Error(`Missing Combined map: ${d.id}`);
   if(combined.referenceId&&crypto.createHash('sha256').update(JSON.stringify(fullMaps[combined.referenceId])).digest('hex')!==combined.referenceSha256)throw new Error(`Combined coordinate reference changed: ${d.id}. Rebuild with npm run maps.`);
   const recipe=recipes.find(r=>d.id===`Level.ID.${r.key}`);
+  if(!publicOnly&&fullMaps[d.id]&&recipe&&JSON.stringify(registeredMap(fullMaps[d.id],d,recipe))!==JSON.stringify(fullMaps[d.id]))throw new Error(`Native coordinate registration changed: ${d.id}. Run node scripts/register-map-coordinates.mjs, then npm run maps.`);
   if(!recipe||crypto.createHash('sha256').update(JSON.stringify(recipe)).digest('hex')!==combined.recipeSha256)throw new Error(`Combined recipe changed: ${d.id}. Rebuild with npm run maps.`);
   for(const patch of [...recipe.layers.flatMap(layer=>layer.artworkRepairs||[]),...(recipe.canvasRepairs||[])]){
     if(fs.existsSync(patch.path)&&crypto.createHash('sha256').update(fs.readFileSync(patch.path)).digest('hex')!==patch.sha256)throw new Error(`Combined artwork repair changed: ${patch.path}`);

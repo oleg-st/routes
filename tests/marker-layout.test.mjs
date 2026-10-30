@@ -6,12 +6,11 @@ import {enemyMarkerRadius} from '../data/enemy-marker-sizes.js';
 import {markerAnchor} from '../data/marker-anchors.js';
 import {mapViews,mapCoordinates} from '../map-views.js';
 
-test('Sinnari portrait uses its centered overview anchor without changing source coordinates',()=>{
+test('Sinnari no longer needs a portrait override after native texture registration',()=>{
   const boss={placementId:'placement-2f08a0644a58616a92aee8c52e26e64e6160054dba296541b472deed07cee715',worldPosition:{x:17150.752,y:18276.22,z:3470.7163}};
   const original=structuredClone(boss),full={id:'Level.ID.DesertDunes:Full'};
   const point=markerAnchor(boss,full);
-  assert.ok(Math.abs(point[0]-5146.222222222221)<1e-6);
-  assert.ok(Math.abs(point[1]-524.6797770358662)<1e-6);
+  assert.equal(point,null);
   assert.deepEqual(markerAnchor(boss,{id:'Level.ID.DesertDunes:Combined-v4',referenceId:'Level.ID.DesertDunes'}),point);
   assert.equal(markerAnchor(boss,{id:'Level.ID.DesertDunes:T_Map_DesertDunes_End'}),null);
   assert.equal(markerAnchor(boss,{id:'Level.ID.UrrakMarkets:Full'}),null);
@@ -27,7 +26,7 @@ test('Game Vexira keeps her portrait inside the lair on both overviews without m
   for(const view of views.filter(v=>v.sources)){
     const worldPoint=mapCoordinates(boss,view),point=markerAnchor(boss,view);
     assert.deepEqual(point,[3257.1428571428573,271.2365388960006]);
-    assert.ok(worldPoint[1]>600,'The game spawn projection reproduces the below-lair regression');
+    assert.ok(worldPoint[1]<0,'The native spawn lies in the north section cropped from the overview');
     assert.deepEqual(mapCoordinates(boss,view),worldPoint,'Display anchors must not alter log/world projection');
     for(const mob of dungeon.enemies.filter(p=>p!==boss))assert.equal(markerAnchor(mob,view),null);
   }

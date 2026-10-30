@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fullMaps} from '../data/full-maps.js';
+import {markerAnchor} from '../data/marker-anchors.js';
 import {recipes} from '../scripts/combined-maps/index.mjs';
 import {mapViews,mapCoordinates,worldMapCoordinates,onMap,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires,mapPatrols} from '../map-views.js';
 import {campfires,campfireBuildId} from '../data/map-campfires.js';
@@ -70,7 +71,7 @@ test('Dragging an arrow on any overview maps back to its original layer',()=>{
   for(const dungeon of dungeons)for(const source of dungeon.mapImages)for(const view of mapViews(dungeon)){
     const drawing={mapId:source.id,kind:'line',points:[[source.width*.2,source.height*.3],[source.width*.7,source.height*.6]]};
     const projected=drawingOnMap(drawing,view,dungeon);if(!projected)continue;
-    const moved=[projected.points[1][0]+25,projected.points[1][1]-40];
+    const moved=[Math.max(1,Math.min(view.width-1,projected.points[1][0]+25)),Math.max(1,Math.min(view.height-1,projected.points[1][1]-40))];
     const restored=drawingPointFromMap(moved,drawing,view,dungeon);
     const edited=drawingOnMap({...drawing,points:[drawing.points[0],restored]},view,dungeon);
     assert.deepEqual(edited.points[0],projected.points[0]);
@@ -127,7 +128,7 @@ test('All active multi-layer dungeons have a full view with every mapped enemy e
     count++;assert.ok(v.sources);assert.equal(views.length,d.mapImages.length+2);
     assert.equal(new Set(views.map(m=>m.id)).size,views.length);
     const ps=d.enemies.filter(p=>onMap(p,v));assert.equal(ps.length,d.enemies.filter(p=>p.mapPosition).length);
-    for(const p of ps){const xy=mapCoordinates(p,v);assert.ok(xy.every(Number.isFinite),p.placementId);assert.ok(xy[0]>=0&&xy[0]<=v.width&&xy[1]>=0&&xy[1]<=v.height,`${d.name}: ${p.placementId}`);}
+    for(const p of ps){const xy=markerAnchor(p,v)||mapCoordinates(p,v);assert.ok(xy.every(Number.isFinite),p.placementId);assert.ok(xy[0]>=0&&xy[0]<=v.width&&xy[1]>=0&&xy[1]<=v.height,`${d.name}: ${p.placementId}`);}
     for(const p of ps)for(const [i,pt]of (p.mapPatrolPath||[]).entries())if(onMap(pt,v))assert.ok(mapCoordinates({...pt,worldPosition:p.patrolPath[i]},v).every(Number.isFinite));
     const r=newRoute(d,d.routeBuildId??'test');applyModifierPresets(r,d,presets);
     for(const kind of ['ghorn','witch'])if(r.modifiers[kind].packId){toggleModifier(r,kind,d);for(const p of effectivePositions(r,d).filter(p=>onMap(p,v)))assert.ok(mapCoordinates(p,v).every(Number.isFinite));toggleModifier(r,kind,d);}
@@ -137,7 +138,10 @@ test('All active multi-layer dungeons have a full view with every mapped enemy e
 test('Game Sands uses world positions; original layers and saved annotations remain stable',()=>{
   const d=dungeons.find(d=>d.id.endsWith('DesertDunes')),views=mapViews(d),p=d.enemies.find(p=>p.id==='ub-bossarchbishop');
   const [x,y]=mapCoordinates(p,views[0]);assert.deepEqual([x,y],mapCoordinates({...p,placementId:undefined},views[0]));
-  const rawPoint=mapCoordinates({...p,placementId:undefined},views[0]);assert.ok(Math.abs(rawPoint[0]-5099.662221818181)<.0001);assert.ok(Math.abs(rawPoint[1]-570.0224814545459)<.0001);
+  const rawPoint=mapCoordinates({...p,placementId:undefined},views[0]);
+  const art=recipes.find(r=>r.key==='DesertDunes').layers.find(l=>p.mapImageId.endsWith(':'+l.suffix)).artworkTransform;
+  assert.ok(Math.abs(rawPoint[0]-(art.x+p.mapPosition.x*1024*art.scale))<.0001);
+  assert.ok(Math.abs(rawPoint[1]-(art.y+p.mapPosition.y*512*art.scale))<.0001);
   const layer=views.find(m=>m.id===p.mapImageId),point=mapCoordinates(p,layer);
   assert.deepEqual(point,[p.mapPosition.x*layer.width,p.mapPosition.y*layer.height]);
   const drawing={id:'old',mapId:layer.id,kind:'note',points:[point],text:'Keep me'};
@@ -222,7 +226,7 @@ test('Combined projects original layers, patrols and modifier members in its cho
     const project=p=>{
       const tile=combined.sources[p.mapImageId];
       assert.deepEqual(mapCoordinates(p,combined),combined.referenceId?mapCoordinates(p,views[1]):combined.placements?.[p.placementId]||[tile.x+p.mapPosition.x*tile.width,tile.y+p.mapPosition.y*tile.height]);
-      const [x,y]=mapCoordinates(p,combined);
+      const [x,y]=markerAnchor(p,combined)||mapCoordinates(p,combined);
       assert.ok(x>=0&&x<=combined.width&&y>=0&&y<=combined.height,`${d.name}: point outside Combined`);
     };
     for(const p of d.enemies.filter(p=>onMap(p,combined))){
@@ -262,7 +266,10 @@ test('Objects created on either overview return to source layers and can be edit
   for(const dungeon of dungeons.filter(d=>d.mapImages.length>1)){
     const overviews=mapViews(dungeon).filter(v=>v.sources);
     for(const layer of dungeon.mapImages)for(const overview of overviews)for(const kind of ['note','line','portal','invis']){
-      const points=kind==='note'?[[layer.width*.5,layer.height*.5]]:[[layer.width*.4,layer.height*.4],[layer.width*.6,layer.height*.6]];
+      // On Jungle, (.6,.6) is blank sea now covered by the detached deck.
+      // Use an unambiguous point; deck round trips are covered separately.
+      const endX=layer.id.endsWith('PirateRaid_JungleArea')?.55:.6;
+      const points=kind==='note'?[[layer.width*.5,layer.height*.5]]:[[layer.width*.4,layer.height*.4],[layer.width*endX,layer.height*.6]];
       const drawing={id:'shared',mapId:layer.id,kind,points,color:'#abcdef',text:'Shared'};
       const projected=drawingOnMap(drawing,overview,dungeon);
       if(!projected)continue; // Some corners of original artwork are outside the stitched canvas.

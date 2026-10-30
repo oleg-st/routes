@@ -88,9 +88,9 @@ export function mapCoordinates(position,view){
   const region=positionRegion(position,view);
   if(region)return projectRegion(normalized,region);
   const inside=source=>['x','y','z'].every(k=>w[k]>=source.bounds[0][k]&&w[k]<=source.bounds[1][k]);
-  // Upstream planners disagree on some floor boundaries. Only switch when
-  // world coordinates identify one unambiguous reference floor.
-  if(Number.isFinite(w.z)&&!inside(t)){
+  // Legacy views can resolve an unambiguous reference floor. Native-registered
+  // views retain the layer already selected by the game export or log resolver.
+  if(!view.nativeProjection&&Number.isFinite(w.z)&&!inside(t)){
     const matches=Object.values(view.sources).filter(inside);
     if(matches.length===1)t=matches[0];
   }
