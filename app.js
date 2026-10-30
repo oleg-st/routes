@@ -319,7 +319,7 @@ function render(){
     const score=scorePull(p,dungeon,enemies,route);
     const members=p.enemies.map(id=>positions.get(id)).filter(Boolean);
     const pending=logPreview?.pendingPullID===p.id;
-    return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-summary"><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}${showHealth()?' · '+hp(health.pulls[i].mobs):''}</div><button class="pull-delete" data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>${pending?'<div class="pull-import-status" title="Choose a pack above to finish this pull.">Pending import</div>':''}${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary'+(timeline[i].spawns>1?' ×'+timeline[i].spawns:'')+(showHealth()?' '+hp(health.pulls[i].shadow):''):''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button></div>`:''}</article>`;
+    return `<article class="pull-card ${p.id===activePull?'selected':''}" style="--pull-color:${p.color}" data-pull="${p.id}" draggable="true" tabindex="0" role="button" aria-label="Select ${esc(p.name)}" aria-describedby="pull-tooltip"><div class="pull-top"><span class="pull-number">${String(i+1).padStart(2,'0')}${route.shadow&&timeline[i].spawns?`<img class="pull-shadow-icon" src="images/modifiers/shadow-lord.avif" alt="Shadow Lord" title="Shadow Lord ×${timeline[i].spawns}" draggable="false">`:""}</span><span class="pull-name">${esc(p.name)}</span><span class="pull-percent">${pct(score.percent)}</span></div><div class="pull-summary"><div class="pull-mob-count">${members.length} ${members.length===1?'mob':'mobs'}${showHealth()?' · '+hp(health.pulls[i].mobs):''}</div><button class="pull-delete" data-action="delete" aria-label="Delete pull" title="Delete · can be undone">×</button></div>${pending?'<div class="pull-import-status" title="Choose a pack above to finish this pull.">Pending import</div>':''}${route.shadow?`<div class="pull-detail">${timeline[i].orbs} orbs · ${timeline[i].total} total orbs${timeline[i].spawns?' · Emissary'+(timeline[i].spawns>1?' ×'+timeline[i].spawns:'')+(showHealth()?' '+hp(health.pulls[i].shadow):''):''}</div>`:''}${p.id===activePull?`<div class="pull-actions"><button data-action="rename" title="Name and color" aria-label="Edit pull">✎</button><button data-action="focus" aria-label="Show pull on map">⌖</button><button data-action="up" ${i===0?'disabled':''} aria-label="Move pull up">↑</button><button data-action="down" ${i===route.pulls.length-1?'disabled':''} aria-label="Move pull down">↓</button></div>`:''}</article>`;
   }).join('');
   if(!canEdit())for(const button of $$('#pulls [data-action]:not([data-action=focus])'))button.disabled=true;
   updateRoomControls();updateSaveButton();renderMap();if(inspected)renderInspector(inspected);
@@ -576,6 +576,7 @@ function renderMap({zoomOnly=false}={}){
   if(!zoomOnly){markerRoot.replaceChildren();$('#patrols').replaceChildren();$('#status-badges').replaceChildren();markerGeometry=new Map();}
   $('#pack-labels').replaceChildren();$('#pack-efficiency').replaceChildren();$('#pack-health').replaceChildren();
   $('#pull-outlines').replaceChildren();$('#pull-labels').replaceChildren();
+  const pullShadowTimeline=route.shadow?shadowTimeline(route,dungeon,enemies):[];
   for(const [i,pull] of route.pulls.entries()){
     const members=visible.filter(p=>owners.get(p.placementId)?.pull.id===pull.id);if(!members.length)continue;
     const points=members.map(markerCoordinates),padding=radius*Math.max(...members.map(p=>enemyMarkerScale(enemies.get(p.id))))+9*unit,hull=pullOutline(points,padding),selected=pull.id===activePull;
@@ -588,6 +589,11 @@ function renderMap({zoomOnly=false}={}){
     const x=singlePack?(right+11*unit>view.x+view.w?Math.min(...xs)-padding-15*unit:right):(Math.min(...xs)+Math.max(...xs))/2,y=(Math.min(...ys)+Math.max(...ys))/2;
     const label=svg('g',{'data-pull-label':pull.id});
     label.append(svg('circle',{cx:x,cy:y,r:11*unit,fill:pull.color,stroke:'#111820','stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('text',{x,y,'text-anchor':'middle','dominant-baseline':'central','font-size':12*unit,'font-weight':700,fill:'#fff'},i+1));
+    if(pullShadowTimeline[i]?.spawns){
+      const iconX=x+18*unit,iconY=y-9*unit,iconRadius=11*.9*unit;
+      const icon=svg('image',{href:'images/modifiers/shadow-lord.avif',x:iconX-iconRadius,y:iconY-iconRadius,width:iconRadius*2,height:iconRadius*2,'clip-path':'url(#mob-portrait-clip)','aria-label':`Shadow Lord ×${pullShadowTimeline[i].spawns}`});
+      icon.append(svg('title',{},`Shadow Lord ×${pullShadowTimeline[i].spawns}`));label.append(svg('circle',{cx:iconX,cy:iconY,r:iconRadius,fill:'#111820',stroke:'#111820','stroke-width':2,'vector-effect':'non-scaling-stroke'}),icon);
+    }
     $('#pull-labels').append(label);
   }
   const visiblePacks=new Set(visible.map(p=>p.packId));

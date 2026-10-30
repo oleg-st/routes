@@ -134,3 +134,7 @@
   .map-search{bottom:16px;right:14px}
   .search-results{bottom:58px;right:14px}
 }
+
+.pull-number{position:relative}
+.pull-number:has(.pull-shadow-icon){margin-right:14px}
+.pull-shadow-icon{position:absolute;top:-8px;right:-17px;width:90%;height:90%;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px #111820}
