@@ -313,8 +313,7 @@ function render(){
   for(const el of $$('#dungeon,#library,#together,#export,#share,#delete-route'))el.disabled=!!logPreview;
   for(const el of $$('#route-name,#add-pull,#clear-route,#new-route,#import,[data-tool]'))el.disabled=!canEdit()&&el.dataset.tool!=='select';
   const chickens=chickenPositions().length;
-  const invis=route.drawings.filter(d=>d.kind==='invis').length;
-  $('#route-relics').innerHTML=relicSummary(chickens,invis);
+  $('#route-relics').innerHTML=relicSummary(chickens);
   $('#pulls').innerHTML=route.pulls.map((p,i)=>{
     const score=scorePull(p,dungeon,enemies,route);
     const members=p.enemies.map(id=>positions.get(id)).filter(Boolean);
@@ -326,9 +325,9 @@ function render(){
 }
 function matchesSearch(pos){const q=$('#search').value.trim().toLowerCase();if(!q)return true;return placementName(pos,enemies.get(pos.id)).toLowerCase().includes(q)||`g${packNumbers.get(pos.packId)}`===q;}
 function visiblePositions(){const owners=assigned();return currentPositions().filter(p=>logHighlights.has(p.placementId)||!$('#hide-unselected').checked||owners.has(p.placementId));}
-function relicSummary(chickens,invis){
+function relicSummary(chickens){
   const limit=gameServiceRules.chickenLimitsByDungeon[dungeon.id],overLimit=limit!=null&&chickens>limit;
-  return [[chickenIcon,'Chicken',chickens],[relicIcons.invis,'Invisibility',invis]].map(([icon,name,count])=>`<span class="route-relic ${count?'present':''} ${name==='Chicken'&&overLimit?'over-limit':''}" ${name==='Chicken'?'data-route-chicken tabindex="0" aria-describedby="chicken-tooltip"':`title="${name}: ${count}"`}><img src="${icon}" alt=""><span>${name}${name==='Chicken'&&overLimit?' — dungeon limit exceeded':''}</span><b>${count}${name==='Chicken'&&overLimit?`/${limit}`:''}</b></span>`).join('');
+  return `<span class="route-relic ${chickens?'present':''} ${overLimit?'over-limit':''}" data-route-chicken tabindex="0" aria-describedby="chicken-tooltip"><img src="${chickenIcon}" alt=""><span>Chicken${overLimit?' — dungeon limit exceeded':''}</span><b>${chickens}${overLimit?`/${limit}`:''}</b></span>`;
 }
 function chickenPositions(){return route.excluded.map(id=>positions.get(id)).filter(p=>p&&!enemies.get(p.id)?.isBoss);}
 let chickenTooltipTimer;

@@ -57,9 +57,18 @@ try{
     assert.equal(await page.locator('#draft > g').count(),0);assert.equal(await drawings.count(),1);
     // Two-point relic paths delete from their endpoints and undo correctly.
     for(const [tool,y] of [['portal',460],['invis',540]]){
+      // Dragging must neither create a path nor leave a pending first point.
+      await page.locator(`[data-tool=${tool}]`).click();
+      await move(300,y);await page.mouse.down();await move(500,y);await page.mouse.up();
+      assert.equal(await drawings.count(),1);
+      assert.equal(await page.locator('#draft > g').count(),0);
+      await click(300,y);await move(500,y);
+      assert.equal(await drawings.count(),1);
+      assert.equal(await page.locator('#draft .annotation-line').count(),1);
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator('#draft > g').count(),0);
       await page.locator(`[data-tool=${tool}]`).click();await click(300,y);await click(500,y);
       assert.equal(await drawings.count(),2);
-      if(tool==='invis')assert.equal(await page.locator('#route-relics b').nth(1).innerText(),'1');
       const path=drawings.nth(1).locator('.annotation-line'),before=await path.getAttribute('points'),beforeView=await map.getAttribute('viewBox');
       // Grab off-center to verify the icon does not jump to the pointer.
       for(const x of [300,500]){await move(x+5,y+5);await page.mouse.down();await move(x+35,y+25);await page.mouse.up();}
@@ -70,7 +79,6 @@ try{
       await page.locator('#redo').click();await page.locator('#redo').click();assert.equal(await path.getAttribute('points'),after);
       await click(330,y+20,{button:'right'});await page.getByRole('menuitem',{name:`Delete ${tool}`,exact:true}).click();
       assert.equal(await drawings.count(),1);
-      if(tool==='invis')assert.equal(await page.locator('#route-relics b').nth(1).innerText(),'0');
     }
     for(const [text,x] of [['First note\n<keep this text>',340],['Second note',560]]){
       await page.locator('[data-tool=marker]').click();await click(x,630);await page.getByRole('textbox',{name:'Marker text'}).fill(text);await page.locator('#place-marker').click();
