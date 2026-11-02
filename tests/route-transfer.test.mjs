@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {deflateRawSync,inflateRawSync} from 'node:zlib';
-import {encodeRoute,decodeRoute} from '../route-model.js';
+import {encodeRoute,decodeRoute,routeShareHash} from '../route-model.js';
 import {newRoute,newPull,applyModifierPresets,validateRoute} from '../route-model.js';
 import {correctDungeon} from '../data/placement-corrections.js';
 import {mapViews} from '../map-views.js';
@@ -10,13 +10,18 @@ import {modifierAvailable} from '../game-scoring.js';
 import {routeDictionary} from '../data/route-dictionary.js';
 import {difficultyOptions} from '../difficulty.js';
 import {hasRouteChanges} from '../route-model.js';
+import {encodeBinaryRoute,decodeBinaryRoute} from '../route-binary.js';
+import {denseRouteCandidates,decodeDenseRoute} from '../route-dense.js';
 
 const read=name=>JSON.parse(fs.readFileSync(new URL(`../data/${name}.json`,import.meta.url)));
 const dungeons=read('dungeons').map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
 const presets=read('modifier-placements');
 const content=route=>JSON.parse(JSON.stringify(route,(key,value)=>key==='id'?undefined:value));
-const pack=(payload,prefix='R3.')=>prefix+deflateRawSync(JSON.stringify(payload)).toString('base64url');
-const unpack=text=>JSON.parse(inflateRawSync(Buffer.from(text.slice(3),'base64url')));
+const pack=(payload,prefix='R3.')=>(prefix==='R5.'?'R3.':prefix)+deflateRawSync(JSON.stringify(payload)).toString('base64url');
+const unpack=text=>{
+  const bytes=Buffer.from(text.slice(3),'base64url');
+  return text.startsWith('R5.')?(bytes[0]&2?decodeBinaryRoute:decodeDenseRoute)(bytes[0]&1?inflateRawSync(bytes.subarray(1)):bytes.subarray(1)):JSON.parse(inflateRawSync(bytes));
+};
 
 test('Priority targets survive JSON and compact exports with and without difficulty',async()=>{
   for(const dungeon of dungeons){
@@ -56,7 +61,7 @@ test('Compact routes preserve all content in every dungeon, with hundredth-pixel
       ...(kind==='line'?{width:5}:{}),points:kind==='note'?[[1.12,2.99]]:[[1.12,2.99],[300.12,400.99]],
     }));
     const encoded=await encodeRoute(route,dungeon),decoded=await decodeRoute(encoded,dungeons,enemies);
-    assert.match(encoded,/^R[34]\.[A-Za-z0-9_-]+$/);
+    assert.match(encoded,/^R[345]\.[A-Za-z0-9_-]+$/);
     assert.deepEqual(content(decoded),content(validateRoute(route,dungeons,enemies)));
     assert.notEqual(decoded.id,route.id);
     assert.notEqual(decoded.pulls[0].id,route.pulls[0].id);
@@ -103,7 +108,7 @@ test('Mapped format preserves marker labels and multi-vertex geometry while crea
   route.drawings=[{id:'path',mapId,kind:'line',color:'#abcdef',width:5,text:'',points:[[10,20],[30,70],[90,40]],pointIds:['a','b','c']},
     {id:'note',mapId,kind:'note',color:'#aabbcc',text:'Заметка 🐉 '.repeat(100),points:[[20,30]]}];
   route.markers=[{id:'marker',mapId,position:[12.35,45.68],color:'#bbaa11',icon:'star',label:'Встречаемся здесь 🐉'}];
-  const encoded=await encodeRoute(route,dungeon);assert.match(encoded,/^R[34]\./);
+  const encoded=await encodeRoute(route,dungeon);assert.match(encoded,/^R[345]\./);
   for(const input of [encoded,'#route='+encoded,'https://example.com/planner/#route='+encoded]){
     const copy=await decodeRoute(input,dungeons,enemies);
     assert.deepEqual(copy.drawings[0].points,route.drawings[0].points);assert.equal(copy.drawings[1].text,route.drawings[1].text);
@@ -160,7 +165,7 @@ test('Current build R3 route exports smaller with lossless member deltas and loa
   const route=await decodeRoute(original,dungeons,enemies),dungeon=dungeons.find(d=>d.id===route.dungeonId);
   route.drawings.forEach(d=>{d.points=d.points.map(p=>p.map(n=>Math.round(n*100)/100));});
   const before=structuredClone(route),encoded=await encodeRoute(route,dungeon);
-  assert.match(encoded,/^R4\./);
+  assert.match(encoded,/^R[345]\./);
   assert.ok(encoded.length<original.length,`${original.length} → ${encoded.length}`);
   assert.deepEqual(route,before);
   for(const input of [encoded,'#route='+encoded,'https://example.com/#route='+encoded]){
@@ -173,17 +178,71 @@ test('Current build R3 route exports smaller with lossless member deltas and loa
   route.excluded.reverse();route.modifiers.empowered.enemies.reverse();route.modifiers.ghorn.replacedEnemies.reverse();
   assert.deepEqual(content(await decodeRoute(await encodeRoute(route,dungeon),dungeons,enemies)),content(route));
   const empty=newRoute(dungeon,dungeon.routeBuildId??'test');
-  assert.match(await encodeRoute(empty,dungeon),/^R3\./,'Keep R3 when delta coding cannot shorten the export');
+  assert.ok((await encodeRoute(empty,dungeon)).length<=pack(unpack(await encodeRoute(empty,dungeon))).length,'Never grow the export over R3');
   console.log(`Real route: ${original.length} → ${encoded.length} characters`);
 });
 
 test('R4 rejects invalid deltas, duplicate members, overflow and oversized decompression',async()=>{
-  const route=await decodeRoute(fs.readFileSync(new URL('fixtures/compact-route-current-r3.txt',import.meta.url),'utf8'),dungeons,enemies);
-  const encoded=await encodeRoute(route,dungeons.find(d=>d.id===route.dungeonId));
+  const encoded=fs.readFileSync(new URL('fixtures/compact-route-current-r4.txt',import.meta.url),'utf8').trim();
   for(const deltas of [['-17'],[null],[1.5],[-17,0],[Number.MAX_SAFE_INTEGER,1],[-999999],{}]){
     const payload=unpack(encoded);payload[4][0][0]=deltas;
     await assert.rejects(decodeRoute(pack(payload,'R4.'),dungeons,enemies));
   }
   const bomb='R4.'+deflateRawSync(Buffer.alloc(3_000_001,32)).toString('base64url');
   await assert.rejects(decodeRoute(bomb,dungeons,enemies),/too large/);
+});
+
+test('User R4 link shrinks with R5 and preserves every field and member order',async()=>{
+  const original=fs.readFileSync(new URL('fixtures/compact-route-current-r4.txt',import.meta.url),'utf8').trim();
+  assert.equal(original.length,461);
+  const route=await decodeRoute(original,dungeons,enemies),before=structuredClone(route);
+  const dungeon=dungeons.find(d=>d.id===route.dungeonId),encoded=await encodeRoute(route,dungeon);
+  assert.match(encoded,/^R5\./);
+  assert.equal(encoded,fs.readFileSync(new URL('fixtures/compact-route-current-r5.txt',import.meta.url),'utf8').trim());
+  assert.equal(encoded.length,82,`${original.length} → ${encoded.length} characters`);
+  assert.deepEqual(route,before);
+  const hash=routeShareHash(encoded);
+  assert.equal(hash,'#r5='+encoded.slice(3));
+  assert.equal(('https://olegfellow.dev/'+hash).length,106);
+  for(const input of [encoded,'#route='+encoded,'https://olegfellow.dev/#route='+encoded,hash,'https://olegfellow.dev/'+hash,'file:///C:/planner/local.html'+hash]){
+    const decoded=await decodeRoute(input,dungeons,enemies);
+    assert.deepEqual(content(decoded),content(route));
+    assert.equal(await encodeRoute(decoded,dungeon),encoded);
+  }
+  console.log(`User route: ${original.length} → ${encoded.length} characters`);
+});
+
+test('Malformed short Share links are rejected',async()=>{
+  for(const hash of ['#r5=','#r5=%ZZ','#r5=***','#r5=R5.abc','#r6=abc']){
+    for(const input of [hash,'https://olegfellow.dev/'+hash])await assert.rejects(decodeRoute(input,dungeons,enemies));
+  }
+});
+
+test('R5 header retains unknown dungeon names and nonnumeric or padded build identities',()=>{
+  for(const id of ['TreeVillage','FutureDungeon'])for(const build of ['26122410','old','00123','4294967295','4294967296']){
+    const payload=[id,build,'m1','New route',[[[]]]];
+    assert.deepEqual(decodeBinaryRoute(encodeBinaryRoute(payload)),payload);
+  }
+});
+
+test('R5 accepts raw/compressed binaries and rejects truncated, oversized and trailing data',async()=>{
+  const original=fs.readFileSync(new URL('fixtures/compact-route-current-r3.txt',import.meta.url),'utf8').trim();
+  const payload=unpack(original),route=await decodeRoute(original,dungeons,enemies);
+  const dictionary=routeDictionary(route.dungeonId);
+  const frame=(bytes,mode=2)=>'R5.'+Buffer.concat([Buffer.from([mode]),bytes]).toString('base64url');
+  for(const mapping of [undefined,dictionary]){
+    const bytes=Buffer.from(encodeBinaryRoute(payload,mapping));
+    for(const encoded of [frame(bytes),frame(deflateRawSync(bytes),3)]){
+      assert.deepEqual(content(await decodeRoute(encoded,dungeons,enemies)),content(route));
+    }
+    for(let length=0;length<bytes.length;length++){
+      await assert.rejects(decodeRoute(frame(bytes.subarray(0,length)),dungeons,enemies));
+    }
+    await assert.rejects(decodeRoute(frame(Buffer.concat([bytes,Buffer.from([0])])),dungeons,enemies));
+    await assert.rejects(decodeRoute(frame(bytes,4),dungeons,enemies));
+  }
+  await assert.rejects(decodeRoute(frame(deflateRawSync(Buffer.alloc(3_000_001)),3),dungeons,enemies),/too large/);
+  for(const bytes of [Buffer.alloc(128),Buffer.alloc(128,255),Buffer.from([255])]){
+    await assert.rejects(decodeRoute(frame(bytes),dungeons,enemies));
+  }
 });

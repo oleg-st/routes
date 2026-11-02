@@ -1,4 +1,4 @@
-import {uid,enemyHealth,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute} from './route-model.js';
+import {uid,enemyHealth,newRoute,hasRouteChanges,newPull,pullColor,scorePull,scoreRoute,placementScore,dungeonPackEfficiencies,packEfficiencyColor,englishDefaultLabel,effectivePositions,shadowTimeline,shadowTarget,orbCount,applyModifierPresets,encodeRoute,decodeRoute,isRouteHash,routeShareHash} from './route-model.js';
 import {pullOutline,separateMarkerCenters} from './map-geometry.js';
 import {planPullSplit} from './pull-split.js';
 import {markerSymbols,markerColors,markerIcon,numberedAnnotations,markerSymbol,legacyMarkerGlyph} from './marker-symbols.js';
@@ -915,7 +915,7 @@ async function exportRoute(){
 }
 async function shareRoute(){
   try{
-    const url=new URL(location.href);url.hash='route='+await encodeRoute(route,dungeon);
+    const url=new URL(location.href);url.hash=routeShareHash(await encodeRoute(route,dungeon));
     return await copyRouteText(url.href,'Share route','Route link copied to clipboard.');
   }catch(err){toast('Share: '+err.message);}
 }
@@ -1013,13 +1013,13 @@ function showImport(){
 }
 async function importRouteHash(){
   const hash=location.hash;
-  if(!hash.startsWith('#route='))return;
+  if(!isRouteHash(hash))return;
   try{await importRouteText(hash);clearImportedRouteHash(hash);}catch(err){toast('Import: '+err.message);}
 }
 function clearImportedRouteHash(hash){
   // Consume the link only after the imported route is persisted. Do not remove
   // another link the user navigated to while the import was loading.
-  if(location.hash!==hash||!hash.startsWith('#route='))return;
+  if(location.hash!==hash||!isRouteHash(hash))return;
   const url=new URL(location.href);url.hash='';
   window.history.replaceState(window.history.state,'',url);
 }
@@ -1348,7 +1348,7 @@ async function init(){
   routeStorage=await startupStep('Opening browser storage',()=>openRouteStorage({name:'fellowship-route-together-'+data.manifest.buildId,onDiagnostic:recordStorageDiagnostic}));
   store=await startupStep('Reading saved routes',()=>routeStorage.library());
   let incoming;const initialRouteHash=location.hash;
-  if(initialRouteHash.startsWith('#route=')){
+  if(isRouteHash(initialRouteHash)){
     try{incoming=await decodeRoute(initialRouteHash,data.dungeons,enemies,data.loadDungeon);incoming.id=uid();}
     catch(error){toast('Import: '+error.message);}
   }

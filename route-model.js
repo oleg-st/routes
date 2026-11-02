@@ -3,6 +3,8 @@ import {correctDungeon} from './data/placement-corrections.js';
 import {nonCombatBossIds} from './data/boss-encounters.js';
 import {routeDictionary,replacementMembers,encodeMembers,decodeMembers} from './data/route-dictionary.js';
 import {assertRouteBuild} from './route-build.js';
+import {encodeBinaryRoute,decodeBinaryRoute} from './route-binary.js';
+import {denseRouteCandidates,decodeDenseRoute} from './route-dense.js';
 import {modifierStats} from './data/game-modifier-stats.js';
 import {modifierPositions} from './data/game-modifier-positions.js';
 import {modifierPlacementIds,nativeModifierSpawns} from './data/modifier-spawns.js';
@@ -329,6 +331,8 @@ export function validateRoute(value,dungeons,enemies){
 // a dataset fingerprint identifies legacy R1/R2 dictionaries. R3 uses permanent
 // append-only pack compositions and placement indexes across grouping changes.
 // R4 stores differences between successive member tokens in each list.
+// R5 has dense (flag 0) and generic (flag 2) binary profiles. Bit 0 enables
+// raw DEFLATE. Export compares actual encoded sizes, including older formats.
 const PREFIX='R1.',LIMIT=3_000_000;
 const tooLarge=()=>new Error('Route is too large (maximum 3 MB).');
 const invalid=()=>new Error('Invalid compact route.');
@@ -363,14 +367,6 @@ async function transform(bytes,Stream){
   for(const chunk of chunks){output.set(chunk,offset);offset+=chunk.length;}
   return output;
 }
-async function dictionary(dungeon){
-  const placements=[...new Set([...dungeon.enemies.map(e=>e.placementId),...modifierPlacementIds(dungeon.id)])].sort();
-  const packs=[...new Set(dungeon.enemies.map(e=>e.packId).filter(Boolean))].sort();
-  const bytes=new TextEncoder().encode(JSON.stringify([placements,packs]));
-  const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes));
-  return {placements,packs,fingerprint:base64url(digest.subarray(0,12))};
-}
-function indexOf(list,id){const index=list.indexOf(id);if(index<0)throw invalid();return index;}
 function itemAt(list,index){if(!Number.isInteger(index)||index<0||index>=list.length)throw invalid();return list[index];}
 function tuple(value,max){if(!Array.isArray(value)||value.length>max)throw invalid();return value;}
 function list(value){if(value==null)return [];if(!Array.isArray(value))throw invalid();return value;}
@@ -392,8 +388,8 @@ export async function encodeRoute(route,dungeon){
   const extended=Boolean(route.priorityTargets?.length||route.difficulty!==undefined||route.markers?.length||route.pulls.length>500||route.drawings.length>500||route.pulls.some(p=>p.note?.length>4000)||route.drawings.some(d=>d.icon||d.kind==='line'&&d.points.length>2||d.text?.length>500));
   if(extended)validateRoute({...route,version:3},[dungeon]); // Reject oversized content; never silently truncate a CRDT view.
   const permanent=routeDictionary(dungeon.id);
-  const {placements,packs,fingerprint}=await dictionary(dungeon);
-  const ids=values=>permanent?encodeMembers(permanent,values):values.map(id=>indexOf(placements,id));
+  if(!permanent)throw new Error('Unknown route mapping.');
+  const ids=values=>encodeMembers(permanent,values);
   const pulls=route.pulls.map((p,i)=>trim([
     ids(p.enemies),p.name===`Pull ${i+1}`?null:p.name,
     p.color===pullColor(i)?null:colorCode(p.color),p.note||null,p.customName?1:null,
@@ -404,7 +400,7 @@ export async function encodeRoute(route,dungeon){
   ]));
   const modifiers=['empowered','ghorn','witch'].map(kind=>{
     const m=route.modifiers?.[kind];if(!m)return null;
-    let packIndex=m.packId==null?null:permanent?permanent.packs.findIndex(p=>p.id===m.packId):indexOf(packs,m.packId);
+    let packIndex=m.packId==null?null:permanent.packs.findIndex(p=>p.id===m.packId);
     if(permanent&&m.packId&&m.replacedEnemies){
       const expected=[...m.replacedEnemies].sort().join('|');
       const exact=permanent.packs.findIndex(p=>p.id===m.packId&&p.members.map(i=>permanent.placements[i]).sort().join('|')===expected);
@@ -422,7 +418,7 @@ export async function encodeRoute(route,dungeon){
     return trim(row).length?row:null;
   });
   const payload=trim([
-    route.dungeonId.replace(/^Level\.ID\./,''),route.buildId,permanent?'m1':fingerprint,route.name,pulls,
+    route.dungeonId.replace(/^Level\.ID\./,''),route.buildId,'m1',route.name,pulls,
     optionalList(drawings),optionalList(ids(route.excluded)),optionalList(trim(modifiers)),route.shadow?1:null,
   ]);
   if(extended){while(payload.length<9)payload.push(null);payload.push((route.markers||[]).map(m=>[m.mapId,compactPoint(m.position),colorCode(m.color),m.icon,m.label]));}
@@ -431,8 +427,20 @@ export async function encodeRoute(route,dungeon){
   if(route.priorityTargets?.length){while(payload.length<11)payload.push(null);payload.push(ids(route.priorityTargets));}
   const bytes=new TextEncoder().encode(JSON.stringify(payload));
   if(bytes.length>LIMIT)throw tooLarge();
-  let prefix=permanent?'R3.':extended?'R2.':PREFIX;
+  let prefix='R3.';
   let compressed=await transform(bytes,CompressionStream);
+  let binary;
+  let dense;
+  if(permanent){
+    const raw=encodeBinaryRoute(payload,permanent),deflated=await transform(raw,CompressionStream);
+    const useDeflate=deflated.length<raw.length,body=useDeflate?deflated:raw;
+    binary=new Uint8Array(body.length+1);binary[0]=useDeflate?3:2;binary.set(body,1);
+    for(const raw of denseRouteCandidates(payload,permanent)){
+      const deflated=await transform(raw,CompressionStream),useDeflate=deflated.length<raw.length;
+      const body=useDeflate?deflated:raw;
+      if(!dense||body.length+1<dense.length){dense=new Uint8Array(body.length+1);dense[0]=useDeflate?1:0;dense.set(body,1);}
+    }
+  }
   if(permanent){
     // Keep R3 when deltas do not help (e.g. already compact whole-pack lists).
     for(const pull of payload[4])pull[0]=memberDeltas(pull[0]);
@@ -448,18 +456,19 @@ export async function encodeRoute(route,dungeon){
       if(candidate.length<compressed.length){compressed=candidate;prefix='R4.';}
     }
   }
+  if(binary&&binary.length<compressed.length){compressed=binary;prefix='R5.';}
+  if(dense&&dense.length<compressed.length){compressed=dense;prefix='R5.';}
   return prefix+base64url(compressed);
 }
 
-async function expandRoute(payload,dungeons,extended=false,mapped=false,deltas=false){
+async function expandRoute(payload,dungeons,extended=false,mapped=false,deltas=false,legacy=null){
   const [id,buildId,fingerprint,name,pulls,drawings,excluded,mods,shadow,markers,difficulty,priorityTargets]=tuple(payload,extended?12:9);
   const dungeon=dungeons.find(d=>d.id===`Level.ID.${id}`);
   if(!dungeon)throw new Error('This dungeon is not available in the current dataset.');
   assertRouteBuild({buildId},dungeon);
-  let {placements,packs,fingerprint:expected}=await dictionary(dungeon);
+  const {placements,packs}=legacy??{};
   const permanent=routeDictionary(dungeon.id);
   if(mapped){if(fingerprint!=='m1'||!permanent)throw new Error('Unknown route mapping.');}
-  else if(fingerprint!==expected)throw new Error('This route uses a different enemy dataset. Import cancelled to avoid selecting incorrect enemies.');
   const ids=values=>mapped?decodeMembers(permanent,deltas?memberDeltas(values,true):values):list(values).map(index=>itemAt(placements,index));
   if(!Array.isArray(pulls)||pulls.length>(extended?10000:500))throw invalid();
   const modifiers={};
@@ -488,28 +497,38 @@ async function expandRoute(payload,dungeons,extended=false,mapped=false,deltas=f
   };
 }
 
+export const isRouteHash=hash=>hash.startsWith('#route=')||hash.startsWith('#r5=');
+export const routeShareHash=code=>code.startsWith('R5.')?'#r5='+code.slice(3):'#route='+code;
+const routeCodeFromHash=hash=>hash.startsWith('#r5=')?'R5.'+decodeURIComponent(hash.slice(4)):decodeURIComponent(hash.slice(7));
+
 export async function decodeRoute(text,dungeons,enemies,loadDungeon){
   text=text.trim();
   if(!text)throw new Error('Paste a route string first.');
   if(text.length>27_000_000)throw tooLarge();
-  if(text.startsWith('#route='))text=decodeURIComponent(text.slice(7));
-  else if(!/^R[1234]\./.test(text)){
+  if(isRouteHash(text))text=routeCodeFromHash(text);
+  else if(!/^R[12345]\./.test(text)){
     let url;try{url=new URL(text);}catch{throw new Error('Paste a valid route string or Share link.');}
-    if(!url.hash.startsWith('#route='))throw new Error('This link does not contain a route.');
-    text=decodeURIComponent(url.hash.slice(7));
+    if(!isRouteHash(url.hash))throw new Error('This link does not contain a route.');
+    text=routeCodeFromHash(url.hash);
   }
   if(new TextEncoder().encode(text).length>LIMIT)throw tooLarge();
-  if(!/^R[1234]\./.test(text))throw invalid();
+  if(!/^R[12345]\./.test(text))throw invalid();
   const encoded=text.slice(PREFIX.length);
   if(!/^[A-Za-z0-9_-]+$/.test(encoded))throw invalid();
   let bytes;
   try{bytes=Uint8Array.from(atob(encoded.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));}
   catch{throw invalid();}
-  const decoded=await transform(bytes,DecompressionStream);
-  const payload=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(decoded));
+  if(/^R[123]\./.test(text)){
+    const {decodeLegacyRoute}=await import('./route-legacy.js');
+    return decodeLegacyRoute(bytes,text.slice(0,3),{dungeons,enemies,loadDungeon,transform,expandRoute,validateRoute,modifierPlacementIds,assertRouteBuild});
+  }
+  const binary=text.startsWith('R5.');
+  if(binary&&!(bytes[0]>=0&&bytes[0]<=3))throw invalid();
+  const decoded=binary&&!(bytes[0]&1)?bytes.subarray(1):await transform(binary?bytes.subarray(1):bytes,DecompressionStream);
+  const payload=binary?(bytes[0]&2?decodeBinaryRoute:decodeDenseRoute)(decoded):JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(decoded));
   if(!Array.isArray(payload))throw invalid();
   if(loadDungeon)await loadDungeon(`Level.ID.${payload[0]}`);
-  const deltas=text.startsWith('R4.'),mapped=text.startsWith('R3.')||deltas;
-  const value=await expandRoute(payload,dungeons,text.startsWith('R2.')||mapped&&payload.length>9,mapped,deltas);
+  const deltas=text.startsWith('R4.');
+  const value=await expandRoute(payload,dungeons,payload.length>9,true,deltas);
   return validateRoute(value,dungeons,enemies);
 }

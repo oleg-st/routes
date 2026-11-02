@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
-import {deflateRawSync,inflateRawSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {correctDungeon} from '../data/placement-corrections.js';
 import {customDungeons} from '../data/custom-dungeons.js';
@@ -15,8 +14,6 @@ const urrakControls=JSON.parse(fs.readFileSync('tests/fixtures/urrak-pack-contro
 const read=p=>JSON.parse(fs.readFileSync(p));
 const raw=read('data/dungeons.json'),enemies=new Map(read('data/enemies.json').map(e=>[e.id,e]));
 const variants=['fellership','custom'].map(mode=>raw.map(d=>correctDungeon(d,mode)));
-const unpack=s=>JSON.parse(inflateRawSync(Buffer.from(s.slice(3),'base64url')));
-const pack=(p,prefix='R3.')=>prefix+deflateRawSync(JSON.stringify(p)).toString('base64url');
 
 test('Custom covers active game placements exactly once and supports lossless source switching',()=>{
   for(const d of raw){
@@ -79,8 +76,8 @@ test('Current game model has 704 packs and keeps Dormant actors separate',()=>{
 test('Pack references preserve old members after splits, partial selections, and appended compositions',async()=>{
   const d=variants[0].find(d=>d.id==='Level.ID.UrrakMarkets'),custom=variants[1].find(c=>c.id===d.id),r=newRoute(d,d.routeBuildId??'test');
   const group=[...Map.groupBy(d.enemies,p=>p.packId).values()].find(ps=>ps.length>=4);r.pulls[0].enemies=group.map(p=>p.placementId);
-  const text=await encodeRoute(r,d),payload=unpack(text),dictionary=routeDictionary(d.id);
-  assert.equal(payload[4][0][0].length,1,'A complete old pack is one mapping reference');
+  const text=await encodeRoute(r,d),dictionary=routeDictionary(d.id);
+  assert.equal(encodeMembers(dictionary,r.pulls[0].enemies).length,1,'A complete old pack is one mapping reference');
   const copy=await decodeRoute(text,[custom],enemies);assert.deepEqual(copy.pulls[0].enemies,r.pulls[0].enemies);
   const before=JSON.stringify(dictionary),n=dictionary.packs.length;
   try{

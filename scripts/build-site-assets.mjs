@@ -39,9 +39,15 @@ export async function buildSiteAssets(destination){
   // Bundle the worker too: versioning only its entry would leave imported modules cached.
   const worker=await build({...options,entryPoints:['log-import/matcher-worker.js']});
   const workerURL=emit('matcher-worker.js',worker.outputFiles[0].contents);
+  let legacyRouteURL=null;
+  if(fs.existsSync(path.join(destination,'route-legacy.js'))){
+    const legacy=await build({...options,entryPoints:['route-legacy.js']});
+    legacyRouteURL=emit('route-legacy.js',legacy.outputFiles[0].contents);
+  }
   const app=await build({...options,entryPoints:['app.js'],plugins:[{
     name:'external-loro',setup(builder){
       builder.onResolve({filter:/^loro-crdt$/},()=>({path:'./'+path.basename(loroURL),external:true}));
+      if(legacyRouteURL)builder.onResolve({filter:/\/route-legacy\.js$/},()=>({path:'./'+path.basename(legacyRouteURL),external:true}));
     },
   }],define:{
     __SITE_DATA_URLS__:JSON.stringify(dataURLs),
@@ -55,5 +61,5 @@ export async function buildSiteAssets(destination){
   fs.writeFileSync(htmlPath,html.replace('src="app.js"',`src="${appURL}"`).replace('href="styles.css"',`href="${cssURL}"`));
   // Keep the old entry usable for HTML cached before hashed URLs were introduced.
   fs.writeFileSync(path.join(destination,'app.js'),`import ${JSON.stringify('./'+appURL)};\n`);
-  return {appURL,cssURL,workerURL,dataURLs,dungeonURLs,loroURL,wasmURL};
+  return {appURL,cssURL,workerURL,dataURLs,dungeonURLs,loroURL,wasmURL,legacyRouteURL};
 }

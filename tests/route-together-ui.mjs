@@ -45,7 +45,7 @@ try{
     const before=await points();await page.mouse.move(map.x+440,map.y+220);await page.mouse.down();await page.mouse.move(map.x+450,map.y+280);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.mouse.up();assert.notEqual(await points(),before);await page.locator('#undo').click();assert.equal(await points(),before);
     await page.mouse.move(map.x+440,map.y+220);await page.mouse.down();await page.mouse.move(map.x+450,map.y+280);await page.keyboard.press('Escape');await page.mouse.up();assert.equal(await points(),before);
     await page.locator('[data-action=rename]').click();await page.locator('#edit-pull-note').fill('Pull note 🐉');await page.locator('#apply-pull').click();
-    await page.locator('#export').click();await page.waitForFunction(()=>/^R[34]\./.test(window.copied));const encoded=await page.evaluate(()=>copied);
+    await page.locator('#export').click();await page.waitForFunction(()=>/^R[345]\./.test(window.copied));const encoded=await page.evaluate(()=>copied);
     await page.locator('#storage-status[data-state=saved]').waitFor({state:'attached'});await page.reload();await page.locator('#map-loading').waitFor({state:'hidden'});
     assert.equal(await marker.getAttribute('data-drawing'),originalId);assert.equal(await marker.locator('title').textContent(),'Updated label');assert.equal((await points()).split(' ').length,3);
     await page.locator('#import').click();await page.locator('#import-route-text').fill(encoded);await page.locator('#import-route-button').click();await page.locator('#dialog').waitFor({state:'hidden'});

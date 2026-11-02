@@ -8,6 +8,10 @@ const output=new URL('../local.html',import.meta.url);
 const data=Object.fromEntries(await Promise.all(dataNames.map(async name=>[
   name,JSON.parse(await readFile(new URL(`../data/${name}.json`,import.meta.url),'utf8')),
 ])));
+// The standalone file embeds the optional module as data, but parses/executes
+// it only when an old link is opened. It remains fully offline and portable.
+const legacy=await build({absWorkingDir:root,entryPoints:['route-legacy.js'],bundle:true,format:'esm',minify:true,write:false,target:['es2022']});
+const legacyURL='data:text/javascript;base64,'+Buffer.from(legacy.outputFiles[0].contents).toString('base64');
 // Replace only the HTTP loader. The same application and map modules run in both modes.
 const result=await build({
   absWorkingDir:root,
@@ -22,6 +26,7 @@ const result=await build({
   plugins:[{
     name:'embedded-local-data',
     setup(builder){
+      builder.onResolve({filter:/\/route-legacy\.js$/},()=>({path:legacyURL,external:true}));
       builder.onLoad({filter:/[/\\]runtime-loader\.js$/},()=>({
         contents:`export async function loadData(){return ${JSON.stringify(data)};}`,
         loader:'js',
