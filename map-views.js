@@ -1,9 +1,13 @@
 import {fullMaps} from './data/full-maps.js';
 import {mapStarts} from './data/map-starts.js';
 import {campfires} from './data/map-campfires.js';
+import {bloodRules} from './data/game-blood.js';
 import {combinedMap} from './data/combined-maps.js';
 export function mapCampfires(dungeon,view){
   return (campfires[dungeon.id]||[]).filter(p=>onMap(p,view)).map(p=>({id:p.id,point:view.sources&&p.overviewPoint?p.overviewPoint:mapCoordinates(p,view)}));
+}
+export function mapBloodTowers(dungeon,view){
+  return dungeon.id===bloodRules.dungeonId?bloodRules.towers.filter(p=>onMap(p,view)).map(p=>({id:p.id,point:mapCoordinates(p,view)})):[];
 }
 export function mapStart(dungeon,view){
   const start=mapStarts[dungeon.id];

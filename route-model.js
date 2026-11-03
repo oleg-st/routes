@@ -1,4 +1,5 @@
 import {drawingMap} from './map-views.js';
+import {positionsBlood} from './blood.js';
 import {correctDungeon} from './data/placement-corrections.js';
 import {nonCombatBossIds} from './data/boss-encounters.js';
 import {routeDictionary,replacementMembers,encodeMembers,decodeMembers} from './data/route-dictionary.js';
@@ -184,6 +185,16 @@ export function setReplacement(route,kind,packId,dungeon,enemies){
 export function shadowTimeline(route,dungeon,enemies){
   let cumulative=0,previous=0;
   return route.pulls.map(p=>{const s=scorePull(p,dungeon,enemies,route);cumulative+=s.orbScore;const total=orbCount(cumulative,dungeon),orbs=total-previous,spawns=Math.min(shadowTarget(dungeon)/shadowOrbsPerLord,Math.floor(total/shadowOrbsPerLord))-Math.min(shadowTarget(dungeon)/shadowOrbsPerLord,Math.floor(previous/shadowOrbsPerLord));previous=total;return {orbs,total,spawns};});
+}
+export function bloodTimeline(route,dungeon){
+  const positions=new Map(effectivePositions(route,dungeon).map(p=>[p.placementId,p])),seen=new Set();
+  let total=0;
+  return route.pulls.map(pull=>{
+    const members=[];
+    for(const id of pull.enemies)if(!seen.has(id)){seen.add(id);members.push(positions.get(id));}
+    const blood=positionsBlood(members,route);total+=blood;
+    return {blood,total};
+  });
 }
 export function scorePull(pull,dungeon,enemies,route){
   const positions=new Map(effectivePositions(route,dungeon).map(e=>[e.placementId,e]));
