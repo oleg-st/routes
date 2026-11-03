@@ -490,8 +490,8 @@ function renderBloodTowers(){
     const label=`Blood tower · ${bloodRules.bloodPerTower} blood`;
     const g=svg('g',{'data-blood-tower':id,transform:`translate(${x} ${y}) scale(${size})`,role:'img','aria-label':label,'pointer-events':'all'});
     g.append(svg('title',{},label),
-      svg('circle',{r:10,fill:'#351721',stroke:'#ff9bab','stroke-width':1.2}),
-      svg('path',{d:'M 0 -6 C -2 -2 -5 1 -5 4 A 5 5 0 0 0 5 4 C 5 1 2 -2 0 -6 Z',fill:'#f25777'}));
+      svg('circle',{r:10,fill:'#351721',stroke:'#f05252','stroke-width':1.2}),
+      svg('path',{d:'M 0 -7.5 C -2 -3.5 -5 -.5 -5 2.5 A 5 5 0 0 0 5 2.5 C 5 -.5 2 -3.5 0 -7.5 Z',fill:'#f05252'}));
     root.append(g);
   }
 }
