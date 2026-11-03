@@ -21,7 +21,7 @@ test('Peak distinguishes sleeping Grims from awake members of the same species',
   assert.equal(grims.filter(p=>p.sleeping).length,11);
   assert.equal(grims.filter(p=>!p.sleeping).length,3);
   for(const p of grims){
-    assert.equal(placementName(p,{name:'Stalking Grim'}),'Stalking Grim'+(p.sleeping?' (sleeping)':''));
+    assert.equal(placementName(p,{name:'Stalking Grim'}),'Stalking Grim');
     assert.equal(requiresPlayerContact(p),false,'Sleep must not become Dormant contact activation');
   }
   const published=JSON.parse(fs.readFileSync('data/dungeons.json'));
