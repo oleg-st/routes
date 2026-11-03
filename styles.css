@@ -143,4 +143,6 @@
 .pull-number:has(.pull-shadow-icon){margin-right:14px}
 .pull-shadow-icon{position:absolute;top:-3px;right:-12px;width:16px;height:16px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px #111820}
 
-.blood-value,.pull-blood{color:#f29aac;font-variant-numeric:tabular-nums;white-space:nowrap}.enemy-facts .blood-value{display:inline;font-size:inherit;margin:0;color:#f29aac}
+.blood-value,.pull-blood{color:#f05252;font-variant-numeric:tabular-nums;white-space:nowrap}.enemy-facts .blood-value{display:inline;font-size:inherit;margin:0;color:#f05252}
+
+.blood-drop{display:inline-block;margin-right:.2em;width:.75em;height:1em;vertical-align:-.12em;color:inherit}

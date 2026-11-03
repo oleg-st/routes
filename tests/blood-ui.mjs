@@ -37,33 +37,33 @@ try{
     assert.deepEqual(await poiGeometry(),beforeZoom,'Tower and campfire coordinates and map-unit sizes stay fixed on zoom');
     await page.locator('#map').press('f');
     await page.screenshot({path:`tmp/blood-tower-${index}.png`});
-    assert.equal(await page.locator('.pull-blood').first().innerText(),'0 blood / 0 total');
+    assert.equal(await page.locator('.pull-blood').first().innerText(),'0 · 0 total');
     const marker=page.locator(`#markers > [data-placement="${caster.placementId}"]`);
     await marker.press('Shift+F10');await page.getByRole('menuitem',{name:'Add only this mob',exact:true}).click();
-    assert.equal(await page.locator('.pull-blood').first().innerText(),'5 blood / 5 total');
+    assert.equal(await page.locator('.pull-blood').first().innerText(),'5 · 5 total');
     await marker.dispatchEvent('pointermove',{clientX:500,clientY:400});
-    assert.equal(await page.locator('#tooltip .tip-score .blood-value').innerText(),'5 blood');
+    assert.equal(await page.locator('#tooltip .tip-score .blood-value').innerText(),'5');
     assert.equal(await page.locator('#tooltip .tip-score .blood-value').getAttribute('title'),'1 blood orb · 5 blood');
     await page.screenshot({path:`tmp/blood-tooltip-${index}.png`});
     await page.locator('.pull-card').first().focus();
-    assert.equal(await page.locator('#pull-tooltip .tip-pack-percent .blood-value').innerText(),'5 blood');
+    assert.equal(await page.locator('#pull-tooltip .tip-pack-percent .blood-value').innerText(),'5');
     await marker.press('Shift+F10');await page.getByRole('menuitem',{name:'Info',exact:true}).click();
-    assert.equal(await page.locator('#inspector .blood-value').innerText(),'5 blood');
+    assert.equal(await page.locator('#inspector .blood-value').innerText(),'5');
     await page.locator('.close-inspector').click();
     await marker.press('Shift+F10');await page.getByRole('menuitemcheckbox',{name:'Chicken',exact:true}).click();
-    assert.equal(await page.locator('.pull-blood').first().innerText(),'0 blood / 0 total');
+    assert.equal(await page.locator('.pull-blood').first().innerText(),'0 · 0 total');
     await page.locator('#undo').click();
-    assert.equal(await page.locator('.pull-blood').first().innerText(),'5 blood / 5 total');
+    assert.equal(await page.locator('.pull-blood').first().innerText(),'5 · 5 total');
     await page.locator('#shadow').click();
-    assert.equal(await page.locator('.pull-blood').first().innerText(),'5 blood / 5 total');
+    assert.equal(await page.locator('.pull-blood').first().innerText(),'5 · 5 total');
     assert.match(await page.locator('.pull-detail:not(.pull-blood)').first().innerText(),/orbs/);
     for(const [enemyId,expected]of [['mc-bloodsummoner',13],['st-smallbloodelemental',16]]){
       const p=dungeon.enemies.find(p=>p.id===enemyId),mob=page.locator(`#markers > [data-placement="${p.placementId}"]`);
       await mob.press('Shift+F10');await page.getByRole('menuitem',{name:'Add only this mob',exact:true}).click();
-      assert.equal(await page.locator('.pull-blood').first().innerText(),`${expected} blood / ${expected} total`);
+      assert.equal(await page.locator('.pull-blood').first().innerText(),`${expected} · ${expected} total`);
       if(enemyId==='st-smallbloodelemental'){
         await mob.dispatchEvent('pointermove',{clientX:500,clientY:400});
-        assert.equal(await page.locator('#tooltip .tip-score .blood-value').innerText(),'3 blood');
+        assert.equal(await page.locator('#tooltip .tip-score .blood-value').innerText(),'3');
       }
     }
     await page.mouse.move(0,0);await page.screenshot({path:`tmp/blood-map-${index}.png`});
