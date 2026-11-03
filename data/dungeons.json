@@ -2184,6 +2184,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "21c86ace-48cd9312-4140658e-8785a256",
+        "sleeping": true,
         "packId": "pack-game-316acc767da0283efb945155"
       },
       {
@@ -8692,6 +8693,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "7fef372a-431d475a-47648fb2-389c8c87",
+        "sleeping": true,
         "packId": "pack-game-316acc767da0283efb945155"
       },
       {
@@ -36894,6 +36896,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "4aa4ea2c-4881dbf7-b63fffad-67119eba",
+        "sleeping": true,
         "packId": "pack-game-e49e94b18ff4ae16a658a32e"
       },
       {
@@ -44038,6 +44041,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "86fd2434-41d53c11-ada548ba-8e961559",
+        "sleeping": true,
         "packId": "pack-game-e49e94b18ff4ae16a658a32e"
       },
       {
@@ -48342,6 +48346,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "cc49341b-4082cf18-b32802b2-46550c03",
+        "sleeping": true,
         "packId": "pack-game-e49e94b18ff4ae16a658a32e"
       },
       {
@@ -75680,6 +75685,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "5e7990f1-4be95cd1-0be0b2bd-591b050d",
+        "sleeping": true,
         "packId": "pack-game-910dff339bd7db3c108d309b"
       },
       {
@@ -91215,6 +91221,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "be4ff8ca-43967a01-46e82b9b-c4dc5cdb",
+        "sleeping": true,
         "packId": "pack-game-8107ab7030d6adb54c6a4702"
       },
       {
@@ -93673,6 +93680,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "c8ce92f0-4d34b52e-1c24529d-1d04dfc7",
+        "sleeping": true,
         "packId": "pack-game-910dff339bd7db3c108d309b"
       },
       {
@@ -118500,6 +118508,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "0160bb0d-4231d330-baf081ac-a8fe10dd",
+        "sleeping": true,
         "packId": "pack-game-3dc5b69a1db756fd1d1a1c6e"
       },
       {
@@ -118536,6 +118545,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "08e68a53-4566bf07-dec4869a-f87dce24",
+        "sleeping": true,
         "packId": "pack-game-b106b64904d02d4bcba97173"
       },
       {
@@ -121060,6 +121070,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "27ee25f7-417cb35d-dac6aa87-235f3701",
+        "sleeping": true,
         "packId": "pack-game-0e7bb03545c669766902755f"
       },
       {
@@ -121078,6 +121089,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "2813d84c-4b0ee678-be18d596-dcf71e54",
+        "sleeping": true,
         "packId": "pack-game-eb9e725a5b81b18ebbfb6060"
       },
       {
@@ -125118,6 +125130,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "7adc2a30-485c27e2-5439e3ab-d72c9ae0",
+        "sleeping": true,
         "packId": "pack-game-e8e69a05dd559571c5db7f7d"
       },
       {
@@ -125172,6 +125185,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "7f46b1ae-4dc7abc4-3920d9a8-5087bf5e",
+        "sleeping": true,
         "packId": "pack-game-32b6765f67fab06b059b5b70"
       },
       {
@@ -125642,6 +125656,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "84f64018-49fd7cc4-90681fb5-36cec409",
+        "sleeping": true,
         "packId": "pack-game-2314e0b5e53e20ee2dc9317e"
       },
       {
@@ -125696,6 +125711,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "8c345d0a-49b8dc89-26fca7a5-562b3ef5",
+        "sleeping": true,
         "packId": "pack-game-fce4ce2b19c5135da1fecadd"
       },
       {
@@ -125786,6 +125802,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "9c7385f2-40043286-eaa4b7ac-fad3ee5c",
+        "sleeping": true,
         "packId": "pack-game-32b6765f67fab06b059b5b70"
       },
       {
@@ -126942,6 +126959,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "ae03f9e6-41fd6be7-630d1ab2-a9e4266f",
+        "sleeping": true,
         "packId": "pack-game-eb9e725a5b81b18ebbfb6060"
       },
       {
@@ -126960,6 +126978,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "b3c06cab-482f5b78-6fc96989-a325ddac",
+        "sleeping": true,
         "packId": "pack-game-2314e0b5e53e20ee2dc9317e"
       },
       {
@@ -126996,6 +127015,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "b7dedaa9-46f64fb8-3a7d3d96-cf6b0049",
+        "sleeping": true,
         "packId": "pack-game-fce4ce2b19c5135da1fecadd"
       },
       {
@@ -127754,6 +127774,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "ddda605c-41708ea4-4d553fa8-e7d6cdc6",
+        "sleeping": true,
         "packId": "pack-game-d7ad6d6ad220c71675cec7fc"
       },
       {
@@ -127790,6 +127811,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "e12e91df-413be015-d68742be-c593533a",
+        "sleeping": true,
         "packId": "pack-game-e8e69a05dd559571c5db7f7d"
       },
       {
@@ -131283,6 +131305,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "4903c993-4cfb7b37-ab4eafb0-9408da45",
+        "sleeping": true,
         "packId": "pack-game-21014826ac37b5cccb672392"
       },
       {
@@ -131301,6 +131324,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "8c0b5c3f-40955408-6baf14bc-d68865d1",
+        "sleeping": true,
         "packId": "pack-game-21014826ac37b5cccb672392"
       },
       {
@@ -150418,6 +150442,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "f6fd0ea0-463737ff-94e53f08-544a216d",
+        "sleeping": true,
         "packId": "pack-game-7fb931dd0af693d61a96f900"
       },
       {
@@ -152661,6 +152686,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "0542acc0-4f0fea8b-6b2eaba6-a7dae6f6",
+        "sleeping": true,
         "packId": "pack-game-dcb7226fe11c664e962aa193"
       },
       {
@@ -156922,6 +156948,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "6bb0c834-46b7baa4-1116e889-ba26da75",
+        "sleeping": true,
         "packId": "pack-game-a09036c1f129b0ed0661b539"
       },
       {
@@ -162068,6 +162095,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "9ed1b036-4c2ef0d4-34a039aa-f29ae655",
+        "sleeping": true,
         "packId": "pack-game-5c9cab7eda09644b00142027"
       },
       {
@@ -164997,6 +165025,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "b1de1c23-428a6a25-ac68df81-d42fc80e",
+        "sleeping": true,
         "packId": "pack-game-a09036c1f129b0ed0661b539"
       },
       {
@@ -165015,6 +165044,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "b2eac480-4f91f0c7-c4bb1280-6defb44d",
+        "sleeping": true,
         "packId": "pack-game-dcb7226fe11c664e962aa193"
       },
       {
@@ -165552,6 +165582,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "c65016ee-4a6ae015-b6a4b6b5-adb527b0",
+        "sleeping": true,
         "packId": "pack-game-7fb931dd0af693d61a96f900"
       },
       {
@@ -165609,6 +165640,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "d1cde0c6-4b8f4f35-beff25b4-031b4aa8",
+        "sleeping": true,
         "packId": "pack-game-dcb7226fe11c664e962aa193"
       },
       {
@@ -171472,6 +171504,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "9e15da86-400e68ee-bca1dca0-53355ea7",
+        "sleeping": true,
         "packId": "pack-game-9c0a69c96951dfaf5e856b99"
       },
       {
@@ -172706,6 +172739,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "c725d3e8-489f2c74-d87d8199-157ca04d",
+        "sleeping": true,
         "packId": "pack-game-bd829d9d98daab20c8d77f4a"
       },
       {
@@ -172724,6 +172758,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "b76cc42f-48de7ae7-18663894-e9257e45",
+        "sleeping": true,
         "packId": "pack-game-bd829d9d98daab20c8d77f4a"
       },
       {
@@ -172742,6 +172777,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "3421a272-4abab978-8d63769c-ced404e6",
+        "sleeping": true,
         "packId": "pack-game-c38b877774ed0a411ca68ff5"
       },
       {
@@ -172760,6 +172796,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "45e9a399-4930ae47-486ac085-a7ce27e6",
+        "sleeping": true,
         "packId": "pack-game-d37c07eb78d52f4c51fc4f42"
       },
       {
@@ -172778,6 +172815,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "d1e6e2c1-445071ce-f86f2395-4c80b19a",
+        "sleeping": true,
         "packId": "pack-game-d37c07eb78d52f4c51fc4f42"
       },
       {
@@ -172796,6 +172834,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "0db1f6f8-467351ee-265b2d88-b913d6b1",
+        "sleeping": true,
         "packId": "pack-game-d37c07eb78d52f4c51fc4f42"
       },
       {
@@ -174990,6 +175029,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "dd90e838-4b52f8a3-d1c9f09d-b160d992",
+        "sleeping": true,
         "packId": "pack-game-c38b877774ed0a411ca68ff5"
       },
       {
@@ -175044,6 +175084,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "644f94cc-45cd7d65-2bdee584-4d076c78",
+        "sleeping": true,
         "packId": "pack-game-c38b877774ed0a411ca68ff5"
       },
       {
@@ -183190,6 +183231,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "14dc009b-44b1bf9c-fc932b87-27fca316",
+        "sleeping": true,
         "packId": "pack-game-bd829d9d98daab20c8d77f4a"
       },
       {
@@ -184658,6 +184700,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "3a9b39ab-41534b08-29e4aa9e-aed51edb",
+        "sleeping": true,
         "packId": "pack-game-bd829d9d98daab20c8d77f4a"
       },
       {
@@ -189688,6 +189731,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "5f1e4e8d-42ff8527-709fdb9b-f43029bc",
+        "sleeping": true,
         "packId": "pack-game-969532a134c1f11a65eecf68"
       },
       {
@@ -191374,6 +191418,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "6ebfab65-4593b253-d9bd4588-e10e8b24",
+        "sleeping": true,
         "packId": "pack-game-2fdce51071e6b4183f7db460"
       },
       {
@@ -200226,6 +200271,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "a169597a-4c99a354-6d73289f-8fc65ec2",
+        "sleeping": true,
         "packId": "pack-game-2fdce51071e6b4183f7db460"
       },
       {
@@ -200262,6 +200308,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "a4bcec2c-4765f238-99d63f98-9227a2ca",
+        "sleeping": true,
         "packId": "pack-game-2fdce51071e6b4183f7db460"
       },
       {
@@ -202546,6 +202593,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "bce922e7-41b28931-79a7faba-d23ee72b",
+        "sleeping": true,
         "packId": "pack-game-969532a134c1f11a65eecf68"
       },
       {
@@ -208606,6 +208654,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "e0327982-4154c9a5-a7abcdb6-d0ae5017",
+        "sleeping": true,
         "packId": "pack-game-9c0a69c96951dfaf5e856b99"
       },
       {
@@ -216366,6 +216415,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "147cc83c-44b13f01-f80682b7-a7f062f0",
+        "sleeping": true,
         "packId": "pack-game-d00f4e62005f9f523b5b77b8"
       },
       {
@@ -217326,6 +217376,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "2f88263d-42473ef6-9c0c7a98-249c1520",
+        "sleeping": true,
         "packId": "pack-game-e78249cbd0a183602ba8cdef"
       },
       {
@@ -220316,6 +220367,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "531f4634-445929b4-17e1c3b2-f66770c4",
+        "sleeping": true,
         "packId": "pack-game-d00f4e62005f9f523b5b77b8"
       },
       {
@@ -221310,6 +221362,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "617b5630-4469bfdb-654fe2b1-29302d91",
+        "sleeping": true,
         "packId": "pack-game-8f10b01a34edefbbb3e5b379"
       },
       {
@@ -221654,6 +221707,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "6ed25c79-4188381c-835c03af-bbf7ad55",
+        "sleeping": true,
         "packId": "pack-game-7242aad2b00bf92c4b7a6909"
       },
       {
@@ -221672,6 +221726,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "76ee2bf6-458ad133-755331ae-970c1708",
+        "sleeping": true,
         "packId": "pack-game-0acb0c2f46887f4556b47763"
       },
       {
@@ -221690,6 +221745,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "78b8906b-40271751-0160ca87-53e2916a",
+        "sleeping": true,
         "packId": "pack-game-e78249cbd0a183602ba8cdef"
       },
       {
@@ -222130,6 +222186,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "7d0dea76-4f60643d-efac099c-f5477a06",
+        "sleeping": true,
         "packId": "pack-game-0acb0c2f46887f4556b47763"
       },
       {
@@ -223768,6 +223825,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "91668043-4283fabd-b016a2a1-71bbf085",
+        "sleeping": true,
         "packId": "pack-game-8f10b01a34edefbbb3e5b379"
       },
       {
@@ -225520,6 +225578,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "aa7eefb8-4116f73d-6120b3bf-69d94bf4",
+        "sleeping": true,
         "packId": "pack-game-38a61c4fd973df71469db461"
       },
       {
@@ -226250,6 +226309,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "c0862143-46077098-f091b582-c2a400a7",
+        "sleeping": true,
         "packId": "pack-game-38a61c4fd973df71469db461"
       },
       {
@@ -226906,6 +226966,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "cb18c98f-47bf4e53-ea7d74aa-a240ce56",
+        "sleeping": true,
         "packId": "pack-game-7242aad2b00bf92c4b7a6909"
       },
       {
@@ -229542,6 +229603,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "e68ed7f1-433c1170-c35e039c-f2edd005",
+        "sleeping": true,
         "packId": "pack-game-7242aad2b00bf92c4b7a6909"
       },
       {
@@ -246080,6 +246142,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "0fcae93e-4efcf399-9718a4b5-e1efa0a5",
+        "sleeping": true,
         "packId": "pack-game-b96aefc262e29b20790b30b4"
       },
       {
@@ -247344,6 +247407,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "156da4df-40ea8fc9-814d5aa0-1af9c566",
+        "sleeping": true,
         "packId": "pack-game-35be5097a96a5817f9fb88ea"
       },
       {
@@ -252014,6 +252078,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "4d47a970-464dca29-8e23c088-aa8c09d7",
+        "sleeping": true,
         "packId": "pack-game-bf7ad6c8b369ed799137a894"
       },
       {
@@ -253032,6 +253097,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "5b7e591b-43b3ed32-113a61b8-f9d345ed",
+        "sleeping": true,
         "packId": "pack-game-95be393ea6a9a9d25edb6278"
       },
       {
@@ -253050,6 +253116,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "5b9a88f1-4cad5da3-2b72cc9f-31d9e18c",
+        "sleeping": true,
         "packId": "pack-game-95be393ea6a9a9d25edb6278"
       },
       {
@@ -254632,6 +254699,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "68cbe06d-4448ea2c-6afa2f8d-a7ebd551",
+        "sleeping": true,
         "packId": "pack-game-7f34a4cc0aaa23797b2152eb"
       },
       {
@@ -257014,6 +257082,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "73521e6d-478944e9-f707a58d-d6cb620b",
+        "sleeping": true,
         "packId": "pack-game-bf7ad6c8b369ed799137a894"
       },
       {
@@ -257068,6 +257137,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "7997ba86-42ffb729-de5b5b8e-299350df",
+        "sleeping": true,
         "packId": "pack-game-7f34a4cc0aaa23797b2152eb"
       },
       {
@@ -257158,6 +257228,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "8ab88412-47aba5fc-d3eeb89a-6b39c2c8",
+        "sleeping": true,
         "packId": "pack-game-81c4e870910742b1861a427c"
       },
       {
@@ -260510,6 +260581,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "a6ef64bc-4aa6bb43-d4149ea9-212e5375",
+        "sleeping": true,
         "packId": "pack-game-7f34a4cc0aaa23797b2152eb"
       },
       {
@@ -262982,6 +263054,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "bba9e9bc-4195b2f9-91376d8b-0f036207",
+        "sleeping": true,
         "packId": "pack-game-bf7ad6c8b369ed799137a894"
       },
       {
@@ -265046,6 +265119,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "e4e68e04-46dab75d-50126db7-bd501417",
+        "sleeping": true,
         "packId": "pack-game-fa7fd2985a087832d64cbe8a"
       },
       {
@@ -266326,6 +266400,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "f65c1660-445989c4-fcdd3fba-1e15db4d",
+        "sleeping": true,
         "packId": "pack-game-b96aefc262e29b20790b30b4"
       },
       {
@@ -273113,6 +273188,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "1c370a83-46b57e19-a0b215b7-531aa379",
+        "sleeping": true,
         "packId": "pack-game-44b2bd9066869f1bf3532dff"
       },
       {
@@ -286979,6 +287055,7 @@
           }
         ],
         "gameGuid": "6f2fd4fd-4f95ce2c-cf412291-a2dfcd76",
+        "sleeping": true,
         "packId": "pack-game-dc555dfe370d39f33043124e"
       },
       {
@@ -288583,6 +288660,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "8a7c3a18-47d51693-4b9dce8d-b6467bd3",
+        "sleeping": true,
         "packId": "pack-game-b1c8c3ba0d0f486af3a8bfd0"
       },
       {
@@ -291133,6 +291211,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "a4316264-48a3ea43-8e6bf0ae-eafedde9",
+        "sleeping": true,
         "packId": "pack-game-903c767655931981f3beb296"
       },
       {
@@ -295153,6 +295232,7 @@
           }
         ],
         "gameGuid": "bd957dc8-4aa8d276-620f9586-0b0740c1",
+        "sleeping": true,
         "packId": "pack-game-dc555dfe370d39f33043124e"
       },
       {
@@ -299124,6 +299204,7 @@
         "patrolPath": null,
         "mapPatrolPath": null,
         "gameGuid": "fd245a15-406ec5ec-46e6eaa6-eae5c776",
+        "sleeping": true,
         "packId": "pack-game-c97ce05e5417d984472ba7e1"
       },
       {

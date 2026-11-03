@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {actorGuids,resolveIdentity,projectGamePoint,dungeonIdentity,selectMapFrame} from './game-source-identity.mjs';
 import {gameSocialInput,formationMotionBounds} from './game-patrol-model.mjs';
+import {isSleeping} from './game-sleep-state.mjs';
 import {inferGeometricPacks} from './geometric-pack-model.mjs';
 import {navigationIndex,auditPatrolIslands,applyIslandCandidates} from './game-patrol-island-rule.mjs';
 const root=process.env.GAME_DATA_ROOT??'private/game-data/all-dungeons';
@@ -48,7 +49,7 @@ for(const key of Object.keys(overlay.activeActorKeys).sort()){
       // Patrol samples can leave the map boxes. Extrapolate only from this
       // actor's freshly selected floor, never from its previous-build floor.
       patrolPath,mapPatrolPath:patrolPath?.map(w=>selectMapFrame(w,mapFrames[id],spawnPoint.mapImageId,{allowOutside:true,displayAreas:display.dungeons[id]}))??null,
-      gameGuid:guid,...(burried?{burried:true}:{}),...(motion.inactive?{dormant:true}:{})};
+      gameGuid:guid,...(burried?{burried:true}:{}),...(motion.inactive?{dormant:true}:{}),...(isSleeping(mob)?{sleeping:true}:{})};
     byActor.set(mob.actorKey,p);
   }
   const packs=model.groups.map(group=>{

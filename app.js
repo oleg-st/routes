@@ -523,11 +523,12 @@ function updateMarkerGeometry(cached,x,y,r,unit){
   for(const node of group.querySelectorAll('.mob-focus-ring,.log-choice-ring')){
     node.setAttribute('cx',x);node.setAttribute('cy',y);node.setAttribute('r',r+(node.classList.contains('mob-focus-ring')?7:6)*unit);
   }
-  for(const {group:badge,circle,image,side} of badges){
+  for(const {group:badge,circle,image,text,side} of badges){
     const bx=x+side*r*.85,by=y-r*.9,br=7*unit;
     badge.removeAttribute('transform');
-    circle.setAttribute('cx',bx);circle.setAttribute('cy',by);circle.setAttribute('r',br+2*unit);
-    image.setAttribute('x',bx-br);image.setAttribute('y',by-br);image.setAttribute('width',br*2);image.setAttribute('height',br*2);
+    if(circle){circle.setAttribute('cx',bx);circle.setAttribute('cy',by);circle.setAttribute('r',br+2*unit);}
+    if(image){image.setAttribute('x',bx-br);image.setAttribute('y',by-br);image.setAttribute('width',br*2);image.setAttribute('height',br*2);}
+    if(text){text.setAttribute('x',bx);text.setAttribute('y',by);text.setAttribute('font-size',9*unit);}
     markerScaleTargets.push({group:badge,x,y});
   }
   markerScaleTargets.push({group,x,y});
@@ -616,12 +617,14 @@ function renderMap({zoomOnly=false}={}){
       group.setAttribute('aria-label',group.getAttribute('aria-label')+', Priority target');
       group.append(svg('circle',{cx:x,cy:y,r:r+unit*(empowered?7:4),class:'priority-target-ring','pointer-events':'none'}));
     }
-    for(const status of [empowered&&{kind:'empowered',name:'Empowered',icon:empoweredIcon,side:-1}].filter(Boolean)){
+    for(const status of [empowered&&{kind:'empowered',name:'Empowered',icon:empoweredIcon,side:-1,color:'#ffbb25',background:'#1a1005'},p.sleeping&&{kind:'sleeping',name:'Sleeping',side:1,color:'#d6d0ff'}].filter(Boolean)){
       const bx=x+status.side*r*.85,by=y-r*.9,br=7*unit;
       const badge=svg('g',{['data-'+status.kind+'-badge']:p.placementId,'data-placement':p.placementId,opacity:matchesSearch(p)?1:.14,style:'cursor:pointer'});
-      badge.append(svg('title',{},`${enemy.name} · ${status.name}`),svg('circle',{cx:bx,cy:by,r:br+2*unit,fill:'#1a1005',stroke:'#ffbb25','stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('image',{href:status.icon,x:bx-br,y:by-br,width:br*2,height:br*2,'clip-path':'url(#mob-portrait-clip)',preserveAspectRatio:'xMidYMid slice','pointer-events':'none'}));
+      badge.append(svg('title',{},`${enemy.name} · ${status.name}`));
+      if(status.icon)badge.append(svg('circle',{cx:bx,cy:by,r:br+2*unit,fill:status.background,stroke:status.color,'stroke-width':2,'vector-effect':'non-scaling-stroke'}),svg('image',{href:status.icon,x:bx-br,y:by-br,width:br*2,height:br*2,'clip-path':'url(#mob-portrait-clip)',preserveAspectRatio:'xMidYMid slice','pointer-events':'none'}));
+      else badge.append(svg('text',{x:bx,y:by,'text-anchor':'middle','dominant-baseline':'central','font-size':9*unit,'font-weight':800,fill:status.color,stroke:'#25213c','stroke-width':2.5,'paint-order':'stroke','stroke-linejoin':'round','vector-effect':'non-scaling-stroke'},'Z'));
       $('#status-badges').append(badge);
-      badges.push({group:badge,circle:badge.querySelector('circle'),image:badge.querySelector('image'),side:status.side});
+      badges.push({group:badge,circle:badge.querySelector('circle'),image:badge.querySelector('image'),text:badge.querySelector('text'),side:status.side});
       markerScaleTargets.push({group:badge,x,y});
     }
     group.append(svg('circle',{cx:x,cy:y,r:r+unit*(enemy?.isBoss?2:.75),fill:enemy?.isBoss?'#10161bcc':'#10161b99'}));
@@ -1025,7 +1028,7 @@ function clearImportedRouteHash(hash){
 }
 function search(){
   renderMap();const q=$('#search').value.trim();$('#search-results').hidden=!q;if(!q)return;
-  const result=effectivePositions(route,dungeon).filter(matchesSearch);const groups=new Map();result.forEach(p=>{const key=p.id+':'+p.packId;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);});
+  const result=effectivePositions(route,dungeon).filter(matchesSearch);const groups=new Map();result.forEach(p=>{const key=p.id+':'+p.packId+':'+!!p.sleeping;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);});
   $('#search-results').innerHTML=[...groups.values()].slice(0,35).map(ps=>`<button data-search-id="${ps[0].placementId}">${esc(placementName(ps[0],enemies.get(ps[0].id)))} <span class="muted">× ${ps.length} · G${packNumbers.get(ps[0].packId)}</span></button>`).join('')||'<p class="muted" style="padding:12px">No results found</p>';
 }
 function addPull(){const p=newPull(route.pulls.length);let index=route.pulls.length;while(route.pulls.some(pull=>pull.color===p.color))p.color=pullColor(++index);if(change({type:'add-pull',id:p.id,color:p.color})){activePull=p.id;render();$('#pulls').scrollTop=$('#pulls').scrollHeight;}}

@@ -3,7 +3,7 @@ import {bossEncounterLabel} from './boss-encounters.js';
 export function placementName(placement,enemy){
   const encounter=bossEncounterLabel(placement);
   const name=(enemy?.name||placement.id)+(encounter?` (${encounter})`:'');
-  return placement.burried?`${name} (burried)`:name;
+  return name+(placement.burried?' (burried)':'')+(placement.sleeping?' (sleeping)':'');
 }
 
 export function correctDungeon(dungeon){
