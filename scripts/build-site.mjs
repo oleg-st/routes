@@ -21,7 +21,6 @@ const files = ['index.html', 'app.js', 'route-model.js', 'route-legacy.js', 'rou
     'boss-encounters','placement-corrections','route-mapping','route-dictionary','game-modifier-stats',
     'game-modifier-positions','modifier-spawns','game-service-rules','game-difficulty','game-summon-rules','ability-corrections','enemy-marker-sizes','marker-anchors',
     'compact-data','runtime-loader','dungeon-loader'].map(name=>`data/${name}.js`),
-  'data/LICENSE-fellowship-data.txt',
   ...usedImages()];
 if (files.some(file => file.startsWith('private/') || file.includes('..'))) throw new Error('Private path in publication allowlist.');
 const destination = path.resolve(projectRoot, 'dist');
