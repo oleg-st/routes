@@ -51,13 +51,13 @@ try {
     window.localUpdates = 0; doc.subscribeLocalUpdates(() => localUpdates++);
   }, initial);
   await a.evaluate(() => doc.execute({type: 'edit-text', group: 'drawings', id: 'note', index: 0, deleteCount: 0, text: 'A🧭'}));
-  await b.evaluate(() => doc.execute({type: 'edit-text', group: 'drawings', id: 'note', index: 0, deleteCount: 0, text: 'Б🐉'}));
+  await b.evaluate(() => doc.execute({type: 'edit-text', group: 'drawings', id: 'note', index: 0, deleteCount: 0, text: '\u0411🐉'}));
   const packets = await Promise.all([a, b].map(page => page.evaluate(() => pack(doc.exportUpdate()))));
   for (const page of pages) for (const packet of packets) await page.evaluate(packet => doc.import(unpack(packet)), packet);
   const states = await Promise.all(pages.map(page => page.evaluate(() => ({peerId: doc.peerId, state: doc.canonical(), text: doc.snapshot().drawings[0].text}))));
   assert.equal(new Set(states.map(state => state.peerId)).size, 3);
   assert.equal(new Set(states.map(state => state.state)).size, 1);
-  assert.ok(states[0].text.includes('A🧭') && states[0].text.includes('Б🐉'));
+  assert.ok(states[0].text.includes('A🧭') && states[0].text.includes('\u0411🐉'));
   const blocked = await spectator.evaluate(() => {
     const before = doc.canonical();
     try {doc.execute({type: 'clear-route'}); return false;} catch (error) {

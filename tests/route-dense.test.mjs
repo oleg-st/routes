@@ -29,13 +29,13 @@ test('Every R5 membership mode preserves seeded partial packs, permutations, emp
       const members=dungeon.enemies.map(e=>dictionary.placements.indexOf(e.placementId));
       for(let i=members.length-1;i>0;i--){const j=random(i+1);[members[i],members[j]]=[members[j],members[i]];}
       for(const id of members)if(random(3))pulls[random(count)][0].push(-id-1);
-      pulls[0].push('Не по шаблону 🐉','#ABCDEF','Log segment-01.',1);
+      pulls[0].push('\u041d\u0435 \u043f\u043e \u0448\u0430\u0431\u043b\u043e\u043d\u0443 🐉','#ABCDEF','Log segment-01.',1);
       if(count>1)pulls[1].push(null,null,'Log segment-99.');
       const drawings=[
-        [book.maps[0],2,[[1.25,-3.5],[99999.999,-99999.999]],'#abc123','текст',null],
+        [book.maps[0],2,[[1.25,-3.5],[99999.999,-99999.999]],'#abc123','\u0442\u0435\u043a\u0441\u0442',null],
         [book.maps.at(-1),0,[[100,20],[-12.75,13.01],[0,0]],null,'',5],
       ];
-      const payload=[book.id,routeCodebooks[0].build,'m1','Любое имя · #007',pulls,drawings,null,book.mods,null,[]];
+      const payload=[book.id,routeCodebooks[0].build,'m1','\u041b\u044e\u0431\u043e\u0435 \u0438\u043c\u044f · #007',pulls,drawings,null,book.mods,null,[]];
       const expected=await decodeRoute(json(payload),dungeons,enemies);
       const variants=denseRouteCandidates(payload,dictionary);assert.equal(variants.length,5);
       for(const bytes of variants){

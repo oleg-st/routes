@@ -45,7 +45,7 @@ test('Priority targets survive JSON and compact exports with and without difficu
 test('Compact routes preserve all content in every dungeon, with hundredth-pixel coordinates and Unicode',async()=>{
   let oldSize=0,newSize=0;
   for(const dungeon of dungeons){
-    const route=newRoute(dungeon,dungeon.routeBuildId??'test','Маршрут 🐉 #?&%');
+    const route=newRoute(dungeon,dungeon.routeBuildId??'test','\u041c\u0430\u0440\u0448\u0440\u0443\u0442 🐉 #?&%');
     applyModifierPresets(route,dungeon,presets);
     route.shadow=modifierAvailable(dungeon.id,'shadow');
     for(const [kind,modifier] of Object.entries(route.modifiers))if(modifierAvailable(dungeon.id,kind)&&(modifier.packId||modifier.enemies?.length))modifier.active=true;
@@ -53,11 +53,11 @@ test('Compact routes preserve all content in every dungeon, with hundredth-pixel
     dungeon.enemies.forEach((enemy,i)=>route.pulls[i%12].enemies.push(enemy.placementId));
     for(const kind of ['ghorn','witch'])if(route.modifiers[kind].packId)route.pulls[0].enemies.push(`modifier:${kind}`);
     route.pulls[0].name='Pull 1';route.pulls[0].customName=true;
-    route.pulls[1].name='Босс';route.pulls[1].customName=true;route.pulls[1].color='#abcdef';
-    route.pulls[2].note='Строка 1\nСтрока 2 <keep> #?&%';
+    route.pulls[1].name='\u0411\u043e\u0441\u0441';route.pulls[1].customName=true;route.pulls[1].color='#abcdef';
+    route.pulls[2].note='\u0421\u0442\u0440\u043e\u043a\u0430 1\n\u0421\u0442\u0440\u043e\u043a\u0430 2 <keep> #?&%';
     route.excluded=dungeon.enemies.filter(e=>!enemies.get(e.id)?.isBoss).slice(0,3).map(e=>e.placementId);
     route.drawings=['line','portal','invis','note'].map((kind,i)=>({
-      id:`drawing-${i}`,mapId:mapViews(dungeon)[0].id,kind,color:'#bc78f5',text:kind==='note'?'Заметка 🐉':'',
+      id:`drawing-${i}`,mapId:mapViews(dungeon)[0].id,kind,color:'#bc78f5',text:kind==='note'?'\u0417\u0430\u043c\u0435\u0442\u043a\u0430 🐉':'',
       ...(kind==='line'?{width:5}:{}),points:kind==='note'?[[1.12,2.99]]:[[1.12,2.99],[300.12,400.99]],
     }));
     const encoded=await encodeRoute(route,dungeon),decoded=await decodeRoute(encoded,dungeons,enemies);
@@ -106,8 +106,8 @@ test('Invalid data, duplicate placements, changed datasets and decompression bom
 test('Mapped format preserves marker labels and multi-vertex geometry while creating independent IDs',async()=>{
   const dungeon=dungeons[0],route=newRoute(dungeon,dungeon.routeBuildId??'test'),mapId=mapViews(dungeon)[0].id;
   route.drawings=[{id:'path',mapId,kind:'line',color:'#abcdef',width:5,text:'',points:[[10,20],[30,70],[90,40]],pointIds:['a','b','c']},
-    {id:'note',mapId,kind:'note',color:'#aabbcc',text:'Заметка 🐉 '.repeat(100),points:[[20,30]]}];
-  route.markers=[{id:'marker',mapId,position:[12.35,45.68],color:'#bbaa11',icon:'star',label:'Встречаемся здесь 🐉'}];
+    {id:'note',mapId,kind:'note',color:'#aabbcc',text:'\u0417\u0430\u043c\u0435\u0442\u043a\u0430 🐉 '.repeat(100),points:[[20,30]]}];
+  route.markers=[{id:'marker',mapId,position:[12.35,45.68],color:'#bbaa11',icon:'star',label:'\u0412\u0441\u0442\u0440\u0435\u0447\u0430\u0435\u043c\u0441\u044f \u0437\u0434\u0435\u0441\u044c 🐉'}];
   const encoded=await encodeRoute(route,dungeon);assert.match(encoded,/^R[345]\./);
   for(const input of [encoded,'#route='+encoded,'https://example.com/planner/#route='+encoded]){
     const copy=await decodeRoute(input,dungeons,enemies);
@@ -126,7 +126,7 @@ test('Export rounds geometry without mutating the route; old links retain exact 
     points:[[123.123456789+i*17.26381271,456.987654321+i*6.2736281],[234.876543219+i*12.72836129,567.123456789+i*8.12376128]],
   }));
   route.drawings.push({id:'portal',mapId,kind:'portal',color:'#e43969',text:'',points:[[-.0049,-12.345678],[99999.999,-99999.999]]});
-  route.markers=[{id:'marker',mapId,position:[12.345678,-45.6789],color:'#e43969',icon:'star',label:'Точная метка 🐉'}];
+  route.markers=[{id:'marker',mapId,position:[12.345678,-45.6789],color:'#e43969',icon:'star',label:'\u0422\u043e\u0447\u043d\u0430\u044f \u043c\u0435\u0442\u043a\u0430 🐉'}];
   const before=structuredClone(route),encoded=await encodeRoute(route,dungeon),decoded=await decodeRoute(encoded,dungeons,enemies);
   assert.deepEqual(route,before);
   assert.deepEqual(decoded.drawings[0].points,[[123.12,456.99],[234.88,567.12]]);

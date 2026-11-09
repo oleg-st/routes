@@ -17,7 +17,7 @@ try{
     const count=async()=>Number(await page.locator('#pull-count').textContent());
     for(const keys of [
       {n:'n',z:'z',y:'y',f:'f',b:'b',v:'v',d:'d',s:'s'},
-      {n:'т',z:'я',y:'н',f:'а',b:'и',v:'м',d:'в',s:'ы'},
+      {n:'\u0442',z:'\u044f',y:'\u043d',f:'\u0430',b:'\u0438',v:'\u043c',d:'\u0432',s:'\u044b'},
       {n:'n',z:'y',y:'z',f:'f',b:'b',v:'v',d:'d',s:'s'},
     ]){
       const before=await count();

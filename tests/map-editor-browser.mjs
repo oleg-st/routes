@@ -32,7 +32,7 @@ try{
   await page.locator('#fit').click();await page.locator('#trace').click();
   const coordinates=await page.locator('#stage [data-layer="1"]').evaluate(g=>[[100,80],[850,100],[700,430],[120,420]].map(([x,y])=>{const p=new DOMPoint(x,y).matrixTransform(g.getScreenCTM());return {x:p.x,y:p.y};}));
   for(const p of coordinates)await page.mouse.click(p.x,p.y);
-  await page.locator('#trace').click();await page.locator('#save').click();await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Сохранено:'));
+  await page.locator('#trace').click();await page.locator('#save').click();await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Saved:'));
   const saved=JSON.parse(fs.readFileSync(path.join(draftDir,'IceCave.json')));assert.equal(saved.layers[1].outline.length,4);assert.equal(saved.layers[1].scale,.75);
   // Overlap the two real images. A cut in the top image must reveal exactly
   // the same pixels as hiding that image, including its opaque frame/artwork.
@@ -54,11 +54,11 @@ try{
   await page.locator('#redo').click();assert.deepEqual(await page.screenshot({clip}),underneath);
   await page.locator('#cut').click();const polygon=await toScreen([[650,120],[850,120],[850,260],[650,260]]);
   for(const p of polygon)await page.mouse.click(p.x,p.y);await page.locator('#cut').click();
-  await page.locator('#save').click();await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Сохранено:'));
+  await page.locator('#save').click();await page.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Saved:'));
   const cutDraft=JSON.parse(fs.readFileSync(path.join(draftDir,'IceCave.json')));assert.equal(cutDraft.layers[1].exclude.length,2);
   const downloadPromise=page.waitForEvent('download');await page.locator('#export').click();const download=await downloadPromise;const recipeFile=path.join(work,'wyrmheart-editor.mjs');await download.saveAs(recipeFile);
   assert.match(fs.readFileSync(recipeFile,'utf8'),/export default/);assert.ok(!fs.readFileSync(recipeFile,'utf8').includes('referenceFrame'));
-  await page.evaluate(()=>localStorage.clear());await page.reload();await page.waitForFunction(()=>document.querySelector('#status').textContent==='Загружен сохранённый черновик');
+  await page.evaluate(()=>localStorage.clear());await page.reload();await page.waitForFunction(()=>document.querySelector('#status').textContent==='Saved draft loaded');
   assert.equal(await page.locator('#stage #cut-mask-1 polygon').count(),2,'Cutouts survive save/reload');
   await page.screenshot({path:path.resolve('tmp/map-editor-wyrmheart.png')});
   execFileSync(process.execPath,['scripts/prepare-combined-maps.mjs','--recipe='+recipeFile,'--preview'],{stdio:'pipe',windowsHide:true});

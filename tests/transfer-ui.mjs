@@ -36,10 +36,10 @@ try{
       await page.waitForFunction(()=>!document.querySelector('#dialog').open||!document.querySelector('#import-error').hidden);
     };
     await page.goto(url);await ready();
-    await page.locator('#route-name').fill('Маршрут #1 — 🐉 & 50%');
+    await page.locator('#route-name').fill('\u041c\u0430\u0440\u0448\u0440\u0443\u0442 #1 — 🐉 & 50%');
     await page.locator('#add-pull').click();
     const source=await exported();assert.equal(source.pulls.length,2);
-    source.pulls[0].note='Строка 1\nСтрока 2 <keep> #?&%';
+    source.pulls[0].note='\u0421\u0442\u0440\u043e\u043a\u0430 1\n\u0421\u0442\u0440\u043e\u043a\u0430 2 <keep> #?&%';
     await paste(await encode(source));assert.equal(await page.locator('#dialog').evaluate(el=>el.open),false);
     const imported=await exported();
     assert.deepEqual(content(imported),content(source));

@@ -58,7 +58,7 @@ test('Manual names survive reordering and JSON roundtrip, including names like P
 test('Legacy custom names survive and color-only edits keep automatic naming',()=>{
   const r=newRoute(d,d.routeBuildId??'test');r.pulls.push(newPull(1),newPull(2));
   for(const p of r.pulls)delete p.customName;
-  r.pulls[0].name='Opening pack';r.pulls[1].name='Пулл 2';
+  r.pulls[0].name='Opening pack';r.pulls[1].name='\u041f\u0443\u043b\u043b 2';
   const loaded=validateRoute(r,dungeons,enemies);
   renamePull(loaded.pulls[1],loaded.pulls[1].name,1);loaded.pulls[1].color='#abcdef';
   movePull(loaded,2,0);

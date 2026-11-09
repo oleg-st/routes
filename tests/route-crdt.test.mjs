@@ -182,7 +182,7 @@ test('One mob has one assignment; independent pull fields and route fields survi
 test('Legacy colors, manual names, scoring and compact view remain compatible with solo moves', t => {
   const route = newRoute(dungeon,dungeon.routeBuildId??'test'); route.pulls.push(newPull(1), newPull(2));
   route.pulls[1].name = 'Boss'; route.pulls[1].customName = true; route.pulls[1].enemies = [mobs[0]];
-  route.drawings = [{id: 'saved-note', kind: 'note', mapId, color: '#abcdef', text: 'Привет 🧭', points: [[1, 2]]}];
+  route.drawings = [{id: 'saved-note', kind: 'note', mapId, color: '#abcdef', text: '\u041f\u0440\u0438\u0432\u0435\u0442 🧭', points: [[1, 2]]}];
   const a = migrateRoute(route, {dungeons, enemies}); t.after(() => a.dispose());
   a.execute({type: 'move-pull', pullId: route.pulls[1].id, beforeId: route.pulls[0].id});
   movePull(route, 1, 0);
@@ -215,11 +215,11 @@ test('Concurrent note, pull note and marker label text preserves both users inpu
   const b = peer(t, a);
   for (const [group, id] of [['pulls', 'pull-0'], ['drawings', 'note'], ['markers', 'marker']]) {
     a.execute({type: 'edit-text', group, id, index: 0, deleteCount: 0, text: 'A🧭'});
-    b.execute({type: 'edit-text', group, id, index: 0, deleteCount: 0, text: 'Б🐉'});
+    b.execute({type: 'edit-text', group, id, index: 0, deleteCount: 0, text: '\u0411🐉'});
   }
   sync(a, b);
   for (const text of [a.snapshot().pulls[0].note, a.snapshot().drawings[0].text, a.snapshot().markers[0].label]) {
-    assert.ok(text.includes('A🧭')); assert.ok(text.includes('Б🐉'));
+    assert.ok(text.includes('A🧭')); assert.ok(text.includes('\u0411🐉'));
   }
   a.execute({type: 'set-text', group: 'drawings', id: 'note', text: 'hello world'}); sync(a, b);
   a.execute({type: 'set-text', group: 'drawings', id: 'note', text: 'hello brave world'});

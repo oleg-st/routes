@@ -7,14 +7,14 @@ const status=(message,error=false)=>{$('status').textContent=message;$('status')
 const current=()=>draft.layers[selected];
 const remember=()=>{history.push(JSON.stringify(draft));if(history.length>80)history.shift();future=[];};
 const persist=()=>localStorage.setItem('map-editor:'+catalog.build+':'+dungeon.id,JSON.stringify(draft));
-function changed(){persist();render();status('Есть изменения · черновик в этом браузере');}
+function changed(){persist();render();status('Unsaved changes · draft stored in this browser');}
 function view(){const box=$('stage').getBoundingClientRect(),ratio=box.width/box.height;let [x,y,w,h]=camera;if(w/h<ratio){x-=(h*ratio-w)/2;w=h*ratio;}else{y-=(w/ratio-h)/2;h=w/ratio;}$('stage').setAttribute('viewBox',[x,y,w,h].join(' '));}
 function fit(){camera=draftBounds(draft);view();}
 function point(event){return new DOMPoint(event.clientX,event.clientY).matrixTransform($('stage').getScreenCTM().inverse());}
 function layerPoint(event,clamp=false){const p=point(event),l=current(),xy=[(p.x-l.at[0])/l.scale,(p.y-l.at[1])/l.scale];return clamp?xy.map((v,i)=>Math.round(Math.max(0,Math.min(i?512:1024,v)))):xy.map(Math.round);}
 function stopCut(){cutMode=null;cutPoints=[];drag=null;}
 function commitCut(){
-  try{validateMapPolygon(cutPoints,'Вырез');}catch{status('Для выреза нужна область: протяните прямоугольник или отметьте минимум три точки.',true);return false;}
+  try{validateMapPolygon(cutPoints,'Cutout');}catch{status('Define a cutout area: drag a rectangle or mark at least three points.',true);return false;}
   remember();(current().exclude??=[]).push(cutPoints.map(p=>[...p]));cutPoints=[];changed();return true;
 }
 function render(){
@@ -23,10 +23,10 @@ function render(){
   $('x').value=Number(layer.at[0].toFixed(2));$('y').value=Number(layer.at[1].toFixed(2));$('scale').value=Number(layer.scale.toFixed(4));
   $('slug').value=draft.slug;$('version').value=draft.version;$('undo').disabled=!history.length;$('redo').disabled=!future.length;
   $('trace').setAttribute('aria-pressed',tracing);$('stage').classList.toggle('tracing',tracing||!!cutMode);
-  $('cut-rectangle').setAttribute('aria-pressed',cutMode==='rectangle');$('cut').setAttribute('aria-pressed',cutMode==='polygon');$('cut').textContent=cutMode==='polygon'?'Завершить вырез':'Вырезать по точкам';
+  $('cut-rectangle').setAttribute('aria-pressed',cutMode==='rectangle');$('cut').setAttribute('aria-pressed',cutMode==='polygon');$('cut').textContent=cutMode==='polygon'?'Finish cutout':'Cut polygon';
   $('cut-point-undo').disabled=cutMode!=='polygon'||!cutPoints.length;$('cut-cancel').disabled=!cutMode;$('cut-remove').disabled=!layer.exclude?.length;
-  $('cut-count').textContent='Вырезов в слое: '+(layer.exclude?.length??0);
-  $('mode').textContent=cutMode==='rectangle'?'Вырез: протяните прямоугольник · Esc — выйти':cutMode==='polygon'?'Вырез: отметьте точки и нажмите «Завершить вырез»':tracing?'Контур: нажмите по краям территории':'Перемещение слоёв';
+  $('cut-count').textContent='Layer cutouts: '+(layer.exclude?.length??0);
+  $('mode').textContent=cutMode==='rectangle'?'Cutout: drag a rectangle · Esc to exit':cutMode==='polygon'?'Cutout: mark points and click "Finish cutout"':tracing?'Outline: click along the terrain boundary':'Move layers';
   $('stage').innerHTML=draft.layers.map((l,i)=>{
     const id=dungeon.id+':'+l.suffix,image='/api/image?'+new URLSearchParams({dungeon:dungeon.id,map:id});
     const poly=l.outline.map(p=>p.join(',')).join(' '),color=i===selected?'#6de7bf':'#5d7f90',clipped=l.outline.length>=3;
@@ -42,10 +42,10 @@ async function load(){
   const saved=await fetch('/api/draft?'+new URLSearchParams({dungeon:dungeon.id})).then(r=>r.json());
   const local=localStorage.getItem('map-editor:'+catalog.build+':'+dungeon.id);
   try{draft=local?JSON.parse(local):saved??createDraft(dungeon,catalog.frames[dungeon.id]);validateDraft(draft,dungeon);}catch{draft=createDraft(dungeon,catalog.frames[dungeon.id]);}
-  camera=draftBounds(draft);render();status(saved?'Загружен сохранённый черновик':'Слои расположены по координатам клиента');
+  camera=draftBounds(draft);render();status(saved?'Saved draft loaded':'Layers positioned using game client coordinates');
 }
-$('dungeon').innerHTML=catalog.dungeons.filter(d=>d.mapImages.length).map(d=>`<option value="${esc(d.id)}">${esc(d.name)} · ${d.mapImages.length} сл.</option>`).join('');
-$('build').textContent='Клиент '+catalog.build;
+$('dungeon').innerHTML=catalog.dungeons.filter(d=>d.mapImages.length).map(d=>`<option value="${esc(d.id)}">${esc(d.name)} · ${d.mapImages.length} layer${d.mapImages.length===1?'':'s'}</option>`).join('');
+$('build').textContent='Client '+catalog.build;
 $('dungeon').value=catalog.dungeons.find(d=>d.id==='Level.ID.IceCave')?.id??$('dungeon').value;
 $('dungeon').onchange=()=>load().catch(e=>status(e.message,true));
 $('layers').onclick=e=>{const button=e.target.closest('[data-select]');if(button){selected=Number(button.dataset.select);tracing=false;stopCut();render();}};
@@ -88,6 +88,6 @@ $('stage').onpointerup=event=>{if(drag){const moved=drag.layer,cut=drag.cut;drag
 $('stage').onpointercancel=()=>{drag=null;cutPoints=[];render();};
 $('stage').addEventListener('wheel',event=>{event.preventDefault();const p=point(event),factor=event.deltaY>0?1.12:1/1.12;if(camera[2]*factor<50||camera[2]*factor>100000)return;camera=[p.x+(camera[0]-p.x)*factor,p.y+(camera[1]-p.y)*factor,camera[2]*factor,camera[3]*factor];view();},{passive:false});
 window.addEventListener('resize',view);
-$('save').onclick=async()=>{try{validateDraft(draft,dungeon);const response=await fetch('/api/draft?'+new URLSearchParams({dungeon:dungeon.id}),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(draft)}),result=await response.json();if(!response.ok)throw Error(result.error);status('Сохранено: '+result.saved);}catch(e){status(e.message,true);}};
-$('export').onclick=()=>{try{const blob=new Blob([recipeModule(draft,dungeon)],{type:'text/javascript'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=draft.slug+'.mjs';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status('Рецепт скачан · сборка: npm run maps -- --recipe=путь --preview');}catch(e){status(e.message,true);}};
+$('save').onclick=async()=>{try{validateDraft(draft,dungeon);const response=await fetch('/api/draft?'+new URLSearchParams({dungeon:dungeon.id}),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(draft)}),result=await response.json();if(!response.ok)throw Error(result.error);status('Saved: '+result.saved);}catch(e){status(e.message,true);}};
+$('export').onclick=()=>{try{const blob=new Blob([recipeModule(draft,dungeon)],{type:'text/javascript'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=draft.slug+'.mjs';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status('Recipe downloaded · build: npm run maps -- --recipe=path --preview');}catch(e){status(e.message,true);}};
 await load();

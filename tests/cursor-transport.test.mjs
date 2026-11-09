@@ -72,7 +72,7 @@ test('Reception acknowledges data, rejects malformed/oversized packets and never
   wire.receive(packet);assert.deepEqual(received,[{id:'peer',payload:{x:2}}]);assert.equal(wire.sent[0].ack,true);
   assert.equal(wire.sent[0].stream,packet.stream);assert.equal(wire.sent[0].sequence,1);
   wire.receive({...packet,payload:undefined,ack:true});
-  for(const patch of [{sequence:0},{sequence:NaN},{version:1},{roomId:'wrong'},{stream:null},{payload:null},{payload:{x:'я'.repeat(1100)}}])wire.receive({...packet,...patch});
+  for(const patch of [{sequence:0},{sequence:NaN},{version:1},{roomId:'wrong'},{stream:null},{payload:null},{payload:{x:'\u044f'.repeat(1100)}}])wire.receive({...packet,...patch});
   wire.channel.onmessage({data:'{'});wire.channel.onmessage({data:new ArrayBuffer(10)});wire.receive(null);
   assert.equal(received.length,1);assert.equal(wire.sent.length,1);
   wire.channel.bufferedAmount=100;wire.receive({...packet,sequence:2});assert.equal(received.length,2);assert.equal(wire.sent.length,1,'ACKs also respect buffer pressure');
