@@ -128,7 +128,7 @@ test('Peak replay identifies twelve spawned Shardlings and retains all thirteen 
 });
 
 test('Generated identities distinguish spawned NPCs from buff targets and transformations',()=>{
-  assert.equal(gameSummonBuild,JSON.parse(fs.readFileSync('scripts/game-summon-semantics.json')).steamBuild);
+  assert.equal(gameSummonBuild,JSON.parse(fs.readFileSync('data/manifest.json')).buildId);
   assert.equal(new Set(gameSummonRules.map(r=>r.id)).size,gameSummonRules.length);
   assert.ok(!gameSummonRules.some(r=>[775,1403,1478].includes(r.abilityGameID)));
   assert.deepEqual(gameSummonRules.find(r=>r.id==='han-eth-response-cast').childGameIDs,[316,324,325,326,334]);

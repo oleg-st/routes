@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import path from 'node:path';
-import {customDungeons} from '../data/custom-dungeons.js';
 import {modifierPlacementIds} from '../data/modifier-spawns.js';
 
 // Indexes remain stable within a build. Routes from other builds are rejected
@@ -16,7 +15,7 @@ const signature=members=>[...members].sort((a,b)=>a-b).join(',');
 for(const d of raw){
  if(d.routeBuildId!==buildId)throw Error('Mixed route build: '+d.id);
  const entry=mapping.dungeons[d.id]??={placements:[],packs:[]};
- for(const id of [...new Set([...d.enemies.map(p=>p.placementId),...(customDungeons[d.id]?.packs??[]).flatMap(p=>p.members),...modifierPlacementIds(d.id)])].sort())if(!entry.placements.includes(id))entry.placements.push(id);
+ for(const id of [...new Set([...d.enemies.map(p=>p.placementId),...modifierPlacementIds(d.id)])].sort())if(!entry.placements.includes(id))entry.placements.push(id);
  function register(id,ids){
   const members=ids.map(id=>entry.placements.indexOf(id));
   if(members.some(i=>i<0))throw Error('Unknown placement in '+id);
@@ -25,7 +24,6 @@ for(const d of raw){
   return index;
  }
  for(const id of [...new Set(d.enemies.map(p=>p.packId).filter(Boolean))].sort())register(id,d.enemies.filter(p=>p.packId===id).map(p=>p.placementId));
- for(const p of customDungeons[d.id]?.packs??[])register(p.id,p.members);
 }
 for(const [id,before]of Object.entries(initial.dungeons))for(const key of ['placements','packs']){
  if(JSON.stringify(mapping.dungeons[id][key].slice(0,before[key].length))!==JSON.stringify(before[key]))throw Error('Existing mapping was changed: '+id+' '+key);

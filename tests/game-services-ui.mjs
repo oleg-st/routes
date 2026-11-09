@@ -14,6 +14,8 @@ try{
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
  await page.goto(origin);await page.locator('#map-loading').waitFor({state:'hidden'});
+ await page.locator('#dungeon').selectOption('Level.ID.DesertDunes');
+ await page.locator('#ghorn img').waitFor({state:'visible'});
  for(const id of ['shadow','empowered','ghorn','witch']){
   const icon=await page.locator('#'+id+' img').boundingBox();
   assert.equal(icon.width,20,id+' toolbar icon width');assert.equal(icon.height,20,id+' toolbar icon height');
@@ -50,7 +52,7 @@ try{
    await page.locator('#undo').click();
   }
  }
- const icons=Object.keys(JSON.parse(fs.readFileSync('data/game-image-sources.json'))).filter(p=>/^images\/(?:modifiers|pois|hero-items|relics)\//.test(p));
+ const icons=(await import('../scripts/image-assets.mjs')).usedImages().filter(p=>/^images\/(?:modifiers|pois|hero-items|relics)\//.test(p));
  for(const src of icons)assert.ok(await page.evaluate(async src=>{const i=new Image();i.src=src;await i.decode();return i.naturalWidth>0;},src));
- assert.deepEqual(errors,[]);console.log('15 dungeons and entrances, modifier availability, 53 campfires, 18 available modifier portraits, '+icons.length+' native icons: browser checks passed.');
+ assert.deepEqual(errors,[]);console.log(dungeons.length+' dungeons and entrances, modifier availability, campfires, available modifier portraits, '+icons.length+' native icons: browser checks passed.');
 }finally{await browser?.close();server.kill();server.stdout.destroy();server.stderr.destroy();server.unref();}

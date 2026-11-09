@@ -3,80 +3,8 @@
     "id": "Level.ID.DesertDunes",
     "routeBuildId": "26122410",
     "name": "Empyrean Sands",
-    "description": "Under the cold light of the moon, the dunes of the Empyrean Sands shift and whisper. From beneath their surface, the Sin-Magir rises once more, the Augur of the Stars reborn in deathless form. His followers gather beneath the constellations, drawn to a celestial relic capable of restoring their ancient empire.",
-    "kind": "adventure",
-    "minimumDifficulty": 0,
     "requiredScore": 140,
     "timerSeconds": 760,
-    "mapImages": [
-      {
-        "id": "Level.ID.DesertDunes:T_Map_DesertDunes_End",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/desertdunes-t_map_desertdunes_end-game.avif",
-        "sourcePath": "private/game-data/planner/images\\baee0e31139e3c564726bcc591f1d2a6dec5a69e8771b140a1d03ba69a71ffb9.png",
-        "sourceSha256": "174824471a23964f48beca469d46a228e577f6fd1d0f52f77f47cb8b6095bb49",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/DesertDunes/Minimap/T_Map_DesertDunes_End",
-        "name": "End",
-        "gameFrame": {
-          "calibration": {
-            "sx": 106000,
-            "sy": -53000,
-            "ox": -54754.624,
-            "oy": 31236.739999999998
-          },
-          "bounds": [
-            {
-              "x": -21763.260000000002,
-              "y": -54754.624,
-              "z": -5660.94995
-            },
-            {
-              "x": 31236.739999999998,
-              "y": 51245.376,
-              "z": 4339.05005
-            }
-          ]
-        },
-        "sha256": "91dbdc7e77ccd165e94bfbae7f9942b62b802974375c9eeb0e959e4224dbd5b7"
-      },
-      {
-        "id": "Level.ID.DesertDunes:T_Map_DesertDunes_Start",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/desertdunes-t_map_desertdunes_start-game.avif",
-        "sourcePath": "private/game-data/planner/images\\751b65b7757f2539b83dd39737f341689a120571f5bf8562979b72841c28b098.png",
-        "sourceSha256": "73b0f7784fb8f09062b2860a4084d9eb2f4d0082d987b236b69f3e5de380443c",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/DesertDunes/Minimap/T_Map_DesertDunes_Start",
-        "name": "Start",
-        "gameFrame": {
-          "calibration": {
-            "sx": 60000,
-            "sy": -30000,
-            "ox": -66023.73000000001,
-            "oy": 1058.1319999999996
-          },
-          "bounds": [
-            {
-              "x": -28941.868000000002,
-              "y": -66023.73000000001,
-              "z": -5206.38536
-            },
-            {
-              "x": 1058.1319999999996,
-              "y": -6023.730000000003,
-              "z": 4793.61464
-            }
-          ]
-        },
-        "sha256": "6bc6ab776e3af93831b87e6d618fcba69ff7e8e46fdfc3406910d483d6bedfb3"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "ub-bossarchbishop",
@@ -16605,57 +16533,71 @@
         "packId": "pack-game-0b03866f47c726bfb763a543"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Content/dungeons/DT_LevelInfo.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.DesertDunes:T_Map_DesertDunes_End",
+        "name": "End",
+        "size": "full",
+        "path": "private/images/dungeons/maps/desertdunes-t_map_desertdunes_end-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 106000,
+            "sy": -53000,
+            "ox": -54754.624,
+            "oy": 31236.739999999998
+          },
+          "bounds": [
+            {
+              "x": -21763.260000000002,
+              "y": -54754.624,
+              "z": -5660.94995
+            },
+            {
+              "x": 31236.739999999998,
+              "y": 51245.376,
+              "z": 4339.05005
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.DesertDunes:T_Map_DesertDunes_Start",
+        "name": "Start",
+        "size": "full",
+        "path": "private/images/dungeons/maps/desertdunes-t_map_desertdunes_start-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 60000,
+            "sy": -30000,
+            "ox": -66023.73000000001,
+            "oy": 1058.1319999999996
+          },
+          "bounds": [
+            {
+              "x": -28941.868000000002,
+              "y": -66023.73000000001,
+              "z": -5206.38536
+            },
+            {
+              "x": 1058.1319999999996,
+              "y": -6023.730000000003,
+              "z": 4793.61464
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.ElfMines",
     "routeBuildId": "26122410",
     "name": "Godfall Quarry",
-    "description": "Beneath the jagged peaks of the Godfall Mountains, a hidden quarry pulses with unnatural light. The Nezari Elves have begun a relentless mining operation deep within the stone, tearing blood-red crystals from the earth in a frenzy. Their reasons remain cloaked in secrecy, but the brutality of their methods is plain to see. The Nezari prepare for war.",
-    "kind": "adventure",
-    "minimumDifficulty": 0,
     "requiredScore": 135,
     "timerSeconds": 780,
-    "mapImages": [
-      {
-        "id": "Level.ID.ElfMines:T_Map_EM_Global",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "images/dungeons/maps/elfmines-t_map_em_global-game.avif",
-        "sourcePath": "private/game-data/planner/images\\5e4e8eb5e6fb33514170990182701428749e08a1153baecca474762e590da6a9.png",
-        "sourceSha256": "8a057790162bd11035180873c23eadfa2a74682c195e90b4e4e2a7b10626dbbd",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/ElfMines/Maps/T_Map_EM_Global",
-        "name": "Global",
-        "gameFrame": {
-          "calibration": {
-            "sx": 108000,
-            "sy": -54000,
-            "ox": -38728.354,
-            "oy": 101299.3
-          },
-          "bounds": [
-            {
-              "x": 47299.3,
-              "y": -38728.354,
-              "z": -14635.6973
-            },
-            {
-              "x": 101299.3,
-              "y": 69271.64600000001,
-              "z": 4114.3027
-            }
-          ]
-        },
-        "sha256": "510edb8ac2a2fd18fc6bc44ed74788dcb6ddc0e98a36b42f9d3e70778cc5db32"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "em-bossgianttroll",
@@ -30934,57 +30876,43 @@
         "packId": "pack-game-5ec9d2393dfba8ec2c9d9328"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Content/dungeons/DT_LevelInfo.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.ElfMines:T_Map_EM_Global",
+        "name": "Global",
+        "size": "full",
+        "path": "images/dungeons/maps/elfmines-t_map_em_global-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 108000,
+            "sy": -54000,
+            "ox": -38728.354,
+            "oy": 101299.3
+          },
+          "bounds": [
+            {
+              "x": 47299.3,
+              "y": -38728.354,
+              "z": -14635.6973
+            },
+            {
+              "x": 101299.3,
+              "y": 69271.64600000001,
+              "z": 4114.3027
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.FrozenKingdom",
     "routeBuildId": "26122410",
     "name": "Cithrel's Fall",
-    "description": "To the frozen south, high atop the Ael'deth Mountain, lies the hidden prison of Al’zerac, an ancient frost wyrm. For centuries, the Eldrin have guarded the vault, but time wears down both vigilance and faith. Cithrel now walks the outer wards, her power cracking ancient seals that once bound the Great Wyrm. When the final lock breaks, Al’zerac will rise again, not as a god to be worshiped but as a weapon to restore the Eldrin’s ancient dominion.",
-    "kind": "capstone",
-    "minimumDifficulty": 0,
     "requiredScore": 188,
     "timerSeconds": 1620,
-    "mapImages": [
-      {
-        "id": "Level.ID.FrozenKingdom:T_Map_FrozenKingdom_01",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "images/dungeons/maps/frozenkingdom-t_map_frozenkingdom_01-game.avif",
-        "sourcePath": "private/game-data/planner/images\\5d0046a9a4f8d3d90b158a8a34800db6edfc6618ff792d726e4a768e53a02aef.png",
-        "sourceSha256": "397d99c67c957b9a3cffcfb871c7ad3e789bf2afc87880fe884b6ad2a373a26d",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/FrozenKingdom/Minimap/T_Map_FrozenKingdom_01",
-        "name": "Global",
-        "gameFrame": {
-          "calibration": {
-            "sx": 106000,
-            "sy": -53000,
-            "ox": -54841.6171,
-            "oy": 33429.3984
-          },
-          "bounds": [
-            {
-              "x": -19570.6016,
-              "y": -54841.6171,
-              "z": 1182.7569999999996
-            },
-            {
-              "x": 33429.3984,
-              "y": 51158.3829,
-              "z": 11182.757
-            }
-          ]
-        },
-        "sha256": "7f25a9476f41da5fc3a5dc543c3603c3cd97f12c45a86adcd0704386d359a202"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "fk-bosselfdragon",
@@ -53860,89 +53788,43 @@
         "packId": "pack-game-ee27e6065995e9161494aa3d"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Content/dungeons/DT_LevelInfo.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.FrozenKingdom:T_Map_FrozenKingdom_01",
+        "name": "Global",
+        "size": "full",
+        "path": "images/dungeons/maps/frozenkingdom-t_map_frozenkingdom_01-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 106000,
+            "sy": -53000,
+            "ox": -54841.6171,
+            "oy": 33429.3984
+          },
+          "bounds": [
+            {
+              "x": -19570.6016,
+              "y": -54841.6171,
+              "z": 1182.7569999999996
+            },
+            {
+              "x": 33429.3984,
+              "y": 51158.3829,
+              "z": 11182.757
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.MoorCastle",
     "routeBuildId": "26122410",
     "name": "Ruins of Regath",
-    "description": "The outpost of Regath festers with decay. The land it stands upon is soaked with the blood of fallen warriors; betrayed by a Heskyr acolyte, slain in a forgotten battle, for an unholy cause. Now their restless spirits are bound to the land by the unnatural magics of the lost Blood Reliquary, hidden in the crypt beneath.\\r\\n\\r\\nHoping to extract the blood from within, the Heskyr have mounted an offensive on the keep's inner sanctum. They have stormed the crumbling walls with ease and now seek to unleash the dormant power, awaking the anger and hate of the unquiet dead.",
-    "kind": "adventure",
     "requiredScore": 152,
     "timerSeconds": 870,
-    "mapImages": [
-      {
-        "id": "Level.ID.MoorCastle:T_Map_MC_Chamber_01",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/moorcastle-t_map_mc_chamber_01-game.avif",
-        "sourcePath": "private/game-data/planner/images\\9c162a7a2f7b4e6d7e18c96b1c5b2ae2ebac0f4d81004f3ac3ccb67990db2677.png",
-        "sourceSha256": "e0eb0da07bd2b5d3edaa98bb9e07e3afa8618bcd8aeec3a3335d03d9f24f2ae0",
-        "width": 4096,
-        "height": 2048,
-        "gameAsset": "/MoorCastle/Environment/Map/T_Map_MC_Chamber_01",
-        "name": "Chamber",
-        "gameFrame": {
-          "calibration": {
-            "sx": 50000,
-            "sy": -25000,
-            "ox": -20686.826699999998,
-            "oy": 376.4830000000002
-          },
-          "bounds": [
-            {
-              "x": -24623.517,
-              "y": -20686.826699999998,
-              "z": -11279.94
-            },
-            {
-              "x": 376.4830000000002,
-              "y": 29313.173300000002,
-              "z": -6279.9400000000005
-            }
-          ]
-        },
-        "sha256": "bd37461598c1703ef26d0a2154cc37f4e7d907908f1c70bf47bf9a26c8094fd8"
-      },
-      {
-        "id": "Level.ID.MoorCastle:T_Map_MC_Global_01",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/moorcastle-t_map_mc_global_01-game.avif",
-        "sourcePath": "private/game-data/planner/images\\5d6fcc3074d7814477871cdf9550a5055e512401aec5b596bb1e2e7ca6de5b91.png",
-        "sourceSha256": "c0d69a862cd88e29dffdced0fa7aefff56e5d4b9d823f1eb2fbf4c876a34d73e",
-        "width": 4096,
-        "height": 2048,
-        "gameAsset": "/MoorCastle/Environment/Map/T_Map_MC_Global_01",
-        "name": "Global",
-        "gameFrame": {
-          "calibration": {
-            "sx": 108000,
-            "sy": -54000,
-            "ox": -54763.02576,
-            "oy": 18654.884
-          },
-          "bounds": [
-            {
-              "x": -35345.116,
-              "y": -54763.02576,
-              "z": -1166.2683
-            },
-            {
-              "x": 18654.884,
-              "y": 53236.97424,
-              "z": 3833.7317000000003
-            }
-          ]
-        },
-        "sha256": "83b43b7cd72e6a9d5371b14e235af7c5c6cfe0124f0cd5631b4cfbf24e12b479"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "mc-bossguardian",
@@ -118389,90 +118271,71 @@
         "packId": "pack-game-f9bbfc3bed0f1831f514f00c"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Plugins/GameFeatures/Adventures/MoorCastle/Content/LI_MoorCastle.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.MoorCastle:T_Map_MC_Chamber_01",
+        "name": "Chamber",
+        "size": "full",
+        "path": "private/images/dungeons/maps/moorcastle-t_map_mc_chamber_01-game.avif",
+        "width": 4096,
+        "height": 2048,
+        "gameFrame": {
+          "calibration": {
+            "sx": 50000,
+            "sy": -25000,
+            "ox": -20686.826699999998,
+            "oy": 376.4830000000002
+          },
+          "bounds": [
+            {
+              "x": -24623.517,
+              "y": -20686.826699999998,
+              "z": -11279.94
+            },
+            {
+              "x": 376.4830000000002,
+              "y": 29313.173300000002,
+              "z": -6279.9400000000005
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.MoorCastle:T_Map_MC_Global_01",
+        "name": "Global",
+        "size": "full",
+        "path": "private/images/dungeons/maps/moorcastle-t_map_mc_global_01-game.avif",
+        "width": 4096,
+        "height": 2048,
+        "gameFrame": {
+          "calibration": {
+            "sx": 108000,
+            "sy": -54000,
+            "ox": -54763.02576,
+            "oy": 18654.884
+          },
+          "bounds": [
+            {
+              "x": -35345.116,
+              "y": -54763.02576,
+              "z": -1166.2683
+            },
+            {
+              "x": 18654.884,
+              "y": 53236.97424,
+              "z": 3833.7317000000003
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.NightPatrol",
     "routeBuildId": "26122410",
     "name": "Stormwatch",
-    "description": "A dark storm churns above the cliffs beyond Stronghold, where the arrogant orc Warlord Brogg channels thunder and fury. His raiders gather like wolves at the gate, ready to tear down the walls and claim the fort for themselves. Brogg must be made an example to prove to all other would-be bandits and raiders that the Stronghold will not be easily taken.",
-    "kind": "adventure",
-    "minimumDifficulty": 0,
     "requiredScore": 155,
     "timerSeconds": 840,
-    "mapImages": [
-      {
-        "id": "Level.ID.NightPatrol:T_Map_NightPatrol",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/nightpatrol-t_map_nightpatrol-game.avif",
-        "sourcePath": "private/game-data/planner/images\\32767dcc594c351b1fb99d1d900fc13eb73d5bdb1eee8cfc8cd0261559817783.png",
-        "sourceSha256": "3e77a5cd5a514b50a296450d3c7b463578931f12a243529e7954882da7e682db",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/NightPatrol/Minimap/T_Map_NightPatrol",
-        "name": "Global",
-        "gameFrame": {
-          "calibration": {
-            "sx": 62000,
-            "sy": -31000,
-            "ox": -36.53299999999945,
-            "oy": -4798.296999999999
-          },
-          "bounds": [
-            {
-              "x": -35798.297,
-              "y": -36.53299999999945,
-              "z": 8521.805
-            },
-            {
-              "x": -4798.296999999999,
-              "y": 61963.467000000004,
-              "z": 13521.805
-            }
-          ]
-        },
-        "sha256": "e19973052ffb1eb2798a0741712ae95b9a37a06cd1fcb22aa78966bf501ec797"
-      },
-      {
-        "id": "Level.ID.NightPatrol:T_Map_Nightpatrol_02",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/nightpatrol-t_map_nightpatrol_02-game.avif",
-        "sourcePath": "private/game-data/planner/images\\090871b336d17498d08987c455ff8d7982debb02a7c828d5eada9e2c8b1227e6.png",
-        "sourceSha256": "ab41cdea70787542881bb741f4b5acddff3c8d6b6f292038bd2358954453e55d",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/NightPatrol/Minimap/T_Map_Nightpatrol_02",
-        "name": "Global",
-        "gameFrame": {
-          "calibration": {
-            "sx": 58000,
-            "sy": -29000,
-            "ox": -6391.41,
-            "oy": 17876.5535
-          },
-          "bounds": [
-            {
-              "x": -11123.4465,
-              "y": -6391.41,
-              "z": 11370.681
-            },
-            {
-              "x": 17876.5535,
-              "y": 51608.59,
-              "z": 16370.681
-            }
-          ]
-        },
-        "sha256": "44fc16f492d33cebd070b6085826d2ceb31ed8018c4682227b81f7b077c04807"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "np-bosshellcaller",
@@ -130174,156 +130037,71 @@
         "packId": "pack-game-d7649b1f8f787299b204a6cc"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Content/dungeons/DT_LevelInfo.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.NightPatrol:T_Map_NightPatrol",
+        "name": "Global",
+        "size": "full",
+        "path": "private/images/dungeons/maps/nightpatrol-t_map_nightpatrol-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 62000,
+            "sy": -31000,
+            "ox": -36.53299999999945,
+            "oy": -4798.296999999999
+          },
+          "bounds": [
+            {
+              "x": -35798.297,
+              "y": -36.53299999999945,
+              "z": 8521.805
+            },
+            {
+              "x": -4798.296999999999,
+              "y": 61963.467000000004,
+              "z": 13521.805
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.NightPatrol:T_Map_Nightpatrol_02",
+        "name": "Global",
+        "size": "full",
+        "path": "private/images/dungeons/maps/nightpatrol-t_map_nightpatrol_02-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 58000,
+            "sy": -29000,
+            "ox": -6391.41,
+            "oy": 17876.5535
+          },
+          "bounds": [
+            {
+              "x": -11123.4465,
+              "y": -6391.41,
+              "z": 11370.681
+            },
+            {
+              "x": 17876.5535,
+              "y": 51608.59,
+              "z": 16370.681
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.PirateRaid",
     "routeBuildId": "26122410",
     "name": "Wraithtide Vault",
-    "description": "The holy vault of Wraithtide sleeps beneath a tropical isle, its location guarded by generations of fearful villagers. Within lies the spirit of Bael’Aurum, a demon whose hunger for gold once drowned empires in ruin. The seal now weakens as undead pirates scour the island, led by the Deathless Katrine, who seeks to claim the demon’s treasure and power.",
-    "kind": "capstone",
-    "minimumDifficulty": 0,
     "requiredScore": 281,
     "timerSeconds": 1770,
-    "mapImages": [
-      {
-        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_JungleArea",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/pirateraid-t_map_pirateraid_junglearea-game.avif",
-        "sourcePath": "private/game-data/planner/images\\cb0c612400ad09cd8b543bd3c9cc6c80b5b65e7ab36b92a6461f20ec9ed91673.png",
-        "sourceSha256": "7fa7fc8c615cfd9e4a26df491be55b2f9abcebd307b764e0f102c9423ca3ba46",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_JungleArea",
-        "name": "Jungle",
-        "gameFrame": {
-          "calibration": {
-            "sx": 58000,
-            "sy": -29000,
-            "ox": -35749.3267,
-            "oy": -11125.559000000001
-          },
-          "bounds": [
-            {
-              "x": -40125.559,
-              "y": -35749.3267,
-              "z": -4463.94574
-            },
-            {
-              "x": -11125.559000000001,
-              "y": 22250.673300000002,
-              "z": 5536.05426
-            }
-          ]
-        },
-        "sha256": "05b97ec9fe905c3e8d1ca1e16670af3906e93d559d99c7d143d16e3e8f9d8297"
-      },
-      {
-        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Lower",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/pirateraid-t_map_pirateraid_lower-game.avif",
-        "sourcePath": "private/game-data/planner/images\\7a2db660238d265e1ff57725d48c7aaea7fc3ecd8a407c490017adb6ef6eefdd.png",
-        "sourceSha256": "4db82d742a9ed444496f4308599284e0a60426fd155331fef74e7363f1bfa4b3",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_Lower",
-        "name": "Start + village",
-        "gameFrame": {
-          "calibration": {
-            "sx": 78000,
-            "sy": -39000,
-            "ox": -27423.851000000002,
-            "oy": 19947.28967
-          },
-          "bounds": [
-            {
-              "x": -19052.71033,
-              "y": -27423.851000000002,
-              "z": -7372.0287
-            },
-            {
-              "x": 19947.28967,
-              "y": 50576.149,
-              "z": 3356.8913000000002
-            }
-          ]
-        },
-        "sha256": "885e1a337eff4f46f28c7ff740ea05d5b068a9cdbce8f4fd57b214663079f4fa"
-      },
-      {
-        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Ship",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/pirateraid-t_map_pirateraid_ship-game.avif",
-        "sourcePath": "private/game-data/planner/images\\915a30bf4638aaa2f421edce7cdafc83780a70d71aea5b13352e49197c4f12ff.png",
-        "sourceSha256": "b9d1733b2afd23e95b3bcfc3a4892bad49242baf0fef62b095464a1f98581590",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_Ship",
-        "name": "Ship interior",
-        "gameFrame": {
-          "calibration": {
-            "sx": 36000,
-            "sy": -18000,
-            "ox": -27781.931,
-            "oy": -20733.592
-          },
-          "bounds": [
-            {
-              "x": -38733.592000000004,
-              "y": -27781.931,
-              "z": -7316.401
-            },
-            {
-              "x": -20733.592,
-              "y": 8218.069,
-              "z": 2683.599
-            }
-          ]
-        },
-        "sha256": "87b49af5d5a69f85da498cbb6d661aaab13096dfee9dc6d84303f124570a7670"
-      },
-      {
-        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Upper",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/pirateraid-t_map_pirateraid_upper-game.avif",
-        "sourcePath": "private/game-data/planner/images\\fbc9477f1d075efb9b6926a4614b07ceca8d686a5161315bf2755d8a892ebc1b.png",
-        "sourceSha256": "e7d537d0eb3235d148c2d4768999a7bc62bf6183be728f9891a556caa3adfb08",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/PirateRaid/Minimap/T_Map_PirateRaid_Upper",
-        "name": "Upper island",
-        "gameFrame": {
-          "calibration": {
-            "sx": 74000,
-            "sy": -37000,
-            "ox": -46378.007,
-            "oy": 17738.9541
-          },
-          "bounds": [
-            {
-              "x": -19261.0459,
-              "y": -46378.007,
-              "z": -2336.0519999999997
-            },
-            {
-              "x": 17738.9541,
-              "y": 27621.993000000002,
-              "z": 5663.948
-            }
-          ]
-        },
-        "sha256": "c02c8445686ec69d2abfe6bd5fa772a5016d178d0834e75eb2a64f99bce75bf2"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "pr-bossanchor",
@@ -168841,122 +168619,127 @@
         "packId": "pack-game-d8e5da57cc528cf89f4ee172"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Content/dungeons/DT_LevelInfo.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_JungleArea",
+        "name": "Jungle",
+        "size": "full",
+        "path": "private/images/dungeons/maps/pirateraid-t_map_pirateraid_junglearea-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 58000,
+            "sy": -29000,
+            "ox": -35749.3267,
+            "oy": -11125.559000000001
+          },
+          "bounds": [
+            {
+              "x": -40125.559,
+              "y": -35749.3267,
+              "z": -4463.94574
+            },
+            {
+              "x": -11125.559000000001,
+              "y": 22250.673300000002,
+              "z": 5536.05426
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Lower",
+        "name": "Start + village",
+        "size": "full",
+        "path": "private/images/dungeons/maps/pirateraid-t_map_pirateraid_lower-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 78000,
+            "sy": -39000,
+            "ox": -27423.851000000002,
+            "oy": 19947.28967
+          },
+          "bounds": [
+            {
+              "x": -19052.71033,
+              "y": -27423.851000000002,
+              "z": -7372.0287
+            },
+            {
+              "x": 19947.28967,
+              "y": 50576.149,
+              "z": 3356.8913000000002
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Ship",
+        "name": "Ship interior",
+        "size": "full",
+        "path": "private/images/dungeons/maps/pirateraid-t_map_pirateraid_ship-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 36000,
+            "sy": -18000,
+            "ox": -27781.931,
+            "oy": -20733.592
+          },
+          "bounds": [
+            {
+              "x": -38733.592000000004,
+              "y": -27781.931,
+              "z": -7316.401
+            },
+            {
+              "x": -20733.592,
+              "y": 8218.069,
+              "z": 2683.599
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.PirateRaid:T_Map_PirateRaid_Upper",
+        "name": "Upper island",
+        "size": "full",
+        "path": "private/images/dungeons/maps/pirateraid-t_map_pirateraid_upper-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 74000,
+            "sy": -37000,
+            "ox": -46378.007,
+            "oy": 17738.9541
+          },
+          "bounds": [
+            {
+              "x": -19261.0459,
+              "y": -46378.007,
+              "z": -2336.0519999999997
+            },
+            {
+              "x": 17738.9541,
+              "y": 27621.993000000002,
+              "z": 5663.948
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.SandTomb",
     "routeBuildId": "26122410",
     "name": "Xul, The Blood Monolith",
-    "description": "Built at the zenith of the first Heskyrian Dynasty, the Blood Monolith served as the altar of their magic, where rituals of untold power were performed that cast doom on the world and ensured the Heskyr retained their stranglehold. After the dynasty fell, its dormant magics still protected this seat of power, and to this day, no soul who entered has ever emerged.\\r\\n\\r\\nNow the Heskry rise again and the altars of Xul are stirring within the tower where only screams escape.",
-    "kind": "capstone",
     "requiredScore": 260,
     "timerSeconds": 1700,
-    "mapImages": [
-      {
-        "id": "Level.ID.SandTomb:T_ST_Map_End_01",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/sandtomb-t_st_map_end_01-game.avif",
-        "sourcePath": "private/game-data/planner/images\\71c2c8433227bf57970152e58c4753742ff9febc07998c430f588f962d3857cf.png",
-        "sourceSha256": "5e28d61d97ff65fd1028bd480267499e4b0b1391b234f64c84b8f8ace6feea53",
-        "width": 4096,
-        "height": 2048,
-        "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_End_01",
-        "name": "Sanctum",
-        "gameFrame": {
-          "calibration": {
-            "sx": 124000,
-            "sy": -62000,
-            "ox": -74939.093,
-            "oy": 100827.27
-          },
-          "bounds": [
-            {
-              "x": 38827.270000000004,
-              "y": -74939.093,
-              "z": -12001.237000000001
-            },
-            {
-              "x": 100827.27,
-              "y": 49060.907,
-              "z": -2001.237
-            }
-          ]
-        },
-        "sha256": "fa562977868cfc9cd88be6572c92f319d4c228f4a76e1b975dc8c2e656aee5c5"
-      },
-      {
-        "id": "Level.ID.SandTomb:T_ST_Map_Exterior_01",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/sandtomb-t_st_map_exterior_01-game.avif",
-        "sourcePath": "private/game-data/planner/images\\c06e6b1fffab30d21d60708ecd8d50c59050f7845e1415796996ac04afc0a531.png",
-        "sourceSha256": "6129f1862650ab0e7c2b9d2e979f3c60d941aaf19e4ec47dbf1fd8c011501fcc",
-        "width": 4096,
-        "height": 2048,
-        "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_Exterior_01",
-        "name": "Exterior",
-        "gameFrame": {
-          "calibration": {
-            "sx": 68000,
-            "sy": -34000,
-            "ox": -40405.576,
-            "oy": 21633.3413
-          },
-          "bounds": [
-            {
-              "x": -12366.6587,
-              "y": -40405.576,
-              "z": -4190.3202
-            },
-            {
-              "x": 21633.3413,
-              "y": 27594.424,
-              "z": 2809.6798
-            }
-          ]
-        },
-        "sha256": "01915e291bc25b44300351ee66f52888307de2e42a7dc28da9b441de5a77e7ca"
-      },
-      {
-        "id": "Level.ID.SandTomb:T_ST_Map_Interior_01",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/sandtomb-t_st_map_interior_01-game.avif",
-        "sourcePath": "private/game-data/planner/images\\4dfa60e585912991db97c9c3cf6e67c8af763d6fd8b6ea0383c40669c20bdf39.png",
-        "sourceSha256": "36bac07d37369650fe7aae7dd1cfcdc21c4b3ec3d74e9c5137c579e6ddcdff4f",
-        "width": 4096,
-        "height": 2048,
-        "gameAsset": "/SandTomb/Environment/Map/T_ST_Map_Interior_01",
-        "name": "Interior",
-        "gameFrame": {
-          "calibration": {
-            "sx": 76000,
-            "sy": -38000,
-            "ox": -44405.576,
-            "oy": 53673.883
-          },
-          "bounds": [
-            {
-              "x": 15673.883000000002,
-              "y": -44405.576,
-              "z": -8579.199700000001
-            },
-            {
-              "x": 53673.883,
-              "y": 31594.424,
-              "z": 1420.8002999999999
-            }
-          ]
-        },
-        "sha256": "92913e15ad47ed867bacd68c7715d492711b3141f5ad5816da527ee7712ae814"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "st-bossarbiter",
@@ -215402,56 +215185,99 @@
         "packId": "pack-game-c0b7b286af5fff408096eda0"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Plugins/GameFeatures/Adventures/SandTomb/Content/LI_SandTomb.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.SandTomb:T_ST_Map_End_01",
+        "name": "Sanctum",
+        "size": "full",
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_end_01-game.avif",
+        "width": 4096,
+        "height": 2048,
+        "gameFrame": {
+          "calibration": {
+            "sx": 124000,
+            "sy": -62000,
+            "ox": -74939.093,
+            "oy": 100827.27
+          },
+          "bounds": [
+            {
+              "x": 38827.270000000004,
+              "y": -74939.093,
+              "z": -12001.237000000001
+            },
+            {
+              "x": 100827.27,
+              "y": 49060.907,
+              "z": -2001.237
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.SandTomb:T_ST_Map_Exterior_01",
+        "name": "Exterior",
+        "size": "full",
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_exterior_01-game.avif",
+        "width": 4096,
+        "height": 2048,
+        "gameFrame": {
+          "calibration": {
+            "sx": 68000,
+            "sy": -34000,
+            "ox": -40405.576,
+            "oy": 21633.3413
+          },
+          "bounds": [
+            {
+              "x": -12366.6587,
+              "y": -40405.576,
+              "z": -4190.3202
+            },
+            {
+              "x": 21633.3413,
+              "y": 27594.424,
+              "z": 2809.6798
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.SandTomb:T_ST_Map_Interior_01",
+        "name": "Interior",
+        "size": "full",
+        "path": "private/images/dungeons/maps/sandtomb-t_st_map_interior_01-game.avif",
+        "width": 4096,
+        "height": 2048,
+        "gameFrame": {
+          "calibration": {
+            "sx": 76000,
+            "sy": -38000,
+            "ox": -44405.576,
+            "oy": 53673.883
+          },
+          "bounds": [
+            {
+              "x": 15673.883000000002,
+              "y": -44405.576,
+              "z": -8579.199700000001
+            },
+            {
+              "x": 53673.883,
+              "y": 31594.424,
+              "z": 1420.8002999999999
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.SnowPeak",
     "routeBuildId": "26122410",
     "name": "Scryer's Peak",
-    "description": "From atop their ancient towers, the Scryers of old looked down on the little people of the world and peered into the deepest of their secrets. Through their arcane devices, they gained incredible insight for centuries, not least the location of the Blood Reliquaries, thought lost at the downfall of the first Heskyrian Dynasty, thousands of years ago.\\r\\n\\r\\nNow the resurgent Heskyr lay siege to the ruined tower, seeking the long-lost knowledge of the Scryers; the final locations of the last remaining Blood Reliquaries that will bring about the triumphant resurgence of the Blood Order.",
-    "kind": "adventure",
     "requiredScore": 160,
     "timerSeconds": 820,
-    "mapImages": [
-      {
-        "id": "Level.ID.SnowPeak:T_SP_Map_global_01",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "images/dungeons/maps/snowpeak-t_sp_map_global_01-game.avif",
-        "sourcePath": "private/game-data/planner/images\\cee7ed5dfc1a1af68a34d2db01c2edc8b67222f7c67e964ae4d5ff2de4204b98.png",
-        "sourceSha256": "5760c71b1e0a8f6eda2848af3d748c1eb07a075e748ead34771cafe32632c253",
-        "width": 4096,
-        "height": 2048,
-        "gameAsset": "/SnowPeak/Environment/Map/T_SP_Map_global_01",
-        "name": "Global",
-        "gameFrame": {
-          "calibration": {
-            "sx": 90000,
-            "sy": -45000,
-            "ox": -63898.184,
-            "oy": 18377.8228
-          },
-          "bounds": [
-            {
-              "x": -26622.1772,
-              "y": -63898.184,
-              "z": -3870.3716
-            },
-            {
-              "x": 18377.8228,
-              "y": 26101.816,
-              "z": 9129.6284
-            }
-          ]
-        },
-        "sha256": "b1b60e8afcbb65761e4d7e6aca5fe964fe18ac53dd9c64562cc6562074e5d022"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "sp-bossmarcass",
@@ -231393,90 +231219,43 @@
         "packId": "pack-game-72fe2a0cdc14c84f01d31b2e"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Plugins/GameFeatures/Adventures/SnowPeak/Content/LI_SnowPeak.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.SnowPeak:T_SP_Map_global_01",
+        "name": "Global",
+        "size": "full",
+        "path": "images/dungeons/maps/snowpeak-t_sp_map_global_01-game.avif",
+        "width": 4096,
+        "height": 2048,
+        "gameFrame": {
+          "calibration": {
+            "sx": 90000,
+            "sy": -45000,
+            "ox": -63898.184,
+            "oy": 18377.8228
+          },
+          "bounds": [
+            {
+              "x": -26622.1772,
+              "y": -63898.184,
+              "z": -3870.3716
+            },
+            {
+              "x": 18377.8228,
+              "y": 26101.816,
+              "z": 9129.6284
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.SpiderForest",
     "routeBuildId": "26122410",
     "name": "Silken Hollow",
-    "description": "The eastern road connecting the Vidahlian capital to the Stronghold falls silent as merchants vanish without trace. Wagons lie overturned and their goods rot in the rain. The search for bandits leads to the edge of the forest where a simple band of goblins seems, at first glance, to be the cause of the disappearances.",
-    "kind": "adventure",
-    "minimumDifficulty": 0,
     "requiredScore": 168,
     "timerSeconds": 820,
-    "mapImages": [
-      {
-        "id": "Level.ID.SpiderForest:T_Map_SF_01",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/spiderforest-t_map_sf_01-game.avif",
-        "sourcePath": "private/game-data/planner/images\\b016b332895a973375757d9786915381d96df3ee3060671fb226f2676b5cb97c.png",
-        "sourceSha256": "4e120f622df31eb9a2b89814ec2aa998ddf3da7dfe54b63495cc91fef92f45f6",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/SpiderForest/MapAssets/T_Map_SF_01",
-        "name": "Forest",
-        "gameFrame": {
-          "calibration": {
-            "sx": 114000,
-            "sy": -57000,
-            "ox": -64228.321299999996,
-            "oy": 41369.6455
-          },
-          "bounds": [
-            {
-              "x": -15630.3545,
-              "y": -64228.321299999996,
-              "z": -9757.9202
-            },
-            {
-              "x": 41369.6455,
-              "y": 49771.678700000004,
-              "z": 3242.0798
-            }
-          ]
-        },
-        "sha256": "77b6c8b0ee5645bf0a4e4e99887b6d65ae81d84e318b41310a79409599e6ea7c"
-      },
-      {
-        "id": "Level.ID.SpiderForest:T_Map_SF_Lair",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "private/images/dungeons/maps/spiderforest-t_map_sf_lair-game.avif",
-        "sourcePath": "private/game-data/planner/images\\00e083d32ea2406e9024eb3d7851e60b955240eea6f41e34f548b5371e3e4293.png",
-        "sourceSha256": "f09492cfe8c656215fa1a74663e5eabd8a3ecdff91b88e4a325cb6cfea6d194b",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/SpiderForest/MapAssets/T_Map_SF_Lair",
-        "name": "Lair",
-        "gameFrame": {
-          "calibration": {
-            "sx": 22000,
-            "sy": -11000,
-            "ox": -18228.3213,
-            "oy": 47891.223
-          },
-          "bounds": [
-            {
-              "x": 36891.223,
-              "y": -18228.3213,
-              "z": -14715.84
-            },
-            {
-              "x": 47891.223,
-              "y": 3771.6787000000004,
-              "z": -9715.84
-            }
-          ]
-        },
-        "sha256": "f21c1337774e1ecc9559415f355883c68699785abb8b21c16288c54a02b4199c"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "sh-bossspider",
@@ -246003,56 +245782,71 @@
         "packId": "pack-game-c3dd9f0fab22a2671f6a841b"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Content/dungeons/DT_LevelInfo.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.SpiderForest:T_Map_SF_01",
+        "name": "Forest",
+        "size": "full",
+        "path": "private/images/dungeons/maps/spiderforest-t_map_sf_01-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 114000,
+            "sy": -57000,
+            "ox": -64228.321299999996,
+            "oy": 41369.6455
+          },
+          "bounds": [
+            {
+              "x": -15630.3545,
+              "y": -64228.321299999996,
+              "z": -9757.9202
+            },
+            {
+              "x": 41369.6455,
+              "y": 49771.678700000004,
+              "z": 3242.0798
+            }
+          ]
+        }
+      },
+      {
+        "id": "Level.ID.SpiderForest:T_Map_SF_Lair",
+        "name": "Lair",
+        "size": "full",
+        "path": "private/images/dungeons/maps/spiderforest-t_map_sf_lair-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 22000,
+            "sy": -11000,
+            "ox": -18228.3213,
+            "oy": 47891.223
+          },
+          "bounds": [
+            {
+              "x": 36891.223,
+              "y": -18228.3213,
+              "z": -14715.84
+            },
+            {
+              "x": 47891.223,
+              "y": 3771.6787000000004,
+              "z": -9715.84
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.TreeVillage",
     "routeBuildId": "26122410",
     "name": "Crown of the Wild",
-    "description": "Deep within the boreal wilderness of the Rootlands, towering pines conceal the treetop stronghold of a savage druidic order. Here, the primal druids perform soul-siphoning rituals, train their savage combat techniques, and tame the beasts of the wild. Atop the eldest tree stands the Crown of the Wild, an ancient arena where the strongest druids battle for dominion over the village. \r\n\r\nNow, under the rule of Scrofa, the Wild Incarnate, allies of the Stronghold have been brought to the Crown to fuel the order’s vile rituals. You must ascend the great tree, face Scrofa in the arena, and free the prisoners before they are sacrificed to the untamed powers of the Rootlands.",
-    "kind": "adventure",
     "requiredScore": 135,
     "timerSeconds": 920,
-    "mapImages": [
-      {
-        "id": "Level.ID.TreeVillage:T_TreeVillage_Global",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "images/dungeons/maps/treevillage-t_treevillage_global-game.avif",
-        "sourcePath": "private/game-data/planner/images\\c9ce8d172448e9edc5978f1b92c6ac2ae25c2b9a7ca9e0b804abb546275fbcd0.png",
-        "sourceSha256": "dc1121914cc0d879b9b09731d66b4f8ef86ce4196408485869d45e6e4f2dbe1d",
-        "width": 4096,
-        "height": 2048,
-        "gameAsset": "/TreeVillage/Map/T_TreeVillage_Global",
-        "name": "Overview",
-        "gameFrame": {
-          "calibration": {
-            "sx": 80000,
-            "sy": -40000,
-            "ox": -33102.612,
-            "oy": 15147.420399999999
-          },
-          "bounds": [
-            {
-              "x": -24852.5796,
-              "y": -33102.612,
-              "z": -4221.5396
-            },
-            {
-              "x": 15147.420399999999,
-              "y": 46897.388,
-              "z": 11778.4604
-            }
-          ]
-        },
-        "sha256": "d0f29661dcec023b5b0b4f38eadf1f3ebb3bbe5cc2dfce4548e4e56e5fbef4a5"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "sj-jungleraptor",
@@ -267366,57 +267160,43 @@
         "packId": "pack-game-18f169a0f67fad165479454b"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Plugins/GameFeatures/Adventures/TreeVillage/Content/LI_TreeVillage.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.TreeVillage:T_TreeVillage_Global",
+        "name": "Overview",
+        "size": "full",
+        "path": "images/dungeons/maps/treevillage-t_treevillage_global-game.avif",
+        "width": 4096,
+        "height": 2048,
+        "gameFrame": {
+          "calibration": {
+            "sx": 80000,
+            "sy": -40000,
+            "ox": -33102.612,
+            "oy": 15147.420399999999
+          },
+          "bounds": [
+            {
+              "x": -24852.5796,
+              "y": -33102.612,
+              "z": -4221.5396
+            },
+            {
+              "x": 15147.420399999999,
+              "y": 46897.388,
+              "z": 11778.4604
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     "id": "Level.ID.UrrakMarkets",
     "routeBuildId": "26122410",
     "name": "Urrak Markets",
-    "description": "In the heart of the Urrak Markets, the goatmen barter lives for orcish promises of enchanted steel and dark sorcery. Beneath the noise of trade, something far grimmer moves. The orc clans prepare their captives for sacrifice, their rituals meant to rouse the demon god Baphumos from his slumber within the forsaken Demonbrand Ruins.",
-    "kind": "adventure",
-    "minimumDifficulty": 0,
     "requiredScore": 160,
     "timerSeconds": 815,
-    "mapImages": [
-      {
-        "id": "Level.ID.UrrakMarkets:T_Map_UrrakMarkets_Global",
-        "type": "dungeon-map",
-        "size": "full",
-        "path": "images/dungeons/maps/urrakmarkets-t_map_urrakmarkets_global-game.avif",
-        "sourcePath": "private/game-data/planner/images\\b5d9c0f8841cadaf088b658610d1f7e6fe7376d6262429090dfe9815b46c02a8.png",
-        "sourceSha256": "48f7a8e82a4e22df61576c3743468dcbffb2af3a26b9f3a69d95756b701d5541",
-        "width": 2048,
-        "height": 1024,
-        "gameAsset": "/Game/Environment/UrrakMarkets/MapAssets/T_Map_UrrakMarkets_Global",
-        "name": "Overview",
-        "gameFrame": {
-          "calibration": {
-            "sx": 88000,
-            "sy": -44000,
-            "ox": -43288.48816,
-            "oy": 24918.5806
-          },
-          "bounds": [
-            {
-              "x": -19081.4194,
-              "y": -43288.48816,
-              "z": -2019.1235000000001
-            },
-            {
-              "x": 24918.5806,
-              "y": 44711.51184,
-              "z": 7980.8765
-            }
-          ]
-        },
-        "sha256": "5380a3ead779f889bc532bf280a49c2862f7283afe31dff9c3fcfd30ff79a4d3"
-      }
-    ],
-    "loadingScreenImages": [],
     "enemies": [
       {
         "id": "um-bossdrazhulthefleshbroker",
@@ -299972,10 +299752,35 @@
         "packId": "pack-game-56fd4e64bd1b6dae16c95586"
       }
     ],
-    "source": {
-      "kind": "game",
-      "steamBuild": "26122410",
-      "levelInfo": "fellowship/Content/dungeons/DT_LevelInfo.uasset"
-    }
+    "mapImages": [
+      {
+        "id": "Level.ID.UrrakMarkets:T_Map_UrrakMarkets_Global",
+        "name": "Overview",
+        "size": "full",
+        "path": "images/dungeons/maps/urrakmarkets-t_map_urrakmarkets_global-game.avif",
+        "width": 2048,
+        "height": 1024,
+        "gameFrame": {
+          "calibration": {
+            "sx": 88000,
+            "sy": -44000,
+            "ox": -43288.48816,
+            "oy": 24918.5806
+          },
+          "bounds": [
+            {
+              "x": -19081.4194,
+              "y": -43288.48816,
+              "z": -2019.1235000000001
+            },
+            {
+              "x": 24918.5806,
+              "y": 44711.51184,
+              "z": 7980.8765
+            }
+          ]
+        }
+      }
+    ]
   }
 ]

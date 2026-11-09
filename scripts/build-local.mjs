@@ -2,6 +2,9 @@ import {build} from 'esbuild';
 import {readFile,writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dataNames} from '../data/runtime-loader.js';
+import {verifyPublicData} from './verify-public-data.mjs';
+
+verifyPublicData('data');
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const output=new URL('../local.html',import.meta.url);

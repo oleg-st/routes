@@ -1,4 +1,4 @@
-// Generated from installed-game respawn actors.
+// Generated runtime data.
 export const campfireBuildId="26122410";
 export const campfires={
   "Level.ID.DesertDunes": [
@@ -13,8 +13,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.6011799339622642,
         "y": 0.5213245188679245
-      },
-      "source": "/Game/dungeons/DesertDunes/DesertDunes.304"
+      }
     },
     {
       "id": "campfire-game-734b74b6-40dbceae-0d5084bc-d5dc97d4",
@@ -27,8 +26,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.330898962264151,
         "y": 0.750323641509434
-      },
-      "source": "/Game/dungeons/DesertDunes/DesertDunes.305"
+      }
     }
   ],
   "Level.ID.ElfMines": [
@@ -43,8 +41,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.4942028518518518,
         "y": 0.3457012962962965
-      },
-      "source": "/Game/dungeons/ElfMines/ElfMines.697"
+      }
     },
     {
       "id": "campfire-game-6ff7f44e-40ac9d5a-492fa19e-bb7cf674",
@@ -57,8 +54,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.3775844,
         "y": 0.6318827777777778
-      },
-      "source": "/Game/dungeons/ElfMines/ElfMines.698"
+      }
     }
   ],
   "Level.ID.FrozenKingdom": [
@@ -73,8 +69,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.46646915471698114,
         "y": 0.615808979245283
-      },
-      "source": "/Game/dungeons/FrozenKingdom/FrozenKingdom.287"
+      }
     },
     {
       "id": "campfire-game-068b3eb8-474a726e-7950a0bc-c535fa4c",
@@ -87,8 +82,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.4741166613207547,
         "y": 0.3191320452830188
-      },
-      "source": "/Game/dungeons/FrozenKingdom/FrozenKingdom.288"
+      }
     },
     {
       "id": "campfire-game-7603de99-48eb5e07-37b01a98-5ef28506",
@@ -101,8 +95,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.4871095198113208,
         "y": 0.5940571924528302
-      },
-      "source": "/Game/dungeons/FrozenKingdom/FrozenKingdom.289"
+      }
     },
     {
       "id": "campfire-game-75a90f12-4bcfb235-b66c33ad-b400b603",
@@ -115,8 +108,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5716494226415095,
         "y": 0.3858872150943396
-      },
-      "source": "/Game/dungeons/FrozenKingdom/FrozenKingdom.290"
+      }
     }
   ],
   "Level.ID.MoorCastle": [
@@ -131,8 +123,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5739169051851851,
         "y": 0.8034237777777777
-      },
-      "source": "/MoorCastle/Levels/MoorCastle_Enemies_Alternate_03.782"
+      }
     },
     {
       "id": "campfire-game-a1e75a91-4bb4d37f-c63025b7-48382723",
@@ -145,8 +136,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.465884708,
         "y": 0.40393064
-      },
-      "source": "/MoorCastle/Levels/MoorCastle.74"
+      }
     },
     {
       "id": "campfire-game-f713c42c-49a1720d-cbdee982-47cf968b",
@@ -159,8 +149,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.4153270996296296,
         "y": 0.6734774814814815
-      },
-      "source": "/MoorCastle/Levels/MoorCastle.75"
+      }
     },
     {
       "id": "campfire-game-26b8e2dc-425cabba-f44b8786-aee5234c",
@@ -173,8 +162,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5856012385185185,
         "y": 0.399735037037037
-      },
-      "source": "/MoorCastle/Levels/MoorCastle.76"
+      }
     },
     {
       "id": "campfire-game-bf92dc0a-492d3611-587d2881-33725d33",
@@ -187,8 +175,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.4076506922222222,
         "y": 0.3216427
-      },
-      "source": "/MoorCastle/Levels/MoorCastle.77"
+      }
     }
   ],
   "Level.ID.NightPatrol": [
@@ -203,8 +190,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.3059876206896552,
         "y": 0.3806086034482759
-      },
-      "source": "/Game/dungeons/NightPatrol/NightPatrol.278"
+      }
     },
     {
       "id": "campfire-game-8d4b69cf-4d368d1b-e269b5ad-1f9ed635",
@@ -217,8 +203,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.3252207580645161,
         "y": 0.32988254838709685
-      },
-      "source": "/Game/dungeons/NightPatrol/NightPatrol.279"
+      }
     },
     {
       "id": "campfire-game-cd09a65d-46f8ddb1-c6f747a6-82d56ba5",
@@ -231,8 +216,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.44330493548387095,
         "y": 0.27038680645161295
-      },
-      "source": "/Game/dungeons/NightPatrol/NightPatrol.280"
+      }
     }
   ],
   "Level.ID.PirateRaid": [
@@ -247,8 +231,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.4337604358974359,
         "y": 0.3977679402564102
-      },
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.847"
+      }
     },
     {
       "id": "campfire-game-7538be8f-42099b68-732c5485-a7e181eb",
@@ -261,8 +244,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5441694,
         "y": 0.4170927931034482
-      },
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.848"
+      }
     },
     {
       "id": "campfire-game-7f64cb64-415482b1-baa0aeb2-69908bfb",
@@ -275,8 +257,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.41086343243243245,
         "y": 0.7304824351351351
-      },
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.849"
+      }
     },
     {
       "id": "campfire-game-7a35d06e-4c3fa317-b64e7399-a4ab9136",
@@ -289,8 +270,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.6655586351351351,
         "y": 0.0345817324324324
-      },
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.850"
+      }
     },
     {
       "id": "campfire-game-93790e16-47f12744-18fe0cbb-dbef34bf",
@@ -303,8 +283,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.4847994189189189,
         "y": 0.3928327891891892
-      },
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.851"
+      }
     },
     {
       "id": "campfire-game-0bf3c0ac-42f68ec3-dad39e88-7a26f15a",
@@ -317,8 +296,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.3598616957692308,
         "y": 0.49457892999999997
-      },
-      "source": "/Game/dungeons/PirateRaid/PirateRaid.852"
+      }
     },
     {
       "id": "campfire-game-144e3cc7-4f0413c6-581be686-55ee9dd1",
@@ -331,8 +309,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.36096970172413784,
         "y": 0.4506272758620689
-      },
-      "source": "/Game/dungeons/PirateRaid/Sublevels/Dungeon6_Enemies_Alternate_03.799"
+      }
     }
   ],
   "Level.ID.SandTomb": [
@@ -347,8 +324,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.6727567434210526,
         "y": 0.5848554736842105
-      },
-      "source": "/SandTomb/Levels/SandTomb.93"
+      }
     },
     {
       "id": "campfire-game-257b1545-47a2c8ff-113ebb9a-5a74bb4c",
@@ -361,8 +337,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5752741612903226,
         "y": 0.7648212096774194
-      },
-      "source": "/SandTomb/Levels/SandTomb.94"
+      }
     },
     {
       "id": "campfire-game-33094fcb-4836982a-13bd6580-27e10911",
@@ -375,8 +350,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5294321532258065,
         "y": 0.25352806451612914
-      },
-      "source": "/SandTomb/Levels/SandTomb.95"
+      }
     },
     {
       "id": "campfire-game-714a6e2a-48d61ba6-5262ce97-989be631",
@@ -389,8 +363,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.45900625000000006,
         "y": 0.7340167882352941
-      },
-      "source": "/SandTomb/Levels/SandTomb.96"
+      }
     }
   ],
   "Level.ID.SnowPeak": [
@@ -405,8 +378,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.2471483111111111,
         "y": 0.5075138244444445
-      },
-      "source": "/SnowPeak/Levels/SnowPeak_Environment.125"
+      }
     },
     {
       "id": "campfire-game-a7789679-4481f73f-ed7e2e83-f4f4213a",
@@ -419,8 +391,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.7126444911111112,
         "y": 0.07736492888888893
-      },
-      "source": "/SnowPeak/Levels/SnowPeak_Environment.126"
+      }
     },
     {
       "id": "campfire-game-332a4c48-43f728fd-53fc37b0-0d65a9dd",
@@ -433,8 +404,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.4867268888888889,
         "y": 0.3245267377777778
-      },
-      "source": "/SnowPeak/Levels/SnowPeak_Environment.127"
+      }
     }
   ],
   "Level.ID.SpiderForest": [
@@ -449,8 +419,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.43166751140350873,
         "y": 0.5586779561403509
-      },
-      "source": "/Game/dungeons/SpiderForest/SpiderForest.255"
+      }
     },
     {
       "id": "campfire-game-ef606592-439f0f45-ee726981-700be8ab",
@@ -463,8 +432,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.48114459035087714,
         "y": 0.5961551842105263
-      },
-      "source": "/Game/dungeons/SpiderForest/SpiderForest.256"
+      }
     },
     {
       "id": "campfire-game-ae1fd910-475c719c-8bb986bb-f8a1feea",
@@ -477,8 +445,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5213316377192981,
         "y": 0.2583546228070175
-      },
-      "source": "/Game/dungeons/SpiderForest/SpiderForest.257"
+      }
     }
   ],
   "Level.ID.TreeVillage": [
@@ -493,8 +460,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.25492454999999997,
         "y": 0.20552707499999998
-      },
-      "source": "/TreeVillage/Levels/TreeVillage.310"
+      }
     },
     {
       "id": "campfire-game-4c8a8a34-446cc3c2-4f339388-64b1867b",
@@ -507,8 +473,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.560701925,
         "y": 0.13232925999999998
-      },
-      "source": "/TreeVillage/Levels/TreeVillage.311"
+      }
     }
   ],
   "Level.ID.UrrakMarkets": [
@@ -523,8 +488,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.34941463818181817,
         "y": 0.4061041045454546
-      },
-      "source": "/Game/dungeons/UrrakMarkets/UrrakMarkets.1483"
+      }
     },
     {
       "id": "campfire-game-78f503b8-4bd13a74-6659909a-c7f78633",
@@ -537,8 +501,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5156287109090909,
         "y": 0.1516473318181818
-      },
-      "source": "/Game/dungeons/UrrakMarkets/UrrakMarkets.1484"
+      }
     },
     {
       "id": "campfire-game-91d292af-40a71bdd-d2fc7496-871fe0c7",
@@ -551,8 +514,7 @@ export const campfires={
       "mapPosition": {
         "x": 0.5833686722727273,
         "y": 0.5019981522727274
-      },
-      "source": "/Game/dungeons/UrrakMarkets/UrrakMarkets.1485"
+      }
     }
   ]
 };

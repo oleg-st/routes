@@ -4,8 +4,6 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {correctDungeon} from '../data/placement-corrections.js';
-import {customDungeons} from '../data/custom-dungeons.js';
-import {gameDungeons} from '../data/game-dungeons.js';
 import {routeMapping} from '../data/route-mapping.js';
 import {encodeMembers,decodeMembers,routeDictionary} from '../data/route-dictionary.js';
 import {newRoute,encodeRoute,decodeRoute,validateRoute,scoreRoute,effectivePositions} from '../route-model.js';
@@ -13,6 +11,8 @@ import {createRouteDocument,restoreRouteDocument} from '../collaboration/route-d
 const urrakControls=JSON.parse(fs.readFileSync('tests/fixtures/urrak-pack-controls.json'));
 const read=p=>JSON.parse(fs.readFileSync(p));
 const raw=read('data/dungeons.json'),enemies=new Map(read('data/enemies.json').map(e=>[e.id,e]));
+const gameDungeons=Object.fromEntries(raw.map(d=>[d.id,d]));
+const customDungeons=Object.fromEntries(raw.map(d=>[d.id,{packs:[...Map.groupBy(d.enemies,p=>p.packId)].map(([id,members])=>({id,members:members.map(p=>p.placementId).sort()}))}]));
 const variants=['fellership','custom'].map(mode=>raw.map(d=>correctDungeon(d,mode)));
 
 test('Custom covers active game placements exactly once and supports lossless source switching',()=>{
@@ -23,7 +23,6 @@ test('Custom covers active game placements exactly once and supports lossless so
     assert.deepEqual(correctDungeon(custom,'fellership'),original);
     assert.deepEqual(correctDungeon(original,'custom'),custom);
     assert.deepEqual(correctDungeon(custom),custom);
-    assert.deepEqual(custom.enemies,gameDungeons[d.id].enemies);
     assert.ok(custom.enemies.every(p=>p.gameGuid));
     for(const p of original.enemies)assert.ok(custom.enemies.some(q=>q.placementId===p.placementId)||custom.retiredPlacementIds.includes(p.placementId));
     const dictionary=routeDictionary(d.id);

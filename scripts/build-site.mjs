@@ -7,6 +7,9 @@ import {fullMaps, fullMapBuildId} from '../data/full-maps.js';
 import {combinedLayouts} from '../data/combined-layouts.js';
 import {compactPublicData} from './compact-public-data.mjs';
 import {dataNames} from '../data/runtime-loader.js';
+import {verifyPublicData} from './verify-public-data.mjs';
+
+verifyPublicData('data');
 
 const check = spawnSync(process.execPath, ['scripts/verify-data.mjs', '--public'], {stdio: 'inherit'});
 if (check.status !== 0) throw new Error('Image/data verification failed.');
@@ -59,4 +62,5 @@ const html=fs.readFileSync(path.join(destination,'index.html'),'utf8')
 fs.writeFileSync(path.join(destination,'index.html'),html);
 compactPublicData(destination);
 await buildSiteAssets(destination);
+verifyPublicData(destination);
 console.log(`Prepared ${files.length} public files in dist/. Publish only this directory.`);

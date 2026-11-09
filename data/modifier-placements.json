@@ -1,7 +1,5 @@
 {
   "buildId": "26122410",
-  "source": "installed-game",
-  "status": "actor-tags-and-spawner-hit-capsules",
   "dungeons": {
     "Level.ID.DesertDunes": {
       "empowered": [
@@ -31,9 +29,6 @@
           "x": 0.6229580333333335,
           "y": 0.3489334
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/Game/dungeons/DesertDunes/Sublevels/DesertDunes_Enemies_Alternate_03.130",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -57,10 +52,7 @@
             "mapPosition": {
               "x": 0.6229580333333335,
               "y": 0.3489334
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/Game/dungeons/DesertDunes/Sublevels/DesertDunes_Enemies_Alternate_03.130"
+            }
           }
         ]
       },
@@ -82,9 +74,6 @@
           "x": 0.4303080000000002,
           "y": 0.5104592
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/Game/dungeons/DesertDunes/Sublevels/DesertDunes_Enemies_Alternate_03.131",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -103,10 +92,7 @@
             "mapPosition": {
               "x": 0.4303080000000002,
               "y": 0.5104592
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/Game/dungeons/DesertDunes/Sublevels/DesertDunes_Enemies_Alternate_03.131"
+            }
           }
         ]
       }
@@ -141,9 +127,6 @@
           "x": 0.41399780277777776,
           "y": 0.44162490740740756
         },
-        "radius": 2479.278923,
-        "height": 1000,
-        "source": "/Game/dungeons/ElfMines/Sublevels/ElfMines_Enemies_Alternate_03.119",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -167,10 +150,7 @@
             "mapPosition": {
               "x": 0.41399780277777776,
               "y": 0.44162490740740756
-            },
-            "radius": 2479.278923,
-            "height": 1000,
-            "source": "/Game/dungeons/ElfMines/Sublevels/ElfMines_Enemies_Alternate_03.119"
+            }
           }
         ]
       },
@@ -196,9 +176,6 @@
           "x": 0.38226034444444446,
           "y": 0.5463281481481481
         },
-        "radius": 1714.696164,
-        "height": 1000,
-        "source": "/Game/dungeons/ElfMines/Sublevels/ElfMines_Enemies_Alternate_03.120",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -221,10 +198,7 @@
             "mapPosition": {
               "x": 0.38226034444444446,
               "y": 0.5463281481481481
-            },
-            "radius": 1714.696164,
-            "height": 1000,
-            "source": "/Game/dungeons/ElfMines/Sublevels/ElfMines_Enemies_Alternate_03.120"
+            }
           }
         ]
       }
@@ -257,9 +231,6 @@
           "x": 0.5096363079245283,
           "y": 0.43889106415094337
         },
-        "radius": 2305.049598,
-        "height": 1000,
-        "source": "/Game/dungeons/FrozenKingdom/Sublevels/FrozenKingdom_Enemies_Alternate_03.138",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -280,10 +251,7 @@
             "mapPosition": {
               "x": 0.5096363079245283,
               "y": 0.43889106415094337
-            },
-            "radius": 2305.049598,
-            "height": 1000,
-            "source": "/Game/dungeons/FrozenKingdom/Sublevels/FrozenKingdom_Enemies_Alternate_03.138"
+            }
           }
         ]
       },
@@ -306,9 +274,6 @@
           "x": 0.4864387726415095,
           "y": 0.5917534679245283
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/Game/dungeons/FrozenKingdom/Sublevels/FrozenKingdom_Enemies_Alternate_03.137",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -328,10 +293,7 @@
             "mapPosition": {
               "x": 0.4864387726415095,
               "y": 0.5917534679245283
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/Game/dungeons/FrozenKingdom/Sublevels/FrozenKingdom_Enemies_Alternate_03.137"
+            }
           }
         ]
       }
@@ -368,9 +330,6 @@
           "x": 0.6149354051851852,
           "y": 0.7447387037037037
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/MoorCastle/Levels/MoorCastle_Enemies_Alternate_03.250",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -392,10 +351,7 @@
             "mapPosition": {
               "x": 0.6149354051851852,
               "y": 0.7447387037037037
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/MoorCastle/Levels/MoorCastle_Enemies_Alternate_03.250"
+            }
           }
         ]
       },
@@ -422,9 +378,6 @@
           "x": 0.4646999144444444,
           "y": 0.22967428333333328
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/MoorCastle/Levels/MoorCastle_Enemies_Alternate_03.251",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -448,10 +401,7 @@
             "mapPosition": {
               "x": 0.4646999144444444,
               "y": 0.22967428333333328
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/MoorCastle/Levels/MoorCastle_Enemies_Alternate_03.251"
+            }
           }
         ]
       }
@@ -484,9 +434,6 @@
           "x": 0.45569461290322577,
           "y": 0.43122674193548394
         },
-        "radius": 2042.101842,
-        "height": 1000,
-        "source": "/Game/dungeons/NightPatrol/Sublevels/NightPatrol_Enemies_Alternate_03.98",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -508,10 +455,7 @@
             "mapPosition": {
               "x": 0.45569461290322577,
               "y": 0.43122674193548394
-            },
-            "radius": 2042.101842,
-            "height": 1000,
-            "source": "/Game/dungeons/NightPatrol/Sublevels/NightPatrol_Enemies_Alternate_03.98"
+            }
           }
         ]
       },
@@ -538,9 +482,6 @@
           "x": 0.44606706451612904,
           "y": 0.23592658064516137
         },
-        "radius": 2090.702407,
-        "height": 1000,
-        "source": "/Game/dungeons/NightPatrol/Sublevels/NightPatrol_Enemies_Alternate_03.99",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -564,10 +505,7 @@
             "mapPosition": {
               "x": 0.44606706451612904,
               "y": 0.23592658064516137
-            },
-            "radius": 2090.702407,
-            "height": 1000,
-            "source": "/Game/dungeons/NightPatrol/Sublevels/NightPatrol_Enemies_Alternate_03.99"
+            }
           }
         ]
       }
@@ -608,9 +546,6 @@
           "x": 0.5420741603448276,
           "y": 0.4155484137931034
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/Game/dungeons/PirateRaid/Sublevels/Dungeon6_Enemies_Alternate_03.266",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -632,10 +567,7 @@
             "mapPosition": {
               "x": 0.5420741603448276,
               "y": 0.4155484137931034
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/Game/dungeons/PirateRaid/Sublevels/Dungeon6_Enemies_Alternate_03.266"
+            }
           },
           {
             "placementId": "modifier:ghorn:9c1b984b-4e89735f-fbbde68f-1da0e40a",
@@ -657,10 +589,7 @@
             "mapPosition": {
               "x": 0.38481506379310343,
               "y": 0.1950092068965517
-            },
-            "radius": 2058.570406,
-            "height": 1000,
-            "source": "/Game/dungeons/PirateRaid/Sublevels/Dungeon6_Enemies_Alternate_03.268"
+            }
           }
         ]
       },
@@ -685,9 +614,6 @@
           "x": 0.3563570705128205,
           "y": 0.3541869146153846
         },
-        "radius": 1000,
-        "height": 1000,
-        "source": "/Game/dungeons/PirateRaid/Sublevels/Dungeon6_Enemies_Alternate_03.267",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -702,10 +628,7 @@
             "mapPosition": {
               "x": 0.3563570705128205,
               "y": 0.3541869146153846
-            },
-            "radius": 1000,
-            "height": 1000,
-            "source": "/Game/dungeons/PirateRaid/Sublevels/Dungeon6_Enemies_Alternate_03.267"
+            }
           },
           {
             "placementId": "modifier:witch:f72d7c7b-431f3fa6-023e2686-3bcceebc",
@@ -727,10 +650,7 @@
             "mapPosition": {
               "x": 0.5572869405405405,
               "y": 0.2694118675675675
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/Game/dungeons/PirateRaid/Sublevels/Dungeon6_Enemies_Alternate_03.269"
+            }
           }
         ]
       }
@@ -774,9 +694,6 @@
           "x": 0.5094519777777777,
           "y": 0.4172274715555556
         },
-        "radius": 2976.04623,
-        "height": 1000,
-        "source": "/SnowPeak/Levels/SnowPeak_Enemies_Alternate_02.126",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -804,10 +721,7 @@
             "mapPosition": {
               "x": 0.5094519777777777,
               "y": 0.4172274715555556
-            },
-            "radius": 2976.04623,
-            "height": 1000,
-            "source": "/SnowPeak/Levels/SnowPeak_Enemies_Alternate_02.126"
+            }
           }
         ]
       },
@@ -831,9 +745,6 @@
           "x": 0.7643459888888888,
           "y": 0.4297081088888889
         },
-        "radius": 2096.329957,
-        "height": 1000,
-        "source": "/SnowPeak/Levels/SnowPeak_Enemies_Alternate_02.127",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -854,10 +765,7 @@
             "mapPosition": {
               "x": 0.7643459888888888,
               "y": 0.4297081088888889
-            },
-            "radius": 2096.329957,
-            "height": 1000,
-            "source": "/SnowPeak/Levels/SnowPeak_Enemies_Alternate_02.127"
+            }
           }
         ]
       }
@@ -895,9 +803,6 @@
           "x": 0.5356028728070175,
           "y": 0.9457217280701754
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/Game/dungeons/SpiderForest/sublevels/SpiderForest_Enemies_Alternate_03.128",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -923,10 +828,7 @@
             "mapPosition": {
               "x": 0.5356028728070175,
               "y": 0.9457217280701754
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/Game/dungeons/SpiderForest/sublevels/SpiderForest_Enemies_Alternate_03.128"
+            }
           }
         ]
       },
@@ -952,9 +854,6 @@
           "x": 0.5143186631578948,
           "y": 0.8410049736842105
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/Game/dungeons/SpiderForest/sublevels/SpiderForest_Enemies_Alternate_03.129",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -977,10 +876,7 @@
             "mapPosition": {
               "x": 0.5143186631578948,
               "y": 0.8410049736842105
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/Game/dungeons/SpiderForest/sublevels/SpiderForest_Enemies_Alternate_03.129"
+            }
           }
         ]
       }
@@ -1011,9 +907,6 @@
           "x": 0.608001,
           "y": 0.278942285
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/TreeVillage/Levels/TreeVillage.258",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -1033,10 +926,7 @@
             "mapPosition": {
               "x": 0.608001,
               "y": 0.278942285
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/TreeVillage/Levels/TreeVillage.258"
+            }
           }
         ]
       },
@@ -1060,9 +950,6 @@
           "x": 0.46275816000000003,
           "y": 0.23247569499999998
         },
-        "radius": 2000,
-        "height": 1000,
-        "source": "/TreeVillage/Levels/TreeVillage.259",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -1083,10 +970,7 @@
             "mapPosition": {
               "x": 0.46275816000000003,
               "y": 0.23247569499999998
-            },
-            "radius": 2000,
-            "height": 1000,
-            "source": "/TreeVillage/Levels/TreeVillage.259"
+            }
           }
         ]
       }
@@ -1122,9 +1006,6 @@
           "x": 0.49241259431818185,
           "y": 0.14713996818181824
         },
-        "radius": 2559.40917,
-        "height": 1000,
-        "source": "/Game/dungeons/UrrakMarkets/Sublevels/UrrakMarkets_Enemies_Alternate_03.202",
         "spawns": [
           {
             "placementId": "modifier:ghorn",
@@ -1149,10 +1030,7 @@
             "mapPosition": {
               "x": 0.49241259431818185,
               "y": 0.14713996818181824
-            },
-            "radius": 2559.40917,
-            "height": 1000,
-            "source": "/Game/dungeons/UrrakMarkets/Sublevels/UrrakMarkets_Enemies_Alternate_03.202"
+            }
           }
         ]
       },
@@ -1182,9 +1060,6 @@
           "x": 0.4525533881818182,
           "y": 0.5522388354545454
         },
-        "radius": 1884.853082,
-        "height": 1000,
-        "source": "/Game/dungeons/UrrakMarkets/Sublevels/UrrakMarkets_Enemies_Alternate_03.203",
         "spawns": [
           {
             "placementId": "modifier:witch",
@@ -1211,10 +1086,7 @@
             "mapPosition": {
               "x": 0.4525533881818182,
               "y": 0.5522388354545454
-            },
-            "radius": 1884.853082,
-            "height": 1000,
-            "source": "/Game/dungeons/UrrakMarkets/Sublevels/UrrakMarkets_Enemies_Alternate_03.203"
+            }
           }
         ]
       }

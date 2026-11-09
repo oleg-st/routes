@@ -1,33 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {playerStartCenter} from '../scripts/game-service-model.mjs';
 import {mapStarts} from '../data/map-starts.js';
 import {enemyMarkerTier,enemyMarkerScale} from '../data/enemy-marker-sizes.js';
 import {gameServiceRules as rules} from '../data/game-service-rules.js';
-
-test('Every dungeon entrance records its game spawn group and centroid',()=>{
+test('Every dungeon entrance has a runtime position without source evidence',()=>{
  const dungeons=JSON.parse(fs.readFileSync('data/dungeons.json'));
  assert.equal(Object.keys(mapStarts).length,dungeons.length);
  for(const d of dungeons){
-  const start=mapStarts[d.id];assert.equal(start.spawnPoints.length,4,d.name);
-  assert.equal(start.sources.length,start.spawnPoints.length);
-  assert.equal(new Set(start.sources).size,start.sources.length);
-  for(const k of ['x','y','z'])assert.equal(start.worldPosition[k],start.spawnPoints.reduce((s,p)=>s+p[k],0)/start.spawnPoints.length);
+  const start=mapStarts[d.id];
+  assert.ok(!('spawnPoints' in start)&&!('sources' in start));
+  for(const k of ['x','y','z'])assert.ok(Number.isFinite(start.worldPosition[k]));
   assert.ok(d.mapImages.some(m=>m.id===start.mapImageId));
  }
 });
-
-test('Entrance extraction refuses missing coordinates, attachments and unhandled streamed transforms',()=>{
- const point=(x,y,z)=>({source:'game/Test/Test.umap',ref:'actor-'+x,rootComponent:{properties:{RelativeLocation:{X:x,Y:y,Z:z}}}});
- assert.deepEqual(playerStartCenter([point(1,2,3),point(3,4,5)],'Test').worldPosition,{x:2,y:3,z:4});
- assert.throws(()=>playerStartCenter([],'Test'),/No PlayerStart/);
- assert.throws(()=>playerStartCenter([point(1,2,undefined)],'Test'),/coordinates/);
- const attached=point(1,2,3);attached.rootComponent.properties.AttachParent={};
- assert.throws(()=>playerStartCenter([attached],'Test'),/Attached/);
- assert.throws(()=>playerStartCenter([point(1,2,3)],'Other'),/streamed/);
-});
-
 test('Marker sizes follow effective Polymorph thresholds with independent boss styling',()=>{
  assert.deepEqual(rules.markerHealthThresholds,{medium:2,large:3.5});
  assert.equal(rules.polymorphLargeThresholdOverride,undefined);

@@ -13,7 +13,7 @@ test('Published site omits layer controls and private images while preserving sa
   assert.equal(build.status, 0, build.stdout + build.stderr);
   assert.ok(!fs.existsSync('dist/private'));
   assert.ok(!fs.existsSync('dist/data/game-dungeons.js'),'Runtime uses one dungeon dataset without a second geometry copy');
-  for(const name of ['custom-dungeons.js','buried-placements.js','patrol-corrections.js','game-image-sources.json','game-catalog-evidence.json','game-map-frames.json'])
+  for(const name of ['ability-details.json','custom-dungeons.js','buried-placements.js','patrol-corrections.js','game-image-sources.json','game-catalog-evidence.json','game-map-frames.json'])
     assert.ok(!fs.existsSync(`dist/data/${name}`),`Authoring or retired data must not be published: ${name}`);
   assert.equal(fs.readFileSync('dist/local-map-views.js','utf8'),"export {mapViews} from './map-views.js';\n");
   assert.doesNotMatch(fs.readFileSync('dist/app.js','utf8'),/background-user\.(?:png|avif)|Retouched/);
@@ -37,7 +37,7 @@ test('Published site omits layer controls and private images while preserving sa
   const bytes=directory=>fs.readdirSync(directory).reduce((sum,file)=>sum+fs.statSync(`${directory}/${file}`).size,0);
   // Eleven dungeons include Xul and distinct paths for offset patrol columns.
   assert.ok(bytes('dist/data')<5_000_000,'Published data stays within its 5 MB budget');
-  assert.ok(bytes('dist/data')<bytes('data')*.4,'Published data must be at least 60% smaller');
+  assert.ok(bytes('dist/data')<bytes('data'),'Published data remains smaller than the cleaned authoring layout');
   const enemies = new Map(JSON.parse(fs.readFileSync('data/enemies.json')).map(enemy=>[enemy.id,enemy]));
   for (const dungeon of dungeons) {
     const publicDungeon=publicDungeons.find(d=>d.id===dungeon.id);

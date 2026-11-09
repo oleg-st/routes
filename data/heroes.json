@@ -6,16 +6,8 @@
     "classColor": "#7F49F5",
     "images": [
       {
-        "id": "bowguy",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/1e2d185816e03572a7beefcd.avif",
-        "sourcePath": "private/game-data/planner/images\\c6b4069e09ce151ef37bae6a5367c70d7c432dfb3f2bb51bf3e1d5599794b1b7.png",
-        "sourceSha256": "1e2d185816e03572a7beefcd8d361fb1fa79ab9f682a253806826d1a26dc99f2",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Bowguy_01",
-        "sha256": "3a0cd28ec283c5cd32b7aa57bf35d83633ea96e759537178e28a3b9f25b024be"
+        "path": "images/game/1e2d185816e03572a7beefcd.avif"
       }
     ]
   },
@@ -26,16 +18,8 @@
     "classColor": "#EB6328",
     "images": [
       {
-        "id": "firemage",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/4f195577ba3f83573a3eb8cb.avif",
-        "sourcePath": "private/game-data/planner/images\\4c61297a2a653834f1b0b4c2cb8adfae8c0af310b0bb0c2178edd1e0b5ce4bc6.png",
-        "sourceSha256": "4f195577ba3f83573a3eb8cbcd72a5c0bce2ce30fe477f15f00c0804bb59c0e2",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Firemage_default",
-        "sha256": "f638a58bdf638c0578ad11f3cdf6abdeec913d8a473188bd4e9427ed94e87f94"
+        "path": "images/game/4f195577ba3f83573a3eb8cb.avif"
       }
     ]
   },
@@ -46,16 +30,8 @@
     "classColor": "#163EB9",
     "images": [
       {
-        "id": "ink",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/30b2171294f67d6d2858a865.avif",
-        "sourcePath": "private/game-data/planner/images\\8ca3d3efe6e6528001efd0ddcd3cf86b145267bc2a9a5f9d2da14fe3ac99cd8d.png",
-        "sourceSha256": "30b2171294f67d6d2858a865efd4f20dcd6351042c8f37c90cd72e9240a8e21b",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Ink_01",
-        "sha256": "bcac17fe0396694391fca4e7be73987ecbf77e1b13426b665d72120a41596dd3"
+        "path": "images/game/30b2171294f67d6d2858a865.avif"
       }
     ]
   },
@@ -66,16 +42,8 @@
     "classColor": "#BC00FF",
     "images": [
       {
-        "id": "lisa",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/1de4103e4bb5d25a8a160a3a.avif",
-        "sourcePath": "private/game-data/planner/images\\feafc56fa9ed1635347fea03f10e83ba703f50f53b465023f20bcb4266947cc0.png",
-        "sourceSha256": "1de4103e4bb5d25a8a160a3ace1eac95668b8d34ccff7944d04fd875058b970e",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Lisa_default",
-        "sha256": "78a6a5f340dccd68868386748421dbc2011a6026125e32ca6b4843da56651e81"
+        "path": "images/game/1de4103e4bb5d25a8a160a3a.avif"
       }
     ]
   },
@@ -86,16 +54,8 @@
     "classColor": "#6F2EF1",
     "images": [
       {
-        "id": "mara",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/a3fc0285169b891bc2214580.avif",
-        "sourcePath": "private/game-data/planner/images\\66bd6a8cc91735f7feb52a683581440a6733246e3eff6dcadc2e4a5b394e0eb5.png",
-        "sourceSha256": "a3fc0285169b891bc2214580fdefc92768dbcb8dbf829a12ff56dc4ab2a362c9",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Mara_01",
-        "sha256": "42ad313dfc67c279e834aba5b458b510e6984293b829a18e838fd230cada8fa7"
+        "path": "images/game/a3fc0285169b891bc2214580.avif"
       }
     ]
   },
@@ -106,16 +66,8 @@
     "classColor": "#28E05C",
     "images": [
       {
-        "id": "meiko",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/4b0100ab126650fbf41fb863.avif",
-        "sourcePath": "private/game-data/planner/images\\754eb8b32664742e0c3f7ff4e143d0cc01e45b55c42145f576e25c64dba6e8af.png",
-        "sourceSha256": "4b0100ab126650fbf41fb863d702762a7673e1aca3a8dbb14ef6a218518a2fdc",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_meiko_default",
-        "sha256": "19298a05f31bb74191fb91a6fb1166f21289b2a1096326ce0b39cbdd09c8d5f2"
+        "path": "images/game/4b0100ab126650fbf41fb863.avif"
       }
     ]
   },
@@ -126,16 +78,8 @@
     "classColor": "#EA4F84",
     "images": [
       {
-        "id": "mosse",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/b6d367c751b473c837616630.avif",
-        "sourcePath": "private/game-data/planner/images\\640bf6eb5656d7a7bd06a76eda8cf4468b37aa94ddc7166e714d1ee59f61bed2.png",
-        "sourceSha256": "b6d367c751b473c837616630d16318a3303fc9934fc81ce13dbab0713c3e17ef",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_Mosse_01_default",
-        "sha256": "807ad02113183808c4d2a35206fb5fa0e6709ccee6340d4fa0aff40a50c50ce9"
+        "path": "images/game/b6d367c751b473c837616630.avif"
       }
     ]
   },
@@ -146,16 +90,8 @@
     "classColor": "#1EA3EE",
     "images": [
       {
-        "id": "rime",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/105c81fa196ce71a8b99f90f.avif",
-        "sourcePath": "private/game-data/planner/images\\5de8e627f7ec32cb6b36b38d0fa93614e26e74a787cc1ab5893af3d28d5e4ddb.png",
-        "sourceSha256": "105c81fa196ce71a8b99f90f20a5b8511c1d76315b807a383e2fb784c6ccc9f2",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_rime_default",
-        "sha256": "2b32a6dfd6d1d89e1dc06cd277ce093e323d7682d936073d926410ac0afec3f1"
+        "path": "images/game/105c81fa196ce71a8b99f90f.avif"
       }
     ]
   },
@@ -166,16 +102,8 @@
     "classColor": "#077365",
     "images": [
       {
-        "id": "sune",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/e0cdeed8e71860bc08957539.avif",
-        "sourcePath": "private/game-data/planner/images\\0fd127f8aa2cacd25e43055eced122ed7726d3a93d79cfb8de70eb09f0987a50.png",
-        "sourceSha256": "e0cdeed8e71860bc08957539ceb36db017687ee0746598cb811e12699a6e0ea5",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/T_HeroPortrait_Sune",
-        "sha256": "1a53d191b62f361760643a349878edeadc64356b4ac3782ec7b477623ce779f1"
+        "path": "images/game/e0cdeed8e71860bc08957539.avif"
       }
     ]
   },
@@ -186,16 +114,8 @@
     "classColor": "#DDDBC5",
     "images": [
       {
-        "id": "vigor",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/0182dce81ab694530b55b3aa.avif",
-        "sourcePath": "private/game-data/planner/images\\053fef199d6004f0dec69ef98a497edfa42aee8b4b029e1da5e8c698902077d3.png",
-        "sourceSha256": "0182dce81ab694530b55b3aab96df379d12533e74c0b5dd9d4566d5cf773ac6c",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_vigor_default",
-        "sha256": "016d10fcc820d3a75b0949d90d1094b71fc5f80ac1db93c3a462a7720fd38f44"
+        "path": "images/game/0182dce81ab694530b55b3aa.avif"
       }
     ]
   },
@@ -206,16 +126,8 @@
     "classColor": "#B46831",
     "images": [
       {
-        "id": "warmaster",
-        "type": "hero",
         "size": "200",
-        "path": "images/game/a598c57c116b6f6d3c8f9a7a.avif",
-        "sourcePath": "private/game-data/planner/images\\ac034bfacf2db4965a6478ef5798125323d6387a84d1f305ab1b8b72149e9c51.png",
-        "sourceSha256": "a598c57c116b6f6d3c8f9a7a4bfd0ddef5936c803bbb10d8e2d50c2916781d14",
-        "width": 128,
-        "height": 128,
-        "gameAsset": "/Game/ui/icons/hero_portraits/hero_portrait_warmaster_01",
-        "sha256": "40025a6d951e17d0244a5031a7b70b0aa6c42044fc6b0e5c4b3350d10221920d"
+        "path": "images/game/a598c57c116b6f6d3c8f9a7a.avif"
       }
     ]
   }

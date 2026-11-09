@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fullMaps} from '../data/full-maps.js';
 import {markerAnchor} from '../data/marker-anchors.js';
-import {recipes} from '../scripts/combined-maps/index.mjs';
 import {mapViews,mapCoordinates,worldMapCoordinates,onMap,drawingOnMap,drawingPointFromMap,mapStart,mapCampfires,mapPatrols} from '../map-views.js';
 import {campfires,campfireBuildId} from '../data/map-campfires.js';
 import {mapStarts,mapStartBuildId} from '../data/map-starts.js';
@@ -12,7 +11,6 @@ import {newRoute,newPull,validateRoute,scoreRoute,effectivePositions,applyModifi
 const read=n=>JSON.parse(fs.readFileSync(new URL(`../data/${n}.json`,import.meta.url)));
 const raw=read('dungeons'),dungeons=raw.map(correctDungeon),enemies=new Map(read('enemies').map(e=>[e.id,e]));
 const presets=read('modifier-placements');
-
 test('Desert patrols show one existing trail per pack, independent of member order',()=>{
   const dungeon=dungeons.find(d=>d.id==='Level.ID.DesertDunes'),view=mapViews(dungeon)[0];
   const members=dungeon.enemies.filter(p=>onMap(p,view)&&p.mapPatrolPath?.length>1);
@@ -23,7 +21,6 @@ test('Desert patrols show one existing trail per pack, independent of member ord
   assert.deepEqual(byPack(paths),byPack(mapPatrols([...members].reverse(),view)));
   for(const path of paths)assert.ok(members.some(p=>p.packId===path.packId&&JSON.stringify(path.points)===JSON.stringify(p.mapPatrolPath.map((pt,i)=>mapCoordinates({...pt,worldPosition:p.patrolPath[i]},view)))));
 });
-
 test('Pack patrols retain floor breaks and choose a complete visible trail',()=>{
   const point=(floor,x)=>({mapImageId:floor,mapPosition:{x,y:.5}});
   const member=(placementId,points)=>({placementId,packId:'pack',mapPatrolPath:points});
@@ -38,7 +35,6 @@ test('Pack patrols retain floor breaks and choose a complete visible trail',()=>
   const reference={...floor,placementPatrols:{full:'route'},patrols:{route:[[5,5],[95,95]]}};
   assert.deepEqual(mapPatrols(members,reference),[{packId:'pack',points:[[5,5],[95,95]]}]);
 });
-
 test('World-only relic positions agree with known map positions on every single-layer dungeon',()=>{
  const single=dungeons.filter(d=>d.mapImages.length===1);assert.equal(single.length,5);
  for(const d of single){
@@ -52,7 +48,6 @@ test('World-only relic positions agree with known map positions on every single-
    assert.ok(worldMapCoordinates(mid,view.id,view,d).every((v,i)=>Math.abs(v-expected[i])<1e-6));
  }
 });
-
 test('World-only overview coordinates stay unchanged and invalid layer calibration fails explicitly',()=>{
  for(const d of dungeons.filter(d=>d.mapImages.length>1))for(const p of d.enemies.filter(p=>p.mapPosition)){
    const view=mapViews(d)[0];
@@ -65,7 +60,6 @@ test('World-only overview coordinates stay unchanged and invalid layer calibrati
  const bad=structuredClone(d);bad.mapImages[0].gameFrame.calibration.sx=0;
  assert.equal(worldMapCoordinates(p.worldPosition,view.id,view,bad),null);
 });
-
 test('Dragging an arrow on any overview maps back to its original layer',()=>{
   let checked=0;
   for(const dungeon of dungeons)for(const source of dungeon.mapImages)for(const view of mapViews(dungeon)){
@@ -80,7 +74,6 @@ test('Dragging an arrow on any overview maps back to its original layer',()=>{
   }
   assert.ok(checked>30);
 });
-
 test('Campfires project to their floor and both overviews without leaking across floors',()=>{
   assert.equal(campfireBuildId,read('manifest').buildId);
   assert.equal(Object.keys(campfires).length,dungeons.length);
@@ -135,79 +128,11 @@ test('All active multi-layer dungeons have a full view with every mapped enemy e
   }
   assert.equal(count,6);
 });
-test('Game Sands uses world positions; original layers and saved annotations remain stable',()=>{
-  const d=dungeons.find(d=>d.id.endsWith('DesertDunes')),views=mapViews(d),p=d.enemies.find(p=>p.id==='ub-bossarchbishop');
-  const [x,y]=mapCoordinates(p,views[0]);assert.deepEqual([x,y],mapCoordinates({...p,placementId:undefined},views[0]));
-  const rawPoint=mapCoordinates({...p,placementId:undefined},views[0]);
-  const art=recipes.find(r=>r.key==='DesertDunes').layers.find(l=>p.mapImageId.endsWith(':'+l.suffix)).artworkTransform;
-  assert.ok(Math.abs(rawPoint[0]-(art.x+p.mapPosition.x*1024*art.scale))<.0001);
-  assert.ok(Math.abs(rawPoint[1]-(art.y+p.mapPosition.y*512*art.scale))<.0001);
-  const layer=views.find(m=>m.id===p.mapImageId),point=mapCoordinates(p,layer);
-  assert.deepEqual(point,[p.mapPosition.x*layer.width,p.mapPosition.y*layer.height]);
-  const drawing={id:'old',mapId:layer.id,kind:'note',points:[point],text:'Keep me'};
-  assert.deepEqual(drawingOnMap(drawing,layer,d),drawing);
-  const projected=drawingOnMap(drawing,views[0],d);assert.ok(Math.abs(projected.points[0][0]-rawPoint[0])<.0001);assert.ok(Math.abs(projected.points[0][1]-rawPoint[1])<.0001);
-  assert.deepEqual(drawing.points,[point]);
-  const route=newRoute(d,d.routeBuildId??'test');route.drawings=[drawing,{...drawing,id:'full',mapId:views[0].id,points:[[x,y]]}];
-  const imported=validateRoute(JSON.parse(JSON.stringify(route)),dungeons,enemies);assert.equal(imported.drawings.length,2);assert.deepEqual(imported.drawings.map(d=>d.points),route.drawings.map(d=>d.points));
-});
 test('Game Wraithtide captain follows world coordinates rather than a frozen marker override',()=>{
   const d=dungeons.find(d=>d.id.endsWith('PirateRaid')),p=d.enemies.find(p=>p.id==='pr-bosspiratecaptain');
   assert.deepEqual(mapCoordinates(p,mapViews(d)[0]),mapCoordinates({...p,placementId:undefined},mapViews(d)[0]));
   assert.notDeepEqual(mapCoordinates({...p,worldPosition:{...p.worldPosition,y:p.worldPosition.y+1000}},mapViews(d)[0]),mapCoordinates(p,mapViews(d)[0]));
 });
-
-test('Wraithtide deck actors, world points and annotations follow the separated deck artwork',()=>{
-  const d=dungeons.find(d=>d.id.endsWith('PirateRaid')),[overview,reference]=mapViews(d);
-  const jungle=d.mapImages.find(m=>m.id.endsWith('JungleArea'));
-  const deck=d.enemies.filter(p=>p.mapImageId===jungle.id&&p.worldPosition.x<-22000&&p.worldPosition.y>-13000&&p.worldPosition.y<-8000&&p.worldPosition.z>2600);
-  const interior=d.enemies.filter(p=>p.mapImageId.endsWith('_Ship'));
-  assert.equal(deck.length,14);assert.equal(interior.length,18);
-  const overlay=recipes.find(r=>r.key==='PirateRaid').overlays[0];
-  const close=(a,b)=>assert.ok(a.every((v,i)=>Math.abs(v-b[i])<1e-6),`${a} != ${b}`);
-  for(const p of deck){
-    const expected=[0,1].map(i=>overlay.at[i]+(([p.mapPosition.x*1024,p.mapPosition.y*512][i]-overlay.crop[i])/overlay.crop[i+2])*overlay.size[i]);
-    close(mapCoordinates(p,overview),expected);
-    close(mapCoordinates(p,reference),expected);
-    close(mapCoordinates({...p,worldPosition:undefined},overview),expected);
-    close(worldMapCoordinates(p.worldPosition,p.mapImageId,overview,d),expected);
-    const point=mapCoordinates(p,jungle),drawing={id:'deck-note',kind:'note',mapId:jungle.id,points:[point]};
-    close(drawingOnMap(drawing,overview,d).points[0],expected);
-    close(drawingOnMap({...drawing,mapId:overview.id,points:[expected]},jungle,d).points[0],point);
-    close(drawingPointFromMap(expected,drawing,overview,d),point);
-  }
-  assert.ok(Math.min(...deck.map(p=>mapCoordinates(p,overview)[0]))>Math.max(...interior.map(p=>mapCoordinates(p,overview)[0]))+400);
-  // Crossing between the island and its detached deck must not paint a line across the sea.
-  const p=deck.find(p=>p.id==='pr-bosspiratecaptain');
-  const outside={mapImageId:jungle.id,mapPosition:{x:.6,y:.2}};
-  const paths=mapPatrols([{placementId:'crossing',packId:'test',mapPatrolPath:[outside,outside,p,p]}],overview);
-  assert.equal(paths.length,2);
-});
-
-test('All multi-floor maps register displaced playable artwork and retain every floor',()=>{
-  const multi=dungeons.filter(d=>d.mapImages.length>1);
-  assert.equal(multi.length,6);
-  const displaced=[];
-  for(const d of multi){
-    const overview=mapViews(d)[0],recipe=recipes.find(r=>d.id==='Level.ID.'+r.key);
-    for(const m of d.mapImages){
-      assert.ok(d.enemies.some(p=>p.mapImageId===m.id),`${d.name}: empty ${m.name}`);
-      assert.ok(overview.sources[m.id],`${d.name}: omitted ${m.name}`);
-    }
-    for(const overlay of recipe.overlays??[]){
-      const id=d.id+':'+recipe.layers[overlay.source].suffix,art=overview.artworkSources[id];
-      const [cx,cy,cw,ch]=overlay.crop,[x,y]=overlay.at,[w,h]=overlay.size;
-      if(Math.abs(x-(art.x+cx/1024*art.width))<1e-6&&Math.abs(y-(art.y+cy/512*art.height))<1e-6&&Math.abs(w-cw/1024*art.width)<1e-6&&Math.abs(h-ch/512*art.height)<1e-6)continue;
-      const region=fullMaps[d.id].displayRegions?.find(r=>r.mapImageId===id);
-      assert.ok(region,`${d.name}: displaced artwork needs coordinate registration`);
-      assert.deepEqual(region.polygon,overlay.maskPolygon.map(([px,py])=>[(cx+px*cw)/1024,(cy+py*ch)/512]));
-      assert.deepEqual(region.transform,{x:x-cx*w/cw,y:y-cy*h/ch,width:1024*w/cw,height:512*h/ch});
-      displaced.push(region.id);
-    }
-  }
-  assert.deepEqual(displaced,['ship-deck']);
-});
-
 test('Combined projects original layers, patrols and modifier members in its chosen frame',()=>{
   for(const d of dungeons.filter(d=>d.mapImages.length>1)){
     const views=mapViews(d),combined=views.find(v=>v.kind==='combined');
@@ -244,9 +169,6 @@ test('Combined projects original layers, patrols and modifier members in its cho
     }
   }
 });
-
-
-
 test('Saved Full map and Referenced objects share both overviews without changing route data',()=>{
   const d=dungeons.find(d=>d.id.endsWith('DesertDunes')),[combined,full]=mapViews(d);
   const route=newRoute(d,d.routeBuildId??'test');route.pulls[0].enemies=d.enemies.slice(0,10).map(p=>p.placementId);
@@ -260,7 +182,6 @@ test('Saved Full map and Referenced objects share both overviews without changin
   assert.deepEqual(drawingOnMap(imported.drawings[0],full,d),imported.drawings[0]);
   assert.deepEqual(drawingOnMap(imported.drawings[1],combined,d),imported.drawings[1]);
 });
-
 test('Objects created on either overview return to source layers and can be edited there',()=>{
   const close=(a,b)=>assert.ok(a.every((v,i)=>Math.abs(v-b[i])<1e-6),`${a} != ${b}`);
   for(const dungeon of dungeons.filter(d=>d.mapImages.length>1)){
@@ -286,7 +207,6 @@ test('Objects created on either overview return to source layers and can be edit
     }
   }
 });
-
 test('Layer visibility hides outside objects but keeps crossing lines and reversible off-map edits',()=>{
   const dungeon=dungeons.find(d=>d.id.endsWith('DesertDunes'));
   const overview=mapViews(dungeon)[0],layer=dungeon.mapImages[0];
