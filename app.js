@@ -970,8 +970,8 @@ function logPreviewRoute(fixture,state,id){
   const importedDifficulty=difficultyChoice(target.id,fixture.difficulty);
   if(importedDifficulty){next.difficulty=importedDifficulty.value;applyDifficulty(next);}
   next.pulls=state.pulls.filter(p=>p.groups.length||!state.complete&&p===state.pulls.at(-1)).map((p,i)=>{
-    const members=p.groups.flatMap(id=>fixture.groups[id].enemies),inferred=fixture.inferredPlacements?.filter(id=>members.includes(id))??[];
-    return {...newPull(i),id:`log-pull-${i}`,enemies:members,note:`Log ${p.id}.${inferred.length||fixture.partial||fixture.expandedSearch||fixture.skippedRelics?.length?' '+fixture.assumption:''}`};
+    const members=p.groups.flatMap(id=>fixture.groups[id].enemies);
+    return {...newPull(i),id:`log-pull-${i}`,enemies:members};
   });
   next.excluded=groups.flatMap(g=>g.excluded);
   next.priorityTargets=[];
