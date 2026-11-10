@@ -747,8 +747,9 @@ function drawAnnotation(d,root,unit){
       const id=`arrowhead-${root.id}-${root.childElementCount}`,defs=svg('defs'),marker=svg('marker',{id,viewBox:'0 0 10 10',refX:10,refY:5,markerWidth:6,markerHeight:6,orient:'auto-start-reverse'});
       marker.append(svg('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:color}));defs.append(marker);g.append(defs);arrowhead=`url(#${id})`;
     }
-    if(!isDraft)g.append(svg('polyline',{points,fill:'none',stroke:'transparent','stroke-width':Math.max(16,width*6),'vector-effect':'non-scaling-stroke','pointer-events':'stroke','stroke-linecap':'round'}));
-    g.append(svg('polyline',{class:'annotation-line',points,fill:'none',stroke:color,'stroke-width':width,'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':d.kind==='invis'?'7 6':d.kind==='portal'?'3 7':'none','marker-end':arrowhead}));
+    // Invisibility paths let pointer events reach mobs underneath; their endpoint icons remain interactive.
+    if(!isDraft&&d.kind!=='invis')g.append(svg('polyline',{points,fill:'none',stroke:'transparent','stroke-width':Math.max(16,width*6),'vector-effect':'non-scaling-stroke','pointer-events':'stroke','stroke-linecap':'round'}));
+    g.append(svg('polyline',{class:'annotation-line',points,fill:'none',stroke:color,'stroke-width':width,'vector-effect':'non-scaling-stroke','stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':d.kind==='invis'?'7 6':d.kind==='portal'?'3 7':'none','marker-end':arrowhead,...(d.kind==='invis'?{'pointer-events':'none'}:{})}));
     if(d.kind==='line'&&!isDraft)for(const [i,[x,y]]of d.points.entries())g.append(svg('circle',{class:'arrow-handle','data-endpoint':i,cx:x,cy:y,r:6*unit,fill:color,stroke:'#fff','stroke-width':1.5,'vector-effect':'non-scaling-stroke'}));
     if(relicIcons[d.kind])for(const [i,[x,y]] of d.points.entries()){
       const endpoint=svg('g',isDraft?{}:{class:'annotation-handle','data-endpoint':i});
